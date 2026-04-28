@@ -38,6 +38,7 @@ export default async function PeoplePage() {
             initials={initials(signal.person.fullName)}
             name={signal.person.fullName}
             personId={signal.person.id}
+            detailHref={`/pessoas/${signal.person.id}`}
             phone={signal.person.phone}
             context={`${signal.group?.name ?? "Sem célula"} · ${signal.group?.leader?.name ?? "Sem líder"}`}
             reason={signal.reason}

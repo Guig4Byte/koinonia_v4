@@ -57,6 +57,8 @@ O MVP atual deve permanecer limitado a:
 - Check-in simples
 - Taxa de presença
 - Atenções pastorais geradas por presença/ausência
+- Detalhe simples da pessoa em `/pessoas/[personId]`
+- Busca e cards de atenção levando direto ao contexto da pessoa
 - Ação direta de cuidado: ligar, WhatsApp, contato feito e anotação opcional
 - Visão macro simples para pastor
 - Visão de acompanhamento para supervisor
@@ -169,6 +171,20 @@ Regras:
 - `Ainda não` não registra contato.
 - Anotação é apoio; não deve ser a ação principal antes do cuidado.
 
+## Detalhe da pessoa
+
+A rota `/pessoas/[personId]` é a leitura curta de cuidado. Ela deve mostrar somente o necessário para agir:
+
+- pessoa, célula e líder;
+- status simples;
+- nota curta, se existir;
+- ações de contato;
+- atenção aberta e evidência;
+- última presença;
+- cuidado recente.
+
+Não transformar esta tela em prontuário, CRM pastoral completo ou histórico infinito. O objetivo é dar contexto suficiente para um telefonema, WhatsApp ou contato real.
+
 ## Design e linguagem
 
 O produto deve parecer pastoral, não corporativo.
@@ -269,9 +285,9 @@ A seed deve validar os cenários de escopo, não apenas preencher telas:
 
 Com check-in, eventos e matriz de permissões estabilizados para o MVP, os próximos passos naturais são:
 
-1. detalhe simples da pessoa;
-2. detalhe simples da célula;
-3. busca levando direto ao contexto correto da pessoa;
-4. autenticação real.
+1. detalhe simples da célula;
+2. melhorar retorno pós-check-in para pessoas em atenção;
+3. autenticação real;
+4. remover o seletor demo da interface pública.
 
 Não avançar para analytics, playbooks ou dashboard pesado antes do ciclo principal estar bom.

@@ -62,7 +62,8 @@ Inclui:
 - Taxa de presença
 - Visitantes no check-in
 - Atenções pastorais
-- Busca simples
+- Busca simples levando ao detalhe da pessoa
+- Detalhe simples da pessoa com célula, última presença, atenção aberta e cuidado recente
 - Ação direta: ligar, WhatsApp, contato feito e anotação opcional
 - Visão macro do pastor
 - Visão de acompanhamento do supervisor
@@ -167,6 +168,26 @@ Evento da célula
 ```
 
 Pastor e supervisor veem resumo somente leitura. Evento já concluído pode ser ajustado pelo líder da célula, mas aparece como correção de presença, não como novo check-in. Visitantes já registrados aparecem no resumo e também no ajuste do líder, sem virar membros automaticamente. O mesmo visitante não deve ser adicionado duas vezes no mesmo evento; a validação deve comparar nome normalizado, ignorando acento, caixa e espaços extras.
+
+## Detalhe simples da pessoa
+
+A tela de pessoa existe para responder rapidamente:
+
+```txt
+Por que esta pessoa merece atenção e qual é o próximo gesto de cuidado?
+```
+
+Ela deve permanecer curta e operacional:
+
+- nome, célula e líder;
+- status pastoral simples;
+- nota curta, quando existir;
+- ações diretas de cuidado: ligar, WhatsApp e contato feito;
+- atenções abertas com evidência;
+- última presença registrada;
+- cuidado recente.
+
+Ela não deve virar prontuário, CRM completo, timeline infinita ou formulário longo. A busca e os cards de atenção devem levar direto para essa tela quando o usuário precisar de contexto.
 
 ## Fluxo de contato
 

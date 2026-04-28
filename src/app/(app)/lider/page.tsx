@@ -114,6 +114,7 @@ export default async function LeaderPage() {
             initials={initials(signal.person.fullName)}
             name={signal.person.fullName}
             personId={signal.person.id}
+            detailHref={`/pessoas/${signal.person.id}`}
             phone={signal.person.phone}
             context={signal.reason}
             severity={signal.severity === "URGENT" ? "risk" : "warn"}

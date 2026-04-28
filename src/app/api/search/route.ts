@@ -1,7 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
+import { PersonStatus } from "../../../generated/prisma/client";
 import { getVisiblePersonWhere } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
+
+const statusLabels: Record<PersonStatus, string> = {
+  ACTIVE: "Ativo",
+  VISITOR: "Visitante",
+  NEW: "Novo",
+  NEEDS_ATTENTION: "Em atenção",
+  COOLING_AWAY: "Esfriando",
+  INACTIVE: "Inativo",
+};
 
 export async function GET(request: NextRequest) {
   const user = await getCurrentUser();
@@ -28,7 +38,7 @@ export async function GET(request: NextRequest) {
       id: person.id,
       fullName: person.fullName,
       context: person.memberships[0]?.group.name ?? "Sem célula",
-      status: person.status,
+      status: statusLabels[person.status],
     })),
   });
 }

@@ -42,6 +42,7 @@ export function PersonSignalCard({
   context,
   reason,
   severity = "risk",
+  detailHref,
   href,
   personId,
   phone,
@@ -51,6 +52,7 @@ export function PersonSignalCard({
   context: string;
   reason?: string;
   severity?: "ok" | "warn" | "risk" | "info";
+  detailHref?: string;
   href?: string;
   personId?: string;
   phone?: string | null;
@@ -70,13 +72,18 @@ export function PersonSignalCard({
             <Badge tone={severity === "ok" ? "ok" : severity === "info" ? "info" : "risk"}>atenção</Badge>
           </div>
           {reason ? <p className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-primary)]">{reason}</p> : null}
+          {detailHref ? (
+            <Link href={detailHref} className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)] transition active:scale-[0.98]">
+              Abrir cuidado
+            </Link>
+          ) : null}
           <CareActions personId={personId} phone={phone} />
         </div>
       </div>
     </article>
   );
 
-  if (!href) return content;
+  if (!href || detailHref || personId || phone) return content;
   return <Link href={href}>{content}</Link>;
 }
 

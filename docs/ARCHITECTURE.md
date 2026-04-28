@@ -161,6 +161,14 @@ A regra operacional continua:
 - Check-in: somente o líder da célula do evento.
 - Contato/cuidado: apenas quem tem escopo pastoral sobre a pessoa.
 
+## Rotas de pessoa
+
+A lista `/pessoas` mostra pessoas em atenção dentro do escopo do usuário.
+
+A rota `/pessoas/[personId]` é o detalhe simples de cuidado e deve reutilizar `canViewPerson(user, person)` antes de renderizar qualquer dado.
+
+A busca em `/api/search` deve respeitar `getVisiblePersonWhere(user)` e levar direto para `/pessoas/[personId]`, não para uma lista genérica com parâmetro solto.
+
 ## Autenticação futura
 
 Ao implementar autenticação real, preserve o contrato:
