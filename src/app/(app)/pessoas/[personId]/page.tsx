@@ -5,7 +5,7 @@ import { AppShell } from "@/components/app-shell";
 import { CareActions } from "@/components/care-actions";
 import { SectionTitle } from "@/components/cards";
 import { Badge } from "@/components/ui/badge";
-import { canViewGroup, canViewPerson, getVisibleEventWhere, getVisibleGroupWhere, getVisibleOpenSignalWhere, hasWholeChurchScope } from "@/features/permissions/permissions";
+import { canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -78,9 +78,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
 
   const visibleOpenSignalWhere = getVisibleOpenSignalWhere(user);
   const visibleEventWhere = getVisibleEventWhere(user);
-  const visibleCareTouchWhere = hasWholeChurchScope(user)
-    ? { churchId: user.churchId, personId: person.id }
-    : { churchId: user.churchId, personId: person.id, group: getVisibleGroupWhere(user) };
+  const visibleCareTouchWhere = getVisibleCareTouchWhere(user, person.id);
 
   const [signals, attendances, careTouches] = await Promise.all([
     prisma.careSignal.findMany({

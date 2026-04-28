@@ -96,10 +96,10 @@ export function getVisibleEventWhere(user: PermissionUser): Prisma.EventWhereInp
   }
 
   if (user.role === UserRole.SUPERVISOR) {
-    return { churchId: user.churchId, group: { is: { supervisorUserId: user.id } } };
+    return { churchId: user.churchId, group: { is: { churchId: user.churchId, isActive: true, supervisorUserId: user.id } } };
   }
 
-  return { churchId: user.churchId, group: { is: { leaderUserId: user.id } } };
+  return { churchId: user.churchId, group: { is: { churchId: user.churchId, isActive: true, leaderUserId: user.id } } };
 }
 
 export function getVisibleMembershipWhere(user: PermissionUser): Prisma.GroupMembershipWhereInput {
@@ -128,13 +128,13 @@ export function getVisiblePersonWhere(user: PermissionUser): Prisma.PersonWhereI
   if (user.role === UserRole.SUPERVISOR) {
     return {
       churchId: user.churchId,
-      memberships: { some: { leftAt: null, group: { is: { supervisorUserId: user.id } } } },
+      memberships: { some: { leftAt: null, group: { is: { churchId: user.churchId, isActive: true, supervisorUserId: user.id } } } },
     };
   }
 
   return {
     churchId: user.churchId,
-    memberships: { some: { leftAt: null, group: { is: { leaderUserId: user.id } } } },
+    memberships: { some: { leftAt: null, group: { is: { churchId: user.churchId, isActive: true, leaderUserId: user.id } } } },
   };
 }
 
@@ -144,8 +144,39 @@ export function getVisibleOpenSignalWhere(user: PermissionUser): Prisma.CareSign
   }
 
   if (user.role === UserRole.SUPERVISOR) {
-    return { churchId: user.churchId, status: SignalStatus.OPEN, group: { is: { supervisorUserId: user.id } } };
+    return {
+      churchId: user.churchId,
+      status: SignalStatus.OPEN,
+      group: { is: { churchId: user.churchId, isActive: true, supervisorUserId: user.id } },
+    };
   }
 
-  return { churchId: user.churchId, status: SignalStatus.OPEN, group: { is: { leaderUserId: user.id } } };
+  return {
+    churchId: user.churchId,
+    status: SignalStatus.OPEN,
+    group: { is: { churchId: user.churchId, isActive: true, leaderUserId: user.id } },
+  };
+}
+
+export function getVisibleCareTouchWhere(user: PermissionUser, personId?: string): Prisma.CareTouchWhereInput {
+  const base: Prisma.CareTouchWhereInput = {
+    churchId: user.churchId,
+    ...(personId ? { personId } : {}),
+  };
+
+  if (hasWholeChurchScope(user)) {
+    return base;
+  }
+
+  if (user.role === UserRole.SUPERVISOR) {
+    return {
+      ...base,
+      group: { is: { churchId: user.churchId, isActive: true, supervisorUserId: user.id } },
+    };
+  }
+
+  return {
+    ...base,
+    group: { is: { churchId: user.churchId, isActive: true, leaderUserId: user.id } },
+  };
 }

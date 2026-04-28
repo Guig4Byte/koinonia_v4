@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { UserRole } from "../../generated/prisma/client";
-import { canCheckInEvent, canRegisterCare, canViewEvent, canViewGroup, getPrimaryVisibleGroupIdForPerson, getVisibleMembershipWhere } from "./permissions";
+import { canCheckInEvent, canRegisterCare, canViewEvent, canViewGroup, getPrimaryVisibleGroupIdForPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "./permissions";
 
 const pastor = { id: "pastor-1", churchId: "church-1", role: UserRole.PASTOR };
 const supervisor = { id: "supervisor-1", churchId: "church-1", role: UserRole.SUPERVISOR };
@@ -53,4 +53,36 @@ describe("permission helpers", () => {
       group: { is: { churchId: supervisor.churchId, isActive: true, supervisorUserId: supervisor.id } },
     });
   });
+
+  it("keeps query helpers scoped to active groups in the same church", () => {
+    expect(getVisibleEventWhere(leader)).toEqual({
+      churchId: leader.churchId,
+      group: { is: { churchId: leader.churchId, isActive: true, leaderUserId: leader.id } },
+    });
+
+    expect(getVisiblePersonWhere(leader)).toEqual({
+      churchId: leader.churchId,
+      memberships: { some: { leftAt: null, group: { is: { churchId: leader.churchId, isActive: true, leaderUserId: leader.id } } } },
+    });
+
+    expect(getVisibleOpenSignalWhere(supervisor)).toEqual({
+      churchId: supervisor.churchId,
+      status: "OPEN",
+      group: { is: { churchId: supervisor.churchId, isActive: true, supervisorUserId: supervisor.id } },
+    });
+  });
+
+  it("builds scoped care touch filters for person detail history", () => {
+    expect(getVisibleCareTouchWhere(leader, "person-1")).toEqual({
+      churchId: leader.churchId,
+      personId: "person-1",
+      group: { is: { churchId: leader.churchId, isActive: true, leaderUserId: leader.id } },
+    });
+
+    expect(getVisibleCareTouchWhere(pastor, "person-1")).toEqual({
+      churchId: pastor.churchId,
+      personId: "person-1",
+    });
+  });
+
 });

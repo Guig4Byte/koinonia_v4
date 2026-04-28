@@ -275,7 +275,9 @@ canRegisterCare(user, person)
 getVisibleGroupWhere(user)
 getVisibleEventWhere(user)
 getVisiblePersonWhere(user)
+getVisibleMembershipWhere(user)
 getVisibleOpenSignalWhere(user)
+getVisibleCareTouchWhere(user, personId?)
 ```
 
 Não confiar apenas na UI. Toda rota de escrita deve validar permissão no backend.

@@ -148,7 +148,9 @@ canRegisterCare(user, person)
 getVisibleGroupWhere(user)
 getVisibleEventWhere(user)
 getVisiblePersonWhere(user)
+getVisibleMembershipWhere(user)
 getVisibleOpenSignalWhere(user)
+getVisibleCareTouchWhere(user, personId?)
 ```
 
 Rotas, páginas e queries devem reutilizar esses helpers em vez de repetir regra de papel/escopo manualmente.
@@ -171,7 +173,7 @@ A busca em `/api/search` deve respeitar `getVisiblePersonWhere(user)` e levar di
 
 A busca atual é busca de pessoa. Se uma tela exibir o componente `SearchBox`, a copy não deve prometer busca de evento ou célula enquanto a API não suportar isso. O contexto exibido no resultado também deve usar somente vínculos visíveis ao usuário, via `getVisibleMembershipWhere(user)`.
 
-Dentro do detalhe da pessoa, sinais, presenças e cuidados recentes também devem ser filtrados pelo mesmo escopo do usuário. `canViewPerson` autoriza a pessoa, mas não deve ser usado sozinho para carregar histórico de outras células.
+Dentro do detalhe da pessoa, sinais, presenças e cuidados recentes também devem ser filtrados pelo mesmo escopo do usuário. `canViewPerson` autoriza a pessoa, mas não deve ser usado sozinho para carregar histórico de outras células. Para cuidado recente, use `getVisibleCareTouchWhere(user, personId)` em vez de montar filtros manuais.
 
 ## Autenticação futura
 
