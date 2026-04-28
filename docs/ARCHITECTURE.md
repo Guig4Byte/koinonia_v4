@@ -103,6 +103,16 @@ event.group.leaderUserId === user.id
 
 Pastor, supervisor e admin não salvam check-in nesta fase.
 
+A rota de escrita do check-in também valida:
+
+- evento pertence à igreja do usuário;
+- usuário é o líder da célula vinculada ao evento;
+- cada membro ativo não visitante da célula aparece exatamente uma vez no payload;
+- ninguém de fora da célula entra como presença de membro;
+- presença de membro aceita apenas `PRESENT`, `ABSENT` ou `JUSTIFIED`;
+- `VISITOR` entra somente pelo bloco de visitantes;
+- evento concluído continua editável apenas para correção pelo líder da célula.
+
 ### Leitura
 
 - Pastor/Admin: igreja inteira.

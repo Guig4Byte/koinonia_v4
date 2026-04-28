@@ -158,14 +158,14 @@ Fluxo desejado:
 ```txt
 Evento da célula
 -> abrir check-in
--> marcar presentes/ausentes/justificados
+-> marcar explicitamente cada membro como presente, ausente ou justificou
 -> adicionar visitante
--> finalizar presença
+-> finalizar presença somente quando ninguém estiver como não marcado
 -> atualizar taxa
 -> gerar atenções
 ```
 
-Pastor e supervisor veem resumo somente leitura.
+Pastor e supervisor veem resumo somente leitura. Evento já concluído pode ser ajustado pelo líder da célula, mas aparece como correção de presença, não como novo check-in.
 
 ## Fluxo de contato
 

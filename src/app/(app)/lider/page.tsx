@@ -28,6 +28,7 @@ export default async function LeaderPage() {
     fullName: membership.person.fullName,
     currentStatus: currentEvent?.attendances.find((attendance) => attendance.personId === membership.personId)?.status,
   })) ?? [];
+  const currentEventCompleted = currentEvent ? currentEvent.status === "COMPLETED" || currentEvent.attendances.length > 0 : false;
 
   return (
     <AppShell
@@ -55,7 +56,14 @@ export default async function LeaderPage() {
       />
 
       <SectionTitle>Check-in da célula</SectionTitle>
-      {currentEvent ? <CheckInList eventId={currentEvent.id} members={members} initialVisitorCount={currentEvent.attendances.filter((attendance) => attendance.status === "VISITOR").length} /> : (
+      {currentEvent ? (
+        <CheckInList
+          eventId={currentEvent.id}
+          members={members}
+          initialVisitorCount={currentEvent.attendances.filter((attendance) => attendance.status === "VISITOR").length}
+          submitLabel={currentEventCompleted ? "Atualizar" : "Finalizar"}
+        />
+      ) : (
         <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhum evento de célula encontrado. Rode o seed ou crie um evento.</p>
       )}
 

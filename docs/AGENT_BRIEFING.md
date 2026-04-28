@@ -135,7 +135,10 @@ A interface também deve refletir isso:
 
 - líder da célula: tela editável de check-in;
 - pastor/supervisor: tela somente leitura, com resumo e leitura pastoral;
-- evento sem check-in: pastor/supervisor veem que o líder ainda precisa registrar a presença, mas não podem registrar por ele.
+- evento sem check-in: pastor/supervisor veem que o líder ainda precisa registrar a presença, mas não podem registrar por ele;
+- pessoa sem marcação aparece como `Não marcado`, nunca como ausência presumida;
+- a finalização só deve acontecer depois de marcar todos os membros ativos da célula;
+- evento já concluído pode ser aberto pelo líder como `Ajustar presença`, não como novo check-in.
 
 ## Fluxo de cuidado no card
 
@@ -250,11 +253,11 @@ Não confiar apenas na UI. Toda rota de escrita deve validar permissão no backe
 
 ## Próxima direção provável
 
-Após estabilizar check-in e eventos, os próximos passos naturais são:
+Com check-in, eventos e matriz de permissões estabilizados para o MVP, os próximos passos naturais são:
 
 1. detalhe simples da pessoa;
 2. detalhe simples da célula;
-3. matriz centralizada de permissões;
+3. busca levando direto ao contexto correto da pessoa;
 4. autenticação real.
 
 Não avançar para analytics, playbooks ou dashboard pesado antes do ciclo principal estar bom.

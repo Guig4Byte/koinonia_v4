@@ -1,16 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { validateMemberCheckInPayload } from "@/features/check-in/check-in-validation";
 import { AttendanceStatus } from "../../../../../generated/prisma/client";
 import { canCheckInEvent } from "@/features/permissions/permissions";
 import { recalculateAttendanceSignalsForGroup } from "@/features/signals/rules";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 
+const memberAttendanceStatusSchema = z.union([
+  z.literal(AttendanceStatus.PRESENT),
+  z.literal(AttendanceStatus.ABSENT),
+  z.literal(AttendanceStatus.JUSTIFIED),
+]);
+
 const payloadSchema = z.object({
   attendances: z.array(
     z.object({
       personId: z.string().uuid(),
-      status: z.nativeEnum(AttendanceStatus),
+      status: memberAttendanceStatusSchema,
     }),
   ),
   visitors: z.array(
@@ -24,7 +31,14 @@ const payloadSchema = z.object({
 export async function POST(request: NextRequest, context: { params: Promise<{ eventId: string }> }) {
   const user = await getCurrentUser();
   const { eventId } = await context.params;
-  const body = payloadSchema.parse(await request.json());
+  const json = await request.json().catch(() => null);
+  const parsedBody = payloadSchema.safeParse(json);
+
+  if (!parsedBody.success) {
+    return NextResponse.json({ error: "Dados de presença inválidos" }, { status: 400 });
+  }
+
+  const body = parsedBody.data;
 
   const event = await prisma.event.findUnique({
     where: { id: eventId },
@@ -39,17 +53,24 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ev
     return NextResponse.json({ error: "Somente o líder da célula pode registrar este check-in" }, { status: 403 });
   }
 
-  if (event.groupId) {
-    const memberships = await prisma.groupMembership.findMany({
-      where: { groupId: event.groupId, leftAt: null, role: { not: "VISITOR" } },
-      select: { personId: true },
-    });
-    const allowedPersonIds = new Set(memberships.map((membership) => membership.personId));
-    const hasInvalidPerson = body.attendances.some((attendance) => !allowedPersonIds.has(attendance.personId));
+  if (!event.groupId) {
+    return NextResponse.json({ error: "Este evento não está vinculado a uma célula" }, { status: 400 });
+  }
 
-    if (hasInvalidPerson) {
-      return NextResponse.json({ error: "A presença contém pessoa fora desta célula" }, { status: 400 });
-    }
+  const groupId = event.groupId;
+
+  const memberships = await prisma.groupMembership.findMany({
+    where: { groupId, leftAt: null, role: { not: "VISITOR" } },
+    select: { personId: true },
+  });
+
+  const validation = validateMemberCheckInPayload(
+    memberships.map((membership) => membership.personId),
+    body.attendances,
+  );
+
+  if (!validation.ok) {
+    return NextResponse.json({ error: validation.error }, { status: 400 });
   }
 
   await prisma.$transaction(async (tx) => {
@@ -72,15 +93,13 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ev
         },
       });
 
-      if (event.groupId) {
-        await tx.groupMembership.create({
-          data: {
-            groupId: event.groupId,
-            personId: person.id,
-            role: "VISITOR",
-          },
-        });
-      }
+      await tx.groupMembership.create({
+        data: {
+          groupId,
+          personId: person.id,
+          role: "VISITOR",
+        },
+      });
 
       await tx.attendance.create({
         data: {
@@ -94,9 +113,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ev
     await tx.event.update({ where: { id: eventId }, data: { status: "COMPLETED" } });
   });
 
-  if (event.groupId) {
-    await recalculateAttendanceSignalsForGroup(event.groupId);
-  }
+  await recalculateAttendanceSignalsForGroup(groupId);
 
   return NextResponse.json({ ok: true });
 }

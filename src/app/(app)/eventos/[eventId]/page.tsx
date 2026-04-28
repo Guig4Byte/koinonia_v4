@@ -128,8 +128,8 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
     fullName: attendance.person.fullName,
   }));
 
-  const checkInLabel = canEditCheckIn ? (completed ? "Ajuste de check-in" : "Check-in") : "Resumo";
-  const checkInSectionTitle = canEditCheckIn ? (completed ? "Ajustar presença" : "Registrar presença") : "Acompanhamento";
+  const checkInLabel = canEditCheckIn ? (completed ? "Ajuste de presença" : "Check-in") : "Resumo de presença";
+  const checkInSectionTitle = canEditCheckIn ? (completed ? "Ajustar presença" : "Registrar presença") : "Resumo da presença";
   const checkInSubmitLabel = completed ? "Atualizar" : "Finalizar";
 
   return (
