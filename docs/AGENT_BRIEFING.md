@@ -105,6 +105,7 @@ Funcionalidades fora desse recorte exigem pedido explícito do usuário.
 - Atenção por ausência só nasce de encontros reais, passados e com presença registrada.
 - Métrica de presença sem encontro registrado deve aparecer como ausência de dado, não como `0%` de risco.
 - A lista principal deve continuar sendo por pessoa, não por sinal bruto.
+- Para líder, `/pessoas` pode aparecer como `Membros` e listar membros ativos da própria célula; para pastor/supervisor, não transforme `/pessoas` em diretório completo por padrão.
 - Cards de atenção devem manter uma ação primária simples: `Abrir cuidado`; ações diretas ficam no detalhe da pessoa.
 - `Já houve contato?` deve ser uma pergunta com confirmação; não pode resolver atenção por clique acidental.
 - A busca atual é busca de pessoa; não prometa busca de evento/célula enquanto a API não suportar esses tipos.
@@ -157,11 +158,11 @@ Antes de implementar qualquer mudança, verifique:
 
 ## Próxima direção provável
 
-Com check-in, eventos, atenção por pessoa e permissões estabilizados, os próximos passos naturais são:
+Com check-in, eventos, atenção por pessoa, detalhe de célula e leitura de membros do líder estabilizados, os próximos passos naturais são:
 
-1. detalhe simples da célula;
-2. retorno pós-check-in mais claro para pessoas em atenção;
-3. autenticação real;
-4. remoção do seletor demo da interface pública.
+1. revalidar visualmente os fluxos principais em mobile;
+2. autenticação real;
+3. remoção do seletor demo da interface pública;
+4. só depois considerar novas capacidades.
 
 Não avançar para analytics, playbooks, SLA, dashboard pesado ou acompanhamento formal antes do ciclo principal estar excelente.

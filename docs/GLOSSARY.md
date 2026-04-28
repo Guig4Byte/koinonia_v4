@@ -32,6 +32,7 @@ Use na UI:
 
 - `Pessoa`
 - `Pessoas`
+- `Membros`, quando o líder estiver olhando a própria célula
 - `Quem precisa de cuidado`
 
 Evite:

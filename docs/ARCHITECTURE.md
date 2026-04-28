@@ -187,9 +187,16 @@ Ela deve:
 
 A rota não deve implementar edição de célula, cadastro rico, relatórios longos ou gestão administrativa. É uma leitura operacional curta para entender a célula e agir sobre pessoas.
 
-## Rotas de pessoa e busca
+## Rotas de pessoa, membros e busca
 
-A lista `/pessoas` mostra pessoas em atenção dentro do escopo do usuário.
+A lista `/pessoas` deve respeitar o escopo do usuário e não deve funcionar como diretório amplo para todos os perfis.
+
+Regras técnicas:
+
+- todos os perfis carregam pessoas em atenção com `getVisibleOpenSignalWhere(user)` e agregação por pessoa;
+- líderes podem carregar uma lista simples de membros ativos não visitantes da própria célula usando `getVisiblePersonWhere(user)` combinado com `getVisibleMembershipWhere(user)`;
+- pastor e supervisor não devem receber uma lista completa de pessoas por padrão nessa rota; quando precisarem consultar alguém fora da lista de atenção, devem usar a busca;
+- a label da navegação pode ser `Membros` para líder e `Pessoas` para os demais perfis.
 
 A rota `/pessoas/[personId]` é o detalhe simples de cuidado e deve chamar `canViewPerson(user, person)` antes de renderizar qualquer dado.
 

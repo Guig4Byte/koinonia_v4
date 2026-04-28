@@ -59,6 +59,7 @@ Inclui:
 - atenções pastorais;
 - busca simples de pessoa;
 - detalhe simples da pessoa;
+- tela de pessoas/membros respeitando o escopo do perfil;
 - detalhe simples da célula;
 - abertura de cuidado a partir das listas de atenção;
 - ação direta no detalhe da pessoa: ligar, WhatsApp, contato feito e anotação opcional;
@@ -108,6 +109,7 @@ Pode:
 - adicionar visitantes;
 - ver membros da própria célula;
 - ver pessoas em atenção da própria célula;
+- abrir a tela `Membros` com a lista simples dos membros da própria célula;
 - abrir o cuidado dos membros em atenção;
 - no detalhe da pessoa, ligar, chamar no WhatsApp e registrar contato.
 
@@ -220,6 +222,20 @@ Deve mostrar apenas:
 - últimos encontros registrados.
 
 Não deve virar área administrativa completa da célula. Não deve incluir cadastro rico, relatórios longos, ranking de líderes, gráficos complexos ou histórico profundo.
+
+## Tela Pessoas / Membros
+
+A rota `/pessoas` é uma leitura por escopo, não um diretório amplo para todos os perfis.
+
+Regras oficiais:
+
+- todos os perfis veem, primeiro, pessoas em atenção dentro do próprio escopo;
+- para o líder, a navegação pode chamar essa tela de `Membros`, porque o escopo é pequeno e operacional;
+- para o líder, a tela pode listar os membros ativos não visitantes da própria célula;
+- para supervisor e pastor, a tela não deve virar lista completa de todos os membros por padrão; essas pessoas devem ser consultadas pela busca quando necessário;
+- ações diretas de contato continuam no detalhe da pessoa, não na lista.
+
+Isso preserva a diferença de responsabilidade: líder opera a própria célula, supervisor acompanha exceções e pastor interpreta a visão macro.
 
 ## Sinais e atenções
 
