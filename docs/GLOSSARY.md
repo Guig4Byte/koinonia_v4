@@ -1,10 +1,24 @@
 # Glossário — Koinonia Lite
 
-Este documento define o vocabulário oficial do MVP atual. Ele existe para impedir que o produto misture termos de sistema, linguagem pastoral e fluxos futuros antes da hora.
+Este documento é a fonte oficial do vocabulário do MVP atual.
+
+Ele define o significado dos termos para evitar que o produto misture linguagem pastoral, nomes técnicos e fluxos futuros antes da hora.
+
+Para escopo e fluxos, consulte `docs/PRODUCT.md`. Para implementação técnica, consulte `docs/ARCHITECTURE.md`.
 
 ## Regra principal
 
-Na interface, use a palavra mais pastoral e mais simples para quem está cuidando de pessoas. No código, use nomes técnicos quando necessário, mas sem mudar o significado do domínio.
+Na interface, use a palavra mais pastoral, simples e útil para quem está cuidando de pessoas.
+
+No código, use nomes técnicos quando necessário, mas sem mudar o significado do domínio.
+
+Pergunta de corte para criar ou trocar termos:
+
+```txt
+Esse termo ajuda alguém a cuidar melhor de uma pessoa com menos esforço?
+```
+
+Se não ajudar, simplifique.
 
 ## Termos oficiais
 
@@ -44,6 +58,16 @@ Encontro real que gera presença.
 
 No MVP atual, evento existe principalmente para reunião de célula. Ele não deve virar calendário completo antes do fluxo principal estar validado.
 
+Use na UI:
+
+- `Evento`
+- `Encontro`
+- `Reunião da célula`
+
+Evite:
+
+- linguagem de agenda corporativa quando o contexto for pastoral e simples.
+
 ### Presença
 
 Registro de quem esteve, faltou ou justificou ausência em um evento.
@@ -75,13 +99,21 @@ Exemplos:
 
 No código atual, isso pode aparecer como `CareSignal`.
 
-Regra: sinal é evidência e lembrete de cuidado; não é task, cobrança ou experiência principal da pessoa usuária. Se o cuidado já aconteceu fora do sistema, a UI deve permitir registrar isso e fechar a atenção com pouco atrito.
+Regra oficial:
+
+```txt
+Sinal não é tarefa.
+```
+
+Sinal é evidência e lembrete de cuidado. Não é task, cobrança, SLA ou experiência principal da pessoa usuária.
+
+Se o cuidado já aconteceu fora do sistema, a UI deve permitir registrar isso e fechar a atenção com pouco atrito.
 
 ### Atenção
 
 Forma pastoral e visível de apresentar um sinal para o usuário.
 
-Exemplo: em vez de dizer “alerta crítico”, a UI deve dizer algo como:
+Exemplo:
 
 ```txt
 João está pedindo atenção.
@@ -100,7 +132,7 @@ Evite:
 - `Alerta`
 - `Risco crítico`
 - `Incidente`
-- `Pendência` quando soar burocrático.
+- `Pendência`, quando soar burocrático.
 
 ### Contato
 
@@ -126,7 +158,7 @@ Use na UI:
 
 Registro mínimo de que alguém foi percebido e alguém agiu.
 
-No MVP atual, cuidado não deve ser um prontuário pastoral completo. Deve apenas impedir que a pessoa desapareça em silêncio.
+No MVP atual, cuidado não é prontuário pastoral completo. Deve apenas impedir que a pessoa desapareça em silêncio.
 
 Use na UI:
 
@@ -146,7 +178,7 @@ Evite:
 
 Fluxo organizado de continuidade para casos que precisam de mais do que um contato simples.
 
-Importante: acompanhamento é uma direção futura. No MVP Lite atual, não antecipar acompanhamento como task manager, kanban, SLA ou fila complexa.
+Importante: acompanhamento é direção futura. No MVP Lite atual, não antecipar acompanhamento como task manager, kanban, SLA ou fila complexa.
 
 Quando aparecer futuramente, acompanhamento deve significar continuidade pastoral, não burocracia.
 
@@ -178,13 +210,3 @@ No MVP Lite, evite transformar a tela inicial em painel executivo.
 | `Attendance` | Presença | Fonte pastoral, não fiscalização. |
 | Dashboard | Visão | Menos painel, mais leitura. |
 | Task/SLA | Fora do MVP atual | Não transformar sinal em cobrança ou fila. |
-
-## Critério de decisão
-
-Antes de criar uma nova palavra, tela ou entidade, pergunte:
-
-```txt
-Esse termo ajuda alguém a cuidar melhor de uma pessoa com menos esforço?
-```
-
-Se não ajudar, simplifique.

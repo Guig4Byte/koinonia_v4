@@ -1,41 +1,36 @@
 # Produto — Koinonia Lite
 
+Este documento é a fonte oficial do MVP atual: visão, escopo, perfis e fluxos de produto.
+
+Para vocabulário, consulte `docs/GLOSSARY.md`. Para implementação técnica, consulte `docs/ARCHITECTURE.md`. Para entrada rápida de agentes, consulte `docs/AGENT_BRIEFING.md`.
+
 ## Visão
 
-O Koinonia é um sistema pastoral mobile-first para células/grupos.
+O Koinonia Lite é um sistema pastoral mobile-first para células/grupos.
 
 Ele não existe para transformar cuidado em burocracia. Ele existe para ajudar liderança pastoral a perceber, lembrar e agir quando uma pessoa pode estar se afastando.
 
 > O Koinonia não registra cuidado por obrigação. Ele ajuda a não esquecer pessoas.
 
-## Documentos obrigatórios de contexto
-
-Antes de propor funcionalidades ou alterar fluxos, leia:
-
-1. `docs/AGENT_BRIEFING.md` — resumo operacional para agentes.
-2. `docs/PRODUCT.md` — este documento; recorte oficial do MVP atual.
-3. `docs/GLOSSARY.md` — vocabulário oficial do MVP.
-4. `docs/ARCHITECTURE.md` — organização técnica e limites de arquitetura.
-5. `docs/Perfil.txt` — norte de experiência mobile simples, bonita e pastoral.
-6. `docs/Koinonia.txt` — visão ampla do produto e possibilidades futuras.
-
-Ordem de autoridade:
-
-- `AGENT_BRIEFING.md`, `PRODUCT.md` e `GLOSSARY.md` governam o MVP atual.
-- `Perfil.txt` governa a sensação de uso: mobile-first, alívio cognitivo e foco em pessoas.
-- `Koinonia.txt` é visão ampla/futura; não deve puxar o MVP para BI, CRM pesado, playbooks, SLA, mapas ou analytics antes do ciclo central estar validado.
-
-Não há mais dependência de arquivo HTML externo neste projeto.
+O produto deve parecer uma ajuda para cuidar, não uma cobrança para documentar.
 
 ## Princípio de produto
 
-A pergunta central é:
+A pergunta central do MVP é:
 
 ```txt
 Quem precisa de cuidado agora?
 ```
 
-Tudo no MVP deve responder a isso.
+Tudo que entra no MVP precisa ajudar a responder essa pergunta com menos esforço.
+
+Regra de corte:
+
+```txt
+Isso ajuda alguém a cuidar melhor de uma pessoa com menos esforço?
+```
+
+Se a resposta for não, não entra agora.
 
 ## Ciclo central do MVP
 
@@ -43,32 +38,31 @@ Tudo no MVP deve responder a isso.
 Evento -> Presença -> Atenção -> Contato -> Cuidado
 ```
 
-- Evento existe para registrar o encontro real da célula.
-- Presença existe para revelar sinais pastorais.
-- Atenção existe para trazer uma pessoa à consciência do líder/pastor.
-- Contato existe para estimular ação real: ligar, WhatsApp, conversar.
-- Cuidado existe para impedir que alguém desapareça em silêncio.
+- **Evento** existe para registrar um encontro real da célula.
+- **Presença** existe para revelar sinais pastorais.
+- **Atenção** existe para trazer uma pessoa à consciência do líder, supervisor ou pastor.
+- **Contato** existe para estimular ação real: ligar, WhatsApp ou conversa.
+- **Cuidado** existe para impedir que alguém desapareça em silêncio.
 
-Para os termos oficiais, consulte `docs/GLOSSARY.md`. Em caso de dúvida, use sempre a linguagem mais simples para a pessoa usuária: `atenção` na UI, `sinal` como evidência de sistema e `cuidado` como ação humana registrada.
+A presença não é fiscalização. Ela é uma fonte simples para perceber cuidado necessário.
 
 ## Escopo do MVP atual
 
 Inclui:
 
-- Pessoas
-- Células / grupos
-- Eventos de célula
-- Check-in simples
-- Taxa de presença
-- Visitantes no check-in
-- Atenções pastorais
-- Busca simples levando ao detalhe da pessoa
-- A busca atual é busca de pessoa; resultados devem mostrar apenas contexto/célula dentro do escopo visível do usuário
-- Detalhe simples da pessoa com célula, última presença, atenção aberta e cuidado recente
-- Ação direta: ligar, WhatsApp, contato feito e anotação opcional
-- Visão macro do pastor
-- Visão de apoio do supervisor
-- Visão operacional do líder
+- pessoas;
+- células/grupos;
+- eventos de célula;
+- check-in simples;
+- taxa de presença;
+- visitantes no check-in;
+- atenções pastorais;
+- busca simples de pessoa;
+- detalhe simples da pessoa;
+- ação direta: ligar, WhatsApp, contato feito e anotação opcional;
+- visão macro do pastor;
+- visão de apoio do supervisor;
+- visão operacional do líder.
 
 Não inclui agora:
 
@@ -84,7 +78,10 @@ Não inclui agora:
 - acompanhamento formal;
 - CRM pastoral pesado;
 - área rica do membro;
-- formulários longos.
+- formulários longos;
+- calendário amplo de igreja.
+
+`Acompanhamento` é uma direção futura para casos que exigirem continuidade. No MVP Lite atual, não deve ser antecipado como task manager, kanban, SLA ou fila complexa.
 
 ## Perfis e responsabilidades
 
@@ -126,7 +123,7 @@ Pode:
 - ver eventos dessas células em modo resumo;
 - ver check-ins pendentes/realizados;
 - ver presença média, visitantes e pessoas em atenção;
-- acompanhar líderes que precisam de apoio.
+- perceber líderes ou células que precisam de apoio.
 
 Não deve:
 
@@ -152,26 +149,7 @@ Não deve:
 - operar presença no lugar do líder;
 - transformar visão macro em relatório burocrático.
 
-
-## Sinais de ausência confiáveis
-
-Atenção por ausência só pode nascer de encontros reais, passados e com presença registrada. Evento futuro, evento pendente ou membro sem marcação explícita não deve ser tratado como falta presumida.
-
-Depois de salvar check-in, a resposta da API informa quantas pessoas distintas ficaram em atenção naquela célula, para que a interface possa fechar o ciclo: presença salva -> pessoas em atenção -> cuidado. A UI pode escolher o sinal mais grave/recente como motivo, mas a lista principal deve continuar sendo por pessoa, não por sinal.
-
-## Sinal não é tarefa
-
-Sinal é lembrete de cuidado, não cobrança burocrática. Ele pode aparecer depois de o líder já ter ligado, mandado mensagem ou conversado com a pessoa fora do sistema.
-
-Por isso, a interface deve permitir uma saída simples:
-
-```txt
-Já houve contato -> anotar se precisar -> fechar atenção
-```
-
-O usuário não deve ser forçado a abrir acompanhamento, preencher formulário longo ou justificar demais uma ação pastoral simples.
-
-## Check-in
+## Fluxo de check-in
 
 Check-in é exclusivo do líder da célula.
 
@@ -180,37 +158,51 @@ Fluxo desejado:
 ```txt
 Evento da célula
 -> abrir check-in
--> na visão do líder, escolher primeiro o evento de hoje pendente, depois o próximo pendente, depois o último realizado
--> marcar explicitamente cada membro como presente, ausente ou justificou
--> adicionar visitante
--> finalizar presença somente quando ninguém estiver como pendente
+-> escolher o encontro relevante
+-> marcar cada membro ativo como presente, ausente ou justificou
+-> adicionar visitante, se houver
+-> finalizar presença somente quando ninguém estiver pendente
 -> atualizar taxa
--> gerar atenções
+-> gerar atenções quando fizer sentido
 ```
 
-Pastor e supervisor veem resumo somente leitura. Evento já concluído pode ser ajustado pelo líder da célula, mas aparece como correção de presença, não como novo check-in. Visitantes já registrados aparecem no resumo e também no ajuste do líder, sem virar membros automaticamente. O mesmo visitante não deve ser adicionado duas vezes no mesmo evento; a validação deve comparar nome normalizado, ignorando acento, caixa e espaços extras.
+Regras de produto:
 
-## Detalhe simples da pessoa
+- evento de hoje pendente tem prioridade na visão do líder;
+- depois vem o próximo evento pendente;
+- depois vem o último evento realizado;
+- pastor e supervisor veem resumo somente leitura;
+- evento já concluído pode ser ajustado pelo líder da célula;
+- ajuste de evento concluído deve parecer correção de presença, não novo check-in;
+- visitante registrado aparece no resumo e no ajuste, sem virar membro automaticamente;
+- visitante duplicado no mesmo evento deve ser bloqueado por nome normalizado;
+- pessoa sem marcação explícita aparece como `Pendente`, nunca como ausência presumida.
 
-A tela de pessoa existe para responder rapidamente:
+## Sinais e atenções
 
 ```txt
-Por que esta pessoa merece atenção e qual é o próximo gesto de cuidado?
+Sinal não é tarefa.
 ```
 
-Ela deve permanecer curta e operacional:
+Sinal é evidência e lembrete de cuidado, não cobrança burocrática. Ele pode aparecer depois de o líder já ter ligado, mandado mensagem ou conversado com a pessoa fora do sistema.
 
-- nome, célula e líder;
-- status pastoral simples;
-- nota curta, quando existir;
-- ações diretas de cuidado: ligar, WhatsApp e contato feito;
-- atenções abertas com evidência;
-- última presença registrada;
-- cuidado recente.
+Atenção por ausência só pode nascer de encontros reais, passados e com presença registrada. Evento futuro, evento pendente ou membro sem marcação explícita não deve ser tratado como falta presumida.
 
-Ela não deve virar prontuário, CRM completo, timeline infinita ou formulário longo. A busca e os cards de atenção devem levar direto para essa tela quando o usuário precisar de contexto.
+Listas chamadas de `Pessoas em atenção` devem agregar sinais abertos por pessoa. A experiência principal é a pessoa que precisa ser lembrada, não uma pilha de sinais.
 
-## Fluxo de contato
+Depois de salvar check-in, a UI pode informar quantas pessoas ficaram em atenção naquela célula, para fechar o ciclo:
+
+```txt
+presença salva -> pessoas em atenção -> cuidado
+```
+
+## Fluxo de contato e cuidado
+
+A saída simples para uma atenção é:
+
+```txt
+Já houve contato -> anotar se precisar -> fechar atenção
+```
 
 Nos cards de atenção, o fluxo correto é:
 
@@ -227,11 +219,51 @@ Quer anotar algo?
 [Anotar] [Não precisa]
 ```
 
-A anotação é opcional e posterior ao cuidado. O sistema deve incentivar contato real antes de registro.
+Regras de produto:
 
-Quando o contato é salvo, a API deve devolver quantas atenções abertas foram resolvidas naquele escopo. A UI deve mostrar essa consequência em linguagem simples, sem prometer que a pessoa foi “concluída” ou que saiu definitivamente de cuidado. O registro de cuidado fecha sinais abertos, não cria acompanhamento complexo.
+- `Ligar` abre telefone.
+- `WhatsApp` abre conversa.
+- `Já houve contato` registra cuidado que aconteceu fora do aplicativo.
+- `Contato feito` não deve fechar imediatamente; primeiro pergunta se quer anotar.
+- `Não precisa` registra contato e resolve as atenções abertas.
+- `Anotar` salva observação junto com o contato e resolve as atenções abertas.
+- `Ainda não` não registra contato.
+- Anotação é apoio, não ação principal antes do cuidado.
+- A UI deve dizer quantas atenções foram resolvidas, sem transformar isso em acompanhamento ou tarefa.
 
-## Linguagem
+## Detalhe simples da pessoa
+
+A tela `/pessoas/[personId]` existe para responder rapidamente:
+
+```txt
+Por que esta pessoa merece atenção e qual é o próximo gesto de cuidado?
+```
+
+Ela deve mostrar somente o necessário para agir:
+
+- pessoa, célula e líder;
+- status pastoral simples;
+- nota curta, quando existir;
+- ações diretas de cuidado;
+- atenção aberta e evidência;
+- última presença registrada;
+- cuidado recente.
+
+Ela não deve virar prontuário, CRM completo, timeline infinita ou formulário longo. A busca e os cards de atenção devem levar direto para essa tela quando o usuário precisar de contexto.
+
+## Busca
+
+A busca atual é busca de pessoa.
+
+Regras:
+
+- não prometer busca de evento ou célula enquanto a API não suportar esses tipos;
+- resultados devem mostrar apenas contexto/célula dentro do escopo visível do usuário;
+- resultado de pessoa deve levar direto para `/pessoas/[personId]`.
+
+## Linguagem e experiência
+
+A UI deve usar linguagem pastoral, curta e concreta.
 
 Preferir:
 
@@ -252,12 +284,14 @@ Evitar na UI:
 - `funil`;
 - `workflow`.
 
-## Regra de corte
+A experiência deve ser mobile-first, com poucos elementos por tela, ação clara e baixo custo cognitivo. O sistema deve ajudar o usuário a agir, não fazê-lo administrar o sistema.
 
-Antes de implementar qualquer coisa, perguntar:
+## Direção futura sem antecipar escopo
+
+O produto pode crescer para acompanhamento formal, autenticação real, área de membro, relatórios ou recursos mais amplos. Mas isso só deve acontecer depois que o ciclo central estiver validado e útil.
+
+A prioridade atual é deixar excelente o fluxo:
 
 ```txt
-Isso ajuda alguém a cuidar melhor de uma pessoa com menos esforço?
+Evento -> Presença -> Atenção -> Contato -> Cuidado
 ```
-
-Se a resposta for não, não entra agora.
