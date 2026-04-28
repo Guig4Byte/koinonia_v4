@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { AttendanceStatus } from "../../../../../generated/prisma/client";
+import { canCheckInEvent } from "@/features/permissions/permissions";
 import { recalculateAttendanceSignalsForGroup } from "@/features/signals/rules";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
@@ -12,6 +13,12 @@ const payloadSchema = z.object({
       status: z.nativeEnum(AttendanceStatus),
     }),
   ),
+  visitors: z.array(
+    z.object({
+      fullName: z.string().trim().min(2).max(120),
+      phone: z.string().trim().max(30).optional(),
+    }),
+  ).default([]),
 });
 
 export async function POST(request: NextRequest, context: { params: Promise<{ eventId: string }> }) {
@@ -28,19 +35,13 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ev
     return NextResponse.json({ error: "Evento não encontrado" }, { status: 404 });
   }
 
-  const canMark =
-    user.role === "PASTOR" ||
-    user.role === "ADMIN" ||
-    event.group?.leaderUserId === user.id ||
-    event.group?.supervisorUserId === user.id;
-
-  if (!canMark) {
-    return NextResponse.json({ error: "Sem permissão para este check-in" }, { status: 403 });
+  if (!canCheckInEvent(user, event)) {
+    return NextResponse.json({ error: "Somente o líder da célula pode registrar este check-in" }, { status: 403 });
   }
 
   if (event.groupId) {
     const memberships = await prisma.groupMembership.findMany({
-      where: { groupId: event.groupId, leftAt: null },
+      where: { groupId: event.groupId, leftAt: null, role: { not: "VISITOR" } },
       select: { personId: true },
     });
     const allowedPersonIds = new Set(memberships.map((membership) => membership.personId));
@@ -51,16 +52,47 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ev
     }
   }
 
-  await prisma.$transaction([
-    ...body.attendances.map((attendance) =>
-      prisma.attendance.upsert({
+  await prisma.$transaction(async (tx) => {
+    for (const attendance of body.attendances) {
+      await tx.attendance.upsert({
         where: { eventId_personId: { eventId, personId: attendance.personId } },
         create: { eventId, personId: attendance.personId, status: attendance.status },
         update: { status: attendance.status, markedAt: new Date() },
-      }),
-    ),
-    prisma.event.update({ where: { id: eventId }, data: { status: "COMPLETED" } }),
-  ]);
+      });
+    }
+
+    for (const visitor of body.visitors) {
+      const person = await tx.person.create({
+        data: {
+          churchId: user.churchId,
+          fullName: visitor.fullName,
+          phone: visitor.phone,
+          status: "VISITOR",
+          shortNote: "Visitante registrado no check-in.",
+        },
+      });
+
+      if (event.groupId) {
+        await tx.groupMembership.create({
+          data: {
+            groupId: event.groupId,
+            personId: person.id,
+            role: "VISITOR",
+          },
+        });
+      }
+
+      await tx.attendance.create({
+        data: {
+          eventId,
+          personId: person.id,
+          status: AttendanceStatus.VISITOR,
+        },
+      });
+    }
+
+    await tx.event.update({ where: { id: eventId }, data: { status: "COMPLETED" } });
+  });
 
   if (event.groupId) {
     await recalculateAttendanceSignalsForGroup(event.groupId);

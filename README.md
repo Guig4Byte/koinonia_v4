@@ -1,8 +1,48 @@
 # Koinonia Lite
 
-Base limpa para o **Koinonia**: simples, bonito e focado em cuidado pastoral.
+Base limpa para o **Koinonia**: simples, bonito, mobile-first e focado em cuidado pastoral.
 
 > O Koinonia não registra cuidado por obrigação. Ele ajuda a não esquecer pessoas.
+
+## Antes de mexer no projeto
+
+Leia sempre, nesta ordem:
+
+```txt
+docs/AGENT_BRIEFING.md
+docs/PRODUCT.md
+docs/GLOSSARY.md
+docs/ARCHITECTURE.md
+docs/Perfil.txt
+docs/Koinonia.txt
+```
+
+Ordem de autoridade para decisões:
+
+1. `docs/AGENT_BRIEFING.md` — resumo operacional para agentes.
+2. `docs/PRODUCT.md` — recorte oficial do MVP atual.
+3. `docs/GLOSSARY.md` — vocabulário oficial para evitar mistura de conceitos.
+4. `docs/ARCHITECTURE.md` — organização técnica e regras de arquitetura.
+5. `docs/Perfil.txt` — norte de experiência mobile/pastoral.
+6. `docs/Koinonia.txt` — visão ampla e futura do produto.
+
+Importante: `docs/Koinonia.txt` inspira o futuro, mas **não governa o escopo atual** quando entrar em conflito com o MVP Lite. Para esta base, o MVP atual é governado por `AGENT_BRIEFING.md`, `PRODUCT.md` e `GLOSSARY.md`.
+
+## Norte do produto
+
+O MVP atual deve provar este ciclo:
+
+```txt
+Evento -> Presença -> Atenção -> Contato -> Cuidado
+```
+
+Regra de perfis:
+
+```txt
+Líder registra.
+Supervisor acompanha.
+Pastor interpreta.
+```
 
 ## Escopo desta base
 
@@ -13,8 +53,9 @@ Esta versão nasce pequena e preparada para crescer:
 - Eventos, inicialmente reunião de célula
 - Check-in simples
 - Taxa de presença
-- Sinais automáticos de atenção
-- Ação direta: ligar, WhatsApp e marcar como cuidado
+- Visitantes no check-in
+- Atenções automáticas
+- Ação direta: ligar, WhatsApp, contato feito e anotação opcional
 - Visão macro simples para pastor
 - Visão de células para supervisor
 - Visão operacional para líder
@@ -28,6 +69,8 @@ Fora do MVP:
 - Área rica do membro
 - Playbooks e SLA
 - CRM pastoral burocrático
+- Formulários longos
+- Task manager complexo
 
 ## Stack
 
@@ -77,6 +120,7 @@ npm run db:studio
 3. Evento existe para revelar cuidado necessário.
 4. Registro só existe quando evita esquecimento.
 5. O mobile deve aliviar, não cobrar.
+6. Líder registra check-in; pastor e supervisor acompanham.
 
 ## Estrutura
 
@@ -86,16 +130,17 @@ src/components       Componentes visuais reutilizáveis
 src/features         Regras de domínio por feature
 src/lib              Infraestrutura leve: Prisma, sessão demo, utilitários
 prisma               Schema e seed
+docs                 Briefing, produto e arquitetura
 ```
 
 ## Próximos passos recomendados
 
-1. Validar o schema com dados reais de uma igreja pequena.
-2. Implementar autenticação real substituindo o seletor demo.
-3. Refinar o check-in do líder.
-4. Criar testes de autorização por papel.
-5. Transformar sinais em leitura pastoral ainda mais humana.
+1. Validar check-in líder-only.
+2. Criar detalhe simples da pessoa.
+3. Criar detalhe simples da célula.
+4. Centralizar helpers de autorização.
+5. Implementar autenticação real substituindo o seletor demo.
 
-## Tema claro/escuro
+## Tema
 
 A interface possui alternância local de tema no header. A escolha fica salva no `localStorage` em `koinonia-theme` e é aplicada antes da pintura inicial para evitar flash visual.

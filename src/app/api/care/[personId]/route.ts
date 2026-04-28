@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { CareKind } from "../../../../generated/prisma/client";
+import { canRegisterCare, getPrimaryVisibleGroupIdForPerson, hasWholeChurchScope } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 
@@ -24,14 +25,11 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pe
     return NextResponse.json({ error: "Pessoa não encontrada" }, { status: 404 });
   }
 
-  const hasScope =
-    user.role === "PASTOR" ||
-    user.role === "ADMIN" ||
-    person.memberships.some((membership) => membership.group.leaderUserId === user.id || membership.group.supervisorUserId === user.id);
-
-  if (!hasScope) {
+  if (!canRegisterCare(user, person)) {
     return NextResponse.json({ error: "Sem permissão para registrar cuidado" }, { status: 403 });
   }
+
+  const visibleGroupId = getPrimaryVisibleGroupIdForPerson(user, person);
 
   await prisma.$transaction(async (tx) => {
     await tx.careTouch.create({
@@ -41,13 +39,18 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pe
         actorId: user.id,
         kind: body.kind,
         note: body.note,
-        groupId: person.memberships[0]?.groupId,
+        groupId: visibleGroupId,
       },
     });
 
     if (body.resolveOpenSignals) {
       await tx.careSignal.updateMany({
-        where: { churchId: user.churchId, personId, status: "OPEN" },
+        where: {
+          churchId: user.churchId,
+          personId,
+          status: "OPEN",
+          ...(hasWholeChurchScope(user) ? {} : { groupId: visibleGroupId }),
+        },
         data: { status: "RESOLVED", resolvedAt: new Date() },
       });
     }

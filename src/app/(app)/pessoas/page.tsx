@@ -1,6 +1,7 @@
 import { AppShell } from "@/components/app-shell";
 import { PersonSignalCard, SectionTitle } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
+import { getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 
@@ -10,14 +11,8 @@ function initials(name: string) {
 
 export default async function PeoplePage() {
   const user = await getCurrentUser();
-  const where = user.role === "LEADER"
-    ? { churchId: user.churchId, group: { is: { leaderUserId: user.id } }, status: "OPEN" as const }
-    : user.role === "SUPERVISOR"
-      ? { churchId: user.churchId, group: { is: { supervisorUserId: user.id } }, status: "OPEN" as const }
-      : { churchId: user.churchId, status: "OPEN" as const };
-
   const signals = await prisma.careSignal.findMany({
-    where,
+    where: getVisibleOpenSignalWhere(user),
     include: { person: true, group: { include: { leader: true } } },
     orderBy: { detectedAt: "desc" },
     take: 50,

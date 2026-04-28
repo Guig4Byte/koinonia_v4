@@ -1,5 +1,6 @@
 import { endOfWeek, startOfWeek } from "date-fns";
-import { AttendanceStatus, SignalSeverity, SignalStatus, UserRole } from "../../generated/prisma/client";
+import { AttendanceStatus, MembershipRole, SignalSeverity, SignalStatus, UserRole } from "../../generated/prisma/client";
+import { getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { prisma } from "@/lib/prisma";
 import { percent } from "@/lib/format";
 
@@ -63,13 +64,13 @@ export async function getPastorDashboard(churchId: string) {
   };
 }
 
-async function getGroupScopedDashboard(user: { id: string; churchId: string }, groupWhere: { leaderUserId?: string; supervisorUserId?: string }) {
+async function getGroupScopedDashboard(user: PermissionUser) {
   const groups = await prisma.smallGroup.findMany({
-    where: { churchId: user.churchId, isActive: true, ...groupWhere },
+    where: getVisibleGroupWhere(user),
     include: {
       leader: true,
       supervisor: true,
-      memberships: { where: { leftAt: null }, include: { person: true } },
+      memberships: { where: { leftAt: null, role: { not: MembershipRole.VISITOR } }, include: { person: true } },
       signals: { where: { status: SignalStatus.OPEN }, include: { person: true } },
       events: { orderBy: { startsAt: "desc" }, take: 4, include: { attendances: true } },
     },
@@ -93,15 +94,15 @@ async function getGroupScopedDashboard(user: { id: string; churchId: string }, g
   };
 }
 
-export function getSupervisorDashboard(user: { id: string; churchId: string }) {
-  return getGroupScopedDashboard(user, { supervisorUserId: user.id });
+export function getSupervisorDashboard(user: PermissionUser) {
+  return getGroupScopedDashboard(user);
 }
 
-export function getLeaderDashboard(user: { id: string; churchId: string }) {
-  return getGroupScopedDashboard(user, { leaderUserId: user.id });
+export function getLeaderDashboard(user: PermissionUser) {
+  return getGroupScopedDashboard(user);
 }
 
-export async function getScopedDashboard(user: { id: string; churchId: string; role: UserRole }) {
+export async function getScopedDashboard(user: PermissionUser) {
   if (user.role === UserRole.PASTOR || user.role === UserRole.ADMIN) {
     return getPastorDashboard(user.churchId);
   }

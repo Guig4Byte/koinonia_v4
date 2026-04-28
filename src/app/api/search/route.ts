@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getVisiblePersonWhere } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 
@@ -10,18 +11,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ people: [] });
   }
 
-  const membershipScope =
-    user.role === "LEADER"
-      ? { memberships: { some: { leftAt: null, group: { is: { leaderUserId: user.id } } } } }
-      : user.role === "SUPERVISOR"
-        ? { memberships: { some: { leftAt: null, group: { is: { supervisorUserId: user.id } } } } }
-        : {};
-
   const people = await prisma.person.findMany({
     where: {
-      churchId: user.churchId,
+      ...getVisiblePersonWhere(user),
       fullName: { contains: q, mode: "insensitive" },
-      ...membershipScope,
     },
     include: {
       memberships: { include: { group: true }, take: 1 },

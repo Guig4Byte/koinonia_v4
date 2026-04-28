@@ -323,6 +323,18 @@ a {
   box-shadow: var(--color-shadow-header);
 }
 
+.k-primary-action {
+  background: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text) !important;
+  border: 1px solid color-mix(in srgb, var(--color-btn-primary-bg) 84%, var(--color-btn-primary-text));
+  box-shadow: var(--color-shadow-card);
+}
+
+.k-primary-action:focus-visible {
+  outline: 2px solid var(--color-brand-accent);
+  outline-offset: 2px;
+}
+
 .content-flow {
   animation: content-in 180ms ease-out both;
 }

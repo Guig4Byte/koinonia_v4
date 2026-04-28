@@ -1,4 +1,4 @@
-import { AttendanceStatus, SignalSource, SignalStatus } from "../../generated/prisma/client";
+import { AttendanceStatus, MembershipRole, SignalSource, SignalStatus } from "../../generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { countConsecutiveAbsences, describeAttendanceSignal } from "./rules-core";
 
@@ -13,7 +13,7 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string) {
     where: { id: groupId },
     include: {
       memberships: {
-        where: { leftAt: null },
+        where: { leftAt: null, role: { not: MembershipRole.VISITOR } },
         include: { person: true },
       },
       events: {

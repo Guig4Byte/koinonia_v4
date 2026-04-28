@@ -12,7 +12,7 @@ function initials(name: string) {
 
 export default async function LeaderPage() {
   const user = await getCurrentUser();
-  const dashboard = await getLeaderDashboard({ id: user.id, churchId: user.churchId });
+  const dashboard = await getLeaderDashboard(user);
   const group = dashboard.groups[0];
 
   const currentEvent = group
@@ -55,7 +55,7 @@ export default async function LeaderPage() {
       />
 
       <SectionTitle>Check-in da célula</SectionTitle>
-      {currentEvent ? <CheckInList eventId={currentEvent.id} members={members} /> : (
+      {currentEvent ? <CheckInList eventId={currentEvent.id} members={members} initialVisitorCount={currentEvent.attendances.filter((attendance) => attendance.status === "VISITOR").length} /> : (
         <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhum evento de célula encontrado. Rode o seed ou crie um evento.</p>
       )}
 

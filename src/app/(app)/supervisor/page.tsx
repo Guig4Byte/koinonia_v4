@@ -10,7 +10,7 @@ function initials(name: string) {
 
 export default async function SupervisorPage() {
   const user = await getCurrentUser();
-  const dashboard = await getSupervisorDashboard({ id: user.id, churchId: user.churchId });
+  const dashboard = await getSupervisorDashboard(user);
   const firstSignal = dashboard.signals[0];
 
   return (
