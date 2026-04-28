@@ -104,6 +104,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const latestAttendance = attendances[0];
   const homeHref = user.role === "LEADER" ? "/lider" : user.role === "SUPERVISOR" ? "/supervisor" : "/pastor";
   const openSignalsCount = signals.length;
+  const hasCareTouch = careTouches.length > 0;
   const peopleLabel = user.role === "LEADER" ? "Membros" : "Pessoas";
 
   return (
@@ -148,7 +149,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
         <CareActions personId={person.id} phone={person.phone} />
       </section>
 
-      <SectionTitle>Por que merece atenção</SectionTitle>
+      <SectionTitle>{openSignalsCount > 0 ? "Por que merece atenção" : "Situação atual"}</SectionTitle>
       <div className="space-y-3">
         {signals.map((signal) => (
           <article key={signal.id} className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
@@ -165,10 +166,20 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           </article>
         ))}
 
-        {signals.length === 0 ? (
-          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm text-[var(--color-text-secondary)] shadow-card">
-            Nenhum motivo de atenção agora. Esta pessoa pode ser consultada normalmente pela busca.
-          </p>
+        {openSignalsCount === 0 ? (
+          <article className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="font-semibold text-[var(--color-text-primary)]">Sem motivo de atenção agora.</p>
+                <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">
+                  {hasCareTouch
+                    ? "O cuidado mais recente já está registrado abaixo."
+                    : "Esta pessoa pode ser consultada normalmente pela busca."}
+                </p>
+              </div>
+              <Badge tone={hasCareTouch ? "care" : statusTone(person.status)}>{hasCareTouch ? "Cuidado realizado" : personStatusLabels[person.status]}</Badge>
+            </div>
+          </article>
         ) : null}
       </div>
 
