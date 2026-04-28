@@ -9,6 +9,7 @@ export type PermissionUser = {
 type ScopedGroup = {
   id?: string;
   churchId: string;
+  isActive?: boolean | null;
   leaderUserId?: string | null;
   supervisorUserId?: string | null;
 };
@@ -34,7 +35,7 @@ export function hasWholeChurchScope(user: PermissionUser) {
 }
 
 export function canViewGroup(user: PermissionUser, group: ScopedGroup | null | undefined) {
-  if (!group || group.churchId !== user.churchId) return false;
+  if (!group || group.churchId !== user.churchId || group.isActive === false) return false;
   if (hasWholeChurchScope(user)) return true;
   if (user.role === UserRole.SUPERVISOR) return group.supervisorUserId === user.id;
   if (user.role === UserRole.LEADER) return group.leaderUserId === user.id;
@@ -43,13 +44,14 @@ export function canViewGroup(user: PermissionUser, group: ScopedGroup | null | u
 
 export function canViewEvent(user: PermissionUser, event: ScopedEvent | null | undefined) {
   if (!event || event.churchId !== user.churchId) return false;
+  if (event.group && !canViewGroup(user, event.group)) return false;
   if (hasWholeChurchScope(user)) return true;
   return canViewGroup(user, event.group);
 }
 
 export function canCheckInEvent(user: PermissionUser, event: ScopedEvent | null | undefined) {
-  if (!event || event.churchId !== user.churchId) return false;
-  return user.role === UserRole.LEADER && event.group?.leaderUserId === user.id;
+  if (!event || event.churchId !== user.churchId || !event.group) return false;
+  return user.role === UserRole.LEADER && canViewGroup(user, event.group) && event.group.leaderUserId === user.id;
 }
 
 function isActiveMembership(membership: ScopedMembership) {
@@ -73,7 +75,7 @@ export function getPrimaryVisibleGroupIdForPerson(user: PermissionUser, person: 
   if (!person || person.churchId !== user.churchId) return undefined;
 
   const memberships = (person.memberships ?? []).filter(isActiveMembership);
-  const visibleMembership = memberships.find((membership) => hasWholeChurchScope(user) || canViewGroup(user, membership.group));
+  const visibleMembership = memberships.find((membership) => canViewGroup(user, membership.group));
 
   return visibleMembership?.groupId ?? visibleMembership?.group?.id;
 }

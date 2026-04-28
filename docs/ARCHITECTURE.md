@@ -169,6 +169,8 @@ A lista `/pessoas` mostra pessoas em atenção dentro do escopo do usuário.
 
 A rota `/pessoas/[personId]` é o detalhe simples de cuidado e deve reutilizar `canViewPerson(user, person)` antes de renderizar qualquer dado.
 
+Os helpers diretos de permissão também devem recusar escopo vindo de grupo inativo. As queries já filtram `isActive: true`; `canViewGroup`, `canViewEvent`, `canCheckInEvent` e a visibilidade de pessoa por vínculo precisam manter a mesma semântica quando validam objetos carregados diretamente.
+
 A busca em `/api/search` deve respeitar `getVisiblePersonWhere(user)` e levar direto para `/pessoas/[personId]`, não para uma lista genérica com parâmetro solto.
 
 A busca atual é busca de pessoa. Se uma tela exibir o componente `SearchBox`, a copy não deve prometer busca de evento ou célula enquanto a API não suportar isso. O contexto exibido no resultado também deve usar somente vínculos visíveis ao usuário, via `getVisibleMembershipWhere(user)`.

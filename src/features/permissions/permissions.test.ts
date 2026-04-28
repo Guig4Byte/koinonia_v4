@@ -10,6 +10,7 @@ const otherLeader = { id: "leader-2", churchId: "church-1", role: UserRole.LEADE
 const group = {
   id: "group-1",
   churchId: "church-1",
+  isActive: true,
   leaderUserId: leader.id,
   supervisorUserId: supervisor.id,
 };
@@ -28,6 +29,18 @@ describe("permission helpers", () => {
     expect(canViewGroup(supervisor, group)).toBe(true);
     expect(canViewGroup(leader, group)).toBe(true);
     expect(canViewGroup(otherLeader, group)).toBe(false);
+  });
+
+  it("does not allow direct visibility through inactive groups", () => {
+    const inactiveGroup = { ...group, isActive: false };
+    const inactiveEvent = { churchId: "church-1", group: inactiveGroup };
+    const inactivePerson = { churchId: "church-1", memberships: [{ groupId: inactiveGroup.id, leftAt: null, group: inactiveGroup }] };
+
+    expect(canViewGroup(pastor, inactiveGroup)).toBe(false);
+    expect(canViewEvent(pastor, inactiveEvent)).toBe(false);
+    expect(canViewEvent(leader, inactiveEvent)).toBe(false);
+    expect(canCheckInEvent(leader, inactiveEvent)).toBe(false);
+    expect(canRegisterCare(supervisor, inactivePerson)).toBe(false);
   });
 
   it("keeps check-in restricted to the leader of the event group", () => {

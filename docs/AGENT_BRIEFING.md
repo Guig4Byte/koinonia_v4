@@ -280,6 +280,8 @@ getVisibleOpenSignalWhere(user)
 getVisibleCareTouchWhere(user, personId?)
 ```
 
+Quando validar objetos carregados diretamente, mantenha a mesma semântica dos filtros de query: grupo inativo não deve liberar visibilidade, evento ou check-in por escopo.
+
 Não confiar apenas na UI. Toda rota de escrita deve validar permissão no backend.
 
 ## Seed demo
