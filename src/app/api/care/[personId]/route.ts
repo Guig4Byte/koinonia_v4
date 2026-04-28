@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { PersonStatus, SignalStatus } from "@/generated/prisma/client";
 import { parseCarePayload, resolvedAttentionMessage } from "@/features/care/care-validation";
 import { canRegisterCare, getPrimaryVisibleGroupIdForPerson, hasWholeChurchScope } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -55,28 +56,49 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pe
     });
 
     let resolvedSignalsCount = 0;
+    let personStatusReset = false;
 
     if (body.resolveOpenSignals) {
       const updateResult = await tx.careSignal.updateMany({
         where: {
           churchId: user.churchId,
           personId,
-          status: "OPEN",
+          status: SignalStatus.OPEN,
           ...(hasWholeChurchScope(user) ? {} : { groupId: visibleGroupId }),
         },
-        data: { status: "RESOLVED", resolvedAt: new Date() },
+        data: { status: SignalStatus.RESOLVED, resolvedAt: new Date() },
       });
 
       resolvedSignalsCount = updateResult.count;
+
+      if (resolvedSignalsCount > 0) {
+        const remainingOpenSignals = await tx.careSignal.count({
+          where: { churchId: user.churchId, personId, status: SignalStatus.OPEN },
+        });
+
+        if (remainingOpenSignals === 0) {
+          const personUpdate = await tx.person.updateMany({
+            where: {
+              id: personId,
+              churchId: user.churchId,
+              status: { in: [PersonStatus.NEEDS_ATTENTION, PersonStatus.COOLING_AWAY] },
+            },
+            data: { status: PersonStatus.ACTIVE },
+          });
+
+          personStatusReset = personUpdate.count > 0;
+        }
+      }
     }
 
-    return { careTouchId: careTouch.id, resolvedSignalsCount };
+    return { careTouchId: careTouch.id, resolvedSignalsCount, personStatusReset };
   });
 
   return NextResponse.json({
     ok: true,
     careTouchId: result.careTouchId,
     resolvedSignalsCount: result.resolvedSignalsCount,
+    personStatusReset: result.personStatusReset,
     message: resolvedAttentionMessage(result.resolvedSignalsCount),
   });
 }

@@ -122,7 +122,7 @@ export default async function PeoplePage() {
                     <span className="mt-0.5 block text-xs text-[var(--color-text-secondary)]">{person.memberships[0]?.group.name ?? "Sua célula"}</span>
                   </span>
                   <Badge tone={isInAttention ? "warn" : statusTone(person.status)}>
-                    {isInAttention ? "em atenção" : personStatusLabels[person.status]}
+                    {isInAttention ? "Em atenção" : personStatusLabels[person.status]}
                   </Badge>
                 </Link>
               );

@@ -152,7 +152,8 @@ A rota `/api/care/[personId]` deve:
 - associar o registro a uma célula visível quando o usuário não tiver escopo de igreja inteira;
 - recusar escrita se nenhuma célula visível existir;
 - resolver apenas sinais ativos dentro do escopo do usuário;
-- devolver `resolvedSignalsCount` e mensagem curta para a UI.
+- quando não restar nenhum sinal ativo para a pessoa, voltar `Person.status` para `ACTIVE` se ela estava em `NEEDS_ATTENTION` ou `COOLING_AWAY`;
+- devolver `resolvedSignalsCount`, `personStatusReset` e mensagem curta para a UI.
 
 `Já houve contato?` abre um fluxo de confirmação para cuidado já realizado fora do aplicativo. A rota só deve ser chamada depois de confirmação explícita do usuário. Isso não deve criar acompanhamento formal, task ou SLA.
 

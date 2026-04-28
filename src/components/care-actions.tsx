@@ -58,7 +58,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
         return;
       }
 
-      setSavedMessage(noteValue?.trim() ? "Cuidado registrado com anotação." : "Cuidado registrado.");
+      setSavedMessage(noteValue?.trim() ? "Cuidado realizado com anotação." : "Cuidado realizado.");
       setResolvedMessage(responseBody?.message ?? "Os motivos de atenção foram atualizados sem formalizar acompanhamento.");
       setStage("done");
       setNote("");

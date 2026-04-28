@@ -162,7 +162,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
               </Link>
             ) : null}
           </div>
-          <Badge tone={completed ? "ok" : "warn"}>{completed ? "feito" : "pendente"}</Badge>
+          <Badge tone={completed ? "ok" : "warn"}>{completed ? "Feito" : "Pendente"}</Badge>
         </div>
 
         <div className="mt-4 grid grid-cols-3 gap-2 text-center">

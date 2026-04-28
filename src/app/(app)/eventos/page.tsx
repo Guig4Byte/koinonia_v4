@@ -37,7 +37,7 @@ function EventCard({ event, user }: { event: EventWithRelations; user: Permissio
   const canEditPresence = canCheckInEvent(user, event);
   const canRegisterPresence = canEditPresence && !metrics.completed;
   const canAdjustPresence = canEditPresence && metrics.completed;
-  const label = metrics.completed ? "presença registrada" : canRegisterPresence ? "presença pendente" : "aguardando líder";
+  const label = metrics.completed ? "Presença registrada" : canRegisterPresence ? "Presença pendente" : "Aguardando líder";
 
   return (
     <article className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">

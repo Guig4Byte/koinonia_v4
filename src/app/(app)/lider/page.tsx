@@ -97,7 +97,7 @@ export default async function LeaderPage() {
                   {formatShortDate(currentEvent.startsAt)}, {formatTime(currentEvent.startsAt)}
                 </p>
               </div>
-              <Badge tone={currentEventCompleted ? "ok" : "warn"}>{currentEventCompleted ? "registrada" : "pendente"}</Badge>
+              <Badge tone={currentEventCompleted ? "ok" : "warn"}>{currentEventCompleted ? "Registrada" : "Pendente"}</Badge>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">
               {currentEventCompleted

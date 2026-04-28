@@ -120,7 +120,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
               {group.supervisor?.name ? ` · Supervisor: ${group.supervisor.name}` : ""}
             </p>
           </div>
-          <Badge tone={attentionPeople.length > 0 ? "warn" : "ok"}>{attentionPeople.length > 0 ? "em atenção" : "estável"}</Badge>
+          <Badge tone={attentionPeople.length > 0 ? "warn" : "ok"}>{attentionPeople.length > 0 ? "Em atenção" : "Estável"}</Badge>
         </div>
         <p className="mt-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 text-sm leading-relaxed text-[var(--color-text-secondary)]">
           {groupMeetingText(group.meetingDayOfWeek, group.meetingTime)}
@@ -176,7 +176,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
                 {formatShortDate(pendingEvent.startsAt)}, {formatTime(pendingEvent.startsAt)}
               </p>
             </div>
-            <Badge tone="warn">presença pendente</Badge>
+            <Badge tone="warn">Presença pendente</Badge>
           </div>
           <p className="mt-3 text-sm font-semibold text-[var(--color-brand)]">Abrir encontro →</p>
         </Link>

@@ -112,7 +112,7 @@ export function PersonSignalCard({
               <p className="font-semibold text-[var(--color-text-primary)]">{name}</p>
               <p className="mt-0.5 text-sm leading-relaxed text-[var(--color-text-secondary)]">{context}</p>
             </div>
-            <Badge tone={badgeTone}>{severity === "risk" ? "atenção" : "olhar"}</Badge>
+            <Badge tone={badgeTone}>{severity === "risk" ? "Em atenção" : "Olhar"}</Badge>
           </div>
           {reason ? <p className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-primary)]">{reason}</p> : null}
           {detailHref ? (
@@ -153,7 +153,7 @@ export function GroupCard({
           <p className="font-semibold text-[var(--color-text-primary)]">{name}</p>
           <p className="mt-0.5 text-sm text-[var(--color-text-secondary)]">{subtitle}</p>
         </div>
-        <Badge tone={attentionCount > 0 ? "warn" : "ok"}>{attentionCount > 0 ? `${attentionCount} ${attentionCount === 1 ? "atenção" : "atenções"}` : "estável"}</Badge>
+        <Badge tone={attentionCount > 0 ? "warn" : "ok"}>{attentionCount > 0 ? `Em atenção (${attentionCount})` : "Estável"}</Badge>
       </div>
       <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--surface-alt)]">
         <div
@@ -164,7 +164,7 @@ export function GroupCard({
       <div className="mt-2 flex items-center justify-between gap-3 text-xs text-[var(--color-text-secondary)]">
         <span>
           Presença recente:{" "}
-          <strong className="text-[var(--color-text-primary)]">{hasPresenceData ? `${presenceRate}%` : "sem registro"}</strong>
+          <strong className="text-[var(--color-text-primary)]">{hasPresenceData ? `${presenceRate}%` : "Sem registro"}</strong>
         </span>
         {href ? <span className="font-semibold text-[var(--color-brand)]">Abrir célula →</span> : null}
       </div>

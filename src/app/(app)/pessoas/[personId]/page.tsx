@@ -159,7 +159,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
                   {signal.group?.name ?? primaryGroup?.name ?? "Sem célula"} · {formatShortDate(signal.detectedAt)}, {formatTime(signal.detectedAt)}
                 </p>
               </div>
-              <Badge tone={signalTone(signal.severity)}>{signal.severity === "URGENT" ? "urgente" : "atenção"}</Badge>
+              <Badge tone={signalTone(signal.severity)}>{signal.severity === "URGENT" ? "Urgente" : "Atenção"}</Badge>
             </div>
             {signal.evidence ? <p className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">{signal.evidence}</p> : null}
           </article>
@@ -183,7 +183,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
                   {touch.actor?.name ?? "Koinonia"} · {formatShortDate(touch.happenedAt)}, {formatTime(touch.happenedAt)}
                 </p>
               </div>
-              <Badge tone="info">cuidado</Badge>
+              <Badge tone="ok">Cuidado realizado</Badge>
             </div>
             {touch.note ? <p className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-primary)]">{touch.note}</p> : null}
           </article>

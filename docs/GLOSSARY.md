@@ -169,11 +169,13 @@ No MVP atual, cuidado não é prontuário pastoral completo. Deve apenas impedir
 
 Use na UI:
 
-- `Cuidado`
+- `Cuidado realizado`
 - `Registrar cuidado`
-- `Cuidado registrado`
+- `Cuidado realizado com anotação`
 - `Anotar cuidado`
 - `Salvar sem anotação`
+
+Depois que todos os motivos de atenção forem resolvidos, a pessoa pode voltar a aparecer como `Ativo`; o registro recente fica como `Cuidado realizado`.
 
 Evite:
 

@@ -293,6 +293,7 @@ Regras de produto:
 - `Sim, houve contato` ou `Sim, já houve` apenas avança para a decisão de anotação.
 - `Salvar sem anotação` registra contato/cuidado e resolve os motivos de atenção ativos dentro do escopo do usuário.
 - `Anotar` salva observação junto com o contato/cuidado e resolve os motivos de atenção ativos dentro do escopo do usuário.
+- Se todos os motivos de atenção da pessoa forem resolvidos, a pessoa volta ao status pastoral simples `Ativo`; o cuidado aparece no histórico recente como `Cuidado realizado`.
 - `Ainda não`, `Cancelar` ou `Cancelar e não registrar agora` não registram contato e não fecham atenção.
 - Anotação é apoio, não ação principal antes do cuidado.
 - A UI deve dizer quantos motivos de atenção foram resolvidos, sem transformar isso em acompanhamento ou tarefa.
@@ -333,8 +334,8 @@ A UI deve usar linguagem pastoral, curta e concreta.
 
 Preferir:
 
-- `atenção`;
-- `cuidado`;
+- `Atenção`;
+- `Cuidado realizado`;
 - `visão`;
 - `pessoas`;
 - `presença`;
