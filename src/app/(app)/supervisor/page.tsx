@@ -78,6 +78,7 @@ export default async function SupervisorPage() {
             subtitle={`${group.leader?.name ?? "Sem líder"} · ${group.memberships.length} pessoas`}
             presenceRate={group.presenceRate}
             attentionCount={group.attentionCount}
+            href={`/celulas/${group.id}`}
           />
         ))}
       </div>

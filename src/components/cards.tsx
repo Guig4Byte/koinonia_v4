@@ -141,16 +141,18 @@ export function GroupCard({
   subtitle,
   presenceRate,
   attentionCount,
+  href,
 }: {
   name: string;
   subtitle: string;
   presenceRate: number;
   attentionCount: number;
+  href?: string;
 }) {
   const tone = presenceRate < 65 ? "risk" : presenceRate < 75 ? "warn" : "ok";
 
-  return (
-    <article className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
+  const content = (
+    <article className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="font-semibold text-[var(--color-text-primary)]">{name}</p>
@@ -164,9 +166,14 @@ export function GroupCard({
           style={{ width: `${presenceRate}%` }}
         />
       </div>
-      <p className="mt-2 text-xs text-[var(--color-text-secondary)]">Presença média: <strong className="text-[var(--color-text-primary)]">{presenceRate}%</strong></p>
+      <div className="mt-2 flex items-center justify-between gap-3 text-xs text-[var(--color-text-secondary)]">
+        <span>Presença média: <strong className="text-[var(--color-text-primary)]">{presenceRate}%</strong></span>
+        {href ? <span className="font-semibold text-[var(--color-brand)]">Abrir célula →</span> : null}
+      </div>
     </article>
   );
+
+  return href ? <Link href={href}>{content}</Link> : content;
 }
 
 export function EventMacroCard({

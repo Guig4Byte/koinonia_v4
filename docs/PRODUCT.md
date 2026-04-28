@@ -59,6 +59,7 @@ Inclui:
 - atenções pastorais;
 - busca simples de pessoa;
 - detalhe simples da pessoa;
+- detalhe simples da célula;
 - ação direta: ligar, WhatsApp, contato feito e anotação opcional;
 - visão macro do pastor;
 - visão de apoio do supervisor;
@@ -100,6 +101,7 @@ O líder é operacional.
 Pode:
 
 - ver sua célula;
+- abrir resumo simples da própria célula;
 - ver seus eventos;
 - registrar check-in dos eventos da própria célula;
 - adicionar visitantes;
@@ -120,6 +122,7 @@ O supervisor acompanha e apoia.
 Pode:
 
 - ver células sob sua supervisão;
+- abrir resumo simples das células sob sua supervisão;
 - ver eventos dessas células em modo resumo;
 - ver check-ins pendentes/realizados;
 - ver presença média, visitantes e pessoas em atenção;
@@ -140,6 +143,7 @@ Pode:
 - ver eventos da igreja/campus em modo resumo;
 - ver presença geral;
 - ver células em atenção;
+- abrir resumo simples de uma célula;
 - ver pessoas que podem estar se afastando;
 - perceber regiões, células ou líderes que precisam de cuidado.
 
@@ -177,6 +181,28 @@ Regras de produto:
 - visitante registrado aparece no resumo e no ajuste, sem virar membro automaticamente;
 - visitante duplicado no mesmo evento deve ser bloqueado por nome normalizado;
 - pessoa sem marcação explícita aparece como `Pendente`, nunca como ausência presumida.
+
+## Detalhe simples da célula
+
+O detalhe da célula existe para dar destino aos cards de célula sem criar gestão pesada.
+
+Ele deve responder rapidamente:
+
+```txt
+Como esta célula está e quem precisa ser lembrado nela?
+```
+
+Deve mostrar apenas:
+
+- líder e supervisor;
+- horário/local, quando houver;
+- membros ativos;
+- presença recente;
+- pessoas em atenção;
+- encontro pendente;
+- últimos encontros registrados.
+
+Não deve virar área administrativa completa da célula. Não deve incluir cadastro rico, relatórios longos, ranking de líderes, gráficos complexos ou histórico profundo.
 
 ## Sinais e atenções
 

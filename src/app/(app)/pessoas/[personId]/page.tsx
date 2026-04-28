@@ -218,13 +218,14 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       {primaryGroup ? (
         <>
           <SectionTitle>Contexto da célula</SectionTitle>
-          <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm leading-relaxed text-[var(--color-text-secondary)] shadow-card">
+          <Link href={`/celulas/${primaryGroup.id}`} className="block rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm leading-relaxed text-[var(--color-text-secondary)] shadow-card transition active:scale-[0.99]">
             <p className="font-semibold text-[var(--color-text-primary)]">{primaryGroup.name}</p>
             <p className="mt-1">
               Líder: {primaryGroup.leader?.name ?? "não informado"}
               {primaryGroup.supervisor?.name ? ` · Supervisor: ${primaryGroup.supervisor.name}` : ""}
             </p>
-          </section>
+            <p className="mt-3 text-sm font-semibold text-[var(--color-brand)]">Abrir célula →</p>
+          </Link>
         </>
       ) : null}
     </AppShell>

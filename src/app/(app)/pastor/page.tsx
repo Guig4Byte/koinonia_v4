@@ -87,6 +87,7 @@ export default async function PastorPage() {
             subtitle={`${group.leaderName} · ${group.supervisorName}`}
             presenceRate={group.presenceRate}
             attentionCount={group.attentionCount}
+            href={`/celulas/${group.id}`}
           />
         ))}
         {dashboard.groups.filter((group) => group.attentionCount > 0 || group.presenceRate < 70).length === 0 ? (

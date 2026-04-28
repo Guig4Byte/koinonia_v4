@@ -75,7 +75,8 @@ Leitura de domínio:
 5. Backend deve validar permissão mesmo quando a UI esconde ações.
 6. Query deve retornar apenas dados dentro do escopo visível do usuário.
 7. O detalhe da pessoa não deve vazar histórico de células fora do escopo.
-8. Funcionalidade que cria burocracia antes de cuidado não deve entrar no MVP.
+8. O detalhe da célula deve chamar `canViewGroup(user, group)` antes de renderizar qualquer dado.
+9. Funcionalidade que cria burocracia antes de cuidado não deve entrar no MVP.
 
 ## Autorização centralizada
 
@@ -154,6 +155,22 @@ A rota `/api/care/[personId]` deve:
 - devolver `resolvedSignalsCount` e mensagem curta para a UI.
 
 `Já houve contato?` abre um fluxo de confirmação para cuidado já realizado fora do aplicativo. A rota só deve ser chamada depois de confirmação explícita do usuário. Isso não deve criar acompanhamento formal, task ou SLA.
+
+## Rotas de célula
+
+A rota `/celulas/[groupId]` é o detalhe simples da célula.
+
+Ela deve:
+
+- carregar a célula por id;
+- validar visibilidade com `canViewGroup(user, group)`;
+- mostrar somente membros ativos não visitantes;
+- agregar sinais abertos por pessoa com `getPrimarySignalsByPerson`;
+- calcular presença apenas a partir de encontros com presença registrada;
+- apontar encontros para `/eventos/[eventId]`;
+- apontar membros e pessoas em atenção para `/pessoas/[personId]`.
+
+A rota não deve implementar edição de célula, cadastro rico, relatórios longos ou gestão administrativa. É uma leitura operacional curta para entender a célula e agir sobre pessoas.
 
 ## Rotas de pessoa e busca
 
