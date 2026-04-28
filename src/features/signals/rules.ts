@@ -1,4 +1,4 @@
-import { EventStatus, MembershipRole, SignalSource, SignalStatus } from "../../generated/prisma/client";
+import { EventStatus, MembershipRole, PersonStatus, SignalSource, SignalStatus } from "../../generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import {
   countConsecutiveAbsences,
@@ -6,6 +6,28 @@ import {
   getRecordedStatusesNewestFirst,
   shouldKeepAttendanceSignalResolved,
 } from "./rules-core";
+
+const attentionStatuses = [PersonStatus.ACTIVE, PersonStatus.NEW, PersonStatus.NEEDS_ATTENTION, PersonStatus.COOLING_AWAY];
+
+async function markPersonInAttention(personId: string) {
+  await prisma.person.updateMany({
+    where: { id: personId, status: { in: attentionStatuses } },
+    data: { status: PersonStatus.NEEDS_ATTENTION },
+  });
+}
+
+async function markPersonActiveIfNoOpenSignals(churchId: string, personId: string) {
+  const openSignalsCount = await prisma.careSignal.count({
+    where: { churchId, personId, status: SignalStatus.OPEN },
+  });
+
+  if (openSignalsCount > 0) return;
+
+  await prisma.person.updateMany({
+    where: { id: personId, status: { in: [PersonStatus.NEEDS_ATTENTION, PersonStatus.COOLING_AWAY] } },
+    data: { status: PersonStatus.ACTIVE },
+  });
+}
 
 export type AttendanceSnapshot = {
   personId: string;
@@ -59,6 +81,8 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string) {
           data: { status: SignalStatus.RESOLVED, resolvedAt: new Date() },
         });
       }
+
+      await markPersonActiveIfNoOpenSignals(group.churchId, membership.personId);
       continue;
     }
 
@@ -72,6 +96,8 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string) {
           lastEvidenceAt: latestEvidenceAt ?? new Date(),
         },
       });
+
+      await markPersonInAttention(membership.personId);
     } else {
       const lastResolvedAttendanceSignal = await prisma.careSignal.findFirst({
         where: {
@@ -86,6 +112,7 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string) {
       });
 
       if (shouldKeepAttendanceSignalResolved(signal, latestEvidenceAt, lastResolvedAttendanceSignal)) {
+        await markPersonActiveIfNoOpenSignals(group.churchId, membership.personId);
         continue;
       }
 
@@ -102,6 +129,8 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string) {
           lastEvidenceAt: latestEvidenceAt ?? new Date(),
         },
       });
+
+      await markPersonInAttention(membership.personId);
     }
   }
 }

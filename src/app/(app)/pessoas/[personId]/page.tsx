@@ -168,17 +168,12 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
 
         {openSignalsCount === 0 ? (
           <article className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="font-semibold text-[var(--color-text-primary)]">Sem motivo de atenção agora.</p>
-                <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">
-                  {hasCareTouch
-                    ? "O cuidado mais recente já está registrado abaixo."
-                    : "Esta pessoa pode ser consultada normalmente pela busca."}
-                </p>
-              </div>
-              <Badge tone={hasCareTouch ? "care" : statusTone(person.status)}>{hasCareTouch ? "Cuidado realizado" : personStatusLabels[person.status]}</Badge>
-            </div>
+            <p className="font-semibold text-[var(--color-text-primary)]">Sem motivo de atenção agora.</p>
+            <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">
+              {hasCareTouch
+                ? "O cuidado mais recente aparece abaixo, sem manter esta pessoa em atenção."
+                : "Esta pessoa pode ser consultada normalmente pela busca."}
+            </p>
           </article>
         ) : null}
       </div>

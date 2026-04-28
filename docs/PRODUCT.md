@@ -299,6 +299,8 @@ Regras de produto:
 - Anotação é apoio, não ação principal antes do cuidado.
 - A UI deve dizer quantos motivos de atenção foram resolvidos, sem transformar isso em acompanhamento ou tarefa.
 
+Quando a presença ou o cuidado não sustentarem mais nenhum motivo de atenção ativo, a pessoa deve voltar a aparecer como `Ativo`. O status pastoral visível deve acompanhar os motivos ativos, mas a severidade continua pertencendo ao sinal (`Em atenção` ou `Urgente`), não ao cadastro da pessoa.
+
 ## Detalhe simples da pessoa
 
 A tela `/pessoas/[personId]` existe para responder rapidamente:

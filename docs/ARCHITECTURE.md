@@ -142,6 +142,12 @@ Listas chamadas de `Pessoas em atenção` devem agregar sinais ativos por pessoa
 
 O backend do check-in deve retornar contagem de pessoas distintas em atenção, não quantidade bruta de sinais.
 
+Ao recalcular sinais de presença, o backend também deve manter o status pastoral da pessoa coerente:
+
+- se um sinal de presença ativo for criado ou atualizado, a pessoa deve ficar `NEEDS_ATTENTION`, preservando a severidade no próprio sinal;
+- se a presença deixar de sustentar o sinal e não houver nenhum outro sinal ativo para a pessoa, o status deve voltar para `ACTIVE` quando estava em `NEEDS_ATTENTION` ou `COOLING_AWAY`;
+- se um sinal de presença já resolvido continuar baseado na mesma evidência anterior ao cuidado, ele não deve ser reaberto nem manter a pessoa em atenção.
+
 ## Contato e cuidado
 
 A rota `/api/care/[personId]` deve:
@@ -153,7 +159,6 @@ A rota `/api/care/[personId]` deve:
 - recusar escrita se nenhuma célula visível existir;
 - resolver apenas sinais ativos dentro do escopo do usuário;
 - quando não restar nenhum sinal ativo para a pessoa, voltar `Person.status` para `ACTIVE` se ela estava em `NEEDS_ATTENTION` ou `COOLING_AWAY`;
-- não recriar um sinal de presença já resolvido quando o check-in recalculado usa a mesma evidência anterior ao cuidado;
 - devolver `resolvedSignalsCount`, `personStatusReset` e mensagem curta para a UI.
 
 `Já houve contato?` abre um fluxo de confirmação para cuidado já realizado fora do aplicativo. A rota só deve ser chamada depois de confirmação explícita do usuário. Isso não deve criar acompanhamento formal, task ou SLA.
