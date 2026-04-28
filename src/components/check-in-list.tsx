@@ -106,13 +106,22 @@ export function CheckInList({
   const helperText =
     mode === "adjust"
       ? "Revise as marcações já salvas e corrija somente o necessário."
-      : "Marque quem esteve presente. Isso ajuda o Koinonia a perceber quem pode precisar de cuidado.";
+      : "Marque a presença sem transformar cuidado em relatório. O sistema só precisa saber quem pode merecer atenção.";
 
-  function setStatus(personId: string, status: MemberAttendanceStatus) {
+  function clearTransientState() {
     setSaved(false);
     setSavedAttentionCount(null);
     setErrorMessage(null);
+  }
+
+  function setStatus(personId: string, status: MemberAttendanceStatus) {
+    clearTransientState();
     setItems((current) => current.map((item) => (item.personId === personId ? { ...item, status } : item)));
+  }
+
+  function markPendingAsPresent() {
+    clearTransientState();
+    setItems((current) => current.map((item) => (item.status ? item : { ...item, status: ATTENDANCE.PRESENT })));
   }
 
   function addVisitor() {
@@ -125,17 +134,13 @@ export function CheckInList({
       return;
     }
 
-    setSaved(false);
-    setSavedAttentionCount(null);
-    setErrorMessage(null);
+    clearTransientState();
     setVisitors((current) => [...current, { id: makeVisitorId(), fullName: name }]);
     setVisitorName("");
   }
 
   function removeVisitor(id: string) {
-    setSaved(false);
-    setSavedAttentionCount(null);
-    setErrorMessage(null);
+    clearTransientState();
     setVisitors((current) => current.filter((visitor) => visitor.id !== id));
   }
 
@@ -182,9 +187,9 @@ export function CheckInList({
               {summary.present} de {summary.totalMembers} presentes · {summary.visitorTotal} {summary.visitorTotal === 1 ? "visitante" : "visitantes"}
             </p>
           </div>
-          <Button disabled={!canSave} onClick={save} className="min-w-28">
-            {isPending ? "Salvando..." : saved ? "Salvo" : submitLabel}
-          </Button>
+          <div className="rounded-full border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-3 py-1 text-xs font-semibold text-[var(--color-text-secondary)]">
+            {summary.pending > 0 ? `${summary.pending} pendente${summary.pending === 1 ? "" : "s"}` : "Tudo marcado"}
+          </div>
         </div>
 
         <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">{helperText}</p>
@@ -194,7 +199,10 @@ export function CheckInList({
             <p className="font-semibold">
               {summary.pending} {summary.pending === 1 ? "pessoa ainda está pendente" : "pessoas ainda estão pendentes"}.
             </p>
-            <p className="mt-1 text-xs leading-relaxed">Finalize só depois de marcar presente, ausente ou justificou para cada membro.</p>
+            <p className="mt-1 text-xs leading-relaxed">Use o atalho se todos vieram e depois ajuste só ausências ou justificativas.</p>
+            <GhostButton type="button" onClick={markPendingAsPresent} className="mt-3 min-h-10 w-full rounded-xl px-3 text-xs">
+              Marcar pendentes como presentes
+            </GhostButton>
           </div>
         ) : null}
 
@@ -214,10 +222,10 @@ export function CheckInList({
               {savedAttentionCount !== null
                 ? savedAttentionCount > 0
                   ? `${savedAttentionCount} ${savedAttentionCount === 1 ? "pessoa está" : "pessoas estão"} em atenção na célula.`
-                  : "Nenhuma atenção ficou aberta na célula."
+                  : "Nenhum motivo de atenção ficou ativo na célula."
                 : summary.attentionCount > 0
                   ? `${summary.attentionCount} ${summary.attentionCount === 1 ? "pessoa ficou" : "pessoas ficaram"} para olhar depois deste encontro.`
-                  : "Nenhuma ausência ficou pendente neste encontro."}
+                  : "Nenhuma ausência pediu atenção neste encontro."}
             </p>
             {savedAttentionCount && savedAttentionCount > 0 ? (
               <Link href="/pessoas" className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)]">
@@ -313,6 +321,22 @@ export function CheckInList({
             </div>
           </article>
         ))}
+      </div>
+
+      <div className="sticky bottom-[86px] z-10 rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-tab)] p-3 shadow-card backdrop-blur-xl">
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-[var(--color-text-primary)]">
+              {summary.pending > 0 ? `${summary.pending} pendente${summary.pending === 1 ? "" : "s"}` : "Presença pronta"}
+            </p>
+            <p className="mt-0.5 text-xs text-[var(--color-text-secondary)]">
+              {summary.pending > 0 ? "Finalize depois de marcar todos." : "Salve para atualizar a atenção da célula."}
+            </p>
+          </div>
+          <Button disabled={!canSave} onClick={save} className="min-w-28">
+            {isPending ? "Salvando..." : saved ? "Salvo" : submitLabel}
+          </Button>
+        </div>
       </div>
     </section>
   );

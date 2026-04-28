@@ -135,18 +135,18 @@ html[data-theme="light"] {
 }
 
 html[data-theme="parchment"] {
-  --color-bg-page: #c9a060;
-  --color-bg-card: rgba(255, 255, 255, 0.32);
-  --color-bg-header: #9b6b23;
-  --color-bg-banner: #6b4010;
-  --color-bg-tab: rgba(180, 130, 60, 0.72);
+  --color-bg-page: #d2ad72;
+  --color-bg-card: rgba(255, 249, 236, 0.44);
+  --color-bg-header: #7a4f18;
+  --color-bg-banner: #7a4f18;
+  --color-bg-tab: rgba(255, 249, 236, 0.54);
   --color-bg-metric-card: rgba(107, 64, 16, 0.12);
   --color-border-metric-card: transparent;
   --color-shadow-metric-card: none;
 
   --color-text-primary: #3a2008;
-  --color-text-secondary: #704b20;
-  --color-text-muted: #7a5020;
+  --color-text-secondary: #67451f;
+  --color-text-muted: #7a5830;
   --color-text-on-header: #fdf0d0;
   --color-text-on-banner: #f5dfa0;
 
@@ -188,8 +188,8 @@ html[data-theme="parchment"] {
   --color-badge-estavel-border: rgba(59, 109, 17, 0.35);
   --color-badge-estavel-text: #2a4c0a;
 
-  --color-border-card: rgba(120, 70, 10, 0.16);
-  --color-border-divider: rgba(120, 70, 10, 0.22);
+  --color-border-card: rgba(92, 54, 13, 0.18);
+  --color-border-divider: rgba(92, 54, 13, 0.20);
   --color-shadow-card: none;
   --color-shadow-header: none;
 
@@ -205,7 +205,7 @@ html[data-theme="dark"] {
   --color-bg-page: #171411;
   --color-bg-card: #211d18;
   --color-bg-header: #211d18;
-  --color-bg-banner: #d7b98f;
+  --color-bg-banner: #211d18;
   --color-bg-tab: rgba(23, 20, 17, 0.88);
   --color-bg-metric-card: #2b251f;
   --color-border-metric-card: transparent;
@@ -215,7 +215,7 @@ html[data-theme="dark"] {
   --color-text-secondary: #b8aa9a;
   --color-text-muted: #8a7a68;
   --color-text-on-header: #f5eee5;
-  --color-text-on-banner: #241b13;
+  --color-text-on-banner: #f5eee5;
 
   --color-brand: #d7b98f;
   --color-brand-accent: #d7b98f;
@@ -363,5 +363,16 @@ a {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (min-width: 768px) {
+  .safe-page {
+    max-width: 560px;
+    padding-inline: 18px;
+  }
+
+  .app-header {
+    padding: 18px;
   }
 }

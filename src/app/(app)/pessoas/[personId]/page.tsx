@@ -114,7 +114,6 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
         { href: homeHref, label: "Visão", icon: "home" },
         { href: "/pessoas", label: "Pessoas", icon: "people", active: true, attention: openSignalsCount > 0 },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
-        { href: "/pessoas#buscar", label: "Busca", icon: "search" },
       ]}
     >
       <Link href="/pessoas" className="mb-4 inline-flex text-sm font-semibold text-[var(--color-brand)]">
@@ -149,23 +148,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
         <CareActions personId={person.id} phone={person.phone} />
       </section>
 
-      <SectionTitle>Resumo do cuidado</SectionTitle>
-      <section className="grid grid-cols-2 gap-2">
-        <div className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">Atenção</p>
-          <p className="mt-1 text-lg font-bold text-[var(--color-text-primary)]">
-            {openSignalsCount > 0 ? `${openSignalsCount} ${openSignalsCount === 1 ? "aberta" : "abertas"}` : "Nenhuma"}
-          </p>
-        </div>
-        <div className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">Última presença</p>
-          <p className="mt-1 text-lg font-bold text-[var(--color-text-primary)]">
-            {latestAttendance ? attendanceLabels[latestAttendance.status] : "Sem registro"}
-          </p>
-        </div>
-      </section>
-
-      <SectionTitle>Por que aparece aqui</SectionTitle>
+      <SectionTitle>Por que merece atenção</SectionTitle>
       <div className="space-y-3">
         {signals.map((signal) => (
           <article key={signal.id} className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
@@ -184,29 +167,10 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
 
         {signals.length === 0 ? (
           <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm text-[var(--color-text-secondary)] shadow-card">
-            Nenhum sinal aberto agora. Esta pessoa pode ser consultada normalmente pela busca.
+            Nenhum motivo de atenção agora. Esta pessoa pode ser consultada normalmente pela busca.
           </p>
         ) : null}
       </div>
-
-      <SectionTitle>Última presença</SectionTitle>
-      {latestAttendance ? (
-        <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="font-semibold text-[var(--color-text-primary)]">{latestAttendance.event.title}</p>
-              <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
-                {latestAttendance.event.group?.name ?? "Evento"} · {formatShortDate(latestAttendance.event.startsAt)}, {formatTime(latestAttendance.event.startsAt)}
-              </p>
-            </div>
-            <Badge tone={attendanceTone(latestAttendance.status)}>{attendanceLabels[latestAttendance.status]}</Badge>
-          </div>
-        </section>
-      ) : (
-        <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm text-[var(--color-text-secondary)] shadow-card">
-          Ainda não há presença registrada para esta pessoa.
-        </p>
-      )}
 
       <SectionTitle>Cuidado recente</SectionTitle>
       <div className="space-y-3">
@@ -231,6 +195,38 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           </p>
         ) : null}
       </div>
+
+      <SectionTitle>Última presença</SectionTitle>
+      {latestAttendance ? (
+        <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="font-semibold text-[var(--color-text-primary)]">{latestAttendance.event.title}</p>
+              <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
+                {latestAttendance.event.group?.name ?? "Evento"} · {formatShortDate(latestAttendance.event.startsAt)}, {formatTime(latestAttendance.event.startsAt)}
+              </p>
+            </div>
+            <Badge tone={attendanceTone(latestAttendance.status)}>{attendanceLabels[latestAttendance.status]}</Badge>
+          </div>
+        </section>
+      ) : (
+        <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm text-[var(--color-text-secondary)] shadow-card">
+          Ainda não há presença registrada para esta pessoa.
+        </p>
+      )}
+
+      {primaryGroup ? (
+        <>
+          <SectionTitle>Contexto da célula</SectionTitle>
+          <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm leading-relaxed text-[var(--color-text-secondary)] shadow-card">
+            <p className="font-semibold text-[var(--color-text-primary)]">{primaryGroup.name}</p>
+            <p className="mt-1">
+              Líder: {primaryGroup.leader?.name ?? "não informado"}
+              {primaryGroup.supervisor?.name ? ` · Supervisor: ${primaryGroup.supervisor.name}` : ""}
+            </p>
+          </section>
+        </>
+      ) : null}
     </AppShell>
   );
 }

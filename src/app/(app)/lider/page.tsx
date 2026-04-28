@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/app-shell";
-import { MetricRow, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
+import { ContextSummary, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
 import { CheckInList } from "@/components/check-in-list";
 import { SearchBox } from "@/components/search-box";
 import { Badge } from "@/components/ui/badge";
@@ -58,20 +58,30 @@ export default async function LeaderPage() {
         { href: "/lider", label: "Visão", icon: "home", active: true },
         { href: "/pessoas", label: "Membros", icon: "people", attention: dashboard.attentionPeople.length > 0 },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
-        { href: "#buscar", label: "Busca", icon: "search" },
       ]}
     >
       <SearchBox placeholder="Buscar pessoa..." />
       <PulseCard
         title={dashboard.attentionPeople[0] ? `${dashboard.attentionPeople[0].person.fullName} precisa de você.` : `${currentGroup?.name ?? "Sua célula"} está tranquila agora.`}
         subtitle={dashboard.attentionPeople[0] ? dashboard.attentionPeople[0].reason : "Registre a presença quando a célula acontecer."}
+        tone={dashboard.attentionPeople.length > 0 ? "attention" : "ok"}
       />
 
-      <MetricRow
-        metrics={[
-          { label: "membros", value: String(members.length), tone: "neutral" },
-          { label: "presença", value: `${dashboard.presenceRate}%`, tone: dashboard.presenceRate < 65 ? "risk" : "ok" },
-          { label: "atenções", value: String(dashboard.attentionPeople.length), tone: dashboard.attentionPeople.length ? "risk" : "ok" },
+      <ContextSummary
+        items={[
+          { label: "Membros", value: String(members.length), detail: currentGroup?.name ?? "Sua célula.", tone: "neutral" },
+          {
+            label: "Presença recente",
+            value: `${dashboard.presenceRate}%`,
+            detail: "Nos encontros já registrados.",
+            tone: dashboard.presenceRate < 65 ? "risk" : dashboard.presenceRate < 75 ? "warn" : "ok",
+          },
+          {
+            label: "Pessoas em atenção",
+            value: String(dashboard.attentionPeople.length),
+            detail: "Para contato simples, sem burocracia.",
+            tone: dashboard.attentionPeople.length ? "warn" : "ok",
+          },
         ]}
       />
 
@@ -118,8 +128,12 @@ export default async function LeaderPage() {
             phone={signal.person.phone}
             context={signal.reason}
             severity={signal.severity === "URGENT" ? "risk" : "warn"}
+            actionMode="quick"
           />
         ))}
+        {dashboard.attentionPeople.length === 0 ? (
+          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhuma pessoa em atenção agora.</p>
+        ) : null}
       </div>
     </AppShell>
   );

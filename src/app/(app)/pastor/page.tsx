@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/app-shell";
-import { EventMacroCard, GroupCard, MetricRow, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
+import { ContextSummary, GroupCard, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
 import { getPastorDashboard } from "@/features/dashboard/queries";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -11,10 +11,11 @@ function initials(name: string) {
 export default async function PastorPage() {
   const user = await getCurrentUser();
   const dashboard = await getPastorDashboard(user.churchId);
+  const pendingEvents = Math.max(dashboard.plannedEvents - dashboard.completedEvents, 0);
 
   const phrase = dashboard.attentionPeople.length > 0
-    ? `${dashboard.attentionPeople.length} pessoas merecem atenção nesta semana.`
-    : "Nenhuma atenção urgente aberta agora.";
+    ? `${dashboard.attentionPeople.length} ${dashboard.attentionPeople.length === 1 ? "pessoa merece" : "pessoas merecem"} atenção nesta semana.`
+    : "Nenhuma pessoa pede atenção urgente agora.";
 
   return (
     <AppShell
@@ -24,33 +25,39 @@ export default async function PastorPage() {
         { href: "/pastor", label: "Visão", icon: "home", active: true },
         { href: "/pessoas", label: "Pessoas", icon: "people", attention: dashboard.attentionPeople.length > 0 },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
-        { href: "#buscar", label: "Busca", icon: "search" },
       ]}
     >
       <SearchBox />
       <PulseCard
         title={phrase}
-        subtitle={`${dashboard.completedEvents} de ${dashboard.plannedEvents} células já registraram presença. Presença geral: ${dashboard.presenceRate}%.`}
+        subtitle={pendingEvents > 0 ? `${pendingEvents} ${pendingEvents === 1 ? "célula ainda não registrou" : "células ainda não registraram"} presença nesta semana.` : "As presenças da semana estão registradas até aqui."}
+        tone={dashboard.attentionPeople.length > 0 ? "attention" : "ok"}
       />
 
-      <MetricRow
-        metrics={[
-          { label: "presença", value: `${dashboard.presenceRate}%`, tone: dashboard.presenceRate < 65 ? "risk" : "ok" },
-          { label: "atenções", value: String(dashboard.attentionPeople.length), tone: dashboard.attentionPeople.length ? "risk" : "ok" },
-          { label: "visitantes", value: String(dashboard.visitors), tone: "neutral" },
+      <ContextSummary
+        items={[
+          {
+            label: "Presença geral",
+            value: `${dashboard.presenceRate}%`,
+            detail: "Nas células com presença registrada.",
+            tone: dashboard.presenceRate < 65 ? "risk" : dashboard.presenceRate < 75 ? "warn" : "ok",
+          },
+          {
+            label: "Células pendentes",
+            value: String(pendingEvents),
+            detail: "Sem presença registrada nesta semana.",
+            tone: pendingEvents > 0 ? "warn" : "ok",
+          },
+          {
+            label: "Visitantes",
+            value: String(dashboard.visitors),
+            detail: "Novos contatos percebidos nos encontros.",
+            tone: "neutral",
+          },
         ]}
       />
 
-      <SectionTitle>Eventos da semana</SectionTitle>
-      <EventMacroCard
-        title="Células"
-        realized={dashboard.completedEvents}
-        planned={dashboard.plannedEvents}
-        presenceRate={dashboard.presenceRate}
-        visitors={dashboard.visitors}
-      />
-
-      <SectionTitle>Quem precisa do seu coração</SectionTitle>
+      <SectionTitle>Quem merece atenção agora</SectionTitle>
       <div className="space-y-3">
         {dashboard.attentionPeople.slice(0, 3).map((signal) => (
           <PersonSignalCard
@@ -63,6 +70,7 @@ export default async function PastorPage() {
             context={`${signal.group?.name ?? "Sem célula"} · ${signal.group?.leader?.name ?? "Sem líder"}`}
             reason={signal.reason}
             severity={signal.severity === "URGENT" ? "risk" : "warn"}
+            actionMode="none"
           />
         ))}
         {dashboard.attentionPeople.length === 0 ? (
@@ -70,7 +78,7 @@ export default async function PastorPage() {
         ) : null}
       </div>
 
-      <SectionTitle>Células em atenção</SectionTitle>
+      <SectionTitle>Células para olhar</SectionTitle>
       <div className="space-y-3">
         {dashboard.groups.filter((group) => group.attentionCount > 0 || group.presenceRate < 70).slice(0, 4).map((group) => (
           <GroupCard
@@ -81,6 +89,9 @@ export default async function PastorPage() {
             attentionCount={group.attentionCount}
           />
         ))}
+        {dashboard.groups.filter((group) => group.attentionCount > 0 || group.presenceRate < 70).length === 0 ? (
+          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhuma célula pedindo atenção especial agora.</p>
+        ) : null}
       </div>
     </AppShell>
   );

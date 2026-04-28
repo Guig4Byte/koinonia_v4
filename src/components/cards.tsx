@@ -3,11 +3,55 @@ import { Badge } from "@/components/ui/badge";
 import { CareActions } from "@/components/care-actions";
 import { cn } from "@/lib/cn";
 
-export function PulseCard({ title, subtitle }: { title: string; subtitle?: string }) {
+export function PulseCard({
+  title,
+  subtitle,
+  tone = "calm",
+}: {
+  title: string;
+  subtitle?: string;
+  tone?: "calm" | "attention" | "ok";
+}) {
+  const accentClass = {
+    calm: "bg-[var(--color-brand-accent)]",
+    attention: "bg-[var(--color-metric-atencoes)]",
+    ok: "bg-[var(--color-metric-presenca)]",
+  }[tone];
+
   return (
-    <section className="mb-5 rounded-[1.35rem] border border-[var(--color-border-card)] bg-[var(--color-bg-banner)] p-5 text-[var(--color-text-on-banner)] shadow-card">
-      <p className="text-xl font-semibold leading-snug text-balance">{title}</p>
-      {subtitle ? <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-on-banner)] opacity-80">{subtitle}</p> : null}
+    <section className="relative mb-4 overflow-hidden rounded-[1.35rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-5 shadow-card">
+      <div className={cn("absolute inset-x-0 top-0 h-1", accentClass)} />
+      <p className="text-xl font-semibold leading-snug tracking-[-0.02em] text-[var(--color-text-primary)] text-balance">{title}</p>
+      {subtitle ? <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-secondary)]">{subtitle}</p> : null}
+    </section>
+  );
+}
+
+export function ContextSummary({
+  items,
+}: {
+  items: Array<{ label: string; value: string; detail?: string; tone?: "ok" | "warn" | "risk" | "neutral" }>;
+}) {
+  const toneClass = {
+    ok: "text-[var(--color-metric-presenca)]",
+    warn: "text-[var(--color-badge-atencao-text)]",
+    risk: "text-[var(--color-metric-atencoes)]",
+    neutral: "text-[var(--color-text-primary)]",
+  };
+
+  return (
+    <section className="mb-5 rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
+      <div className="space-y-3">
+        {items.map((item) => (
+          <div key={item.label} className="flex items-center justify-between gap-4 border-b border-[var(--color-border-divider)] pb-3 last:border-0 last:pb-0">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-[var(--color-text-primary)]">{item.label}</p>
+              {item.detail ? <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-secondary)]">{item.detail}</p> : null}
+            </div>
+            <p className={cn("shrink-0 text-xl font-bold tracking-[-0.02em]", toneClass[item.tone ?? "neutral"])}>{item.value}</p>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
@@ -46,6 +90,8 @@ export function PersonSignalCard({
   href,
   personId,
   phone,
+  actionMode = "none",
+  ctaLabel = "Abrir cuidado",
 }: {
   initials: string;
   name: string;
@@ -56,7 +102,10 @@ export function PersonSignalCard({
   href?: string;
   personId?: string;
   phone?: string | null;
+  actionMode?: "none" | "quick";
+  ctaLabel?: string;
 }) {
+  const badgeTone = severity === "ok" ? "ok" : severity === "info" ? "info" : "warn";
   const content = (
     <article className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
       <div className="flex items-start gap-3">
@@ -65,25 +114,25 @@ export function PersonSignalCard({
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
-            <div>
+            <div className="min-w-0">
               <p className="font-semibold text-[var(--color-text-primary)]">{name}</p>
-              <p className="mt-0.5 text-sm text-[var(--color-text-secondary)]">{context}</p>
+              <p className="mt-0.5 text-sm leading-relaxed text-[var(--color-text-secondary)]">{context}</p>
             </div>
-            <Badge tone={severity === "ok" ? "ok" : severity === "info" ? "info" : "risk"}>atenção</Badge>
+            <Badge tone={badgeTone}>{severity === "risk" ? "atenção" : "olhar"}</Badge>
           </div>
           {reason ? <p className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-primary)]">{reason}</p> : null}
           {detailHref ? (
             <Link href={detailHref} className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)] transition active:scale-[0.98]">
-              Abrir cuidado
+              {ctaLabel}
             </Link>
           ) : null}
-          <CareActions personId={personId} phone={phone} />
+          {actionMode === "quick" ? <CareActions personId={personId} phone={phone} /> : null}
         </div>
       </div>
     </article>
   );
 
-  if (!href || detailHref || personId || phone) return content;
+  if (!href || detailHref || actionMode === "quick") return content;
   return <Link href={href}>{content}</Link>;
 }
 
@@ -107,7 +156,7 @@ export function GroupCard({
           <p className="font-semibold text-[var(--color-text-primary)]">{name}</p>
           <p className="mt-0.5 text-sm text-[var(--color-text-secondary)]">{subtitle}</p>
         </div>
-        <Badge tone={attentionCount > 0 ? "risk" : "ok"}>{attentionCount > 0 ? `${attentionCount} ${attentionCount === 1 ? "atenção" : "atenções"}` : "estável"}</Badge>
+        <Badge tone={attentionCount > 0 ? "warn" : "ok"}>{attentionCount > 0 ? `${attentionCount} ${attentionCount === 1 ? "atenção" : "atenções"}` : "estável"}</Badge>
       </div>
       <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--surface-alt)]">
         <div

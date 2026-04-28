@@ -140,7 +140,6 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
         { href: user.role === "LEADER" ? "/lider" : user.role === "SUPERVISOR" ? "/supervisor" : "/pastor", label: "Visão", icon: "home" },
         { href: "/pessoas", label: "Pessoas", icon: "people" },
         { href: "/eventos", label: "Eventos", icon: "calendar", active: true },
-        { href: "#buscar", label: "Busca", icon: "search" },
       ]}
     >
       <Link href="/eventos" className="mb-4 inline-flex text-sm font-semibold text-[var(--color-brand)]">

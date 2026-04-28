@@ -104,7 +104,6 @@ export default async function EventsPage() {
         { href: user.role === "LEADER" ? "/lider" : user.role === "SUPERVISOR" ? "/supervisor" : "/pastor", label: "Visão", icon: "home" },
         { href: "/pessoas", label: "Pessoas", icon: "people" },
         { href: "/eventos", label: "Eventos", icon: "calendar", active: true },
-        { href: "#buscar", label: "Busca", icon: "search" },
       ]}
     >
       <SearchBox placeholder="Buscar pessoa..." />

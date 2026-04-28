@@ -28,7 +28,6 @@ export default async function PeoplePage() {
         { href: user.role === "LEADER" ? "/lider" : user.role === "SUPERVISOR" ? "/supervisor" : "/pastor", label: "Visão", icon: "home" },
         { href: "/pessoas", label: "Pessoas", icon: "people", active: true, attention: attentionPeople.length > 0 },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
-        { href: "#buscar", label: "Busca", icon: "search" },
       ]}
     >
       <SearchBox />

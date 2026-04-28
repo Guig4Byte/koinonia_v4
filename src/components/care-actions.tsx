@@ -52,8 +52,8 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
         return;
       }
 
-      setSavedMessage(noteValue?.trim() ? "Contato e anotação salvos." : "Contato registrado.");
-      setResolvedMessage(responseBody?.message ?? "Cuidado recente atualizado.");
+      setSavedMessage(noteValue?.trim() ? "Cuidado registrado com anotação." : "Cuidado registrado.");
+      setResolvedMessage(responseBody?.message ?? "A atenção foi atualizada sem formalizar acompanhamento.");
       setStage("done");
       setNote("");
       setLastContactKind(null);
@@ -151,7 +151,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
 
       {stage === "confirm" ? (
         <div className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3">
-          <p className="text-sm font-semibold text-[var(--color-text-primary)]">Conseguiu contato?</p>
+          <p className="text-sm font-semibold text-[var(--color-text-primary)]">O contato aconteceu?</p>
           <div className="mt-2 grid grid-cols-2 gap-2">
             <button
               type="button"
@@ -160,7 +160,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
               className={cn(buttonBase, "bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)]", (!personId || isPending) && disabled)}
             >
               <CheckCircle2 className="h-4 w-4" strokeWidth={2.2} />
-              Contato feito
+              Sim, houve contato
             </button>
             <button
               type="button"
@@ -179,7 +179,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
 
       {stage === "ask-note" ? (
         <div className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3">
-          <p className="text-sm font-semibold text-[var(--color-text-primary)]">Quer anotar algo?</p>
+          <p className="text-sm font-semibold text-[var(--color-text-primary)]">Quer deixar uma anotação?</p>
           <div className="mt-2 grid grid-cols-2 gap-2">
             <button
               type="button"
@@ -191,7 +191,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
               Anotar
             </button>
             <button type="button" disabled={isPending} onClick={() => registerContact()} className={cn(secondaryButton, isPending && disabled)}>
-              {isPending ? "Salvando..." : "Não precisa"}
+              {isPending ? "Salvando..." : "Salvar sem anotação"}
             </button>
           </div>
         </div>
@@ -228,7 +228,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
               onClick={() => registerContact(note)}
               className={cn(buttonBase, "bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)]", (!note.trim() || isPending) && disabled)}
             >
-              {isPending ? "Salvando..." : "Salvar e concluir"}
+              {isPending ? "Salvando..." : "Salvar cuidado"}
             </button>
           </div>
         </div>
