@@ -160,12 +160,12 @@ Evento da célula
 -> abrir check-in
 -> marcar explicitamente cada membro como presente, ausente ou justificou
 -> adicionar visitante
--> finalizar presença somente quando ninguém estiver como não marcado
+-> finalizar presença somente quando ninguém estiver como pendente
 -> atualizar taxa
 -> gerar atenções
 ```
 
-Pastor e supervisor veem resumo somente leitura. Evento já concluído pode ser ajustado pelo líder da célula, mas aparece como correção de presença, não como novo check-in.
+Pastor e supervisor veem resumo somente leitura. Evento já concluído pode ser ajustado pelo líder da célula, mas aparece como correção de presença, não como novo check-in. Visitantes já registrados aparecem no resumo e também no ajuste do líder, sem virar membros automaticamente.
 
 ## Fluxo de contato
 

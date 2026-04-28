@@ -19,7 +19,7 @@ export default async function LeaderPage() {
     ? await prisma.event.findFirst({
         where: { groupId: group.id, type: "CELL_MEETING" },
         orderBy: { startsAt: "desc" },
-        include: { attendances: true },
+        include: { attendances: { include: { person: true } } },
       })
     : null;
 
@@ -29,6 +29,9 @@ export default async function LeaderPage() {
     currentStatus: currentEvent?.attendances.find((attendance) => attendance.personId === membership.personId)?.status,
   })) ?? [];
   const currentEventCompleted = currentEvent ? currentEvent.status === "COMPLETED" || currentEvent.attendances.length > 0 : false;
+  const currentVisitors = currentEvent?.attendances
+    .filter((attendance) => attendance.status === "VISITOR")
+    .map((attendance) => ({ id: attendance.id, fullName: attendance.person.fullName })) ?? [];
 
   return (
     <AppShell
@@ -44,7 +47,7 @@ export default async function LeaderPage() {
       <SearchBox placeholder="Buscar membro..." />
       <PulseCard
         title={dashboard.signals[0] ? `${dashboard.signals[0].person.fullName} precisa de você.` : `${group?.name ?? "Sua célula"} está tranquila agora.`}
-        subtitle={dashboard.signals[0] ? dashboard.signals[0].reason : "Faça o check-in quando a célula acontecer."}
+        subtitle={dashboard.signals[0] ? dashboard.signals[0].reason : "Registre a presença quando a célula acontecer."}
       />
 
       <MetricRow
@@ -55,13 +58,14 @@ export default async function LeaderPage() {
         ]}
       />
 
-      <SectionTitle>Check-in da célula</SectionTitle>
+      <SectionTitle>Presença da célula</SectionTitle>
       {currentEvent ? (
         <CheckInList
           eventId={currentEvent.id}
           members={members}
-          initialVisitorCount={currentEvent.attendances.filter((attendance) => attendance.status === "VISITOR").length}
+          initialVisitors={currentVisitors}
           submitLabel={currentEventCompleted ? "Atualizar" : "Finalizar"}
+          mode={currentEventCompleted ? "adjust" : "register"}
         />
       ) : (
         <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhum evento de célula encontrado. Rode o seed ou crie um evento.</p>

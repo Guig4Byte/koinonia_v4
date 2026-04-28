@@ -37,7 +37,7 @@ function EventCard({ event, user }: { event: EventWithRelations; user: Permissio
   const canEditPresence = canCheckInEvent(user, event);
   const canRegisterPresence = canEditPresence && !metrics.completed;
   const canAdjustPresence = canEditPresence && metrics.completed;
-  const label = metrics.completed ? "presença registrada" : canRegisterPresence ? "check-in pendente" : "aguardando líder";
+  const label = metrics.completed ? "presença registrada" : canRegisterPresence ? "presença pendente" : "aguardando líder";
 
   return (
     <article className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
@@ -69,7 +69,7 @@ function EventCard({ event, user }: { event: EventWithRelations; user: Permissio
       ) : (
         <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">
           {canRegisterPresence
-            ? "Registre quem veio. A presença vai alimentar as atenções pastorais da semana."
+            ? "Marque quem veio. A presença ajuda o Koinonia a perceber quem pode precisar de cuidado."
             : "O líder da célula registra a presença. Aqui você acompanha o resumo do encontro."}
         </p>
       )}

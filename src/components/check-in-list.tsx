@@ -8,11 +8,17 @@ import { cn } from "@/lib/cn";
 type MemberAttendanceStatus = "PRESENT" | "ABSENT" | "JUSTIFIED";
 type AttendanceStatus = MemberAttendanceStatus | "VISITOR";
 type AttendanceSelection = MemberAttendanceStatus | null;
+type CheckInMode = "register" | "adjust";
 
 type Member = {
   personId: string;
   fullName: string;
   currentStatus?: AttendanceStatus | null;
+};
+
+type VisitorRecord = {
+  id: string;
+  fullName: string;
 };
 
 type VisitorDraft = {
@@ -45,19 +51,24 @@ function getInitialMemberStatus(status?: AttendanceStatus | null): AttendanceSel
 export function CheckInList({
   eventId,
   members,
+  initialVisitors = [],
   initialVisitorCount = 0,
   submitLabel = "Finalizar",
+  mode = "register",
 }: {
   eventId: string;
   members: Member[];
+  initialVisitors?: VisitorRecord[];
   initialVisitorCount?: number;
   submitLabel?: string;
+  mode?: CheckInMode;
 }) {
   const [isPending, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [visitorName, setVisitorName] = useState("");
-  const [committedVisitorCount, setCommittedVisitorCount] = useState(initialVisitorCount);
+  const [savedVisitors, setSavedVisitors] = useState<VisitorRecord[]>(initialVisitors);
+  const fallbackSavedVisitorCount = Math.max(initialVisitorCount, savedVisitors.length);
   const [visitors, setVisitors] = useState<VisitorDraft[]>([]);
   const [items, setItems] = useState(
     members.map((member) => ({
@@ -73,7 +84,7 @@ export function CheckInList({
     const justified = items.filter((item) => item.status === ATTENDANCE.JUSTIFIED).length;
     const absent = items.filter((item) => item.status === ATTENDANCE.ABSENT).length;
     const pending = items.length - marked.length;
-    const visitorTotal = committedVisitorCount + visitors.length;
+    const visitorTotal = fallbackSavedVisitorCount + visitors.length;
     const presenceRate = items.length === 0 ? 0 : Math.round((present / items.length) * 100);
 
     return {
@@ -86,9 +97,13 @@ export function CheckInList({
       presenceRate,
       attentionCount: absent,
     };
-  }, [committedVisitorCount, items, visitors.length]);
+  }, [fallbackSavedVisitorCount, items, visitors.length]);
 
   const canSave = summary.pending === 0 && !isPending;
+  const helperText =
+    mode === "adjust"
+      ? "Revise as marcações já salvas e corrija somente o necessário."
+      : "Marque quem esteve presente. Isso ajuda o Koinonia a perceber quem pode precisar de cuidado.";
 
   function setStatus(personId: string, status: MemberAttendanceStatus) {
     setSaved(false);
@@ -131,12 +146,12 @@ export function CheckInList({
 
       if (!response.ok) {
         const payload = await response.json().catch(() => null);
-        setErrorMessage(payload?.error ?? "Não foi possível salvar o check-in.");
+        setErrorMessage(payload?.error ?? "Não foi possível salvar a presença.");
         return;
       }
 
       setSaved(true);
-      setCommittedVisitorCount((current) => current + visitors.length);
+      setSavedVisitors((current) => [...current, ...visitors]);
       setVisitors([]);
     });
   }
@@ -146,7 +161,7 @@ export function CheckInList({
       <div className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-sm text-[var(--color-text-secondary)]">Presença de hoje</p>
+            <p className="text-sm text-[var(--color-text-secondary)]">Presença do encontro</p>
             <p className="text-3xl font-bold text-[var(--color-metric-presenca)]">{summary.presenceRate}%</p>
             <p className="mt-1 text-xs text-[var(--color-text-secondary)]">
               {summary.present} de {summary.totalMembers} presentes · {summary.visitorTotal} {summary.visitorTotal === 1 ? "visitante" : "visitantes"}
@@ -157,10 +172,12 @@ export function CheckInList({
           </Button>
         </div>
 
+        <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">{helperText}</p>
+
         {summary.pending > 0 ? (
           <div className="mt-4 rounded-2xl border border-[var(--color-badge-atencao-border)] bg-[var(--color-badge-atencao-bg)] p-3 text-sm text-[var(--color-badge-atencao-text)]">
             <p className="font-semibold">
-              {summary.pending} {summary.pending === 1 ? "pessoa ainda não foi marcada" : "pessoas ainda não foram marcadas"}.
+              {summary.pending} {summary.pending === 1 ? "pessoa ainda está pendente" : "pessoas ainda estão pendentes"}.
             </p>
             <p className="mt-1 text-xs leading-relaxed">Finalize só depois de marcar presente, ausente ou justificou para cada membro.</p>
           </div>
@@ -176,20 +193,38 @@ export function CheckInList({
           <div className="mt-4 rounded-2xl bg-[var(--metric-card-bg)] p-3 text-sm text-[var(--color-text-primary)]">
             <div className="flex items-center gap-2 font-semibold">
               <UserRoundCheck className="h-4 w-4 text-[var(--color-metric-presenca)]" />
-              Presença registrada.
+              Presença salva.
             </div>
             <p className="mt-1 text-[var(--color-text-secondary)]">
               {summary.attentionCount > 0
-                ? `${summary.attentionCount} ${summary.attentionCount === 1 ? "pessoa merece" : "pessoas merecem"} atenção depois deste encontro.`
-                : "Nenhuma atenção nova apareceu neste encontro."}
+                ? `${summary.attentionCount} ${summary.attentionCount === 1 ? "pessoa ficou" : "pessoas ficaram"} para olhar depois deste encontro.`
+                : "Nenhuma ausência ficou pendente neste encontro."}
             </p>
           </div>
         ) : null}
       </div>
 
       <div className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
-        <p className="font-semibold text-[var(--color-text-primary)]">Adicionar visitante</p>
-        <div className="mt-3 flex gap-2">
+        <p className="font-semibold text-[var(--color-text-primary)]">Visitantes</p>
+        {savedVisitors.length > 0 ? (
+          <div className="mt-3 space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">Já registrados</p>
+            {savedVisitors.map((visitor) => (
+              <div key={visitor.id} className="flex items-center justify-between rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 text-sm">
+                <span className="font-medium text-[var(--color-text-primary)]">{visitor.fullName}</span>
+                <span className="text-xs font-semibold text-[var(--color-text-secondary)]">registrado</span>
+              </div>
+            ))}
+          </div>
+        ) : fallbackSavedVisitorCount > 0 ? (
+          <p className="mt-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 text-sm text-[var(--color-text-secondary)]">
+            {fallbackSavedVisitorCount} {fallbackSavedVisitorCount === 1 ? "visitante já registrado" : "visitantes já registrados"}.
+          </p>
+        ) : (
+          <p className="mt-2 text-sm text-[var(--color-text-secondary)]">Nenhum visitante registrado neste encontro.</p>
+        )}
+
+        <div className="mt-4 flex gap-2">
           <input
             value={visitorName}
             onChange={(event) => setVisitorName(event.target.value)}
@@ -199,16 +234,17 @@ export function CheckInList({
                 addVisitor();
               }
             }}
-            placeholder="Nome do visitante"
+            placeholder="Adicionar visitante"
             className="min-h-11 flex-1 rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] px-3 text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-brand)]"
           />
-          <GhostButton type="button" onClick={addVisitor} className="px-3">
+          <GhostButton type="button" onClick={addVisitor} className="px-3" aria-label="Adicionar visitante">
             <Plus className="h-4 w-4" />
           </GhostButton>
         </div>
 
         {visitors.length > 0 ? (
           <div className="mt-3 space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">Para salvar agora</p>
             {visitors.map((visitor) => (
               <div key={visitor.id} className="flex items-center justify-between rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 text-sm">
                 <span className="font-medium text-[var(--color-text-primary)]">{visitor.fullName}</span>
@@ -234,7 +270,7 @@ export function CheckInList({
                     : "border border-[var(--color-badge-atencao-border)] bg-[var(--color-badge-atencao-bg)] text-[var(--color-badge-atencao-text)]",
                 )}
               >
-                {item.status ? labels[item.status] : "Não marcado"}
+                {item.status ? labels[item.status] : "Pendente"}
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2">

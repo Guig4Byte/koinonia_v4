@@ -47,7 +47,7 @@ function EventReadOnlySummary({
   if (!completed) {
     return (
       <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm leading-relaxed text-[var(--color-text-secondary)] shadow-card">
-        A presença ainda não foi registrada. O líder da célula faz o check-in; pastor e supervisor acompanham o resumo quando ele estiver pronto.
+        A presença ainda não foi registrada. O líder da célula registra o encontro; pastor e supervisor acompanham o resumo quando ele estiver pronto.
       </section>
     );
   }
@@ -61,7 +61,7 @@ function EventReadOnlySummary({
             <div key={member.personId} className="flex items-center justify-between gap-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2">
               <span className="min-w-0 text-sm font-medium text-[var(--color-text-primary)]">{member.fullName}</span>
               <Badge tone={statusTone(member.currentStatus)}>
-                {member.currentStatus ? attendanceLabels[member.currentStatus] : "Não marcado"}
+                {member.currentStatus ? attendanceLabels[member.currentStatus] : "Pendente"}
               </Badge>
             </div>
           ))}
@@ -128,7 +128,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
     fullName: attendance.person.fullName,
   }));
 
-  const checkInLabel = canEditCheckIn ? (completed ? "Ajuste de presença" : "Check-in") : "Resumo de presença";
+  const checkInLabel = canEditCheckIn ? (completed ? "Ajuste de presença" : "Registrar presença") : "Resumo de presença";
   const checkInSectionTitle = canEditCheckIn ? (completed ? "Ajustar presença" : "Registrar presença") : "Resumo da presença";
   const checkInSubmitLabel = completed ? "Atualizar" : "Finalizar";
 
@@ -180,13 +180,19 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
       <SectionTitle>{checkInSectionTitle}</SectionTitle>
       {event.groupId ? (
         canEditCheckIn ? (
-          <CheckInList eventId={event.id} members={members} initialVisitorCount={visitors.length} submitLabel={checkInSubmitLabel} />
+          <CheckInList
+            eventId={event.id}
+            members={members}
+            initialVisitors={visitorRows}
+            submitLabel={checkInSubmitLabel}
+            mode={completed ? "adjust" : "register"}
+          />
         ) : (
           <EventReadOnlySummary completed={completed} members={members} visitors={visitorRows} />
         )
       ) : (
         <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm text-[var(--color-text-secondary)] shadow-card">
-          Este evento não está vinculado a uma célula. O check-in completo entra depois.
+          Este evento não está vinculado a uma célula. A presença completa entra depois.
         </p>
       )}
     </AppShell>

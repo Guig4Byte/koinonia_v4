@@ -136,9 +136,9 @@ A interface também deve refletir isso:
 - líder da célula: tela editável de check-in;
 - pastor/supervisor: tela somente leitura, com resumo e leitura pastoral;
 - evento sem check-in: pastor/supervisor veem que o líder ainda precisa registrar a presença, mas não podem registrar por ele;
-- pessoa sem marcação aparece como `Não marcado`, nunca como ausência presumida;
+- pessoa sem marcação aparece como `Pendente`, nunca como ausência presumida;
 - a finalização só deve acontecer depois de marcar todos os membros ativos da célula;
-- evento já concluído pode ser aberto pelo líder como `Ajustar presença`, não como novo check-in.
+- evento já concluído pode ser aberto pelo líder como `Ajustar presença`, não como novo check-in; visitantes já registrados aparecem com nome no ajuste, sem virar membros automaticamente.
 
 ## Fluxo de cuidado no card
 
