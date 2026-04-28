@@ -75,7 +75,7 @@ Exemplos:
 
 No código atual, isso pode aparecer como `CareSignal`.
 
-Regra: sinal é evidência; não é a experiência principal da pessoa usuária.
+Regra: sinal é evidência e lembrete de cuidado; não é task, cobrança ou experiência principal da pessoa usuária. Se o cuidado já aconteceu fora do sistema, a UI deve permitir registrar isso e fechar a atenção com pouco atrito.
 
 ### Atenção
 
@@ -177,7 +177,7 @@ No MVP Lite, evite transformar a tela inicial em painel executivo.
 | `Event` | Evento / reunião de célula | Não virar calendário amplo cedo demais. |
 | `Attendance` | Presença | Fonte pastoral, não fiscalização. |
 | Dashboard | Visão | Menos painel, mais leitura. |
-| Task/SLA | Cuidado / acompanhamento futuro | Não entra no MVP atual. |
+| Task/SLA | Fora do MVP atual | Não transformar sinal em cobrança ou fila. |
 
 ## Critério de decisão
 

@@ -62,7 +62,7 @@ O MVP atual deve permanecer limitado a:
 - Busca atual é busca de pessoa; não prometer busca de evento/célula na interface enquanto `/api/search` não suportar esses tipos
 - Ação direta de cuidado: ligar, WhatsApp, contato feito e anotação opcional
 - Visão macro simples para pastor
-- Visão de acompanhamento para supervisor
+- Visão de apoio para supervisor
 - Visão operacional para líder
 
 ## Fora do MVP agora
@@ -77,6 +77,7 @@ Não implemente ainda, salvo pedido explícito do usuário:
 - SLA
 - Playbooks
 - Task manager complexo
+- Acompanhamento formal
 - CRM pastoral pesado
 - Área rica do membro
 - Formulários longos
@@ -135,6 +136,12 @@ Atenção por ausência só pode nascer de encontros reais, passados e com prese
 
 Depois de salvar check-in, a resposta da API informa quantas pessoas distintas ficaram em atenção naquela célula, para que a interface possa fechar o ciclo: presença salva -> pessoas em atenção -> cuidado. A UI pode escolher o sinal mais grave/recente como motivo, mas a lista principal deve continuar sendo por pessoa, não por sinal.
 
+## Sinal não é tarefa
+
+Sinal é lembrete de cuidado, não cobrança. Ele pode aparecer depois de o líder já ter ligado, mandado mensagem ou conversado com a pessoa fora do sistema.
+
+A interface deve oferecer uma saída simples: `Já houve contato` -> anotar se precisar -> resolver a atenção. Não criar acompanhamento, task ou formulário longo por causa de um sinal simples.
+
 ## Check-in
 
 Check-in é operação do líder.
@@ -159,8 +166,9 @@ Nos cards de pessoa em atenção, o fluxo correto é:
 
 ```txt
 [Ligar] [WhatsApp]
+[Já houve contato]
         ↓
-Conseguiu contato?
+Conseguiu contato? ou cuidado já aconteceu
         ↓
 [Contato feito] [Ainda não]
         ↓
@@ -173,6 +181,7 @@ Regras:
 
 - `Ligar` abre `tel:`.
 - `WhatsApp` abre `wa.me`.
+- `Já houve contato` registra um cuidado que aconteceu fora do aplicativo e resolve as atenções abertas.
 - `Contato feito` não deve fechar imediatamente; primeiro pergunta se quer anotar.
 - `Não precisa` registra contato e resolve as atenções abertas.
 - `Anotar` salva observação junto com o contato e resolve as atenções abertas.

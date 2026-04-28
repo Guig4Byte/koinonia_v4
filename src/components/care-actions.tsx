@@ -133,7 +133,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
             </a>
           </div>
 
-          {!hasPhone && personId ? (
+          {personId ? (
             <button
               type="button"
               disabled={isPending}
@@ -143,7 +143,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
               }}
               className={cn(secondaryButton, "w-full", isPending && disabled)}
             >
-              Registrar contato feito
+              Já houve contato
             </button>
           ) : null}
         </>

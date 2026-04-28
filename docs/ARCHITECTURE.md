@@ -131,6 +131,8 @@ O registro de contato deve ser permitido para quem tem escopo pastoral sobre a p
 
 A rota `/api/care/[personId]` deve usar `src/features/care/care-validation.ts` para validar entrada, aparar anotação vazia e devolver `resolvedSignalsCount`. Para usuários sem escopo de igreja inteira, o registro precisa estar associado a uma célula visível; se nenhuma célula visível existir, a rota deve recusar a escrita em vez de resolver sinais fora de escopo.
 
+Sinal não deve virar task. A ação `Já houve contato` deve permitir registrar cuidado já realizado fora do aplicativo e resolver a atenção sem criar acompanhamento formal.
+
 ## Autorização centralizada
 
 As regras de escopo ficam em:
@@ -213,6 +215,7 @@ Ou seja: contraste, legibilidade e hierarquia visual têm prioridade sobre segui
 - SLA
 - Playbook
 - CRM pesado
+- Acompanhamento formal
 - Dashboard analítico profundo
 - BI
 - Mapa

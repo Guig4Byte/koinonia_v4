@@ -67,7 +67,7 @@ Inclui:
 - Detalhe simples da pessoa com célula, última presença, atenção aberta e cuidado recente
 - Ação direta: ligar, WhatsApp, contato feito e anotação opcional
 - Visão macro do pastor
-- Visão de acompanhamento do supervisor
+- Visão de apoio do supervisor
 - Visão operacional do líder
 
 Não inclui agora:
@@ -81,6 +81,7 @@ Não inclui agora:
 - playbooks;
 - SLA;
 - task manager complexo;
+- acompanhamento formal;
 - CRM pastoral pesado;
 - área rica do membro;
 - formulários longos.
@@ -158,6 +159,18 @@ Atenção por ausência só pode nascer de encontros reais, passados e com prese
 
 Depois de salvar check-in, a resposta da API informa quantas pessoas distintas ficaram em atenção naquela célula, para que a interface possa fechar o ciclo: presença salva -> pessoas em atenção -> cuidado. A UI pode escolher o sinal mais grave/recente como motivo, mas a lista principal deve continuar sendo por pessoa, não por sinal.
 
+## Sinal não é tarefa
+
+Sinal é lembrete de cuidado, não cobrança burocrática. Ele pode aparecer depois de o líder já ter ligado, mandado mensagem ou conversado com a pessoa fora do sistema.
+
+Por isso, a interface deve permitir uma saída simples:
+
+```txt
+Já houve contato -> anotar se precisar -> fechar atenção
+```
+
+O usuário não deve ser forçado a abrir acompanhamento, preencher formulário longo ou justificar demais uma ação pastoral simples.
+
 ## Check-in
 
 Check-in é exclusivo do líder da célula.
@@ -203,8 +216,9 @@ Nos cards de atenção, o fluxo correto é:
 
 ```txt
 [Ligar] [WhatsApp]
+[Já houve contato]
         ↓
-Conseguiu contato?
+Conseguiu contato? ou cuidado já aconteceu
         ↓
 [Contato feito] [Ainda não]
         ↓
