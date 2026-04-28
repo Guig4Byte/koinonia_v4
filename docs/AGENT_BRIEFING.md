@@ -183,6 +183,8 @@ A rota `/pessoas/[personId]` é a leitura curta de cuidado. Ela deve mostrar som
 - última presença;
 - cuidado recente.
 
+Mesmo depois de validar `canViewPerson(user, person)`, os históricos internos da tela — sinais, presenças e cuidados recentes — devem continuar filtrados pelo escopo visível do usuário. Isso evita vazar contexto de outra célula caso a pessoa tenha mais de um vínculo.
+
 Não transformar esta tela em prontuário, CRM pastoral completo ou histórico infinito. O objetivo é dar contexto suficiente para um telefonema, WhatsApp ou contato real.
 
 ## Design e linguagem

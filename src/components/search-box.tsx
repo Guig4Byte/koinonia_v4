@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { Search } from "lucide-react";
 
@@ -36,10 +37,10 @@ export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: 
       {results.length > 0 ? (
         <div className="absolute left-0 right-0 top-14 z-30 overflow-hidden rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] shadow-card">
           {results.map((person) => (
-            <a key={person.id} href={`/pessoas/${person.id}`} className="block border-b border-[var(--color-border-divider)] px-4 py-3 last:border-0">
+            <Link key={person.id} href={`/pessoas/${person.id}`} className="block border-b border-[var(--color-border-divider)] px-4 py-3 last:border-0">
               <p className="text-sm font-semibold text-[var(--color-text-primary)]">{person.fullName}</p>
               <p className="mt-0.5 text-xs text-[var(--color-text-secondary)]">{person.context} · {person.status}</p>
-            </a>
+            </Link>
           ))}
         </div>
       ) : null}

@@ -169,6 +169,8 @@ A rota `/pessoas/[personId]` é o detalhe simples de cuidado e deve reutilizar `
 
 A busca em `/api/search` deve respeitar `getVisiblePersonWhere(user)` e levar direto para `/pessoas/[personId]`, não para uma lista genérica com parâmetro solto.
 
+Dentro do detalhe da pessoa, sinais, presenças e cuidados recentes também devem ser filtrados pelo mesmo escopo do usuário. `canViewPerson` autoriza a pessoa, mas não deve ser usado sozinho para carregar histórico de outras células.
+
 ## Autenticação futura
 
 Ao implementar autenticação real, preserve o contrato:

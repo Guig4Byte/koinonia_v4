@@ -5,7 +5,7 @@ import { AppShell } from "@/components/app-shell";
 import { CareActions } from "@/components/care-actions";
 import { SectionTitle } from "@/components/cards";
 import { Badge } from "@/components/ui/badge";
-import { canViewGroup, canViewPerson } from "@/features/permissions/permissions";
+import { canViewGroup, canViewPerson, getVisibleEventWhere, getVisibleGroupWhere, getVisibleOpenSignalWhere, hasWholeChurchScope } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -70,32 +70,43 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
         where: { leftAt: null },
         include: { group: { include: { leader: true, supervisor: true } } },
       },
-      signals: {
-        where: { status: "OPEN" },
-        include: { group: { include: { leader: true, supervisor: true } } },
-        orderBy: [{ severity: "desc" }, { detectedAt: "desc" }],
-      },
-      attendances: {
-        include: { event: { include: { group: true } } },
-        orderBy: { markedAt: "desc" },
-        take: 8,
-      },
-      careTouches: {
-        include: { actor: true, group: true },
-        orderBy: { happenedAt: "desc" },
-        take: 5,
-      },
     },
   });
 
   if (!person || person.churchId !== user.churchId) notFound();
   if (!canViewPerson(user, person)) notFound();
 
+  const visibleOpenSignalWhere = getVisibleOpenSignalWhere(user);
+  const visibleEventWhere = getVisibleEventWhere(user);
+  const visibleCareTouchWhere = hasWholeChurchScope(user)
+    ? { churchId: user.churchId, personId: person.id }
+    : { churchId: user.churchId, personId: person.id, group: getVisibleGroupWhere(user) };
+
+  const [signals, attendances, careTouches] = await Promise.all([
+    prisma.careSignal.findMany({
+      where: { ...visibleOpenSignalWhere, personId: person.id },
+      include: { group: { include: { leader: true, supervisor: true } } },
+      orderBy: [{ severity: "desc" }, { detectedAt: "desc" }],
+    }),
+    prisma.attendance.findMany({
+      where: { personId: person.id, event: visibleEventWhere },
+      include: { event: { include: { group: true } } },
+      orderBy: [{ event: { startsAt: "desc" } }, { markedAt: "desc" }],
+      take: 8,
+    }),
+    prisma.careTouch.findMany({
+      where: visibleCareTouchWhere,
+      include: { actor: true, group: true },
+      orderBy: { happenedAt: "desc" },
+      take: 5,
+    }),
+  ]);
+
   const primaryMembership = person.memberships.find((membership) => canViewGroup(user, membership.group)) ?? person.memberships[0];
   const primaryGroup = primaryMembership?.group;
-  const latestAttendance = person.attendances[0];
+  const latestAttendance = attendances[0];
   const homeHref = user.role === "LEADER" ? "/lider" : user.role === "SUPERVISOR" ? "/supervisor" : "/pastor";
-  const openSignalsCount = person.signals.length;
+  const openSignalsCount = signals.length;
 
   return (
     <AppShell
@@ -158,7 +169,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
 
       <SectionTitle>Por que aparece aqui</SectionTitle>
       <div className="space-y-3">
-        {person.signals.map((signal) => (
+        {signals.map((signal) => (
           <article key={signal.id} className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -173,7 +184,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           </article>
         ))}
 
-        {person.signals.length === 0 ? (
+        {signals.length === 0 ? (
           <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm text-[var(--color-text-secondary)] shadow-card">
             Nenhum sinal aberto agora. Esta pessoa pode ser consultada normalmente pela busca.
           </p>
@@ -201,7 +212,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
 
       <SectionTitle>Cuidado recente</SectionTitle>
       <div className="space-y-3">
-        {person.careTouches.map((touch) => (
+        {careTouches.map((touch) => (
           <article key={touch.id} className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -216,7 +227,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           </article>
         ))}
 
-        {person.careTouches.length === 0 ? (
+        {careTouches.length === 0 ? (
           <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm text-[var(--color-text-secondary)] shadow-card">
             Nenhum contato registrado ainda. Use as ações acima quando houver ligação, WhatsApp ou cuidado real.
           </p>

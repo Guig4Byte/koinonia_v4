@@ -70,7 +70,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
           <CheckCircle2 className="h-4 w-4" strokeWidth={2.2} />
           {savedMessage}
         </div>
-        <p className="mt-1 text-[var(--color-text-secondary)]">A pessoa sai da lista de atenção por enquanto.</p>
+        <p className="mt-1 text-[var(--color-text-secondary)]">Registrado no cuidado recente.</p>
       </div>
     );
   }
@@ -78,55 +78,71 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
   return (
     <div className="mt-3 space-y-2.5">
       {stage === "idle" ? (
-        <div className="grid grid-cols-2 gap-2">
-          <a
-            href={links.tel}
-            aria-disabled={!hasPhone}
-            className={cn(buttonBase, "border", !hasPhone && disabled)}
-            style={{
-              backgroundColor: "var(--color-action-call-bg)",
-              borderColor: "var(--color-action-call-border)",
-              color: "var(--color-action-call-text)",
-            }}
-            onClick={(event) => {
-              if (!hasPhone) {
-                event.preventDefault();
-                return;
-              }
+        <>
+          <div className="grid grid-cols-2 gap-2">
+            <a
+              href={links.tel}
+              aria-disabled={!hasPhone}
+              className={cn(buttonBase, "border", !hasPhone && disabled)}
+              style={{
+                backgroundColor: "var(--color-action-call-bg)",
+                borderColor: "var(--color-action-call-border)",
+                color: "var(--color-action-call-text)",
+              }}
+              onClick={(event) => {
+                if (!hasPhone) {
+                  event.preventDefault();
+                  return;
+                }
 
-              setLastContactKind("CALL");
-              setStage("confirm");
-            }}
-          >
-            <Phone className="h-4 w-4" strokeWidth={2.3} />
-            Ligar
-          </a>
+                setLastContactKind("CALL");
+                setStage("confirm");
+              }}
+            >
+              <Phone className="h-4 w-4" strokeWidth={2.3} />
+              Ligar
+            </a>
 
-          <a
-            href={links.whatsapp}
-            target={hasPhone ? "_blank" : undefined}
-            rel={hasPhone ? "noreferrer" : undefined}
-            aria-disabled={!hasPhone}
-            className={cn(buttonBase, "border", !hasPhone && disabled)}
-            style={{
-              backgroundColor: "var(--color-action-whatsapp-bg)",
-              borderColor: "var(--color-action-whatsapp-border)",
-              color: "var(--color-action-whatsapp-text)",
-            }}
-            onClick={(event) => {
-              if (!hasPhone) {
-                event.preventDefault();
-                return;
-              }
+            <a
+              href={links.whatsapp}
+              target={hasPhone ? "_blank" : undefined}
+              rel={hasPhone ? "noreferrer" : undefined}
+              aria-disabled={!hasPhone}
+              className={cn(buttonBase, "border", !hasPhone && disabled)}
+              style={{
+                backgroundColor: "var(--color-action-whatsapp-bg)",
+                borderColor: "var(--color-action-whatsapp-border)",
+                color: "var(--color-action-whatsapp-text)",
+              }}
+              onClick={(event) => {
+                if (!hasPhone) {
+                  event.preventDefault();
+                  return;
+                }
 
-              setLastContactKind("WHATSAPP");
-              setStage("confirm");
-            }}
-          >
-            <MessageCircleMore className="h-4 w-4" strokeWidth={2.3} />
-            WhatsApp
-          </a>
-        </div>
+                setLastContactKind("WHATSAPP");
+                setStage("confirm");
+              }}
+            >
+              <MessageCircleMore className="h-4 w-4" strokeWidth={2.3} />
+              WhatsApp
+            </a>
+          </div>
+
+          {!hasPhone && personId ? (
+            <button
+              type="button"
+              disabled={isPending}
+              onClick={() => {
+                setLastContactKind(null);
+                setStage("ask-note");
+              }}
+              className={cn(secondaryButton, "w-full", isPending && disabled)}
+            >
+              Registrar contato feito
+            </button>
+          ) : null}
+        </>
       ) : null}
 
       {stage === "confirm" ? (
