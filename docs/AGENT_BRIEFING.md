@@ -59,6 +59,7 @@ O MVP atual deve permanecer limitado a:
 - Atenções pastorais geradas por presença/ausência
 - Detalhe simples da pessoa em `/pessoas/[personId]`
 - Busca e cards de atenção levando direto ao contexto da pessoa
+- Busca atual é busca de pessoa; não prometer busca de evento/célula na interface enquanto `/api/search` não suportar esses tipos
 - Ação direta de cuidado: ligar, WhatsApp, contato feito e anotação opcional
 - Visão macro simples para pastor
 - Visão de acompanhamento para supervisor

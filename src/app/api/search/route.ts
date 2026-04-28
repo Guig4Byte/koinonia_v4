@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PersonStatus } from "../../../generated/prisma/client";
-import { getVisiblePersonWhere } from "@/features/permissions/permissions";
+import { getVisibleMembershipWhere, getVisiblePersonWhere } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       fullName: { contains: q, mode: "insensitive" },
     },
     include: {
-      memberships: { include: { group: true }, take: 1 },
+      memberships: { where: getVisibleMembershipWhere(user), include: { group: true }, take: 1 },
     },
     orderBy: { fullName: "asc" },
     take: 8,

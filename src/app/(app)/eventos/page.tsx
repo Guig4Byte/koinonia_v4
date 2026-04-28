@@ -107,7 +107,7 @@ export default async function EventsPage() {
         { href: "#buscar", label: "Busca", icon: "search" },
       ]}
     >
-      <SearchBox placeholder="Buscar evento ou célula..." />
+      <SearchBox placeholder="Buscar pessoa..." />
       <h2 className="mb-2 text-2xl font-semibold text-[var(--color-text-primary)]">Eventos</h2>
       <p className="mb-4 text-sm leading-relaxed text-[var(--color-text-secondary)]">
         Acompanhe os encontros da semana sem transformar cuidado em relatório.

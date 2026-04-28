@@ -61,7 +61,7 @@ export default async function LeaderPage() {
         { href: "#buscar", label: "Busca", icon: "search" },
       ]}
     >
-      <SearchBox placeholder="Buscar membro..." />
+      <SearchBox placeholder="Buscar pessoa..." />
       <PulseCard
         title={dashboard.attentionPeople[0] ? `${dashboard.attentionPeople[0].person.fullName} precisa de você.` : `${currentGroup?.name ?? "Sua célula"} está tranquila agora.`}
         subtitle={dashboard.attentionPeople[0] ? dashboard.attentionPeople[0].reason : "Registre a presença quando a célula acontecer."}

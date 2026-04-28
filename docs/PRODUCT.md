@@ -63,6 +63,7 @@ Inclui:
 - Visitantes no check-in
 - Atenções pastorais
 - Busca simples levando ao detalhe da pessoa
+- A busca atual é busca de pessoa; resultados devem mostrar apenas contexto/célula dentro do escopo visível do usuário
 - Detalhe simples da pessoa com célula, última presença, atenção aberta e cuidado recente
 - Ação direta: ligar, WhatsApp, contato feito e anotação opcional
 - Visão macro do pastor

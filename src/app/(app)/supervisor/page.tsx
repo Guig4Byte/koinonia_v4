@@ -24,7 +24,7 @@ export default async function SupervisorPage() {
         { href: "#buscar", label: "Busca", icon: "search" },
       ]}
     >
-      <SearchBox placeholder="Buscar pessoa ou célula..." />
+      <SearchBox placeholder="Buscar pessoa..." />
       <PulseCard
         title={firstSignal ? `${firstSignal.group.name} precisa de atenção.` : "Suas células estão estáveis agora."}
         subtitle={firstSignal ? `${firstSignal.person.fullName}: ${firstSignal.reason}` : "Continue acompanhando presença e cuidados simples."}

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { UserRole } from "../../generated/prisma/client";
-import { canCheckInEvent, canRegisterCare, canViewEvent, canViewGroup, getPrimaryVisibleGroupIdForPerson } from "./permissions";
+import { canCheckInEvent, canRegisterCare, canViewEvent, canViewGroup, getPrimaryVisibleGroupIdForPerson, getVisibleMembershipWhere } from "./permissions";
 
 const pastor = { id: "pastor-1", churchId: "church-1", role: UserRole.PASTOR };
 const supervisor = { id: "supervisor-1", churchId: "church-1", role: UserRole.SUPERVISOR };
@@ -40,5 +40,17 @@ describe("permission helpers", () => {
   it("returns the first visible active group when registering care", () => {
     expect(getPrimaryVisibleGroupIdForPerson(leader, person)).toBe(group.id);
     expect(getPrimaryVisibleGroupIdForPerson(otherLeader, person)).toBeUndefined();
+  });
+
+  it("builds visible membership filters for search result context", () => {
+    expect(getVisibleMembershipWhere(leader)).toEqual({
+      leftAt: null,
+      group: { is: { churchId: leader.churchId, isActive: true, leaderUserId: leader.id } },
+    });
+
+    expect(getVisibleMembershipWhere(supervisor)).toEqual({
+      leftAt: null,
+      group: { is: { churchId: supervisor.churchId, isActive: true, supervisorUserId: supervisor.id } },
+    });
   });
 });

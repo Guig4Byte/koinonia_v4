@@ -102,6 +102,24 @@ export function getVisibleEventWhere(user: PermissionUser): Prisma.EventWhereInp
   return { churchId: user.churchId, group: { is: { leaderUserId: user.id } } };
 }
 
+export function getVisibleMembershipWhere(user: PermissionUser): Prisma.GroupMembershipWhereInput {
+  if (hasWholeChurchScope(user)) {
+    return { leftAt: null, group: { is: { churchId: user.churchId, isActive: true } } };
+  }
+
+  if (user.role === UserRole.SUPERVISOR) {
+    return {
+      leftAt: null,
+      group: { is: { churchId: user.churchId, isActive: true, supervisorUserId: user.id } },
+    };
+  }
+
+  return {
+    leftAt: null,
+    group: { is: { churchId: user.churchId, isActive: true, leaderUserId: user.id } },
+  };
+}
+
 export function getVisiblePersonWhere(user: PermissionUser): Prisma.PersonWhereInput {
   if (hasWholeChurchScope(user)) {
     return { churchId: user.churchId };

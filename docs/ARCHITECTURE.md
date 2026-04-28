@@ -169,6 +169,8 @@ A rota `/pessoas/[personId]` é o detalhe simples de cuidado e deve reutilizar `
 
 A busca em `/api/search` deve respeitar `getVisiblePersonWhere(user)` e levar direto para `/pessoas/[personId]`, não para uma lista genérica com parâmetro solto.
 
+A busca atual é busca de pessoa. Se uma tela exibir o componente `SearchBox`, a copy não deve prometer busca de evento ou célula enquanto a API não suportar isso. O contexto exibido no resultado também deve usar somente vínculos visíveis ao usuário, via `getVisibleMembershipWhere(user)`.
+
 Dentro do detalhe da pessoa, sinais, presenças e cuidados recentes também devem ser filtrados pelo mesmo escopo do usuário. `canViewPerson` autoriza a pessoa, mas não deve ser usado sozinho para carregar histórico de outras células.
 
 ## Autenticação futura
