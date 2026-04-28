@@ -6,7 +6,7 @@ import { useMemo, useState, useTransition } from "react";
 import { cn } from "@/lib/cn";
 
 type ContactKind = "CALL" | "WHATSAPP";
-type FlowStage = "idle" | "confirm" | "ask-note" | "note" | "done";
+type FlowStage = "idle" | "confirm" | "confirm-existing" | "ask-note" | "note" | "done";
 
 function digitsOnly(value?: string | null) {
   return value?.replace(/\D/g, "") ?? "";
@@ -30,6 +30,12 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
     }),
     [digits, hasPhone],
   );
+
+  function resetFlow() {
+    setStage("idle");
+    setNote("");
+    setLastContactKind(null);
+  }
 
   function registerContact(noteValue?: string) {
     if (!personId) return;
@@ -139,11 +145,11 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
               disabled={isPending}
               onClick={() => {
                 setLastContactKind(null);
-                setStage("ask-note");
+                setStage("confirm-existing");
               }}
               className={cn(secondaryButton, "w-full", isPending && disabled)}
             >
-              Já houve contato
+              Já houve contato?
             </button>
           ) : null}
         </>
@@ -152,6 +158,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
       {stage === "confirm" ? (
         <div className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3">
           <p className="text-sm font-semibold text-[var(--color-text-primary)]">O contato aconteceu?</p>
+          <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">Nada será registrado se você ainda não conseguiu falar com a pessoa.</p>
           <div className="mt-2 grid grid-cols-2 gap-2">
             <button
               type="button"
@@ -162,16 +169,31 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
               <CheckCircle2 className="h-4 w-4" strokeWidth={2.2} />
               Sim, houve contato
             </button>
+            <button type="button" disabled={isPending} onClick={resetFlow} className={cn(secondaryButton, isPending && disabled)}>
+              Ainda não
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {stage === "confirm-existing" ? (
+        <div className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3">
+          <p className="text-sm font-semibold text-[var(--color-text-primary)]">O cuidado já aconteceu?</p>
+          <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+            Use quando você já ligou, mandou mensagem ou conversou fora do Koinonia. A atenção só será fechada depois da próxima confirmação.
+          </p>
+          <div className="mt-2 grid grid-cols-2 gap-2">
             <button
               type="button"
-              disabled={isPending}
-              onClick={() => {
-                setStage("idle");
-                setLastContactKind(null);
-              }}
-              className={cn(secondaryButton, isPending && disabled)}
+              disabled={!personId || isPending}
+              onClick={() => setStage("ask-note")}
+              className={cn(buttonBase, "bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)]", (!personId || isPending) && disabled)}
             >
-              Ainda não
+              <CheckCircle2 className="h-4 w-4" strokeWidth={2.2} />
+              Sim, já houve
+            </button>
+            <button type="button" disabled={isPending} onClick={resetFlow} className={cn(secondaryButton, isPending && disabled)}>
+              Cancelar
             </button>
           </div>
         </div>
@@ -180,6 +202,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
       {stage === "ask-note" ? (
         <div className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3">
           <p className="text-sm font-semibold text-[var(--color-text-primary)]">Quer deixar uma anotação?</p>
+          <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">Salvar sem anotação também registra o cuidado e resolve as atenções abertas no seu escopo.</p>
           <div className="mt-2 grid grid-cols-2 gap-2">
             <button
               type="button"
@@ -194,6 +217,14 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
               {isPending ? "Salvando..." : "Salvar sem anotação"}
             </button>
           </div>
+          <button
+            type="button"
+            disabled={isPending}
+            onClick={resetFlow}
+            className={cn("mt-2 min-h-9 w-full text-xs font-semibold text-[var(--color-text-secondary)] transition active:scale-[0.98]", isPending && disabled)}
+          >
+            Cancelar e não registrar agora
+          </button>
         </div>
       ) : null}
 
@@ -214,11 +245,12 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
           <div className="mt-2 grid grid-cols-2 gap-2">
             <button
               type="button"
+              disabled={isPending}
               onClick={() => {
                 setStage("ask-note");
                 setNote("");
               }}
-              className={secondaryButton}
+              className={cn(secondaryButton, isPending && disabled)}
             >
               Voltar
             </button>

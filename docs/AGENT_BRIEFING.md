@@ -103,7 +103,7 @@ Funcionalidades fora desse recorte exigem pedido explícito do usuário.
 - Pessoa sem marcação explícita aparece como `Pendente`, nunca como falta presumida.
 - Atenção por ausência só nasce de encontros reais, passados e com presença registrada.
 - A lista principal deve continuar sendo por pessoa, não por sinal bruto.
-- `Já houve contato` deve permitir registrar cuidado realizado fora do aplicativo e resolver a atenção sem formulário longo.
+- `Já houve contato?` deve ser uma pergunta com confirmação; não pode resolver atenção por clique acidental.
 - A busca atual é busca de pessoa; não prometa busca de evento/célula enquanto a API não suportar esses tipos.
 - A rota `/pessoas/[personId]` é uma leitura curta para ação, não histórico infinito.
 

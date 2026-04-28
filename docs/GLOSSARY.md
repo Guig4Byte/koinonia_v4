@@ -107,7 +107,7 @@ Sinal não é tarefa.
 
 Sinal é evidência e lembrete de cuidado. Não é task, cobrança, SLA ou experiência principal da pessoa usuária.
 
-Se o cuidado já aconteceu fora do sistema, a UI deve permitir registrar isso e fechar a atenção com pouco atrito.
+Se o cuidado já aconteceu fora do sistema, a UI deve permitir registrar isso e fechar a atenção com pouco atrito, mas nunca por clique acidental. `Já houve contato?` deve funcionar como pergunta/entrada de confirmação.
 
 ### Atenção
 
@@ -151,8 +151,10 @@ Use na UI:
 
 - `Ligar`
 - `WhatsApp`
-- `Contato feito`
+- `Já houve contato?`
+- `Sim, houve contato`
 - `Ainda não consegui contato`
+- `Cancelar e não registrar agora`
 
 ### Cuidado
 
@@ -164,8 +166,9 @@ Use na UI:
 
 - `Cuidado`
 - `Registrar cuidado`
-- `Contato feito`
+- `Cuidado registrado`
 - `Anotar cuidado`
+- `Salvar sem anotação`
 
 Evite:
 

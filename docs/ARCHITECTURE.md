@@ -153,7 +153,7 @@ A rota `/api/care/[personId]` deve:
 - resolver apenas sinais abertos dentro do escopo do usuário;
 - devolver `resolvedSignalsCount` e mensagem curta para a UI.
 
-`Já houve contato` registra cuidado já realizado fora do aplicativo. Não deve criar acompanhamento formal, task ou SLA.
+`Já houve contato?` abre um fluxo de confirmação para cuidado já realizado fora do aplicativo. A rota só deve ser chamada depois de confirmação explícita do usuário. Isso não deve criar acompanhamento formal, task ou SLA.
 
 ## Rotas de pessoa e busca
 

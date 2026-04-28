@@ -201,33 +201,34 @@ presença salva -> pessoas em atenção -> cuidado
 A saída simples para uma atenção é:
 
 ```txt
-Já houve contato -> anotar se precisar -> fechar atenção
+Já houve contato? -> confirmar -> anotar se precisar -> fechar atenção
 ```
 
 Nos cards de atenção, o fluxo correto é:
 
 ```txt
 [Ligar] [WhatsApp]
-[Já houve contato]
+[Já houve contato?]
         ↓
-Conseguiu contato? ou cuidado já aconteceu
+O contato/cuidado aconteceu?
         ↓
-[Contato feito] [Ainda não]
+[Sim, houve contato] [Ainda não ou Cancelar]
         ↓
 Quer anotar algo?
         ↓
-[Anotar] [Não precisa]
+[Anotar] [Salvar sem anotação] [Cancelar]
 ```
 
 Regras de produto:
 
 - `Ligar` abre telefone.
 - `WhatsApp` abre conversa.
-- `Já houve contato` registra cuidado que aconteceu fora do aplicativo.
-- `Contato feito` não deve fechar imediatamente; primeiro pergunta se quer anotar.
-- `Não precisa` registra contato e resolve as atenções abertas.
-- `Anotar` salva observação junto com o contato e resolve as atenções abertas.
-- `Ainda não` não registra contato.
+- `Já houve contato?` é pergunta, não ação destrutiva imediata.
+- Nenhum clique acidental deve resolver atenção sem confirmação explícita.
+- `Sim, houve contato` ou `Sim, já houve` apenas avança para a decisão de anotação.
+- `Salvar sem anotação` registra contato/cuidado e resolve as atenções abertas dentro do escopo do usuário.
+- `Anotar` salva observação junto com o contato/cuidado e resolve as atenções abertas dentro do escopo do usuário.
+- `Ainda não`, `Cancelar` ou `Cancelar e não registrar agora` não registram contato e não fecham atenção.
 - Anotação é apoio, não ação principal antes do cuidado.
 - A UI deve dizer quantas atenções foram resolvidas, sem transformar isso em acompanhamento ou tarefa.
 
