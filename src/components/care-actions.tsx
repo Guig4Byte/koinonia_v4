@@ -19,6 +19,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
   const [note, setNote] = useState("");
   const [savedMessage, setSavedMessage] = useState("");
   const [resolvedMessage, setResolvedMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [lastContactKind, setLastContactKind] = useState<ContactKind | null>(null);
   const digits = digitsOnly(phone);
   const hasPhone = digits.length >= 10;
@@ -34,11 +35,14 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
   function resetFlow() {
     setStage("idle");
     setNote("");
+    setErrorMessage("");
     setLastContactKind(null);
   }
 
   function registerContact(noteValue?: string) {
     if (!personId) return;
+
+    setErrorMessage("");
 
     startTransition(async () => {
       const response = await fetch(`/api/care/${personId}`, {
@@ -54,12 +58,13 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
       const responseBody = await response.json().catch(() => null) as { error?: string; message?: string } | null;
 
       if (!response.ok) {
-        alert(responseBody?.error ?? "Não foi possível registrar o contato agora.");
+        setErrorMessage(responseBody?.error ?? "Não foi possível registrar o cuidado agora.");
         return;
       }
 
       setSavedMessage(noteValue?.trim() ? "Cuidado realizado com anotação." : "Cuidado realizado.");
       setResolvedMessage(responseBody?.message ?? "Os motivos de atenção foram atualizados sem formalizar acompanhamento.");
+      setErrorMessage("");
       setStage("done");
       setNote("");
       setLastContactKind(null);
@@ -75,8 +80,8 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
 
   if (stage === "done") {
     return (
-      <div className="mt-3 rounded-2xl border border-[var(--color-badge-estavel-border)] bg-[var(--color-badge-estavel-bg)] p-3 text-sm text-[var(--color-text-primary)]">
-        <div className="flex items-center gap-2 font-semibold text-[var(--color-badge-estavel-text)]">
+      <div aria-live="polite" className="mt-3 rounded-2xl border border-[var(--color-badge-cuidado-border)] bg-[var(--color-badge-cuidado-bg)] p-3 text-sm text-[var(--color-text-primary)]">
+        <div className="flex items-center gap-2 font-semibold text-[var(--color-badge-cuidado-text)]">
           <CheckCircle2 className="h-4 w-4" strokeWidth={2.2} />
           {savedMessage}
         </div>
@@ -87,6 +92,12 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
 
   return (
     <div className="mt-3 space-y-2.5">
+      {errorMessage ? (
+        <div aria-live="assertive" className="rounded-2xl border border-[var(--color-badge-risco-border)] bg-[var(--color-badge-risco-bg)] p-3 text-sm font-semibold text-[var(--color-badge-risco-text)]">
+          {errorMessage}
+        </div>
+      ) : null}
+
       {stage === "idle" ? (
         <>
           <div className="grid grid-cols-2 gap-2">
@@ -105,6 +116,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
                   return;
                 }
 
+                setErrorMessage("");
                 setLastContactKind("CALL");
                 setStage("confirm");
               }}
@@ -130,6 +142,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
                   return;
                 }
 
+                setErrorMessage("");
                 setLastContactKind("WHATSAPP");
                 setStage("confirm");
               }}
@@ -144,6 +157,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
               type="button"
               disabled={isPending}
               onClick={() => {
+                setErrorMessage("");
                 setLastContactKind(null);
                 setStage("confirm-existing");
               }}
