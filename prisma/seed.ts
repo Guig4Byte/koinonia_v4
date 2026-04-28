@@ -28,10 +28,12 @@ async function main() {
   const pastorPerson = await prisma.person.create({ data: { churchId: church.id, fullName: "Roberto Almeida", phone: "+5581999990001" } });
   const supervisorPerson = await prisma.person.create({ data: { churchId: church.id, fullName: "Ana Martins", phone: "+5581999990002" } });
   const leaderPerson = await prisma.person.create({ data: { churchId: church.id, fullName: "Bruno Lima", phone: "+5581999990003" } });
+  const secondLeaderPerson = await prisma.person.create({ data: { churchId: church.id, fullName: "Carla Nascimento", phone: "+5581999990004" } });
 
   const pastor = await prisma.user.create({ data: { churchId: church.id, personId: pastorPerson.id, name: "Roberto Almeida", email: "pastor@koinonia.local", passwordHash, role: "PASTOR" } });
   const supervisor = await prisma.user.create({ data: { churchId: church.id, personId: supervisorPerson.id, name: "Ana Martins", email: "ana@koinonia.local", passwordHash, role: "SUPERVISOR" } });
   const leader = await prisma.user.create({ data: { churchId: church.id, personId: leaderPerson.id, name: "Bruno Lima", email: "bruno@koinonia.local", passwordHash, role: "LEADER" } });
+  const secondLeader = await prisma.user.create({ data: { churchId: church.id, personId: secondLeaderPerson.id, name: "Carla Nascimento", email: "carla@koinonia.local", passwordHash, role: "LEADER" } });
 
   const group = await prisma.smallGroup.create({
     data: {
@@ -51,7 +53,7 @@ async function main() {
       churchId: church.id,
       name: "Célula Ágape",
       kind: "CELL",
-      leaderUserId: leader.id,
+      leaderUserId: secondLeader.id,
       supervisorUserId: supervisor.id,
       meetingDayOfWeek: 4,
       meetingTime: "19:30",
@@ -65,24 +67,35 @@ async function main() {
     prisma.person.create({ data: { churchId: church.id, fullName: "Pedro Souza", phone: "+5581999991003", status: "ACTIVE" } }),
     prisma.person.create({ data: { churchId: church.id, fullName: "João Ferreira", phone: "+5581999991004", status: "NEEDS_ATTENTION", shortNote: "Está procurando emprego." } }),
     prisma.person.create({ data: { churchId: church.id, fullName: "Lucia Santos", phone: "+5581999991005", status: "ACTIVE" } }),
+    prisma.person.create({ data: { churchId: church.id, fullName: "Rafael Costa", phone: "+5581999991006", status: "ACTIVE" } }),
   ]);
 
-  for (const person of people.slice(0, 4)) {
-    await prisma.groupMembership.create({ data: { groupId: group.id, personId: person.id, role: person.status === "VISITOR" ? "VISITOR" : "MEMBER" } });
-  }
-  await prisma.groupMembership.create({ data: { groupId: agape.id, personId: people[4].id, role: "MEMBER" } });
+  const [claudio, maria, pedro, joao, lucia, rafael] = people;
+
+  await prisma.groupMembership.createMany({
+    data: [
+      { groupId: group.id, personId: claudio.id, role: "MEMBER" },
+      { groupId: group.id, personId: maria.id, role: "VISITOR" },
+      { groupId: group.id, personId: pedro.id, role: "MEMBER" },
+      { groupId: group.id, personId: joao.id, role: "MEMBER" },
+      { groupId: agape.id, personId: lucia.id, role: "MEMBER" },
+      { groupId: agape.id, personId: rafael.id, role: "MEMBER" },
+    ],
+  });
 
   const e1 = await prisma.event.create({ data: { churchId: church.id, groupId: group.id, createdById: leader.id, title: "Célula Esperança", startsAt: daysFromNow(-21), status: "COMPLETED" } });
   const e2 = await prisma.event.create({ data: { churchId: church.id, groupId: group.id, createdById: leader.id, title: "Célula Esperança", startsAt: daysFromNow(-14), status: "COMPLETED" } });
   const e3 = await prisma.event.create({ data: { churchId: church.id, groupId: group.id, createdById: leader.id, title: "Célula Esperança", startsAt: daysFromNow(-7), status: "COMPLETED" } });
-  const e4 = await prisma.event.create({ data: { churchId: church.id, groupId: group.id, createdById: leader.id, title: "Célula Esperança", startsAt: daysFromNow(0), status: "CHECKIN_OPEN" } });
-  await prisma.event.create({ data: { churchId: church.id, groupId: agape.id, createdById: leader.id, title: "Célula Ágape", startsAt: daysFromNow(-2), status: "COMPLETED" } });
+  await prisma.event.create({ data: { churchId: church.id, groupId: group.id, createdById: leader.id, title: "Célula Esperança", startsAt: daysFromNow(0), status: "CHECKIN_OPEN" } });
+  await prisma.event.create({ data: { churchId: church.id, groupId: group.id, createdById: leader.id, title: "Célula Esperança", startsAt: daysFromNow(7), status: "SCHEDULED" } });
 
-  const [claudio, maria, pedro, joao] = people;
+  const agapeEvent = await prisma.event.create({ data: { churchId: church.id, groupId: agape.id, createdById: secondLeader.id, title: "Célula Ágape", startsAt: daysFromNow(-2, 19), status: "COMPLETED" } });
+  await prisma.event.create({ data: { churchId: church.id, groupId: agape.id, createdById: secondLeader.id, title: "Célula Ágape", startsAt: daysFromNow(2, 19), status: "CHECKIN_OPEN" } });
+
   for (const event of [e1, e2, e3]) {
     await prisma.attendance.createMany({
       data: [
-        { eventId: event.id, personId: claudio.id, status: event.id === e1.id ? "PRESENT" : "ABSENT" },
+        { eventId: event.id, personId: claudio.id, status: "ABSENT" },
         { eventId: event.id, personId: maria.id, status: "VISITOR" },
         { eventId: event.id, personId: pedro.id, status: "PRESENT" },
         { eventId: event.id, personId: joao.id, status: event.id === e3.id ? "ABSENT" : "PRESENT" },
@@ -92,10 +105,8 @@ async function main() {
 
   await prisma.attendance.createMany({
     data: [
-      { eventId: e4.id, personId: claudio.id, status: "ABSENT" },
-      { eventId: e4.id, personId: maria.id, status: "VISITOR" },
-      { eventId: e4.id, personId: pedro.id, status: "PRESENT" },
-      { eventId: e4.id, personId: joao.id, status: "PRESENT" },
+      { eventId: agapeEvent.id, personId: lucia.id, status: "PRESENT" },
+      { eventId: agapeEvent.id, personId: rafael.id, status: "JUSTIFIED" },
     ],
   });
 
@@ -125,8 +136,21 @@ async function main() {
     },
   });
 
+  await prisma.careSignal.create({
+    data: {
+      churchId: church.id,
+      personId: rafael.id,
+      groupId: agape.id,
+      assignedToId: secondLeader.id,
+      source: "MANUAL",
+      severity: "ATTENTION",
+      reason: "Justificou ausência e pediu oração pela rotina de trabalho.",
+      evidence: "Supervisor deve conseguir ver este sinal; Bruno não deve ver.",
+    },
+  });
+
   console.log("Seed concluído.");
-  console.log("Usuários demo: pastor@koinonia.local / ana@koinonia.local / bruno@koinonia.local");
+  console.log("Usuários demo: pastor@koinonia.local / ana@koinonia.local / bruno@koinonia.local / carla@koinonia.local");
   console.log("Senha: koinonia123");
 }
 

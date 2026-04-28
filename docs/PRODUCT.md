@@ -158,6 +158,7 @@ Fluxo desejado:
 ```txt
 Evento da célula
 -> abrir check-in
+-> na visão do líder, escolher primeiro o evento de hoje pendente, depois o próximo pendente, depois o último realizado
 -> marcar explicitamente cada membro como presente, ausente ou justificou
 -> adicionar visitante
 -> finalizar presença somente quando ninguém estiver como pendente
@@ -165,7 +166,7 @@ Evento da célula
 -> gerar atenções
 ```
 
-Pastor e supervisor veem resumo somente leitura. Evento já concluído pode ser ajustado pelo líder da célula, mas aparece como correção de presença, não como novo check-in. Visitantes já registrados aparecem no resumo e também no ajuste do líder, sem virar membros automaticamente.
+Pastor e supervisor veem resumo somente leitura. Evento já concluído pode ser ajustado pelo líder da célula, mas aparece como correção de presença, não como novo check-in. Visitantes já registrados aparecem no resumo e também no ajuste do líder, sem virar membros automaticamente. O mesmo visitante não deve ser adicionado duas vezes no mesmo evento; a validação deve comparar nome normalizado, ignorando acento, caixa e espaços extras.
 
 ## Fluxo de contato
 

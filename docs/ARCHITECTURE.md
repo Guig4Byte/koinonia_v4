@@ -111,7 +111,9 @@ A rota de escrita do check-in também valida:
 - ninguém de fora da célula entra como presença de membro;
 - presença de membro aceita apenas `PRESENT`, `ABSENT` ou `JUSTIFIED`;
 - `VISITOR` entra somente pelo bloco de visitantes;
-- evento concluído continua editável apenas para correção pelo líder da célula.
+- evento concluído continua editável apenas para correção pelo líder da célula;
+- visitantes novos não podem duplicar visitantes já registrados no mesmo evento;
+- duplicidade de visitante é comparada por nome normalizado, ignorando acento, caixa e espaços extras.
 
 ### Leitura
 
@@ -200,3 +202,17 @@ Ou seja: contraste, legibilidade e hierarquia visual têm prioridade sobre segui
 - Geolocalização
 
 Esses conceitos podem aparecer depois, mas só se o uso real pedir.
+
+## Seed demo
+
+A seed não deve ser apenas decorativa. Ela precisa permitir validação de escopo e de fluxo.
+
+Cenário atual esperado:
+
+- Roberto (`PASTOR`) vê a igreja inteira.
+- Ana (`SUPERVISOR`) supervisiona `Célula Esperança` e `Célula Ágape`.
+- Bruno (`LEADER`) lidera apenas `Célula Esperança`.
+- Carla (`LEADER`) lidera apenas `Célula Ágape`.
+- A aba demo de líder seleciona o primeiro líder criado, Bruno, justamente para testar que ele não vê a célula da Carla.
+- `Célula Esperança` mantém três encontros concluídos, um evento de hoje aberto para check-in e um próximo evento agendado.
+- `Célula Ágape` mantém eventos próprios para validar leitura de supervisor/pastor sem liberar check-in para Bruno.

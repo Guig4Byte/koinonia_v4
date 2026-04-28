@@ -3,6 +3,7 @@
 import { Plus, UserRoundCheck } from "lucide-react";
 import { useMemo, useState, useTransition } from "react";
 import { Button, GhostButton } from "@/components/ui/button";
+import { findDuplicateVisitorName } from "@/features/check-in/visitor-validation";
 import { cn } from "@/lib/cn";
 
 type MemberAttendanceStatus = "PRESENT" | "ABSENT" | "JUSTIFIED";
@@ -114,6 +115,13 @@ export function CheckInList({
   function addVisitor() {
     const name = visitorName.trim();
     if (!name) return;
+
+    const duplicate = findDuplicateVisitorName(savedVisitors, [...visitors, { fullName: name }]);
+    if (duplicate) {
+      setErrorMessage(duplicate + " já está registrado como visitante neste encontro.");
+      return;
+    }
+
     setSaved(false);
     setErrorMessage(null);
     setVisitors((current) => [...current, { id: makeVisitorId(), fullName: name }]);

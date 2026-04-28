@@ -2,8 +2,11 @@ import { AppShell } from "@/components/app-shell";
 import { MetricRow, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
 import { CheckInList } from "@/components/check-in-list";
 import { SearchBox } from "@/components/search-box";
+import { Badge } from "@/components/ui/badge";
 import { getLeaderDashboard } from "@/features/dashboard/queries";
+import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
 function initials(name: string) {
@@ -13,22 +16,36 @@ function initials(name: string) {
 export default async function LeaderPage() {
   const user = await getCurrentUser();
   const dashboard = await getLeaderDashboard(user);
-  const group = dashboard.groups[0];
+  const groupIds = dashboard.groups.map((group) => group.id);
 
-  const currentEvent = group
-    ? await prisma.event.findFirst({
-        where: { groupId: group.id, type: "CELL_MEETING" },
-        orderBy: { startsAt: "desc" },
-        include: { attendances: { include: { person: true } } },
+  const visibleEvents = groupIds.length > 0
+    ? await prisma.event.findMany({
+        where: { groupId: { in: groupIds }, type: "CELL_MEETING" },
+        orderBy: { startsAt: "asc" },
+        take: 20,
+        include: {
+          group: {
+            include: {
+              memberships: {
+                where: { leftAt: null, role: { not: "VISITOR" } },
+                include: { person: true },
+              },
+            },
+          },
+          attendances: { include: { person: true } },
+        },
       })
-    : null;
+    : [];
 
-  const members = group?.memberships.map((membership) => ({
+  const currentEvent = selectRelevantCheckInEvent(visibleEvents);
+  const currentGroup = currentEvent?.group ?? dashboard.groups[0] ?? null;
+
+  const members = currentGroup?.memberships.map((membership) => ({
     personId: membership.personId,
     fullName: membership.person.fullName,
     currentStatus: currentEvent?.attendances.find((attendance) => attendance.personId === membership.personId)?.status,
   })) ?? [];
-  const currentEventCompleted = currentEvent ? currentEvent.status === "COMPLETED" || currentEvent.attendances.length > 0 : false;
+  const currentEventCompleted = currentEvent ? hasRecordedPresence(currentEvent) : false;
   const currentVisitors = currentEvent?.attendances
     .filter((attendance) => attendance.status === "VISITOR")
     .map((attendance) => ({ id: attendance.id, fullName: attendance.person.fullName })) ?? [];
@@ -46,7 +63,7 @@ export default async function LeaderPage() {
     >
       <SearchBox placeholder="Buscar membro..." />
       <PulseCard
-        title={dashboard.signals[0] ? `${dashboard.signals[0].person.fullName} precisa de você.` : `${group?.name ?? "Sua célula"} está tranquila agora.`}
+        title={dashboard.signals[0] ? `${dashboard.signals[0].person.fullName} precisa de você.` : `${currentGroup?.name ?? "Sua célula"} está tranquila agora.`}
         subtitle={dashboard.signals[0] ? dashboard.signals[0].reason : "Registre a presença quando a célula acontecer."}
       />
 
@@ -58,15 +75,33 @@ export default async function LeaderPage() {
         ]}
       />
 
-      <SectionTitle>Presença da célula</SectionTitle>
+      <SectionTitle>Presença do encontro</SectionTitle>
       {currentEvent ? (
-        <CheckInList
-          eventId={currentEvent.id}
-          members={members}
-          initialVisitors={currentVisitors}
-          submitLabel={currentEventCompleted ? "Atualizar" : "Finalizar"}
-          mode={currentEventCompleted ? "adjust" : "register"}
-        />
+        <>
+          <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="font-semibold text-[var(--color-text-primary)]">{currentEvent.group?.name ?? "Célula"}</p>
+                <p className="mt-0.5 text-sm text-[var(--color-text-secondary)]">
+                  {formatShortDate(currentEvent.startsAt)}, {formatTime(currentEvent.startsAt)}
+                </p>
+              </div>
+              <Badge tone={currentEventCompleted ? "ok" : "warn"}>{currentEventCompleted ? "registrada" : "pendente"}</Badge>
+            </div>
+            <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">
+              {currentEventCompleted
+                ? "A presença deste encontro já foi registrada. Ajuste somente se alguma marcação estiver errada."
+                : "Este é o encontro mais importante agora. Marque a presença para manter o cuidado em dia."}
+            </p>
+          </section>
+          <CheckInList
+            eventId={currentEvent.id}
+            members={members}
+            initialVisitors={currentVisitors}
+            submitLabel={currentEventCompleted ? "Atualizar" : "Finalizar"}
+            mode={currentEventCompleted ? "adjust" : "register"}
+          />
+        </>
       ) : (
         <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhum evento de célula encontrado. Rode o seed ou crie um evento.</p>
       )}

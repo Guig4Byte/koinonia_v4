@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { validateMemberCheckInPayload } from "@/features/check-in/check-in-validation";
+import { validateNewVisitors } from "@/features/check-in/visitor-validation";
 import { AttendanceStatus } from "../../../../../generated/prisma/client";
 import { canCheckInEvent } from "@/features/permissions/permissions";
 import { recalculateAttendanceSignalsForGroup } from "@/features/signals/rules";
@@ -58,6 +59,22 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ev
   }
 
   const groupId = event.groupId;
+
+  const existingVisitors = body.visitors.length > 0
+    ? await prisma.attendance.findMany({
+        where: { eventId, status: AttendanceStatus.VISITOR },
+        include: { person: true },
+      })
+    : [];
+
+  const visitorValidation = validateNewVisitors(
+    existingVisitors.map((attendance) => ({ fullName: attendance.person.fullName })),
+    body.visitors,
+  );
+
+  if (!visitorValidation.ok) {
+    return NextResponse.json({ error: visitorValidation.error }, { status: 400 });
+  }
 
   const memberships = await prisma.groupMembership.findMany({
     where: { groupId, leftAt: null, role: { not: "VISITOR" } },

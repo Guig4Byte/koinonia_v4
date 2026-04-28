@@ -138,7 +138,10 @@ A interface também deve refletir isso:
 - evento sem check-in: pastor/supervisor veem que o líder ainda precisa registrar a presença, mas não podem registrar por ele;
 - pessoa sem marcação aparece como `Pendente`, nunca como ausência presumida;
 - a finalização só deve acontecer depois de marcar todos os membros ativos da célula;
-- evento já concluído pode ser aberto pelo líder como `Ajustar presença`, não como novo check-in; visitantes já registrados aparecem com nome no ajuste, sem virar membros automaticamente.
+- evento já concluído pode ser aberto pelo líder como `Ajustar presença`, não como novo check-in;
+- a visão do líder deve destacar o encontro mais relevante: evento de hoje pendente, depois próximo evento pendente, depois último realizado;
+- visitantes já registrados aparecem com nome no ajuste, sem virar membros automaticamente;
+- o mesmo visitante não deve ser adicionado duas vezes no mesmo evento, mesmo com diferença de acento, caixa ou espaços.
 
 ## Fluxo de cuidado no card
 
@@ -250,6 +253,17 @@ getVisibleOpenSignalWhere(user)
 ```
 
 Não confiar apenas na UI. Toda rota de escrita deve validar permissão no backend.
+
+## Seed demo
+
+A seed deve validar os cenários de escopo, não apenas preencher telas:
+
+- Bruno é o líder demo principal e lidera apenas a `Célula Esperança`;
+- Carla é uma segunda líder e lidera a `Célula Ágape`;
+- Ana supervisiona as duas células;
+- Roberto, como pastor, vê a igreja inteira;
+- a `Célula Esperança` tem eventos realizados, visitante já registrado, evento de hoje pendente e próximo evento agendado;
+- a `Célula Ágape` existe para testar que Bruno não vê outra célula, enquanto Ana e Roberto veem.
 
 ## Próxima direção provável
 
