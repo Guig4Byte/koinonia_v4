@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Plus, UserRoundCheck } from "lucide-react";
 import { useMemo, useState, useTransition } from "react";
 import { Button, GhostButton } from "@/components/ui/button";
@@ -66,6 +67,7 @@ export function CheckInList({
 }) {
   const [isPending, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
+  const [savedAttentionCount, setSavedAttentionCount] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [visitorName, setVisitorName] = useState("");
   const [savedVisitors, setSavedVisitors] = useState<VisitorRecord[]>(initialVisitors);
@@ -108,6 +110,7 @@ export function CheckInList({
 
   function setStatus(personId: string, status: MemberAttendanceStatus) {
     setSaved(false);
+    setSavedAttentionCount(null);
     setErrorMessage(null);
     setItems((current) => current.map((item) => (item.personId === personId ? { ...item, status } : item)));
   }
@@ -123,6 +126,7 @@ export function CheckInList({
     }
 
     setSaved(false);
+    setSavedAttentionCount(null);
     setErrorMessage(null);
     setVisitors((current) => [...current, { id: makeVisitorId(), fullName: name }]);
     setVisitorName("");
@@ -130,6 +134,7 @@ export function CheckInList({
 
   function removeVisitor(id: string) {
     setSaved(false);
+    setSavedAttentionCount(null);
     setErrorMessage(null);
     setVisitors((current) => current.filter((visitor) => visitor.id !== id));
   }
@@ -152,12 +157,14 @@ export function CheckInList({
         }),
       });
 
+      const payload = await response.json().catch(() => null);
+
       if (!response.ok) {
-        const payload = await response.json().catch(() => null);
         setErrorMessage(payload?.error ?? "Não foi possível salvar a presença.");
         return;
       }
 
+      setSavedAttentionCount(typeof payload?.openSignalCount === "number" ? payload.openSignalCount : null);
       setSaved(true);
       setSavedVisitors((current) => [...current, ...visitors]);
       setVisitors([]);
@@ -204,10 +211,19 @@ export function CheckInList({
               Presença salva.
             </div>
             <p className="mt-1 text-[var(--color-text-secondary)]">
-              {summary.attentionCount > 0
-                ? `${summary.attentionCount} ${summary.attentionCount === 1 ? "pessoa ficou" : "pessoas ficaram"} para olhar depois deste encontro.`
-                : "Nenhuma ausência ficou pendente neste encontro."}
+              {savedAttentionCount !== null
+                ? savedAttentionCount > 0
+                  ? `${savedAttentionCount} ${savedAttentionCount === 1 ? "pessoa está" : "pessoas estão"} em atenção na célula.`
+                  : "Nenhuma atenção ficou aberta na célula."
+                : summary.attentionCount > 0
+                  ? `${summary.attentionCount} ${summary.attentionCount === 1 ? "pessoa ficou" : "pessoas ficaram"} para olhar depois deste encontro.`
+                  : "Nenhuma ausência ficou pendente neste encontro."}
             </p>
+            {savedAttentionCount && savedAttentionCount > 0 ? (
+              <Link href="/pessoas" className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)]">
+                Ver pessoas em atenção
+              </Link>
+            ) : null}
           </div>
         ) : null}
       </div>

@@ -1,5 +1,16 @@
 import { AttendanceStatus, SignalSeverity } from "../../generated/prisma/client";
 
+export type AttendanceEventSnapshot = {
+  attendances: Array<{ personId: string; status: AttendanceStatus }>;
+};
+
+export function getRecordedStatusesNewestFirst(eventsNewestFirst: AttendanceEventSnapshot[], personId: string) {
+  return eventsNewestFirst.flatMap((event) => {
+    const attendance = event.attendances.find((item) => item.personId === personId);
+    return attendance ? [attendance.status] : [];
+  });
+}
+
 export function countConsecutiveAbsences(statusesNewestFirst: AttendanceStatus[]) {
   let count = 0;
   for (const status of statusesNewestFirst) {

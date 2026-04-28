@@ -1,11 +1,11 @@
-import { AttendanceStatus, MembershipRole, SignalSource, SignalStatus } from "../../generated/prisma/client";
+import { EventStatus, MembershipRole, SignalSource, SignalStatus } from "../../generated/prisma/client";
 import { prisma } from "@/lib/prisma";
-import { countConsecutiveAbsences, describeAttendanceSignal } from "./rules-core";
+import { countConsecutiveAbsences, describeAttendanceSignal, getRecordedStatusesNewestFirst } from "./rules-core";
 
 export type AttendanceSnapshot = {
   personId: string;
   fullName: string;
-  statusesNewestFirst: AttendanceStatus[];
+  statusesNewestFirst: ReturnType<typeof getRecordedStatusesNewestFirst>;
 };
 
 export async function recalculateAttendanceSignalsForGroup(groupId: string) {
@@ -17,7 +17,11 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string) {
         include: { person: true },
       },
       events: {
-        where: { type: "CELL_MEETING" },
+        where: {
+          type: "CELL_MEETING",
+          startsAt: { lte: new Date() },
+          OR: [{ status: EventStatus.COMPLETED }, { attendances: { some: {} } }],
+        },
         orderBy: { startsAt: "desc" },
         take: 4,
         include: { attendances: true },
@@ -28,11 +32,7 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string) {
   if (!group) return;
 
   for (const membership of group.memberships) {
-    const statuses = group.events.map((event) => {
-      const attendance = event.attendances.find((item) => item.personId === membership.personId);
-      return attendance?.status ?? AttendanceStatus.ABSENT;
-    });
-
+    const statuses = getRecordedStatusesNewestFirst(group.events, membership.personId);
     const absences = countConsecutiveAbsences(statuses);
     const signal = describeAttendanceSignal(absences);
 

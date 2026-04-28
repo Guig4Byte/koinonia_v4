@@ -127,6 +127,13 @@ O pastor interpreta a visão macro:
 - vê pessoas que podem estar se afastando;
 - não registra check-in.
 
+
+## Sinais de ausência confiáveis
+
+Atenção por ausência só pode nascer de encontros reais, passados e com presença registrada. Evento futuro, evento pendente ou membro sem marcação explícita não deve ser tratado como falta presumida.
+
+Depois de salvar check-in, a resposta da API informa quantas atenções abertas existem naquela célula, para que a interface possa fechar o ciclo: presença salva -> pessoas em atenção -> cuidado.
+
 ## Check-in
 
 Check-in é operação do líder.

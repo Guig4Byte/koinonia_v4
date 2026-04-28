@@ -226,3 +226,9 @@ Cenário atual esperado:
 - A aba demo de líder seleciona o primeiro líder criado, Bruno, justamente para testar que ele não vê a célula da Carla.
 - `Célula Esperança` mantém três encontros concluídos, um evento de hoje aberto para check-in e um próximo evento agendado.
 - `Célula Ágape` mantém eventos próprios para validar leitura de supervisor/pastor sem liberar check-in para Bruno.
+
+## Sinais de ausência confiáveis
+
+Atenção por ausência só pode nascer de encontros reais, passados e com presença registrada. Evento futuro, evento pendente ou membro sem marcação explícita não deve ser tratado como falta presumida.
+
+Depois de salvar check-in, a resposta da API informa quantas atenções abertas existem naquela célula, para que a interface possa fechar o ciclo: presença salva -> pessoas em atenção -> cuidado.

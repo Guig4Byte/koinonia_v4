@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { validateMemberCheckInPayload } from "@/features/check-in/check-in-validation";
 import { validateNewVisitors } from "@/features/check-in/visitor-validation";
-import { AttendanceStatus } from "../../../../../generated/prisma/client";
+import { AttendanceStatus, SignalStatus } from "../../../../../generated/prisma/client";
 import { canCheckInEvent } from "@/features/permissions/permissions";
 import { recalculateAttendanceSignalsForGroup } from "@/features/signals/rules";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -132,5 +132,9 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ev
 
   await recalculateAttendanceSignalsForGroup(groupId);
 
-  return NextResponse.json({ ok: true });
+  const openSignalCount = await prisma.careSignal.count({
+    where: { churchId: user.churchId, groupId, status: SignalStatus.OPEN },
+  });
+
+  return NextResponse.json({ ok: true, openSignalCount });
 }

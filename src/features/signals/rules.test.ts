@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { AttendanceStatus, SignalSeverity } from "../../generated/prisma/client";
-import { countConsecutiveAbsences, describeAttendanceSignal } from "./rules-core";
+import { countConsecutiveAbsences, describeAttendanceSignal, getRecordedStatusesNewestFirst } from "./rules-core";
 
 describe("attendance signal rules", () => {
   it("counts absences only until the first present/justified record", () => {
@@ -15,5 +15,20 @@ describe("attendance signal rules", () => {
 
   it("creates an urgent signal after three absences", () => {
     expect(describeAttendanceSignal(3)?.severity).toBe(SignalSeverity.URGENT);
+  });
+
+  it("uses only attendance records that actually exist for the person", () => {
+    const statuses = getRecordedStatusesNewestFirst(
+      [
+        { attendances: [] },
+        { attendances: [{ personId: "person-1", status: AttendanceStatus.ABSENT }] },
+        { attendances: [{ personId: "person-1", status: AttendanceStatus.ABSENT }] },
+        { attendances: [{ personId: "person-2", status: AttendanceStatus.ABSENT }] },
+      ],
+      "person-1",
+    );
+
+    expect(statuses).toEqual([AttendanceStatus.ABSENT, AttendanceStatus.ABSENT]);
+    expect(countConsecutiveAbsences(statuses)).toBe(2);
   });
 });
