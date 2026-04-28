@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { AttendanceStatus, SignalSeverity } from "../../generated/prisma/client";
-import { countConsecutiveAbsences, describeAttendanceSignal, getRecordedStatusesNewestFirst } from "./rules-core";
+import {
+  countConsecutiveAbsences,
+  describeAttendanceSignal,
+  getRecordedStatusesNewestFirst,
+  shouldKeepAttendanceSignalResolved,
+} from "./rules-core";
 
 describe("attendance signal rules", () => {
   it("counts absences only until the first present/justified record", () => {
@@ -30,5 +35,31 @@ describe("attendance signal rules", () => {
 
     expect(statuses).toEqual([AttendanceStatus.ABSENT, AttendanceStatus.ABSENT]);
     expect(countConsecutiveAbsences(statuses)).toBe(2);
+  });
+
+  it("does not reopen the same attendance signal after care for the same evidence", () => {
+    const signal = describeAttendanceSignal(3);
+
+    expect(signal).not.toBeNull();
+    expect(
+      shouldKeepAttendanceSignalResolved(signal!, new Date("2026-04-20T20:00:00.000Z"), {
+        reason: signal!.reason,
+        evidence: signal!.evidence,
+        resolvedAt: new Date("2026-04-21T10:00:00.000Z"),
+      }),
+    ).toBe(true);
+  });
+
+  it("allows reopening an attendance signal when the evidence is newer than the care", () => {
+    const signal = describeAttendanceSignal(3);
+
+    expect(signal).not.toBeNull();
+    expect(
+      shouldKeepAttendanceSignalResolved(signal!, new Date("2026-04-22T20:00:00.000Z"), {
+        reason: signal!.reason,
+        evidence: signal!.evidence,
+        resolvedAt: new Date("2026-04-21T10:00:00.000Z"),
+      }),
+    ).toBe(false);
   });
 });

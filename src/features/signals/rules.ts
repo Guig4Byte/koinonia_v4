@@ -1,6 +1,11 @@
 import { EventStatus, MembershipRole, SignalSource, SignalStatus } from "../../generated/prisma/client";
 import { prisma } from "@/lib/prisma";
-import { countConsecutiveAbsences, describeAttendanceSignal, getRecordedStatusesNewestFirst } from "./rules-core";
+import {
+  countConsecutiveAbsences,
+  describeAttendanceSignal,
+  getRecordedStatusesNewestFirst,
+  shouldKeepAttendanceSignalResolved,
+} from "./rules-core";
 
 export type AttendanceSnapshot = {
   personId: string;
@@ -35,6 +40,7 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string) {
     const statuses = getRecordedStatusesNewestFirst(group.events, membership.personId);
     const absences = countConsecutiveAbsences(statuses);
     const signal = describeAttendanceSignal(absences);
+    const latestEvidenceAt = group.events.find((event) => event.attendances.some((item) => item.personId === membership.personId))?.startsAt ?? null;
 
     const existing = await prisma.careSignal.findFirst({
       where: {
@@ -63,10 +69,26 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string) {
           severity: signal.severity,
           reason: signal.reason,
           evidence: signal.evidence,
-          lastEvidenceAt: new Date(),
+          lastEvidenceAt: latestEvidenceAt ?? new Date(),
         },
       });
     } else {
+      const lastResolvedAttendanceSignal = await prisma.careSignal.findFirst({
+        where: {
+          churchId: group.churchId,
+          groupId: group.id,
+          personId: membership.personId,
+          source: SignalSource.ATTENDANCE,
+          status: SignalStatus.RESOLVED,
+        },
+        orderBy: { resolvedAt: "desc" },
+        select: { reason: true, evidence: true, resolvedAt: true },
+      });
+
+      if (shouldKeepAttendanceSignalResolved(signal, latestEvidenceAt, lastResolvedAttendanceSignal)) {
+        continue;
+      }
+
       await prisma.careSignal.create({
         data: {
           churchId: group.churchId,
@@ -77,6 +99,7 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string) {
           severity: signal.severity,
           reason: signal.reason,
           evidence: signal.evidence,
+          lastEvidenceAt: latestEvidenceAt ?? new Date(),
         },
       });
     }

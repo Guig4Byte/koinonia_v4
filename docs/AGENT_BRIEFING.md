@@ -109,6 +109,7 @@ Funcionalidades fora desse recorte exigem pedido explícito do usuário.
 - Cards de atenção devem manter uma ação primária simples: `Abrir cuidado`; ações diretas ficam no detalhe da pessoa.
 - `Já houve contato?` deve ser uma pergunta com confirmação; não pode resolver atenção por clique acidental.
 - Quando um cuidado/contato resolve todos os motivos de atenção da pessoa, a pessoa deve voltar ao status `Ativo`; o histórico recente deve mostrar `Cuidado realizado`.
+- Recalcular presença não deve reabrir o mesmo motivo já cuidado se não houver nova evidência posterior ao cuidado.
 - Badges/status visíveis na UI devem usar primeira letra maiúscula, evitando rótulos como `cuidado`, `atenção` ou `pendente` em minúsculo.
 - A busca atual é busca de pessoa; não prometa busca de evento/célula enquanto a API não suportar esses tipos.
 - A rota `/pessoas/[personId]` é uma leitura curta para ação, não histórico infinito.

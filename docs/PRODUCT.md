@@ -294,6 +294,7 @@ Regras de produto:
 - `Salvar sem anotação` registra contato/cuidado e resolve os motivos de atenção ativos dentro do escopo do usuário.
 - `Anotar` salva observação junto com o contato/cuidado e resolve os motivos de atenção ativos dentro do escopo do usuário.
 - Se todos os motivos de atenção da pessoa forem resolvidos, a pessoa volta ao status pastoral simples `Ativo`; o cuidado aparece no histórico recente como `Cuidado realizado`.
+- Um check-in posterior não deve reabrir automaticamente o mesmo motivo de atenção se a evidência de presença não mudou depois do cuidado. Só uma nova evidência posterior ao cuidado deve abrir nova atenção.
 - `Ainda não`, `Cancelar` ou `Cancelar e não registrar agora` não registram contato e não fecham atenção.
 - Anotação é apoio, não ação principal antes do cuidado.
 - A UI deve dizer quantos motivos de atenção foram resolvidos, sem transformar isso em acompanhamento ou tarefa.
@@ -334,7 +335,8 @@ A UI deve usar linguagem pastoral, curta e concreta.
 
 Preferir:
 
-- `Atenção`;
+- `Em atenção`;
+- `Urgente`;
 - `Cuidado realizado`;
 - `visão`;
 - `pessoas`;

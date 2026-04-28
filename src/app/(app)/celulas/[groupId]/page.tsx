@@ -90,6 +90,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
 
   const homeHref = user.role === UserRole.LEADER ? "/lider" : user.role === UserRole.SUPERVISOR ? "/supervisor" : "/pastor";
   const attentionPeople = getPrimarySignalsByPerson(group.signals);
+  const attentionPersonIds = new Set(attentionPeople.map((signal) => signal.personId));
   const completedEvents = group.events.filter((event) => eventMetrics(event).completed);
   const accountableAttendances = completedEvents.flatMap((event) => event.attendances.filter((attendance) => attendance.status !== AttendanceStatus.VISITOR));
   const presentAttendances = accountableAttendances.filter((attendance) => attendance.status === AttendanceStatus.PRESENT);
@@ -214,12 +215,18 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
 
       <SectionTitle>Membros</SectionTitle>
       <div className="space-y-2">
-        {group.memberships.map((membership) => (
-          <Link key={membership.id} href={`/pessoas/${membership.personId}`} className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]">
-            <span className="min-w-0 text-sm font-semibold text-[var(--color-text-primary)]">{membership.person.fullName}</span>
-            <Badge tone={statusTone(membership.person.status)}>{personStatusLabels[membership.person.status]}</Badge>
-          </Link>
-        ))}
+        {group.memberships.map((membership) => {
+          const isInAttention = attentionPersonIds.has(membership.personId);
+
+          return (
+            <Link key={membership.id} href={`/pessoas/${membership.personId}`} className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]">
+              <span className="min-w-0 text-sm font-semibold text-[var(--color-text-primary)]">{membership.person.fullName}</span>
+              <Badge tone={isInAttention ? "warn" : statusTone(membership.person.status)}>
+                {isInAttention ? "Em atenção" : personStatusLabels[membership.person.status]}
+              </Badge>
+            </Link>
+          );
+        })}
       </div>
     </AppShell>
   );

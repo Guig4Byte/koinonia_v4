@@ -175,7 +175,7 @@ Use na UI:
 - `Anotar cuidado`
 - `Salvar sem anotação`
 
-Depois que todos os motivos de atenção forem resolvidos, a pessoa pode voltar a aparecer como `Ativo`; o registro recente fica como `Cuidado realizado`.
+Depois que todos os motivos de atenção forem resolvidos, a pessoa pode voltar a aparecer como `Ativo`; o registro recente fica como `Cuidado realizado`. O mesmo motivo de presença não deve voltar como atenção apenas por recalcular o check-in; precisa haver nova evidência depois do cuidado.
 
 Evite:
 

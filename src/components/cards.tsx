@@ -112,7 +112,7 @@ export function PersonSignalCard({
               <p className="font-semibold text-[var(--color-text-primary)]">{name}</p>
               <p className="mt-0.5 text-sm leading-relaxed text-[var(--color-text-secondary)]">{context}</p>
             </div>
-            <Badge tone={badgeTone}>{severity === "risk" ? "Em atenção" : "Olhar"}</Badge>
+            <Badge tone={badgeTone}>{severity === "risk" ? "Urgente" : "Em atenção"}</Badge>
           </div>
           {reason ? <p className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-primary)]">{reason}</p> : null}
           {detailHref ? (

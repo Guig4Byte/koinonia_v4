@@ -39,3 +39,22 @@ export function describeAttendanceSignal(absences: number) {
 
   return null;
 }
+
+export type DescribedAttendanceSignal = NonNullable<ReturnType<typeof describeAttendanceSignal>>;
+
+export type ResolvedAttendanceSignalSnapshot = {
+  reason: string | null;
+  evidence: string | null;
+  resolvedAt: Date | null;
+};
+
+export function shouldKeepAttendanceSignalResolved(
+  signal: DescribedAttendanceSignal,
+  latestEvidenceAt: Date | null | undefined,
+  resolvedSignal: ResolvedAttendanceSignalSnapshot | null | undefined,
+) {
+  if (!latestEvidenceAt || !resolvedSignal?.resolvedAt) return false;
+  if (latestEvidenceAt.getTime() > resolvedSignal.resolvedAt.getTime()) return false;
+
+  return resolvedSignal.reason === signal.reason && (resolvedSignal.evidence ?? null) === (signal.evidence ?? null);
+}
