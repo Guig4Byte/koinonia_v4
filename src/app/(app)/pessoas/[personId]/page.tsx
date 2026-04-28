@@ -104,6 +104,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const latestAttendance = attendances[0];
   const homeHref = user.role === "LEADER" ? "/lider" : user.role === "SUPERVISOR" ? "/supervisor" : "/pastor";
   const openSignalsCount = signals.length;
+  const peopleLabel = user.role === "LEADER" ? "Membros" : "Pessoas";
 
   return (
     <AppShell
@@ -111,12 +112,12 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       role={user.role}
       nav={[
         { href: homeHref, label: "Visão", icon: "home" },
-        { href: "/pessoas", label: "Pessoas", icon: "people", active: true, attention: openSignalsCount > 0 },
+        { href: "/pessoas", label: peopleLabel, icon: "people", active: true, attention: openSignalsCount > 0 },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
       ]}
     >
       <Link href="/pessoas" className="mb-4 inline-flex text-sm font-semibold text-[var(--color-brand)]">
-        ← Pessoas
+        ← {peopleLabel}
       </Link>
 
       <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">

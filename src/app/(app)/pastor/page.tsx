@@ -76,7 +76,7 @@ export default async function PastorPage() {
         ) : null}
       </div>
 
-      <SectionTitle>Células para olhar</SectionTitle>
+      <SectionTitle>Células em atenção</SectionTitle>
       <div className="space-y-3">
         {dashboard.groups.filter((group) => group.attentionCount > 0 || (group.recordedEventsCount > 0 && group.presenceRate < 70)).slice(0, 4).map((group) => (
           <GroupCard

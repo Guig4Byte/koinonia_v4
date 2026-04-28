@@ -232,7 +232,7 @@ export function CheckInList({
                   ? `${savedAttentionCount} ${savedAttentionCount === 1 ? "pessoa está" : "pessoas estão"} em atenção na célula.`
                   : "Nenhum motivo de atenção ficou ativo na célula."
                 : summary.attentionCount > 0
-                  ? `${summary.attentionCount} ${summary.attentionCount === 1 ? "pessoa ficou" : "pessoas ficaram"} para olhar depois deste encontro.`
+                  ? `${summary.attentionCount} ${summary.attentionCount === 1 ? "pessoa ficou" : "pessoas ficaram"} em atenção depois deste encontro.`
                   : "Nenhuma ausência pediu atenção neste encontro."}
             </p>
             {hasSavedAttention ? (

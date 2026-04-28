@@ -116,6 +116,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
   const visitors = event.attendances.filter((attendance) => attendance.status === "VISITOR");
   const presenceRate = percent(present, accountable.length);
   const completed = event.status === "COMPLETED" || event.attendances.length > 0;
+  const hasPresenceData = completed && accountable.length > 0;
 
   const members = event.group?.memberships.map((membership) => ({
     personId: membership.personId,
@@ -131,6 +132,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
   const checkInLabel = canEditCheckIn ? (completed ? "Ajuste de presença" : "Registrar presença") : "Resumo de presença";
   const checkInSectionTitle = canEditCheckIn ? (completed ? "Ajustar presença" : "Registrar presença") : "Resumo da presença";
   const checkInSubmitLabel = completed ? "Atualizar" : "Finalizar";
+  const eventStatusLabel = completed ? "Presença registrada" : canEditCheckIn ? "Presença pendente" : "Aguardando líder";
 
   return (
     <AppShell
@@ -138,7 +140,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
       role={user.role}
       nav={[
         { href: user.role === "LEADER" ? "/lider" : user.role === "SUPERVISOR" ? "/supervisor" : "/pastor", label: "Visão", icon: "home" },
-        { href: "/pessoas", label: "Pessoas", icon: "people" },
+        { href: "/pessoas", label: user.role === "LEADER" ? "Membros" : "Pessoas", icon: "people" },
         { href: "/eventos", label: "Eventos", icon: "calendar", active: true },
       ]}
     >
@@ -162,12 +164,12 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
               </Link>
             ) : null}
           </div>
-          <Badge tone={completed ? "ok" : "warn"}>{completed ? "Feito" : "Pendente"}</Badge>
+          <Badge tone={completed ? "ok" : "warn"}>{eventStatusLabel}</Badge>
         </div>
 
         <div className="mt-4 grid grid-cols-3 gap-2 text-center">
           <div className="rounded-2xl bg-[var(--metric-card-bg)] p-3">
-            <p className="text-lg font-bold text-[var(--color-metric-presenca)]">{presenceRate}%</p>
+            <p className="text-lg font-bold text-[var(--color-metric-presenca)]">{hasPresenceData ? `${presenceRate}%` : "—"}</p>
             <p className="text-[11px] text-[var(--color-text-secondary)]">presença</p>
           </div>
           <div className="rounded-2xl bg-[var(--metric-card-bg)] p-3">

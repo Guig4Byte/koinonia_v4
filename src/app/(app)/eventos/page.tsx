@@ -102,11 +102,11 @@ export default async function EventsPage() {
       role={user.role}
       nav={[
         { href: user.role === "LEADER" ? "/lider" : user.role === "SUPERVISOR" ? "/supervisor" : "/pastor", label: "Visão", icon: "home" },
-        { href: "/pessoas", label: "Pessoas", icon: "people" },
+        { href: "/pessoas", label: user.role === "LEADER" ? "Membros" : "Pessoas", icon: "people" },
         { href: "/eventos", label: "Eventos", icon: "calendar", active: true },
       ]}
     >
-      <SearchBox placeholder="Buscar pessoa..." />
+      <SearchBox placeholder={user.role === "LEADER" ? "Buscar membro..." : "Buscar pessoa..."} />
       <h2 className="mb-2 text-2xl font-semibold text-[var(--color-text-primary)]">Eventos</h2>
       <p className="mb-4 text-sm leading-relaxed text-[var(--color-text-secondary)]">
         Acompanhe os encontros da semana sem transformar cuidado em relatório.
