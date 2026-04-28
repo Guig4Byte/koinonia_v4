@@ -178,6 +178,9 @@ Regras:
 - `Anotar` salva observação junto com o contato e resolve as atenções abertas.
 - `Ainda não` não registra contato.
 - Anotação é apoio; não deve ser a ação principal antes do cuidado.
+- A API de cuidado deve validar payload com `src/features/care/care-validation.ts`.
+- A API deve devolver `resolvedSignalsCount` e uma mensagem curta para a UI.
+- A UI deve dizer quantas atenções foram resolvidas, sem transformar isso em acompanhamento ou tarefa.
 
 ## Detalhe da pessoa
 

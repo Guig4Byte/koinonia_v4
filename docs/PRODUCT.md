@@ -215,6 +215,8 @@ Quer anotar algo?
 
 A anotação é opcional e posterior ao cuidado. O sistema deve incentivar contato real antes de registro.
 
+Quando o contato é salvo, a API deve devolver quantas atenções abertas foram resolvidas naquele escopo. A UI deve mostrar essa consequência em linguagem simples, sem prometer que a pessoa foi “concluída” ou que saiu definitivamente de cuidado. O registro de cuidado fecha sinais abertos, não cria acompanhamento complexo.
+
 ## Linguagem
 
 Preferir:

@@ -129,6 +129,8 @@ O registro de contato deve ser permitido para quem tem escopo pastoral sobre a p
 - supervisor da célula da pessoa;
 - líder da célula da pessoa.
 
+A rota `/api/care/[personId]` deve usar `src/features/care/care-validation.ts` para validar entrada, aparar anotação vazia e devolver `resolvedSignalsCount`. Para usuários sem escopo de igreja inteira, o registro precisa estar associado a uma célula visível; se nenhuma célula visível existir, a rota deve recusar a escrita em vez de resolver sinais fora de escopo.
+
 ## Autorização centralizada
 
 As regras de escopo ficam em:

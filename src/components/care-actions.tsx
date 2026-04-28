@@ -18,6 +18,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
   const [stage, setStage] = useState<FlowStage>("idle");
   const [note, setNote] = useState("");
   const [savedMessage, setSavedMessage] = useState("");
+  const [resolvedMessage, setResolvedMessage] = useState("");
   const [lastContactKind, setLastContactKind] = useState<ContactKind | null>(null);
   const digits = digitsOnly(phone);
   const hasPhone = digits.length >= 10;
@@ -44,12 +45,15 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
         }),
       });
 
+      const responseBody = await response.json().catch(() => null) as { error?: string; message?: string } | null;
+
       if (!response.ok) {
-        alert("Não foi possível registrar o contato agora.");
+        alert(responseBody?.error ?? "Não foi possível registrar o contato agora.");
         return;
       }
 
       setSavedMessage(noteValue?.trim() ? "Contato e anotação salvos." : "Contato registrado.");
+      setResolvedMessage(responseBody?.message ?? "Cuidado recente atualizado.");
       setStage("done");
       setNote("");
       setLastContactKind(null);
@@ -70,7 +74,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
           <CheckCircle2 className="h-4 w-4" strokeWidth={2.2} />
           {savedMessage}
         </div>
-        <p className="mt-1 text-[var(--color-text-secondary)]">Registrado no cuidado recente.</p>
+        <p className="mt-1 text-[var(--color-text-secondary)]">{resolvedMessage || "Registrado no cuidado recente."}</p>
       </div>
     );
   }
