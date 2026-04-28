@@ -343,6 +343,12 @@ Preferir:
 - `presença`;
 - `contato feito`.
 
+Tons visuais de status:
+
+- `Em atenção` usa tom âmbar/alaranjado; indica cuidado necessário, não urgência extrema.
+- `Urgente` usa tom vermelho; fica reservado para severidade real.
+- `Cuidado realizado` usa tom azulado; indica ação registrada, sem competir com o verde de `Ativo`/presença.
+
 Evitar na UI:
 
 - `alerta`;

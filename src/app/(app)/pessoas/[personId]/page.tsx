@@ -55,8 +55,7 @@ function signalTone(severity: SignalSeverity): "warn" | "risk" | "info" {
 function statusTone(status: PersonStatus): "ok" | "warn" | "risk" | "info" {
   if (status === PersonStatus.ACTIVE) return "ok";
   if (status === PersonStatus.VISITOR || status === PersonStatus.NEW) return "info";
-  if (status === PersonStatus.INACTIVE) return "warn";
-  return "risk";
+  return "warn";
 }
 
 export default async function PersonDetailPage({ params }: { params: Promise<{ personId: string }> }) {
@@ -183,7 +182,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
                   {touch.actor?.name ?? "Koinonia"} · {formatShortDate(touch.happenedAt)}, {formatTime(touch.happenedAt)}
                 </p>
               </div>
-              <Badge tone="ok">Cuidado realizado</Badge>
+              <Badge tone="care">Cuidado realizado</Badge>
             </div>
             {touch.note ? <p className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-primary)]">{touch.note}</p> : null}
           </article>

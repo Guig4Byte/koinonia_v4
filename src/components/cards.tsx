@@ -98,7 +98,7 @@ export function PersonSignalCard({
   href?: string;
   ctaLabel?: string;
 }) {
-  const badgeTone = severity === "ok" ? "ok" : severity === "info" ? "info" : "warn";
+  const badgeTone = severity === "risk" ? "risk" : severity === "ok" ? "ok" : severity === "info" ? "info" : "warn";
 
   const content = (
     <article className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">

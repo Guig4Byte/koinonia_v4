@@ -184,6 +184,13 @@ Evite:
 - `SLA`
 - `Chamado`
 
+### Tons visuais de status
+
+- `Ativo`/presença positiva: verde.
+- `Em atenção`: âmbar, alaranjado ou amarelado.
+- `Urgente`: vermelho, reservado para severidade real.
+- `Cuidado realizado`: azul, para diferenciar cuidado registrado de presença positiva.
+
 ### Acompanhamento
 
 Fluxo organizado de continuidade para casos que precisam de mais do que um contato simples.

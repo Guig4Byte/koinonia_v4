@@ -282,3 +282,8 @@ Não implemente sem pedido explícito:
 - calendário amplo.
 
 Esses conceitos podem aparecer depois, mas só se o uso real pedir e depois que o ciclo principal estiver validado.
+
+## Tokens visuais de status
+
+O componente `Badge` deve preservar tons semânticos oficiais: `warn` para `Em atenção`/pendências em âmbar, `risk` para `Urgente` em vermelho e `care` para `Cuidado realizado` em azul. `ok` continua reservado para presença positiva/estabilidade.
+

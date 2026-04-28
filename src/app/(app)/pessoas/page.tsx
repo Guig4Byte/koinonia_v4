@@ -25,8 +25,7 @@ function initials(name: string) {
 function statusTone(status: PersonStatus): "ok" | "warn" | "risk" | "info" {
   if (status === PersonStatus.ACTIVE) return "ok";
   if (status === PersonStatus.VISITOR || status === PersonStatus.NEW) return "info";
-  if (status === PersonStatus.INACTIVE) return "warn";
-  return "risk";
+  return "warn";
 }
 
 export default async function PeoplePage() {
