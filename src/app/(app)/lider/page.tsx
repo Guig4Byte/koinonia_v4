@@ -38,6 +38,7 @@ export default async function LeaderPage() {
     : [];
 
   const currentEvent = selectRelevantCheckInEvent(visibleEvents);
+  const hasRecentPresence = dashboard.recordedEventsCount > 0;
   const currentGroup = currentEvent?.group ?? dashboard.groups[0] ?? null;
 
   const members = currentGroup?.memberships.map((membership) => ({
@@ -72,9 +73,9 @@ export default async function LeaderPage() {
           { label: "Membros", value: String(members.length), detail: currentGroup?.name ?? "Sua célula.", tone: "neutral" },
           {
             label: "Presença recente",
-            value: `${dashboard.presenceRate}%`,
-            detail: "Nos encontros já registrados.",
-            tone: dashboard.presenceRate < 65 ? "risk" : dashboard.presenceRate < 75 ? "warn" : "ok",
+            value: hasRecentPresence ? `${dashboard.presenceRate}%` : "—",
+            detail: hasRecentPresence ? "Nos encontros já registrados." : "Ainda sem encontro registrado no recorte atual.",
+            tone: !hasRecentPresence ? "neutral" : dashboard.presenceRate < 65 ? "risk" : dashboard.presenceRate < 75 ? "warn" : "ok",
           },
           {
             label: "Pessoas em atenção",

@@ -133,9 +133,9 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
           { label: "Membros", value: String(group.memberships.length), detail: "Pessoas ativas nesta célula.", tone: "neutral" },
           {
             label: "Presença recente",
-            value: `${presenceRate}%`,
+            value: completedEvents.length > 0 ? `${presenceRate}%` : "—",
             detail: completedEvents.length > 0 ? "Nos últimos encontros registrados." : "Ainda sem presença registrada.",
-            tone: presenceRate < 65 ? "risk" : presenceRate < 75 ? "warn" : "ok",
+            tone: completedEvents.length === 0 ? "neutral" : presenceRate < 65 ? "risk" : presenceRate < 75 ? "warn" : "ok",
           },
           {
             label: "Pessoas em atenção",

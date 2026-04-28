@@ -12,6 +12,7 @@ export default async function SupervisorPage() {
   const user = await getCurrentUser();
   const dashboard = await getSupervisorDashboard(user);
   const firstSignal = dashboard.attentionPeople[0];
+  const hasRecentPresence = dashboard.recordedEventsCount > 0;
 
   return (
     <AppShell
@@ -34,10 +35,10 @@ export default async function SupervisorPage() {
         items={[
           { label: "Células acompanhadas", value: String(dashboard.groups.length), detail: "Sob sua supervisão.", tone: "neutral" },
           {
-            label: "Presença média",
-            value: `${dashboard.presenceRate}%`,
-            detail: "Nos últimos encontros registrados.",
-            tone: dashboard.presenceRate < 65 ? "risk" : dashboard.presenceRate < 75 ? "warn" : "ok",
+            label: "Presença recente",
+            value: hasRecentPresence ? `${dashboard.presenceRate}%` : "—",
+            detail: hasRecentPresence ? "Últimos encontros registrados nas suas células." : "Ainda sem encontro registrado no recorte atual.",
+            tone: !hasRecentPresence ? "neutral" : dashboard.presenceRate < 65 ? "risk" : dashboard.presenceRate < 75 ? "warn" : "ok",
           },
           {
             label: "Pessoas em atenção",
@@ -76,6 +77,7 @@ export default async function SupervisorPage() {
             presenceRate={group.presenceRate}
             attentionCount={group.attentionCount}
             href={`/celulas/${group.id}`}
+            hasPresenceData={group.recordedEventsCount > 0}
           />
         ))}
       </div>

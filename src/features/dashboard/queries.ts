@@ -46,14 +46,19 @@ export async function getPastorDashboard(churchId: string) {
   const attentionPeople = getPrimarySignalsByPerson(openSignals);
   const urgentSignals = attentionPeople.filter((signal) => signal.severity === SignalSeverity.URGENT).length;
 
-  const groupsWithPresence = groups.map((group) => ({
-    id: group.id,
-    name: group.name,
-    leaderName: group.leader?.name ?? "Sem líder",
-    supervisorName: group.supervisor?.name ?? "Sem supervisor",
-    presenceRate: summarizePresence(group.events).presenceRate,
-    attentionCount: getPrimarySignalsByPerson(group.signals).length,
-  }));
+  const groupsWithPresence = groups.map((group) => {
+    const recordedEvents = group.events.filter((event) => event.status === "COMPLETED" || event.attendances.length > 0);
+
+    return {
+      id: group.id,
+      name: group.name,
+      leaderName: group.leader?.name ?? "Sem líder",
+      supervisorName: group.supervisor?.name ?? "Sem supervisor",
+      presenceRate: summarizePresence(recordedEvents).presenceRate,
+      recordedEventsCount: recordedEvents.length,
+      attentionCount: getPrimarySignalsByPerson(group.signals).length,
+    };
+  });
 
   return {
     plannedEvents: events.length,
@@ -81,14 +86,20 @@ async function getGroupScopedDashboard(user: PermissionUser) {
   });
 
   const events = groups.flatMap((group) => group.events);
+  const recordedEvents = events.filter((event) => event.status === "COMPLETED" || event.attendances.length > 0);
   const signals = groups.flatMap((group) => group.signals.map((signal) => ({ ...signal, group })));
   const attentionPeople = getPrimarySignalsByPerson(signals);
-  const presence = summarizePresence(events);
-  const groupsWithPresence = groups.map((group) => ({
-    ...group,
-    presenceRate: summarizePresence(group.events).presenceRate,
-    attentionCount: getPrimarySignalsByPerson(group.signals).length,
-  }));
+  const presence = summarizePresence(recordedEvents);
+  const groupsWithPresence = groups.map((group) => {
+    const recordedGroupEvents = group.events.filter((event) => event.status === "COMPLETED" || event.attendances.length > 0);
+
+    return {
+      ...group,
+      presenceRate: summarizePresence(recordedGroupEvents).presenceRate,
+      recordedEventsCount: recordedGroupEvents.length,
+      attentionCount: getPrimarySignalsByPerson(group.signals).length,
+    };
+  });
 
   return {
     groups: groupsWithPresence,
@@ -96,6 +107,7 @@ async function getGroupScopedDashboard(user: PermissionUser) {
     signals,
     attentionPeople,
     presenceRate: presence.presenceRate,
+    recordedEventsCount: recordedEvents.length,
     visitors: presence.visitors,
   };
 }

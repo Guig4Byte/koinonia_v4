@@ -12,6 +12,7 @@ export default async function PastorPage() {
   const user = await getCurrentUser();
   const dashboard = await getPastorDashboard(user.churchId);
   const pendingEvents = Math.max(dashboard.plannedEvents - dashboard.completedEvents, 0);
+  const hasWeekPresence = dashboard.completedEvents > 0;
 
   const phrase = dashboard.attentionPeople.length > 0
     ? `${dashboard.attentionPeople.length} ${dashboard.attentionPeople.length === 1 ? "pessoa merece" : "pessoas merecem"} atenção nesta semana.`
@@ -37,21 +38,21 @@ export default async function PastorPage() {
       <ContextSummary
         items={[
           {
-            label: "Presença geral",
-            value: `${dashboard.presenceRate}%`,
-            detail: "Nas células com presença registrada.",
-            tone: dashboard.presenceRate < 65 ? "risk" : dashboard.presenceRate < 75 ? "warn" : "ok",
+            label: "Presença da semana",
+            value: hasWeekPresence ? `${dashboard.presenceRate}%` : "—",
+            detail: hasWeekPresence ? "Nos encontros já registrados." : "Nenhum encontro registrado nesta semana.",
+            tone: !hasWeekPresence ? "neutral" : dashboard.presenceRate < 65 ? "risk" : dashboard.presenceRate < 75 ? "warn" : "ok",
           },
           {
             label: "Células pendentes",
             value: String(pendingEvents),
-            detail: "Sem presença registrada nesta semana.",
+            detail: pendingEvents > 0 ? "Não entram na presença da semana." : "Tudo registrado até aqui.",
             tone: pendingEvents > 0 ? "warn" : "ok",
           },
           {
             label: "Visitantes",
             value: String(dashboard.visitors),
-            detail: "Novos contatos percebidos nos encontros.",
+            detail: "Nos encontros registrados nesta semana.",
             tone: "neutral",
           },
         ]}
@@ -77,7 +78,7 @@ export default async function PastorPage() {
 
       <SectionTitle>Células para olhar</SectionTitle>
       <div className="space-y-3">
-        {dashboard.groups.filter((group) => group.attentionCount > 0 || group.presenceRate < 70).slice(0, 4).map((group) => (
+        {dashboard.groups.filter((group) => group.attentionCount > 0 || (group.recordedEventsCount > 0 && group.presenceRate < 70)).slice(0, 4).map((group) => (
           <GroupCard
             key={group.id}
             name={group.name}
@@ -85,9 +86,10 @@ export default async function PastorPage() {
             presenceRate={group.presenceRate}
             attentionCount={group.attentionCount}
             href={`/celulas/${group.id}`}
+            hasPresenceData={group.recordedEventsCount > 0}
           />
         ))}
-        {dashboard.groups.filter((group) => group.attentionCount > 0 || group.presenceRate < 70).length === 0 ? (
+        {dashboard.groups.filter((group) => group.attentionCount > 0 || (group.recordedEventsCount > 0 && group.presenceRate < 70)).length === 0 ? (
           <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhuma célula pedindo atenção especial agora.</p>
         ) : null}
       </div>

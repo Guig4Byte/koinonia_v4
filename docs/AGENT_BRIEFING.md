@@ -103,6 +103,7 @@ Funcionalidades fora desse recorte exigem pedido explícito do usuário.
 - Pastor e supervisor veem eventos/presença em modo resumo; não registram presença pelo líder.
 - Pessoa sem marcação explícita aparece como `Pendente`, nunca como falta presumida.
 - Atenção por ausência só nasce de encontros reais, passados e com presença registrada.
+- Métrica de presença sem encontro registrado deve aparecer como ausência de dado, não como `0%` de risco.
 - A lista principal deve continuar sendo por pessoa, não por sinal bruto.
 - Cards de atenção devem manter uma ação primária simples: `Abrir cuidado`; ações diretas ficam no detalhe da pessoa.
 - `Já houve contato?` deve ser uma pergunta com confirmação; não pode resolver atenção por clique acidental.

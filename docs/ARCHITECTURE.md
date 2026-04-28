@@ -158,6 +158,19 @@ A rota `/api/care/[personId]` deve:
 
 As listas de atenção devem usar `PersonSignalCard` com uma ação primária simples para abrir o detalhe da pessoa. `CareActions` fica no detalhe da pessoa, evitando que listas do líder, supervisor ou pastor virem blocos de botões repetidos.
 
+
+## Métricas de presença em dashboards
+
+As consultas de dashboard devem evitar tratar falta de dado como baixa presença.
+
+Regras técnicas:
+
+- agregue presença somente a partir de eventos concluídos ou com marcações de presença;
+- ignore visitantes no denominador da taxa;
+- exponha quantidade de eventos registrados no recorte para a UI decidir entre percentual real e estado sem dado;
+- na visão do pastor, o recorte da métrica principal é a semana atual;
+- em cards de célula, não destaque `0%` como risco quando a célula não tem encontro registrado no recorte carregado; use estado `sem registro`.
+
 ## Rotas de célula
 
 A rota `/celulas/[groupId]` é o detalhe simples da célula.

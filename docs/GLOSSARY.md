@@ -77,6 +77,8 @@ Presença não é fiscalização. É uma fonte simples para perceber cuidado nec
 Use na UI:
 
 - `Presença`
+- `Presença da semana`, quando o recorte for a semana atual e somente encontros já registrados
+- `Presença recente`, quando o recorte for os últimos encontros registrados
 - `Registrar presença`
 - `Ver resumo`
 

@@ -184,6 +184,21 @@ Regras de produto:
 - visitante duplicado no mesmo evento deve ser bloqueado por nome normalizado;
 - pessoa sem marcação explícita aparece como `Pendente`, nunca como ausência presumida.
 
+
+## Métricas de presença
+
+As métricas de presença devem explicar o recorte para não parecerem número absoluto de toda a igreja.
+
+Regras oficiais:
+
+- `Presença da semana`, na visão do pastor, considera somente encontros de célula da semana atual que já têm presença registrada;
+- células com encontro pendente não entram na porcentagem da semana; elas aparecem separadamente como `Células pendentes`;
+- visitantes não entram no denominador da porcentagem de presença;
+- quando não houver encontro registrado no recorte, a UI deve mostrar ausência de dado (`—` ou texto equivalente), não `0%` como se fosse baixa presença;
+- `Presença recente`, nas visões de líder, supervisor e célula, resume os últimos encontros registrados dentro do escopo visível.
+
+O objetivo da métrica é dar contexto pastoral rápido, não criar ranking nem cobrança.
+
 ## Detalhe simples da célula
 
 O detalhe da célula existe para dar destino aos cards de célula sem criar gestão pesada.

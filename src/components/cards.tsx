@@ -135,14 +135,16 @@ export function GroupCard({
   presenceRate,
   attentionCount,
   href,
+  hasPresenceData = true,
 }: {
   name: string;
   subtitle: string;
   presenceRate: number;
   attentionCount: number;
   href?: string;
+  hasPresenceData?: boolean;
 }) {
-  const tone = presenceRate < 65 ? "risk" : presenceRate < 75 ? "warn" : "ok";
+  const tone = !hasPresenceData ? "neutral" : presenceRate < 65 ? "risk" : presenceRate < 75 ? "warn" : "ok";
 
   const content = (
     <article className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
@@ -156,11 +158,14 @@ export function GroupCard({
       <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--surface-alt)]">
         <div
           className={cn("h-full rounded-full", tone === "risk" && "bg-[var(--color-metric-atencoes)]", tone === "warn" && "bg-[var(--color-badge-atencao-text)]", tone === "ok" && "bg-[var(--color-metric-presenca)]")}
-          style={{ width: `${presenceRate}%` }}
+          style={{ width: hasPresenceData ? `${presenceRate}%` : "0%" }}
         />
       </div>
       <div className="mt-2 flex items-center justify-between gap-3 text-xs text-[var(--color-text-secondary)]">
-        <span>Presença média: <strong className="text-[var(--color-text-primary)]">{presenceRate}%</strong></span>
+        <span>
+          Presença recente:{" "}
+          <strong className="text-[var(--color-text-primary)]">{hasPresenceData ? `${presenceRate}%` : "sem registro"}</strong>
+        </span>
         {href ? <span className="font-semibold text-[var(--color-brand)]">Abrir célula →</span> : null}
       </div>
     </article>
