@@ -19,8 +19,8 @@ describe("care validation", () => {
   });
 
   it("formats resolved attention feedback", () => {
-    expect(resolvedAttentionMessage(0)).toBe("Nenhuma atenção aberta foi alterada.");
-    expect(resolvedAttentionMessage(1)).toBe("1 atenção foi resolvida.");
-    expect(resolvedAttentionMessage(2)).toBe("2 atenções foram resolvidas.");
+    expect(resolvedAttentionMessage(0)).toBe("Nenhum motivo de atenção foi alterado.");
+    expect(resolvedAttentionMessage(1)).toBe("1 motivo de atenção foi resolvido.");
+    expect(resolvedAttentionMessage(2)).toBe("2 motivos de atenção foram resolvidos.");
   });
 });

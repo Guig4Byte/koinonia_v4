@@ -188,7 +188,7 @@ Sinal é evidência e lembrete de cuidado, não cobrança burocrática. Ele pode
 
 Atenção por ausência só pode nascer de encontros reais, passados e com presença registrada. Evento futuro, evento pendente ou membro sem marcação explícita não deve ser tratado como falta presumida.
 
-Listas chamadas de `Pessoas em atenção` devem agregar sinais abertos por pessoa. A experiência principal é a pessoa que precisa ser lembrada, não uma pilha de sinais.
+Listas chamadas de `Pessoas em atenção` devem agregar sinais ativos por pessoa. Na UI, esses sinais devem aparecer como motivos de atenção. A experiência principal é a pessoa que precisa ser lembrada, não uma pilha de sinais.
 
 Depois de salvar check-in, a UI pode informar quantas pessoas ficaram em atenção naquela célula, para fechar o ciclo:
 
@@ -226,11 +226,11 @@ Regras de produto:
 - `Já houve contato?` é pergunta, não ação destrutiva imediata.
 - Nenhum clique acidental deve resolver atenção sem confirmação explícita.
 - `Sim, houve contato` ou `Sim, já houve` apenas avança para a decisão de anotação.
-- `Salvar sem anotação` registra contato/cuidado e resolve as atenções abertas dentro do escopo do usuário.
-- `Anotar` salva observação junto com o contato/cuidado e resolve as atenções abertas dentro do escopo do usuário.
+- `Salvar sem anotação` registra contato/cuidado e resolve os motivos de atenção ativos dentro do escopo do usuário.
+- `Anotar` salva observação junto com o contato/cuidado e resolve os motivos de atenção ativos dentro do escopo do usuário.
 - `Ainda não`, `Cancelar` ou `Cancelar e não registrar agora` não registram contato e não fecham atenção.
 - Anotação é apoio, não ação principal antes do cuidado.
-- A UI deve dizer quantas atenções foram resolvidas, sem transformar isso em acompanhamento ou tarefa.
+- A UI deve dizer quantos motivos de atenção foram resolvidos, sem transformar isso em acompanhamento ou tarefa.
 
 ## Detalhe simples da pessoa
 
@@ -246,7 +246,7 @@ Ela deve mostrar somente o necessário para agir:
 - status pastoral simples;
 - nota curta, quando existir;
 - ações diretas de cuidado;
-- atenção aberta e evidência;
+- motivos de atenção e evidência;
 - última presença registrada;
 - cuidado recente.
 

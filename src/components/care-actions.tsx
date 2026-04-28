@@ -59,7 +59,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
       }
 
       setSavedMessage(noteValue?.trim() ? "Cuidado registrado com anotação." : "Cuidado registrado.");
-      setResolvedMessage(responseBody?.message ?? "A atenção foi atualizada sem formalizar acompanhamento.");
+      setResolvedMessage(responseBody?.message ?? "Os motivos de atenção foram atualizados sem formalizar acompanhamento.");
       setStage("done");
       setNote("");
       setLastContactKind(null);
@@ -202,7 +202,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
       {stage === "ask-note" ? (
         <div className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3">
           <p className="text-sm font-semibold text-[var(--color-text-primary)]">Quer deixar uma anotação?</p>
-          <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">Salvar sem anotação também registra o cuidado e resolve as atenções abertas no seu escopo.</p>
+          <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">Salvar sem anotação também registra o cuidado e atualiza os motivos de atenção no seu escopo.</p>
           <div className="mt-2 grid grid-cols-2 gap-2">
             <button
               type="button"

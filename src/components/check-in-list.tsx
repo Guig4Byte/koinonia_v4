@@ -102,7 +102,7 @@ export function CheckInList({
     };
   }, [fallbackSavedVisitorCount, items, visitors.length]);
 
-  const canSave = summary.pending === 0 && !isPending;
+  const canSave = summary.pending === 0 && !isPending && !saved;
   const helperText =
     mode === "adjust"
       ? "Revise as marcações já salvas e corrija somente o necessário."
@@ -147,8 +147,11 @@ export function CheckInList({
   function save() {
     if (summary.pending > 0) {
       setErrorMessage("Marque todas as pessoas antes de finalizar a presença.");
+      setSaved(false);
       return;
     }
+
+    if (saved) return;
 
     startTransition(async () => {
       setErrorMessage(null);
@@ -207,13 +210,13 @@ export function CheckInList({
         ) : null}
 
         {errorMessage ? (
-          <div className="mt-4 rounded-2xl border border-[var(--color-badge-atencao-border)] bg-[var(--color-badge-atencao-bg)] p-3 text-sm font-medium text-[var(--color-badge-atencao-text)]">
+          <div aria-live="polite" className="mt-4 rounded-2xl border border-[var(--color-badge-atencao-border)] bg-[var(--color-badge-atencao-bg)] p-3 text-sm font-medium text-[var(--color-badge-atencao-text)]">
             {errorMessage}
           </div>
         ) : null}
 
         {saved ? (
-          <div className="mt-4 rounded-2xl bg-[var(--metric-card-bg)] p-3 text-sm text-[var(--color-text-primary)]">
+          <div aria-live="polite" className="mt-4 rounded-2xl bg-[var(--metric-card-bg)] p-3 text-sm text-[var(--color-text-primary)]">
             <div className="flex items-center gap-2 font-semibold">
               <UserRoundCheck className="h-4 w-4 text-[var(--color-metric-presenca)]" />
               Presença salva.
@@ -330,11 +333,11 @@ export function CheckInList({
               {summary.pending > 0 ? `${summary.pending} pendente${summary.pending === 1 ? "" : "s"}` : "Presença pronta"}
             </p>
             <p className="mt-0.5 text-xs text-[var(--color-text-secondary)]">
-              {summary.pending > 0 ? "Finalize depois de marcar todos." : "Salve para atualizar a atenção da célula."}
+              {summary.pending > 0 ? "Finalize depois de marcar todos." : saved ? "Altere alguma marcação para salvar de novo." : "Salve para atualizar a atenção da célula."}
             </p>
           </div>
           <Button disabled={!canSave} onClick={save} className="min-w-28">
-            {isPending ? "Salvando..." : saved ? "Salvo" : submitLabel}
+            {isPending ? "Salvando..." : saved ? "Presença salva" : submitLabel}
           </Button>
         </div>
       </div>

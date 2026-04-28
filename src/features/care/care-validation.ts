@@ -19,7 +19,7 @@ export function parseCarePayload(input: unknown) {
 }
 
 export function resolvedAttentionMessage(resolvedSignalsCount: number) {
-  if (resolvedSignalsCount <= 0) return "Nenhuma atenção aberta foi alterada.";
-  if (resolvedSignalsCount === 1) return "1 atenção foi resolvida.";
-  return `${resolvedSignalsCount} atenções foram resolvidas.`;
+  if (resolvedSignalsCount <= 0) return "Nenhum motivo de atenção foi alterado.";
+  if (resolvedSignalsCount === 1) return "1 motivo de atenção foi resolvido.";
+  return `${resolvedSignalsCount} motivos de atenção foram resolvidos.`;
 }
