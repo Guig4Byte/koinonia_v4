@@ -55,13 +55,10 @@ export default async function SupervisorPage() {
             key={signal.id}
             initials={initials(signal.person.fullName)}
             name={signal.person.fullName}
-            personId={signal.person.id}
             detailHref={`/pessoas/${signal.person.id}`}
-            phone={signal.person.phone}
             context={signal.group.name}
             reason={signal.reason}
             severity={signal.severity === "URGENT" ? "risk" : "warn"}
-            actionMode="none"
           />
         ))}
         {dashboard.attentionPeople.length === 0 ? (

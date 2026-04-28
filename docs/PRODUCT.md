@@ -60,7 +60,8 @@ Inclui:
 - busca simples de pessoa;
 - detalhe simples da pessoa;
 - detalhe simples da célula;
-- ação direta: ligar, WhatsApp, contato feito e anotação opcional;
+- abertura de cuidado a partir das listas de atenção;
+- ação direta no detalhe da pessoa: ligar, WhatsApp, contato feito e anotação opcional;
 - visão macro do pastor;
 - visão de apoio do supervisor;
 - visão operacional do líder.
@@ -107,7 +108,8 @@ Pode:
 - adicionar visitantes;
 - ver membros da própria célula;
 - ver pessoas em atenção da própria célula;
-- ligar, chamar no WhatsApp e registrar contato.
+- abrir o cuidado dos membros em atenção;
+- no detalhe da pessoa, ligar, chamar no WhatsApp e registrar contato.
 
 Não deve:
 
@@ -230,7 +232,13 @@ A saída simples para uma atenção é:
 Já houve contato? -> confirmar -> anotar se precisar -> fechar atenção
 ```
 
-Nos cards de atenção, o fluxo correto é:
+Nas listas de atenção, o fluxo correto é abrir o cuidado da pessoa primeiro:
+
+```txt
+Pessoa em atenção -> Abrir cuidado -> detalhe da pessoa
+```
+
+No detalhe da pessoa, o fluxo de contato é:
 
 ```txt
 [Ligar] [WhatsApp]

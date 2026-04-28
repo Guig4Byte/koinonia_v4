@@ -153,13 +153,10 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
             key={signal.id}
             initials={initials(signal.person.fullName)}
             name={signal.person.fullName}
-            personId={signal.person.id}
             detailHref={`/pessoas/${signal.person.id}`}
-            phone={signal.person.phone}
             context="Membro da célula"
             reason={signal.reason}
             severity={signal.severity === SignalSeverity.URGENT ? "risk" : signal.severity === SignalSeverity.ATTENTION ? "warn" : "info"}
-            actionMode={user.role === UserRole.LEADER ? "quick" : "none"}
           />
         ))}
         {attentionPeople.length === 0 ? (

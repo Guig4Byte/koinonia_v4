@@ -57,6 +57,8 @@ export function CheckInList({
   initialVisitorCount = 0,
   submitLabel = "Finalizar",
   mode = "register",
+  attentionHref = "/pessoas",
+  attentionLabel = "Ver pessoas em atenção",
 }: {
   eventId: string;
   members: Member[];
@@ -64,6 +66,8 @@ export function CheckInList({
   initialVisitorCount?: number;
   submitLabel?: string;
   mode?: CheckInMode;
+  attentionHref?: string;
+  attentionLabel?: string;
 }) {
   const [isPending, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
@@ -103,6 +107,7 @@ export function CheckInList({
   }, [fallbackSavedVisitorCount, items, visitors.length]);
 
   const canSave = summary.pending === 0 && !isPending && !saved;
+  const hasSavedAttention = savedAttentionCount !== null ? savedAttentionCount > 0 : summary.attentionCount > 0;
   const helperText =
     mode === "adjust"
       ? "Revise as marcações já salvas e corrija somente o necessário."
@@ -230,9 +235,9 @@ export function CheckInList({
                   ? `${summary.attentionCount} ${summary.attentionCount === 1 ? "pessoa ficou" : "pessoas ficaram"} para olhar depois deste encontro.`
                   : "Nenhuma ausência pediu atenção neste encontro."}
             </p>
-            {savedAttentionCount && savedAttentionCount > 0 ? (
-              <Link href="/pessoas" className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)]">
-                Ver pessoas em atenção
+            {hasSavedAttention ? (
+              <Link href={attentionHref} className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)]">
+                {attentionLabel}
               </Link>
             ) : null}
           </div>

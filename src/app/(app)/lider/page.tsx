@@ -110,6 +110,8 @@ export default async function LeaderPage() {
             initialVisitors={currentVisitors}
             submitLabel={currentEventCompleted ? "Atualizar" : "Finalizar"}
             mode={currentEventCompleted ? "adjust" : "register"}
+            attentionHref={currentGroup ? `/celulas/${currentGroup.id}` : "/pessoas"}
+            attentionLabel="Ver atenção da célula"
           />
         </>
       ) : (
@@ -123,12 +125,9 @@ export default async function LeaderPage() {
             key={signal.id}
             initials={initials(signal.person.fullName)}
             name={signal.person.fullName}
-            personId={signal.person.id}
             detailHref={`/pessoas/${signal.person.id}`}
-            phone={signal.person.phone}
             context={signal.reason}
             severity={signal.severity === "URGENT" ? "risk" : "warn"}
-            actionMode="quick"
           />
         ))}
         {dashboard.attentionPeople.length === 0 ? (

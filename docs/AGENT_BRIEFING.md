@@ -89,7 +89,8 @@ O MVP atual pode trabalhar com:
 - atenções pastorais geradas por presença/ausência;
 - busca simples de pessoa;
 - detalhe simples da pessoa;
-- ligar, WhatsApp, contato feito e anotação opcional;
+- lista de atenção com abertura de cuidado;
+- contato e anotação opcional no detalhe da pessoa;
 - visão macro para pastor;
 - visão de apoio para supervisor;
 - visão operacional para líder.
@@ -103,6 +104,7 @@ Funcionalidades fora desse recorte exigem pedido explícito do usuário.
 - Pessoa sem marcação explícita aparece como `Pendente`, nunca como falta presumida.
 - Atenção por ausência só nasce de encontros reais, passados e com presença registrada.
 - A lista principal deve continuar sendo por pessoa, não por sinal bruto.
+- Cards de atenção devem manter uma ação primária simples: `Abrir cuidado`; ações diretas ficam no detalhe da pessoa.
 - `Já houve contato?` deve ser uma pergunta com confirmação; não pode resolver atenção por clique acidental.
 - A busca atual é busca de pessoa; não prometa busca de evento/célula enquanto a API não suportar esses tipos.
 - A rota `/pessoas/[personId]` é uma leitura curta para ação, não histórico infinito.

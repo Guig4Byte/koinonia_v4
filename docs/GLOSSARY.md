@@ -147,6 +147,8 @@ Exemplos:
 
 Contato não é formulário. Primeiro vem a ação humana, depois o registro mínimo.
 
+Nas listas de atenção, use apenas a ação primária `Abrir cuidado`. As ações abaixo pertencem ao detalhe da pessoa, onde há mais contexto para agir sem poluir a lista.
+
 Use na UI:
 
 - `Ligar`

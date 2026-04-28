@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { CareActions } from "@/components/care-actions";
 import { cn } from "@/lib/cn";
 
 export function PulseCard({
@@ -88,9 +87,6 @@ export function PersonSignalCard({
   severity = "risk",
   detailHref,
   href,
-  personId,
-  phone,
-  actionMode = "none",
   ctaLabel = "Abrir cuidado",
 }: {
   initials: string;
@@ -100,12 +96,10 @@ export function PersonSignalCard({
   severity?: "ok" | "warn" | "risk" | "info";
   detailHref?: string;
   href?: string;
-  personId?: string;
-  phone?: string | null;
-  actionMode?: "none" | "quick";
   ctaLabel?: string;
 }) {
   const badgeTone = severity === "ok" ? "ok" : severity === "info" ? "info" : "warn";
+
   const content = (
     <article className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
       <div className="flex items-start gap-3">
@@ -126,13 +120,12 @@ export function PersonSignalCard({
               {ctaLabel}
             </Link>
           ) : null}
-          {actionMode === "quick" ? <CareActions personId={personId} phone={phone} /> : null}
         </div>
       </div>
     </article>
   );
 
-  if (!href || detailHref || actionMode === "quick") return content;
+  if (!href || detailHref) return content;
   return <Link href={href}>{content}</Link>;
 }
 

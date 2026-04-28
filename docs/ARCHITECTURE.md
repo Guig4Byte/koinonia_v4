@@ -156,6 +156,8 @@ A rota `/api/care/[personId]` deve:
 
 `Já houve contato?` abre um fluxo de confirmação para cuidado já realizado fora do aplicativo. A rota só deve ser chamada depois de confirmação explícita do usuário. Isso não deve criar acompanhamento formal, task ou SLA.
 
+As listas de atenção devem usar `PersonSignalCard` com uma ação primária simples para abrir o detalhe da pessoa. `CareActions` fica no detalhe da pessoa, evitando que listas do líder, supervisor ou pastor virem blocos de botões repetidos.
+
 ## Rotas de célula
 
 A rota `/celulas/[groupId]` é o detalhe simples da célula.

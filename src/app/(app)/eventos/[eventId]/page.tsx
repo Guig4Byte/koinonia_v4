@@ -156,6 +156,11 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
             <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
               {event.group?.name ?? "Evento geral"} · {formatShortDate(event.startsAt)}, {formatTime(event.startsAt)}
             </p>
+            {event.group ? (
+              <Link href={`/celulas/${event.group.id}`} className="mt-3 inline-flex text-sm font-semibold text-[var(--color-brand)]">
+                Abrir célula →
+              </Link>
+            ) : null}
           </div>
           <Badge tone={completed ? "ok" : "warn"}>{completed ? "feito" : "pendente"}</Badge>
         </div>
@@ -185,6 +190,8 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
             initialVisitors={visitorRows}
             submitLabel={checkInSubmitLabel}
             mode={completed ? "adjust" : "register"}
+            attentionHref={event.groupId ? `/celulas/${event.groupId}` : "/pessoas"}
+            attentionLabel="Ver atenção da célula"
           />
         ) : (
           <EventReadOnlySummary completed={completed} members={members} visitors={visitorRows} />
