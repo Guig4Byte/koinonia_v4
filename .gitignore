@@ -1,0 +1,13 @@
+node_modules
+.next
+out
+dist
+coverage
+*.tsbuildinfo
+.env
+.env*.local
+!.env.example
+src/generated/prisma
+public/sw.js
+public/workbox-*.js
+.DS_Store

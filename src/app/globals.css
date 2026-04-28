@@ -1,0 +1,355 @@
+@import "tailwindcss";
+
+:root {
+  /* Tipografia */
+  --font-display: Georgia, "Times New Roman", serif;
+  --font-body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 14px;
+  --text-lg: 16px;
+  --text-xl: 20px;
+  --text-hero: 38px;
+
+  --weight-regular: 400;
+  --weight-medium: 600;
+  --weight-bold: 700;
+
+  /* Raios */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+  --radius-circle: 50%;
+
+  /* Aliases usados pelos componentes atuais */
+  --background: var(--color-bg-page);
+  --surface: var(--color-bg-card);
+  --surface-alt: color-mix(in srgb, var(--color-bg-card) 72%, var(--color-bg-page));
+  --metric-card-bg: var(--color-bg-metric-card);
+  --metric-card-border: var(--color-border-metric-card);
+  --metric-card-shadow: var(--color-shadow-metric-card);
+  --border: var(--color-border-card);
+  --text: var(--color-text-primary);
+  --muted: var(--color-text-secondary);
+  --accent: var(--color-brand);
+  --on-accent: var(--color-btn-primary-text);
+  --accent-muted: var(--color-text-on-banner);
+  --accent-soft: color-mix(in srgb, var(--color-brand-accent) 28%, transparent);
+  --risk: var(--color-metric-atencoes);
+  --risk-soft: var(--color-badge-atencao-bg);
+  --ok: var(--color-metric-presenca);
+  --ok-soft: var(--color-badge-estavel-bg);
+  --warn: var(--color-badge-atencao-text);
+  --warn-soft: var(--color-badge-atencao-bg);
+  --info: var(--color-brand);
+  --info-soft: color-mix(in srgb, var(--color-brand-accent) 18%, var(--color-bg-card));
+  --nav-bg: var(--color-bg-tab);
+  --page-glow: color-mix(in srgb, var(--color-brand-accent) 14%, transparent);
+  --action-primary-bg: var(--color-btn-primary-bg);
+  --action-primary-text: var(--color-btn-primary-text);
+  --action-secondary-bg: var(--color-btn-secondary-bg);
+  --action-secondary-text: var(--color-btn-secondary-text);
+  --action-secondary-border: var(--color-btn-secondary-border);
+}
+
+:root,
+html[data-theme="light"] {
+  /* Superfícies */
+  --color-bg-page: #ede8e0;
+  --color-bg-card: #ffffff;
+  --color-bg-header: #2c1a0a;
+  --color-bg-banner: #2c1a0a;
+  --color-bg-tab: rgba(255, 255, 255, 0.88);
+  --color-bg-metric-card: #ebe5dc;
+  --color-border-metric-card: transparent;
+  --color-shadow-metric-card: none;
+
+  /* Texto */
+  --color-text-primary: #1c1008;
+  --color-text-secondary: #8b7a69;
+  --color-text-muted: #b0a090;
+  --color-text-on-header: #f0e0c0;
+  --color-text-on-banner: #f0d8a8;
+
+  /* Marca */
+  --color-brand: #2c1a0a;
+  --color-brand-accent: #c9a060;
+
+  /* Botões */
+  --color-btn-primary-bg: #2c1a0a;
+  --color-btn-primary-text: #f0d8a8;
+  --color-btn-secondary-bg: transparent;
+  --color-btn-secondary-border: #2c1a0a;
+  --color-btn-secondary-text: #2c1a0a;
+
+  /* Ações diretas */
+  --color-action-call-bg: transparent;
+  --color-action-call-border: #2c1a0a;
+  --color-action-call-text: #2c1a0a;
+  --color-action-whatsapp-bg: #2c1a0a;
+  --color-action-whatsapp-border: #2c1a0a;
+  --color-action-whatsapp-text: #fff7e8;
+
+  /* Controles segmentados */
+  --color-segmented-bg: rgba(0, 0, 0, 0.18);
+  --color-segmented-border: rgba(201, 160, 96, 0.34);
+  --color-segmented-active-bg: #c9a060;
+  --color-segmented-active-text: #2c1a0a;
+  --color-segmented-inactive-text: #f0e0c0;
+
+  /* Tab bar */
+  --color-tab-active: #2c1a0a;
+  --color-tab-inactive: #e8e0d6;
+  --color-tab-label-active: #2c1a0a;
+  --color-tab-label-inactive: #9a8878;
+
+  /* Métricas */
+  --color-metric-presenca: #2e6b2e;
+  --color-metric-atencoes: #b54020;
+  --color-metric-visitantes: #2c1a0a;
+
+  /* Badges */
+  --color-badge-atencao-bg: #faeeda;
+  --color-badge-atencao-border: #ef9f27;
+  --color-badge-atencao-text: #854f0b;
+  --color-badge-estavel-bg: #eaf3de;
+  --color-badge-estavel-border: #97c459;
+  --color-badge-estavel-text: #3b6d11;
+
+  /* Bordas e sombras */
+  --color-border-card: rgba(60, 30, 10, 0.08);
+  --color-border-divider: #f0e8dc;
+  --color-shadow-card: 0 1px 4px rgba(60, 30, 10, 0.07);
+  --color-shadow-header: 0 18px 48px rgba(44, 26, 10, 0.12);
+
+  /* Avatar */
+  --color-avatar-bg: #2c1a0a;
+  --color-avatar-text: #c9a060;
+
+  /* Toggle */
+  --color-theme-icon-active-bg: rgba(201, 160, 96, 0.2);
+  --color-theme-icon-active-border: rgba(201, 160, 96, 0.5);
+}
+
+html[data-theme="parchment"] {
+  --color-bg-page: #c9a060;
+  --color-bg-card: rgba(255, 255, 255, 0.32);
+  --color-bg-header: #9b6b23;
+  --color-bg-banner: #6b4010;
+  --color-bg-tab: rgba(180, 130, 60, 0.72);
+  --color-bg-metric-card: rgba(107, 64, 16, 0.12);
+  --color-border-metric-card: transparent;
+  --color-shadow-metric-card: none;
+
+  --color-text-primary: #3a2008;
+  --color-text-secondary: #704b20;
+  --color-text-muted: #7a5020;
+  --color-text-on-header: #fdf0d0;
+  --color-text-on-banner: #f5dfa0;
+
+  --color-brand: #6b4010;
+  --color-brand-accent: #f5dfa0;
+
+  --color-btn-primary-bg: #6b4010;
+  --color-btn-primary-text: #f5dfa0;
+  --color-btn-secondary-bg: transparent;
+  --color-btn-secondary-border: #6b4010;
+  --color-btn-secondary-text: #4a2808;
+
+  --color-action-call-bg: transparent;
+  --color-action-call-border: #6b4010;
+  --color-action-call-text: #4a2808;
+  --color-action-whatsapp-bg: #6b4010;
+  --color-action-whatsapp-border: #6b4010;
+  --color-action-whatsapp-text: #fff6dc;
+
+  --color-segmented-bg: rgba(0, 0, 0, 0.16);
+  --color-segmented-border: rgba(245, 223, 160, 0.40);
+  --color-segmented-active-bg: #f5dfa0;
+  --color-segmented-active-text: #4a2808;
+  --color-segmented-inactive-text: #fff0cf;
+
+  --color-tab-active: #6b4010;
+  --color-tab-inactive: rgba(0, 0, 0, 0.12);
+  --color-tab-label-active: #3a2008;
+  --color-tab-label-inactive: #7a5020;
+
+  --color-metric-presenca: #2a5c2a;
+  --color-metric-atencoes: #8a2a10;
+  --color-metric-visitantes: #4a2e08;
+
+  --color-badge-atencao-bg: rgba(139, 79, 11, 0.18);
+  --color-badge-atencao-border: rgba(139, 79, 11, 0.4);
+  --color-badge-atencao-text: #5a3008;
+  --color-badge-estavel-bg: rgba(59, 109, 17, 0.15);
+  --color-badge-estavel-border: rgba(59, 109, 17, 0.35);
+  --color-badge-estavel-text: #2a4c0a;
+
+  --color-border-card: rgba(120, 70, 10, 0.16);
+  --color-border-divider: rgba(120, 70, 10, 0.22);
+  --color-shadow-card: none;
+  --color-shadow-header: none;
+
+  --color-avatar-bg: #6b4010;
+  --color-avatar-text: #f5dfa0;
+
+  --color-theme-icon-active-bg: rgba(245, 223, 160, 0.25);
+  --color-theme-icon-active-border: rgba(245, 223, 160, 0.5);
+}
+
+html[data-theme="dark"] {
+  /* Dark theme restaurado para a estética anterior: espresso, creme e dourado suave. */
+  --color-bg-page: #171411;
+  --color-bg-card: #211d18;
+  --color-bg-header: #211d18;
+  --color-bg-banner: #d7b98f;
+  --color-bg-tab: rgba(23, 20, 17, 0.88);
+  --color-bg-metric-card: #2b251f;
+  --color-border-metric-card: transparent;
+  --color-shadow-metric-card: none;
+
+  --color-text-primary: #f5eee5;
+  --color-text-secondary: #b8aa9a;
+  --color-text-muted: #8a7a68;
+  --color-text-on-header: #f5eee5;
+  --color-text-on-banner: #241b13;
+
+  --color-brand: #d7b98f;
+  --color-brand-accent: #d7b98f;
+
+  --color-btn-primary-bg: #d7b98f;
+  --color-btn-primary-text: #241b13;
+  --color-btn-secondary-bg: #2b251f;
+  --color-btn-secondary-border: #3b342c;
+  --color-btn-secondary-text: #f5eee5;
+
+  --color-action-call-bg: transparent;
+  --color-action-call-border: #d7b98f;
+  --color-action-call-text: #d7b98f;
+  --color-action-whatsapp-bg: #d7b98f;
+  --color-action-whatsapp-border: #d7b98f;
+  --color-action-whatsapp-text: #241b13;
+
+  --color-segmented-bg: rgba(0, 0, 0, 0.18);
+  --color-segmented-border: rgba(215, 185, 143, 0.34);
+  --color-segmented-active-bg: #d7b98f;
+  --color-segmented-active-text: #241b13;
+  --color-segmented-inactive-text: #d8c7b5;
+
+  --color-tab-active: #d7b98f;
+  --color-tab-inactive: #2b251f;
+  --color-tab-label-active: #f5eee5;
+  --color-tab-label-inactive: #8a7a68;
+
+  --color-metric-presenca: #a9d889;
+  --color-metric-atencoes: #f08b78;
+  --color-metric-visitantes: #f5eee5;
+
+  --color-badge-atencao-bg: #3a211d;
+  --color-badge-atencao-border: #5a312a;
+  --color-badge-atencao-text: #f08b78;
+  --color-badge-estavel-bg: #21321c;
+  --color-badge-estavel-border: #39522d;
+  --color-badge-estavel-text: #a9d889;
+
+  --color-border-card: #3b342c;
+  --color-border-divider: #3b342c;
+  --color-shadow-card: none;
+  --color-shadow-header: none;
+
+  --color-avatar-bg: #3a211d;
+  --color-avatar-text: #f08b78;
+
+  --color-theme-icon-active-bg: rgba(215, 185, 143, 0.12);
+  --color-theme-icon-active-border: rgba(215, 185, 143, 0.28);
+
+  --surface-alt: #2b251f;
+  --accent-muted: #4f3d2c;
+  --page-glow: rgba(215, 185, 143, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--color-bg-page);
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, var(--page-glow), transparent 28rem),
+    var(--color-bg-page);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.safe-page {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 14px 14px 86px;
+}
+
+.app-header {
+  margin-bottom: 18px;
+  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 24%, transparent);
+  border-radius: 28px;
+  background: var(--color-bg-header);
+  color: var(--color-text-on-header);
+  padding: 14px;
+  box-shadow: var(--color-shadow-header);
+}
+
+.content-flow {
+  animation: content-in 180ms ease-out both;
+}
+
+.font-serif-display {
+  font-family: var(--font-display);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.shadow-card {
+  box-shadow: var(--color-shadow-card);
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+@keyframes content-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

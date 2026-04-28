@@ -1,0 +1,281 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  PASTOR
+  SUPERVISOR
+  LEADER
+}
+
+enum PersonStatus {
+  ACTIVE
+  VISITOR
+  NEW
+  NEEDS_ATTENTION
+  COOLING_AWAY
+  INACTIVE
+}
+
+enum GroupKind {
+  CELL
+  GROUP
+}
+
+enum MembershipRole {
+  MEMBER
+  VISITOR
+  HOST
+  LEADER
+}
+
+enum EventType {
+  CELL_MEETING
+  SERVICE
+  TRAINING
+  RETREAT
+  LEADERSHIP
+  OTHER
+}
+
+enum EventStatus {
+  SCHEDULED
+  CHECKIN_OPEN
+  COMPLETED
+  CANCELLED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  JUSTIFIED
+  VISITOR
+}
+
+enum SignalSeverity {
+  INFO
+  ATTENTION
+  URGENT
+}
+
+enum SignalStatus {
+  OPEN
+  RESOLVED
+  IGNORED
+}
+
+enum SignalSource {
+  ATTENDANCE
+  VISITOR
+  NO_CONTACT
+  MANUAL
+}
+
+enum CareKind {
+  CALL
+  WHATSAPP
+  VISIT
+  PRAYER
+  MARKED_CARED
+  NOTE
+}
+
+model Church {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  slug      String   @unique
+  timezone  String   @default("America/Sao_Paulo")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users      User[]
+  people     Person[]
+  groups     SmallGroup[]
+  events     Event[]
+  signals    CareSignal[]
+  careTouches CareTouch[]
+
+  @@map("churches")
+}
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  churchId     String   @db.Uuid
+  personId     String?  @unique @db.Uuid
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         UserRole
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  church       Church  @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  person       Person? @relation(fields: [personId], references: [id], onDelete: SetNull)
+  groupsLed    SmallGroup[] @relation("GroupLeader")
+  groupsSupervised SmallGroup[] @relation("GroupSupervisor")
+  eventsCreated Event[] @relation("EventCreator")
+  careTouches  CareTouch[] @relation("CareActor")
+  signalsAssigned CareSignal[] @relation("SignalAssignee")
+
+  @@index([churchId, role])
+  @@map("users")
+}
+
+model Person {
+  id          String       @id @default(uuid()) @db.Uuid
+  churchId    String       @db.Uuid
+  fullName    String
+  phone       String?
+  avatarUrl   String?
+  status      PersonStatus @default(ACTIVE)
+  shortNote   String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  church      Church @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  user        User?
+  memberships GroupMembership[]
+  attendances Attendance[]
+  signals     CareSignal[]
+  careTouches CareTouch[]
+
+  @@index([churchId, status])
+  @@index([churchId, fullName])
+  @@map("people")
+}
+
+model SmallGroup {
+  id               String    @id @default(uuid()) @db.Uuid
+  churchId         String    @db.Uuid
+  name             String
+  kind             GroupKind @default(CELL)
+  leaderUserId     String?   @db.Uuid
+  supervisorUserId String?   @db.Uuid
+  meetingDayOfWeek Int?
+  meetingTime      String?
+  locationName     String?
+  isActive         Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  church      Church @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  leader      User?  @relation("GroupLeader", fields: [leaderUserId], references: [id], onDelete: SetNull)
+  supervisor  User?  @relation("GroupSupervisor", fields: [supervisorUserId], references: [id], onDelete: SetNull)
+  memberships GroupMembership[]
+  events      Event[]
+  signals     CareSignal[]
+  careTouches CareTouch[]
+
+  @@index([churchId, isActive])
+  @@index([leaderUserId])
+  @@index([supervisorUserId])
+  @@map("groups")
+}
+
+model GroupMembership {
+  id        String         @id @default(uuid()) @db.Uuid
+  groupId   String         @db.Uuid
+  personId  String         @db.Uuid
+  role      MembershipRole @default(MEMBER)
+  joinedAt  DateTime       @default(now())
+  leftAt    DateTime?
+
+  group  SmallGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  person Person     @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, personId])
+  @@index([personId])
+  @@map("group_memberships")
+}
+
+model Event {
+  id          String      @id @default(uuid()) @db.Uuid
+  churchId    String      @db.Uuid
+  groupId     String?     @db.Uuid
+  createdById String?     @db.Uuid
+  type        EventType   @default(CELL_MEETING)
+  title       String
+  startsAt    DateTime
+  endsAt      DateTime?
+  status      EventStatus @default(SCHEDULED)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  church      Church     @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  group       SmallGroup? @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  createdBy   User?      @relation("EventCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  attendances Attendance[]
+
+  @@index([churchId, startsAt])
+  @@index([groupId, startsAt])
+  @@map("events")
+}
+
+model Attendance {
+  id        String           @id @default(uuid()) @db.Uuid
+  eventId   String           @db.Uuid
+  personId  String           @db.Uuid
+  status    AttendanceStatus
+  markedAt  DateTime         @default(now())
+  note      String?
+
+  event  Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, personId])
+  @@index([personId, markedAt])
+  @@map("attendances")
+}
+
+model CareSignal {
+  id             String         @id @default(uuid()) @db.Uuid
+  churchId       String         @db.Uuid
+  personId       String         @db.Uuid
+  groupId        String?        @db.Uuid
+  assignedToId   String?        @db.Uuid
+  source         SignalSource
+  severity       SignalSeverity @default(ATTENTION)
+  status         SignalStatus   @default(OPEN)
+  reason         String
+  evidence       String?
+  detectedAt     DateTime       @default(now())
+  lastEvidenceAt DateTime       @default(now())
+  resolvedAt     DateTime?
+
+  church     Church      @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  person     Person      @relation(fields: [personId], references: [id], onDelete: Cascade)
+  group      SmallGroup?  @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  assignedTo User?       @relation("SignalAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+
+  @@index([churchId, status, severity])
+  @@index([personId, status])
+  @@index([groupId, status])
+  @@map("care_signals")
+}
+
+model CareTouch {
+  id        String   @id @default(uuid()) @db.Uuid
+  churchId  String   @db.Uuid
+  personId  String   @db.Uuid
+  groupId   String?  @db.Uuid
+  actorId   String?  @db.Uuid
+  kind      CareKind
+  note      String?
+  happenedAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+
+  church Church @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+  group  SmallGroup? @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  actor  User? @relation("CareActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([churchId, happenedAt])
+  @@index([personId, happenedAt])
+  @@map("care_touches")
+}
