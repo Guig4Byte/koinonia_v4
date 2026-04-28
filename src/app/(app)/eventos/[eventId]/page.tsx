@@ -32,6 +32,7 @@ type ReadOnlyMember = {
 
 type ReadOnlyVisitor = {
   id: string;
+  personId: string;
   fullName: string;
 };
 
@@ -58,12 +59,16 @@ function EventReadOnlySummary({
         <p className="font-semibold text-[var(--color-text-primary)]">Membros</p>
         <div className="mt-3 space-y-2">
           {members.map((member) => (
-            <div key={member.personId} className="flex items-center justify-between gap-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2">
+            <Link
+              key={member.personId}
+              href={`/pessoas/${member.personId}`}
+              className="flex items-center justify-between gap-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 transition active:scale-[0.99]"
+            >
               <span className="min-w-0 text-sm font-medium text-[var(--color-text-primary)]">{member.fullName}</span>
               <Badge tone={statusTone(member.currentStatus)}>
                 {member.currentStatus ? attendanceLabels[member.currentStatus] : "Pendente"}
               </Badge>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
@@ -73,10 +78,14 @@ function EventReadOnlySummary({
           <p className="font-semibold text-[var(--color-text-primary)]">Visitantes</p>
           <div className="mt-3 space-y-2">
             {visitors.map((visitor) => (
-              <div key={visitor.id} className="flex items-center justify-between gap-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2">
+              <Link
+                key={visitor.id}
+                href={`/pessoas/${visitor.personId}`}
+                className="flex items-center justify-between gap-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 transition active:scale-[0.99]"
+              >
                 <span className="min-w-0 text-sm font-medium text-[var(--color-text-primary)]">{visitor.fullName}</span>
                 <Badge tone="info">Visitante</Badge>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -126,6 +135,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
 
   const visitorRows = visitors.map((attendance) => ({
     id: attendance.id,
+    personId: attendance.personId,
     fullName: attendance.person.fullName,
   }));
 

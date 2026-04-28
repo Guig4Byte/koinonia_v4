@@ -204,7 +204,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
 
       <SectionTitle>Última presença</SectionTitle>
       {latestAttendance ? (
-        <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
+        <Link href={`/eventos/${latestAttendance.event.id}`} className="block rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="font-semibold text-[var(--color-text-primary)]">{latestAttendance.event.title}</p>
@@ -214,7 +214,8 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
             </div>
             <Badge tone={attendanceTone(latestAttendance.status)}>{attendanceLabels[latestAttendance.status]}</Badge>
           </div>
-        </section>
+          <p className="mt-3 text-sm font-semibold text-[var(--color-brand)]">Abrir encontro →</p>
+        </Link>
       ) : (
         <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm text-[var(--color-text-secondary)] shadow-card">
           Ainda não há presença registrada para esta pessoa.
