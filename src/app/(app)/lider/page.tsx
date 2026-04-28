@@ -56,22 +56,22 @@ export default async function LeaderPage() {
       role={user.role}
       nav={[
         { href: "/lider", label: "Visão", icon: "home", active: true },
-        { href: "/pessoas", label: "Membros", icon: "people", attention: dashboard.signals.length > 0 },
+        { href: "/pessoas", label: "Membros", icon: "people", attention: dashboard.attentionPeople.length > 0 },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
         { href: "#buscar", label: "Busca", icon: "search" },
       ]}
     >
       <SearchBox placeholder="Buscar membro..." />
       <PulseCard
-        title={dashboard.signals[0] ? `${dashboard.signals[0].person.fullName} precisa de você.` : `${currentGroup?.name ?? "Sua célula"} está tranquila agora.`}
-        subtitle={dashboard.signals[0] ? dashboard.signals[0].reason : "Registre a presença quando a célula acontecer."}
+        title={dashboard.attentionPeople[0] ? `${dashboard.attentionPeople[0].person.fullName} precisa de você.` : `${currentGroup?.name ?? "Sua célula"} está tranquila agora.`}
+        subtitle={dashboard.attentionPeople[0] ? dashboard.attentionPeople[0].reason : "Registre a presença quando a célula acontecer."}
       />
 
       <MetricRow
         metrics={[
           { label: "membros", value: String(members.length), tone: "neutral" },
           { label: "presença", value: `${dashboard.presenceRate}%`, tone: dashboard.presenceRate < 65 ? "risk" : "ok" },
-          { label: "atenções", value: String(dashboard.signals.length), tone: dashboard.signals.length ? "risk" : "ok" },
+          { label: "atenções", value: String(dashboard.attentionPeople.length), tone: dashboard.attentionPeople.length ? "risk" : "ok" },
         ]}
       />
 
@@ -108,7 +108,7 @@ export default async function LeaderPage() {
 
       <SectionTitle>Quem merece atenção</SectionTitle>
       <div className="space-y-3">
-        {dashboard.signals.slice(0, 3).map((signal) => (
+        {dashboard.attentionPeople.slice(0, 3).map((signal) => (
           <PersonSignalCard
             key={signal.id}
             initials={initials(signal.person.fullName)}

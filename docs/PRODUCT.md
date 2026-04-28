@@ -155,7 +155,7 @@ Não deve:
 
 Atenção por ausência só pode nascer de encontros reais, passados e com presença registrada. Evento futuro, evento pendente ou membro sem marcação explícita não deve ser tratado como falta presumida.
 
-Depois de salvar check-in, a resposta da API informa quantas atenções abertas existem naquela célula, para que a interface possa fechar o ciclo: presença salva -> pessoas em atenção -> cuidado.
+Depois de salvar check-in, a resposta da API informa quantas pessoas distintas ficaram em atenção naquela célula, para que a interface possa fechar o ciclo: presença salva -> pessoas em atenção -> cuidado. A UI pode escolher o sinal mais grave/recente como motivo, mas a lista principal deve continuar sendo por pessoa, não por sinal.
 
 ## Check-in
 

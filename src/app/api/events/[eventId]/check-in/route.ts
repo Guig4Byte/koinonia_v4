@@ -132,9 +132,11 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ev
 
   await recalculateAttendanceSignalsForGroup(groupId);
 
-  const openSignalCount = await prisma.careSignal.count({
+  const openSignalPeople = await prisma.careSignal.findMany({
     where: { churchId: user.churchId, groupId, status: SignalStatus.OPEN },
+    distinct: ["personId"],
+    select: { personId: true },
   });
 
-  return NextResponse.json({ ok: true, openSignalCount });
+  return NextResponse.json({ ok: true, openSignalPeopleCount: openSignalPeople.length });
 }

@@ -11,7 +11,7 @@ function initials(name: string) {
 export default async function SupervisorPage() {
   const user = await getCurrentUser();
   const dashboard = await getSupervisorDashboard(user);
-  const firstSignal = dashboard.signals[0];
+  const firstSignal = dashboard.attentionPeople[0];
 
   return (
     <AppShell
@@ -19,7 +19,7 @@ export default async function SupervisorPage() {
       role={user.role}
       nav={[
         { href: "/supervisor", label: "Visão", icon: "home", active: true },
-        { href: "/pessoas", label: "Pessoas", icon: "people", attention: dashboard.signals.length > 0 },
+        { href: "/pessoas", label: "Pessoas", icon: "people", attention: dashboard.attentionPeople.length > 0 },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
         { href: "#buscar", label: "Busca", icon: "search" },
       ]}
@@ -33,7 +33,7 @@ export default async function SupervisorPage() {
         metrics={[
           { label: "células", value: String(dashboard.groups.length), tone: "neutral" },
           { label: "presença", value: `${dashboard.presenceRate}%`, tone: dashboard.presenceRate < 65 ? "risk" : "ok" },
-          { label: "atenções", value: String(dashboard.signals.length), tone: dashboard.signals.length ? "risk" : "ok" },
+          { label: "atenções", value: String(dashboard.attentionPeople.length), tone: dashboard.attentionPeople.length ? "risk" : "ok" },
         ]}
       />
 
@@ -45,14 +45,14 @@ export default async function SupervisorPage() {
             name={group.name}
             subtitle={`${group.leader?.name ?? "Sem líder"} · ${group.memberships.length} pessoas`}
             presenceRate={group.presenceRate}
-            attentionCount={group.signals.length}
+            attentionCount={group.attentionCount}
           />
         ))}
       </div>
 
       <SectionTitle>Pessoas para acompanhar</SectionTitle>
       <div className="space-y-3">
-        {dashboard.signals.slice(0, 4).map((signal) => (
+        {dashboard.attentionPeople.slice(0, 4).map((signal) => (
           <PersonSignalCard
             key={signal.id}
             initials={initials(signal.person.fullName)}

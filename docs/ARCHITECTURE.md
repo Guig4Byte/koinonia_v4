@@ -231,4 +231,9 @@ Cenário atual esperado:
 
 Atenção por ausência só pode nascer de encontros reais, passados e com presença registrada. Evento futuro, evento pendente ou membro sem marcação explícita não deve ser tratado como falta presumida.
 
-Depois de salvar check-in, a resposta da API informa quantas atenções abertas existem naquela célula, para que a interface possa fechar o ciclo: presença salva -> pessoas em atenção -> cuidado.
+Depois de salvar check-in, a resposta da API informa quantas pessoas distintas ficaram em atenção naquela célula, para que a interface possa fechar o ciclo: presença salva -> pessoas em atenção -> cuidado.
+
+
+## Atenção por pessoa
+
+Listas chamadas de `Pessoas em atenção` devem agregar sinais abertos por pessoa. Use `src/features/signals/attention.ts` para escolher o sinal primário: primeiro o mais grave, depois o mais recente. O backend do check-in também retorna contagem de pessoas distintas em atenção, não quantidade bruta de sinais.

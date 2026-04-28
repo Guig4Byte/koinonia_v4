@@ -164,7 +164,7 @@ export function CheckInList({
         return;
       }
 
-      setSavedAttentionCount(typeof payload?.openSignalCount === "number" ? payload.openSignalCount : null);
+      setSavedAttentionCount(typeof payload?.openSignalPeopleCount === "number" ? payload.openSignalPeopleCount : null);
       setSaved(true);
       setSavedVisitors((current) => [...current, ...visitors]);
       setVisitors([]);

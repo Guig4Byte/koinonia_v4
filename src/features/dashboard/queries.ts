@@ -1,6 +1,7 @@
 import { endOfWeek, startOfWeek } from "date-fns";
 import { AttendanceStatus, MembershipRole, SignalSeverity, SignalStatus, UserRole } from "../../generated/prisma/client";
 import { getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
+import { getPrimarySignalsByPerson } from "@/features/signals/attention";
 import { prisma } from "@/lib/prisma";
 import { percent } from "@/lib/format";
 
@@ -31,7 +32,7 @@ export async function getPastorDashboard(churchId: string) {
       where: { churchId, status: SignalStatus.OPEN },
       include: { person: true, group: { include: { leader: true, supervisor: true } } },
       orderBy: [{ detectedAt: "desc" }],
-      take: 6,
+      take: 50,
     }),
     prisma.smallGroup.findMany({
       where: { churchId, isActive: true },
@@ -42,7 +43,8 @@ export async function getPastorDashboard(churchId: string) {
 
   const completedEvents = events.filter((event) => event.status === "COMPLETED" || event.attendances.length > 0);
   const presence = summarizePresence(completedEvents);
-  const urgentSignals = openSignals.filter((signal) => signal.severity === SignalSeverity.URGENT).length;
+  const attentionPeople = getPrimarySignalsByPerson(openSignals);
+  const urgentSignals = attentionPeople.filter((signal) => signal.severity === SignalSeverity.URGENT).length;
 
   const groupsWithPresence = groups.map((group) => ({
     id: group.id,
@@ -50,7 +52,7 @@ export async function getPastorDashboard(churchId: string) {
     leaderName: group.leader?.name ?? "Sem líder",
     supervisorName: group.supervisor?.name ?? "Sem supervisor",
     presenceRate: summarizePresence(group.events).presenceRate,
-    attentionCount: group.signals.length,
+    attentionCount: getPrimarySignalsByPerson(group.signals).length,
   }));
 
   return {
@@ -59,6 +61,7 @@ export async function getPastorDashboard(churchId: string) {
     presenceRate: presence.presenceRate,
     visitors: presence.visitors,
     openSignals,
+    attentionPeople,
     urgentSignals,
     groups: groupsWithPresence,
   };
@@ -79,16 +82,19 @@ async function getGroupScopedDashboard(user: PermissionUser) {
 
   const events = groups.flatMap((group) => group.events);
   const signals = groups.flatMap((group) => group.signals.map((signal) => ({ ...signal, group })));
+  const attentionPeople = getPrimarySignalsByPerson(signals);
   const presence = summarizePresence(events);
   const groupsWithPresence = groups.map((group) => ({
     ...group,
     presenceRate: summarizePresence(group.events).presenceRate,
+    attentionCount: getPrimarySignalsByPerson(group.signals).length,
   }));
 
   return {
     groups: groupsWithPresence,
     events,
     signals,
+    attentionPeople,
     presenceRate: presence.presenceRate,
     visitors: presence.visitors,
   };

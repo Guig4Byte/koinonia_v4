@@ -12,8 +12,8 @@ export default async function PastorPage() {
   const user = await getCurrentUser();
   const dashboard = await getPastorDashboard(user.churchId);
 
-  const phrase = dashboard.openSignals.length > 0
-    ? `${dashboard.openSignals.length} pessoas merecem atenção nesta semana.`
+  const phrase = dashboard.attentionPeople.length > 0
+    ? `${dashboard.attentionPeople.length} pessoas merecem atenção nesta semana.`
     : "Nenhuma atenção urgente aberta agora.";
 
   return (
@@ -22,7 +22,7 @@ export default async function PastorPage() {
       role={user.role}
       nav={[
         { href: "/pastor", label: "Visão", icon: "home", active: true },
-        { href: "/pessoas", label: "Pessoas", icon: "people", attention: dashboard.openSignals.length > 0 },
+        { href: "/pessoas", label: "Pessoas", icon: "people", attention: dashboard.attentionPeople.length > 0 },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
         { href: "#buscar", label: "Busca", icon: "search" },
       ]}
@@ -36,7 +36,7 @@ export default async function PastorPage() {
       <MetricRow
         metrics={[
           { label: "presença", value: `${dashboard.presenceRate}%`, tone: dashboard.presenceRate < 65 ? "risk" : "ok" },
-          { label: "atenções", value: String(dashboard.openSignals.length), tone: dashboard.openSignals.length ? "risk" : "ok" },
+          { label: "atenções", value: String(dashboard.attentionPeople.length), tone: dashboard.attentionPeople.length ? "risk" : "ok" },
           { label: "visitantes", value: String(dashboard.visitors), tone: "neutral" },
         ]}
       />
@@ -52,7 +52,7 @@ export default async function PastorPage() {
 
       <SectionTitle>Quem precisa do seu coração</SectionTitle>
       <div className="space-y-3">
-        {dashboard.openSignals.slice(0, 3).map((signal) => (
+        {dashboard.attentionPeople.slice(0, 3).map((signal) => (
           <PersonSignalCard
             key={signal.id}
             initials={initials(signal.person.fullName)}
@@ -65,7 +65,7 @@ export default async function PastorPage() {
             severity={signal.severity === "URGENT" ? "risk" : "warn"}
           />
         ))}
-        {dashboard.openSignals.length === 0 ? (
+        {dashboard.attentionPeople.length === 0 ? (
           <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Tudo calmo por enquanto.</p>
         ) : null}
       </div>
