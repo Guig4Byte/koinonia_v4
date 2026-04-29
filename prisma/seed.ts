@@ -148,16 +148,43 @@ const memberNamesByGroup: Record<string, string[]> = {
     "Nicolas Barros",
     "Olívia Tavares",
   ],
+  semRegistro: [
+    "Amanda Paiva",
+    "Benício Moura",
+    "Cristiane Lopes",
+    "Danilo Araújo",
+    "Elisa Figueira",
+    "Fernando Valença",
+    "Gabriela Souza",
+    "Heitor Gomes",
+    "Iara Melo",
+    "Júlio Andrade",
+    "Karina Barros",
+    "Leonardo Cunha",
+  ],
 };
 
-function memberStatus(groupKey: string, memberIndex: number, eventIndex: number): AttendanceStatus {
-  if (groupKey === "esperanca" && memberIndex === 0) return AttendanceStatus.ABSENT;
-  if (groupKey === "esperanca" && memberIndex === 1 && eventIndex === 2) return AttendanceStatus.ABSENT;
-  if (groupKey === "betel" && memberIndex < 4) return memberIndex === eventIndex ? AttendanceStatus.JUSTIFIED : AttendanceStatus.ABSENT;
-  if (groupKey === "semente" && memberIndex === 0) return AttendanceStatus.ABSENT;
-  if (groupKey === "graca") return memberIndex < 7 ? AttendanceStatus.ABSENT : AttendanceStatus.PRESENT;
-  if (groupKey === "videira" && memberIndex === 0 && eventIndex === 2) return AttendanceStatus.ABSENT;
-  if (groupKey === "caminho" && memberIndex === 0 && eventIndex > 0) return AttendanceStatus.ABSENT;
+function memberStatus(
+  groupKey: string,
+  memberIndex: number,
+  eventIndex: number,
+): AttendanceStatus {
+  if (groupKey === "esperanca" && memberIndex === 0)
+    return AttendanceStatus.ABSENT;
+  if (groupKey === "esperanca" && memberIndex === 1 && eventIndex === 2)
+    return AttendanceStatus.ABSENT;
+  if (groupKey === "betel" && memberIndex < 4)
+    return memberIndex === eventIndex
+      ? AttendanceStatus.JUSTIFIED
+      : AttendanceStatus.ABSENT;
+  if (groupKey === "semente" && memberIndex === 0)
+    return AttendanceStatus.ABSENT;
+  if (groupKey === "graca")
+    return memberIndex < 7 ? AttendanceStatus.ABSENT : AttendanceStatus.PRESENT;
+  if (groupKey === "videira" && memberIndex === 0 && eventIndex === 2)
+    return AttendanceStatus.ABSENT;
+  if (groupKey === "caminho" && memberIndex === 0 && eventIndex > 0)
+    return AttendanceStatus.ABSENT;
   if ((memberIndex + eventIndex) % 9 === 0) return AttendanceStatus.JUSTIFIED;
   if ((memberIndex + eventIndex) % 7 === 0) return AttendanceStatus.ABSENT;
   return AttendanceStatus.PRESENT;
@@ -230,19 +257,26 @@ async function createGroupWithMembers({
   });
 
   const members = await Promise.all(
-    memberNamesByGroup[key].map((fullName, index) => prisma.person.create({
-      data: {
-        churchId,
-        fullName,
-        phone: `+55819${String(91000000 + Object.keys(memberNamesByGroup).indexOf(key) * 1000 + index).padStart(8, "0")}`,
-        status: index === 0 && key === "esperanca"
-          ? PersonStatus.COOLING_AWAY
-          : (index === 1 && key === "esperanca") || (index === 0 && ["semente", "caminho"].includes(key))
-            ? PersonStatus.NEEDS_ATTENTION
-            : PersonStatus.ACTIVE,
-        shortNote: index === 0 && key === "esperanca" ? "Família pediu oração nas últimas semanas." : undefined,
-      },
-    })),
+    memberNamesByGroup[key].map((fullName, index) =>
+      prisma.person.create({
+        data: {
+          churchId,
+          fullName,
+          phone: `+55819${String(91000000 + Object.keys(memberNamesByGroup).indexOf(key) * 1000 + index).padStart(8, "0")}`,
+          status:
+            index === 0 && key === "esperanca"
+              ? PersonStatus.COOLING_AWAY
+              : (index === 1 && key === "esperanca") ||
+                  (index === 0 && ["semente", "caminho"].includes(key))
+                ? PersonStatus.NEEDS_ATTENTION
+                : PersonStatus.ACTIVE,
+          shortNote:
+            index === 0 && key === "esperanca"
+              ? "Família pediu oração nas últimas semanas."
+              : undefined,
+        },
+      }),
+    ),
   );
 
   await prisma.groupMembership.createMany({
@@ -275,7 +309,10 @@ async function createGroupWithMembers({
     name,
     leader,
     supervisor,
-    members: members.map((member) => ({ id: member.id, fullName: member.fullName })),
+    members: members.map((member) => ({
+      id: member.id,
+      fullName: member.fullName,
+    })),
     visitor: { id: visitor.id, fullName: visitor.fullName },
   };
 }
@@ -354,7 +391,11 @@ async function main() {
   const passwordHash = await hash("koinonia123", 10);
 
   const church = await prisma.church.create({
-    data: { name: "Igreja Koinonia", slug: "koinonia", timezone: "America/Sao_Paulo" },
+    data: {
+      name: "Igreja Koinonia",
+      slug: "koinonia",
+      timezone: "America/Sao_Paulo",
+    },
   });
 
   const pastor = await createUserWithPerson({
@@ -389,42 +430,240 @@ async function main() {
     passwordHash,
   });
 
-  const bruno = await createUserWithPerson({ churchId: church.id, name: "Bruno Lima", email: "bruno@koinonia.local", role: UserRole.LEADER, passwordHash });
-  const carla = await createUserWithPerson({ churchId: church.id, name: "Carla Nascimento", email: "carla@koinonia.local", role: UserRole.LEADER, passwordHash });
-  const diego = await createUserWithPerson({ churchId: church.id, name: "Diego Ramos", email: "diego@koinonia.local", role: UserRole.LEADER, passwordHash });
-  const fernanda = await createUserWithPerson({ churchId: church.id, name: "Fernanda Alves", email: "fernanda@koinonia.local", role: UserRole.LEADER, passwordHash });
-  const gabriel = await createUserWithPerson({ churchId: church.id, name: "Gabriel Torres", email: "gabriel@koinonia.local", role: UserRole.LEADER, passwordHash });
-  const juliana = await createUserWithPerson({ churchId: church.id, name: "Juliana Costa", email: "juliana@koinonia.local", role: UserRole.LEADER, passwordHash });
-  const lucas = await createUserWithPerson({ churchId: church.id, name: "Lucas Pereira", email: "lucas@koinonia.local", role: UserRole.LEADER, passwordHash });
+  const bruno = await createUserWithPerson({
+    churchId: church.id,
+    name: "Bruno Lima",
+    email: "bruno@koinonia.local",
+    role: UserRole.LEADER,
+    passwordHash,
+  });
+  const carla = await createUserWithPerson({
+    churchId: church.id,
+    name: "Carla Nascimento",
+    email: "carla@koinonia.local",
+    role: UserRole.LEADER,
+    passwordHash,
+  });
+  const diego = await createUserWithPerson({
+    churchId: church.id,
+    name: "Diego Ramos",
+    email: "diego@koinonia.local",
+    role: UserRole.LEADER,
+    passwordHash,
+  });
+  const fernanda = await createUserWithPerson({
+    churchId: church.id,
+    name: "Fernanda Alves",
+    email: "fernanda@koinonia.local",
+    role: UserRole.LEADER,
+    passwordHash,
+  });
+  const gabriel = await createUserWithPerson({
+    churchId: church.id,
+    name: "Gabriel Torres",
+    email: "gabriel@koinonia.local",
+    role: UserRole.LEADER,
+    passwordHash,
+  });
+  const juliana = await createUserWithPerson({
+    churchId: church.id,
+    name: "Juliana Costa",
+    email: "juliana@koinonia.local",
+    role: UserRole.LEADER,
+    passwordHash,
+  });
+  const lucas = await createUserWithPerson({
+    churchId: church.id,
+    name: "Lucas Pereira",
+    email: "lucas@koinonia.local",
+    role: UserRole.LEADER,
+    passwordHash,
+  });
 
   const groups = await Promise.all([
-    createGroupWithMembers({ churchId: church.id, key: "esperanca", name: "Célula Esperança", leader: bruno, supervisor: ana, meetingDayOfWeek: 5, meetingTime: "20:00", locationName: "Casa do Bruno" }),
-    createGroupWithMembers({ churchId: church.id, key: "agape", name: "Célula Ágape", leader: carla, supervisor: ana, meetingDayOfWeek: 4, meetingTime: "19:30", locationName: "Casa da Carla" }),
-    createGroupWithMembers({ churchId: church.id, key: "betel", name: "Célula Betel", leader: diego, supervisor: ana, meetingDayOfWeek: 3, meetingTime: "20:00", locationName: "Casa do Diego" }),
-    createGroupWithMembers({ churchId: church.id, key: "videira", name: "Célula Videira", leader: fernanda, supervisor: marcos, meetingDayOfWeek: 5, meetingTime: "20:00", locationName: "Casa da Fernanda" }),
-    createGroupWithMembers({ churchId: church.id, key: "semente", name: "Célula Semente", leader: gabriel, supervisor: marcos, meetingDayOfWeek: 2, meetingTime: "19:30", locationName: "Casa do Gabriel" }),
-    createGroupWithMembers({ churchId: church.id, key: "caminho", name: "Célula Caminho", leader: juliana, supervisor: helena, meetingDayOfWeek: 6, meetingTime: "18:30", locationName: "Casa da Juliana" }),
-    createGroupWithMembers({ churchId: church.id, key: "graca", name: "Célula Graça", leader: lucas, supervisor: helena, meetingDayOfWeek: 4, meetingTime: "20:00", locationName: "Casa do Lucas" }),
+    createGroupWithMembers({
+      churchId: church.id,
+      key: "esperanca",
+      name: "Célula Esperança",
+      leader: bruno,
+      supervisor: ana,
+      meetingDayOfWeek: 5,
+      meetingTime: "20:00",
+      locationName: "Casa do Bruno",
+    }),
+    createGroupWithMembers({
+      churchId: church.id,
+      key: "agape",
+      name: "Célula Ágape",
+      leader: carla,
+      supervisor: ana,
+      meetingDayOfWeek: 4,
+      meetingTime: "19:30",
+      locationName: "Casa da Carla",
+    }),
+    createGroupWithMembers({
+      churchId: church.id,
+      key: "betel",
+      name: "Célula Betel",
+      leader: diego,
+      supervisor: ana,
+      meetingDayOfWeek: 3,
+      meetingTime: "20:00",
+      locationName: "Casa do Diego",
+    }),
+    createGroupWithMembers({
+      churchId: church.id,
+      key: "videira",
+      name: "Célula Videira",
+      leader: fernanda,
+      supervisor: marcos,
+      meetingDayOfWeek: 5,
+      meetingTime: "20:00",
+      locationName: "Casa da Fernanda",
+    }),
+    createGroupWithMembers({
+      churchId: church.id,
+      key: "semente",
+      name: "Célula Semente",
+      leader: gabriel,
+      supervisor: marcos,
+      meetingDayOfWeek: 2,
+      meetingTime: "19:30",
+      locationName: "Casa do Gabriel",
+    }),
+    createGroupWithMembers({
+      churchId: church.id,
+      key: "caminho",
+      name: "Célula Caminho",
+      leader: juliana,
+      supervisor: helena,
+      meetingDayOfWeek: 6,
+      meetingTime: "18:30",
+      locationName: "Casa da Juliana",
+    }),
+    createGroupWithMembers({
+      churchId: church.id,
+      key: "graca",
+      name: "Célula Graça",
+      leader: lucas,
+      supervisor: helena,
+      meetingDayOfWeek: 4,
+      meetingTime: "20:00",
+      locationName: "Casa do Lucas",
+    }),
   ]);
+
+  // Cenário de regressão: célula ativa sem eventos registrados deve aparecer como sem registro,
+  // não como 0% de presença.
+  await createGroupWithMembers({
+    churchId: church.id,
+    key: "semRegistro",
+    name: "Célula Sem Registro",
+    leader: bruno,
+    supervisor: ana,
+    meetingDayOfWeek: 2,
+    meetingTime: "20:00",
+    locationName: "Casa da Amanda",
+  });
 
   const churchId = church.id;
 
   for (const group of groups) {
-    await createCompletedEventWithChurch(churchId, group, group.leader.id, -21, 0);
-    await createCompletedEventWithChurch(churchId, group, group.leader.id, -14, 1);
-    await createCompletedEventWithChurch(churchId, group, group.leader.id, -7, 2);
+    await createCompletedEventWithChurch(
+      churchId,
+      group,
+      group.leader.id,
+      -21,
+      0,
+    );
+    await createCompletedEventWithChurch(
+      churchId,
+      group,
+      group.leader.id,
+      -14,
+      1,
+    );
+    await createCompletedEventWithChurch(
+      churchId,
+      group,
+      group.leader.id,
+      -7,
+      2,
+    );
   }
 
   const [esperanca, agape, betel, videira, semente, caminho, graca] = groups;
 
-  await createEvent({ churchId, group: esperanca, createdById: bruno.id, days: 0, status: EventStatus.CHECKIN_OPEN, hour: 20 });
-  const agapeWeek = await createEvent({ churchId, group: agape, createdById: carla.id, days: -1, status: EventStatus.COMPLETED, hour: 19 });
-  const betelWeek = await createEvent({ churchId, group: betel, createdById: diego.id, days: -1, status: EventStatus.COMPLETED, hour: 20 });
-  await createEvent({ churchId, group: videira, createdById: fernanda.id, days: 0, status: EventStatus.CHECKIN_OPEN, hour: 20 });
-  const sementeWeek = await createEvent({ churchId, group: semente, createdById: gabriel.id, days: -1, status: EventStatus.COMPLETED, hour: 19 });
-  await createEvent({ churchId, group: caminho, createdById: juliana.id, days: 1, status: EventStatus.SCHEDULED, hour: 18 });
-  const gracaWeek = await createEvent({ churchId, group: graca, createdById: lucas.id, days: -1, status: EventStatus.COMPLETED, hour: 20 });
+  await createEvent({
+    churchId,
+    group: esperanca,
+    createdById: bruno.id,
+    days: 0,
+    status: EventStatus.CHECKIN_OPEN,
+    hour: 20,
+  });
+  const agapeWeek = await createEvent({
+    churchId,
+    group: agape,
+    createdById: carla.id,
+    days: -1,
+    status: EventStatus.COMPLETED,
+    hour: 19,
+  });
+  const betelWeek = await createEvent({
+    churchId,
+    group: betel,
+    createdById: diego.id,
+    days: -1,
+    status: EventStatus.COMPLETED,
+    hour: 20,
+  });
+  await createEvent({
+    churchId,
+    group: videira,
+    createdById: fernanda.id,
+    days: 0,
+    status: EventStatus.CHECKIN_OPEN,
+    hour: 20,
+  });
+  const sementeWeek = await createEvent({
+    churchId,
+    group: semente,
+    createdById: gabriel.id,
+    days: -1,
+    status: EventStatus.COMPLETED,
+    hour: 19,
+  });
+  await createEvent({
+    churchId,
+    group: caminho,
+    createdById: juliana.id,
+    days: 1,
+    status: EventStatus.SCHEDULED,
+    hour: 18,
+  });
+  const gracaWeek = await createEvent({
+    churchId,
+    group: graca,
+    createdById: lucas.id,
+    days: -1,
+    status: EventStatus.COMPLETED,
+    hour: 20,
+  });
 
+  // Cenário de regressão: evento concluído sem marcação não deve virar 0% de risco.
+  // A UI deve tratar como ausência de dado/sem registro.
+  await createEvent({
+    churchId,
+    group: videira,
+    createdById: fernanda.id,
+    days: -1,
+    status: EventStatus.COMPLETED,
+    hour: 19,
+  });
+
+  // Visitante aparece no check-in como presença de visitante e não vira membro automaticamente.
+  // O mesmo visitante pode voltar em outro encontro; duplicidade no mesmo evento é bloqueada pela API de check-in.
   for (const [event, group, eventIndex, hasVisitor] of [
     [agapeWeek, agape, 3, true],
     [betelWeek, betel, 3, false],
@@ -438,11 +677,21 @@ async function main() {
           personId: member.id,
           status: memberStatus(group.key, memberIndex, eventIndex),
         })),
-        ...(hasVisitor ? [{ eventId: event.id, personId: group.visitor.id, status: AttendanceStatus.VISITOR }] : []),
+        ...(hasVisitor
+          ? [
+              {
+                eventId: event.id,
+                personId: group.visitor.id,
+                status: AttendanceStatus.VISITOR,
+              },
+            ]
+          : []),
       ],
     });
   }
 
+  // Cenário de regressão: sinal resolvido após cuidado. Recalcular presença não deve
+  // reabrir este mesmo motivo sem nova evidência posterior ao cuidado.
   await prisma.careSignal.create({
     data: {
       churchId,
@@ -480,6 +729,51 @@ async function main() {
     evidence: "Bom para validar atenção local que não sobe para o pastor.",
   });
 
+  // Cenário de regressão: múltiplos sinais na mesma pessoa devem agregar por pessoa
+  // e priorizar severidade antes de recência.
+  await prisma.person.update({
+    where: { id: graca.members[1].id },
+    data: { status: PersonStatus.NEEDS_ATTENTION },
+  });
+
+  await createSignal({
+    churchId,
+    group: graca,
+    personIndex: 1,
+    assignedToId: null,
+    severity: SignalSeverity.ATTENTION,
+    source: SignalSource.NO_CONTACT,
+    reason: "Sem contato recente após ausência simples.",
+    evidence: "Sinal mais antigo e menos grave para validar agregação.",
+  });
+
+  await prisma.careSignal.create({
+    data: {
+      churchId,
+      personId: graca.members[1].id,
+      groupId: graca.id,
+      source: SignalSource.ATTENDANCE,
+      severity: SignalSeverity.URGENT,
+      reason: "Queda rápida de presença com preocupação pastoral.",
+      evidence:
+        "Sinal urgente deve ser o primário mesmo havendo outro sinal aberto.",
+      detectedAt: daysFromNow(-1, 12),
+      lastEvidenceAt: daysFromNow(-1, 12),
+    },
+  });
+
+  // Cenário de regressão: supervisor com múltiplos pedidos sem transformar visão em fila pastoral do pastor.
+  await createSignal({
+    churchId,
+    group: agape,
+    personIndex: 2,
+    assignedToId: ana.id,
+    severity: SignalSeverity.ATTENTION,
+    source: SignalSource.MANUAL,
+    reason: "Apoio solicitado à supervisão para acolhimento.",
+    evidence: "Segundo pedido no escopo da supervisora Ana.",
+  });
+
   await createSignal({
     churchId,
     group: betel,
@@ -488,7 +782,8 @@ async function main() {
     severity: SignalSeverity.URGENT,
     source: SignalSource.ATTENDANCE,
     reason: "Ausências recorrentes e pouca resposta ao líder.",
-    evidence: "Urgente aparece ao pastor por gravidade, mesmo atribuído à supervisão.",
+    evidence:
+      "Urgente aparece ao pastor por gravidade, mesmo atribuído à supervisão.",
   });
 
   await createSignal({
@@ -499,7 +794,8 @@ async function main() {
     severity: SignalSeverity.ATTENTION,
     source: SignalSource.MANUAL,
     reason: "Apoio solicitado para retomar contato.",
-    evidence: "Pedido fica no escopo do supervisor Marcos, não vira caso pastoral por padrão.",
+    evidence:
+      "Pedido fica no escopo do supervisor Marcos, não vira caso pastoral por padrão.",
   });
 
   await createSignal({
@@ -510,7 +806,8 @@ async function main() {
     severity: SignalSeverity.URGENT,
     source: SignalSource.ATTENDANCE,
     reason: "Faltas consecutivas com histórico de esfriamento.",
-    evidence: "Caso urgente para validar radar pastoral sem escalonamento explícito.",
+    evidence:
+      "Caso urgente para validar radar pastoral sem escalonamento explícito.",
   });
 
   await createSignal({
@@ -521,7 +818,8 @@ async function main() {
     severity: SignalSeverity.ATTENTION,
     source: SignalSource.MANUAL,
     reason: "Supervisor encaminhou para cuidado pastoral.",
-    evidence: "Não é urgente automático, mas aparece ao pastor por encaminhamento explícito.",
+    evidence:
+      "Não é urgente automático, mas aparece ao pastor por encaminhamento explícito.",
   });
 
   const inactiveGroup = await prisma.smallGroup.create({
@@ -544,7 +842,8 @@ async function main() {
       fullName: "Membro de Célula Arquivada",
       phone: nextDemoPhone(),
       status: PersonStatus.NEEDS_ATTENTION,
-      shortNote: "Cenário de regressão: não deve aparecer em listas padrão por estar em grupo inativo.",
+      shortNote:
+        "Cenário de regressão: não deve aparecer em listas padrão por estar em grupo inativo.",
     },
   });
 
@@ -564,7 +863,8 @@ async function main() {
       source: SignalSource.MANUAL,
       severity: SignalSeverity.URGENT,
       reason: "Sinal de regressão em célula inativa.",
-      evidence: "Não deve aparecer para pastor, supervisor ou líder nas superfícies padrão.",
+      evidence:
+        "Não deve aparecer para pastor, supervisor ou líder nas superfícies padrão.",
     },
   });
 
@@ -581,14 +881,29 @@ async function main() {
   });
 
   console.log("Seed concluído.");
-  console.log("Estrutura demo: 1 pastor, 3 supervisores, 7 células ativas, 1 célula inativa e 12 membros por célula ativa.");
-  console.log("Perfis principais pelo seletor atual: pastor@koinonia.local / ana@koinonia.local / bruno@koinonia.local");
-  console.log("Outros usuários demo: marcos@koinonia.local / helena@koinonia.local / carla@koinonia.local / diego@koinonia.local / fernanda@koinonia.local / gabriel@koinonia.local / juliana@koinonia.local / lucas@koinonia.local");
-  console.log("Cenários de regressão: urgente sem atribuição, apoio à supervisão, encaminhamento pastoral, sinal resolvido e célula inativa.");
+  console.log(
+    "Estrutura demo: 1 pastor, 3 supervisores, 8 células ativas, 1 célula inativa e 12 membros por célula ativa.",
+  );
+  console.log(
+    "Perfis principais pelo seletor atual: pastor@koinonia.local / ana@koinonia.local / bruno@koinonia.local",
+  );
+  console.log(
+    "Outros usuários demo: marcos@koinonia.local / helena@koinonia.local / carla@koinonia.local / diego@koinonia.local / fernanda@koinonia.local / gabriel@koinonia.local / juliana@koinonia.local / lucas@koinonia.local",
+  );
+  console.log(
+    "Cenários de regressão: urgente sem atribuição, apoio à supervisão, múltiplos sinais, encaminhamento pastoral, sinal resolvido, célula sem registro, evento sem presença e célula inativa.",
+  );
   console.log("Senha: koinonia123");
 }
 
-async function createCompletedEventWithChurch(churchId: string, group: DemoGroup, createdById: string, days: number, eventIndex: number, hour = 20) {
+async function createCompletedEventWithChurch(
+  churchId: string,
+  group: DemoGroup,
+  createdById: string,
+  days: number,
+  eventIndex: number,
+  hour = 20,
+) {
   const event = await prisma.event.create({
     data: {
       churchId,
