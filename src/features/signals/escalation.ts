@@ -12,6 +12,11 @@ export type EscalationSignalLike = {
   assignedTo?: SignalAssigneeLike | null;
 };
 
+export type EscalationViewerLike = {
+  id?: string | null;
+  role: UserRole;
+};
+
 export function isAssignedToSupervisor(signal: EscalationSignalLike) {
   return signal.assignedTo?.role === UserRole.SUPERVISOR;
 }
@@ -30,6 +35,21 @@ export function escalationStatusLabel(signal: EscalationSignalLike) {
   return null;
 }
 
+export function shouldShowEscalationStatusForViewer(signal: EscalationSignalLike, viewer: EscalationViewerLike) {
+  if (isAssignedToPastoralRole(signal)) return true;
+
+  if (isAssignedToSupervisor(signal)) {
+    return viewer.role === UserRole.LEADER || viewer.role === UserRole.SUPERVISOR;
+  }
+
+  return false;
+}
+
+export function escalationStatusLabelForViewer(signal: EscalationSignalLike, viewer: EscalationViewerLike) {
+  if (!shouldShowEscalationStatusForViewer(signal, viewer)) return null;
+  return escalationStatusLabel(signal);
+}
+
 export function escalationStatusDetail(signal: EscalationSignalLike) {
   if (!signal.assignedTo) return null;
 
@@ -42,4 +62,9 @@ export function escalationStatusDetail(signal: EscalationSignalLike) {
   }
 
   return null;
+}
+
+export function escalationStatusDetailForViewer(signal: EscalationSignalLike, viewer: EscalationViewerLike) {
+  if (!shouldShowEscalationStatusForViewer(signal, viewer)) return null;
+  return escalationStatusDetail(signal);
 }

@@ -10,6 +10,7 @@ type SignalSupportActionsProps = {
   signalId: string;
   assignedToName?: string | null;
   assignedToRole?: string | null;
+  showAssignmentMessage?: boolean;
   canRequestSupervisor?: boolean;
   canEscalatePastor?: boolean;
 };
@@ -32,13 +33,14 @@ export function SignalSupportActions({
   signalId,
   assignedToName,
   assignedToRole,
+  showAssignmentMessage = true,
   canRequestSupervisor = false,
   canEscalatePastor = false,
 }: SignalSupportActionsProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [errorMessage, setErrorMessage] = useState("");
-  const label = assignedLabel(assignedToName, assignedToRole);
+  const label = showAssignmentMessage ? assignedLabel(assignedToName, assignedToRole) : null;
 
   function send(action: SupportAction) {
     setErrorMessage("");

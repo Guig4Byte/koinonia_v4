@@ -159,7 +159,7 @@ Fluxo direto permitido quando houver gravidade ou sensibilidade:
 Líder -> Pastor
 ```
 
-Escalonamento não é task, SLA, cobrança ou transferência total de responsabilidade. É pedido de apoio e decisão de visibilidade. No MVP atual, a implementação mínima usa `CareSignal.assignedToId`: quando aponta para supervisor, é pedido de apoio; quando aponta para pastor/admin, aparece como caso pastoral encaminhado.
+Escalonamento não é task, SLA, cobrança ou transferência total de responsabilidade. É pedido de apoio e decisão de visibilidade. No MVP atual, a implementação mínima usa `CareSignal.assignedToId`: quando aponta para supervisor, é pedido de apoio; quando aponta para pastor/admin, aparece como caso pastoral encaminhado. Caso urgente pode aparecer para o pastor sem ter sido encaminhado a ele; nesse caso, mensagens de apoio à supervisão não devem aparecer na UI pastoral.
 
 Use na UI:
 

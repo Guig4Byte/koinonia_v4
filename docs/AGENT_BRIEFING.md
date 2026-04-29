@@ -112,7 +112,7 @@ Funcionalidades fora desse recorte exigem pedido explícito do usuário.
 - Check-in é operação do líder da célula.
 - Pastor e supervisor veem eventos/presença em modo resumo; não registram presença pelo líder.
 - Líder resolve a maioria das atenções locais; supervisor apoia exceções e padrões; pastor vê saúde geral e casos graves/escalados.
-- Pastor não deve receber toda ausência, visitante, retorno ou sinal cotidiano por padrão.
+- Pastor não deve receber toda ausência, visitante, retorno ou sinal cotidiano por padrão. Quando um caso urgente também estiver atribuído ao supervisor, o pastor pode vê-lo por gravidade, mas não deve receber a mensagem de apoio solicitada ao supervisor.
 - Pastor pode buscar qualquer pessoa da igreja/campus quando precisar, mas isso não autoriza listar todos por padrão.
 - Pessoa sem marcação explícita aparece como `Pendente`, nunca como falta presumida.
 - Atenção por ausência só nasce de encontros reais, passados e com presença registrada.

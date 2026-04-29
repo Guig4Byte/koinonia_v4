@@ -7,7 +7,7 @@ import { SectionTitle } from "@/components/cards";
 import { SignalSupportActions } from "@/components/signal-support-actions";
 import { Badge } from "@/components/ui/badge";
 import { canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
-import { escalationStatusLabel } from "@/features/signals/escalation";
+import { escalationStatusLabelForViewer, shouldShowEscalationStatusForViewer } from "@/features/signals/escalation";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -154,7 +154,8 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       <SectionTitle>{openSignalsCount > 0 ? "Por que merece atenção" : "Situação atual"}</SectionTitle>
       <div className="space-y-3">
         {signals.map((signal) => {
-          const escalationLabel = escalationStatusLabel(signal);
+          const escalationLabel = escalationStatusLabelForViewer(signal, user);
+          const shouldShowAssignmentMessage = shouldShowEscalationStatusForViewer(signal, user);
           const isAssignedToPastor = signal.assignedTo?.role === UserRole.PASTOR || signal.assignedTo?.role === UserRole.ADMIN;
           const isAssignedToSupervisor = signal.assignedTo?.role === UserRole.SUPERVISOR;
           const canRequestSupervisor = user.role === UserRole.LEADER
@@ -184,6 +185,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
                 signalId={signal.id}
                 assignedToName={signal.assignedTo?.name}
                 assignedToRole={signal.assignedTo?.role}
+                showAssignmentMessage={shouldShowAssignmentMessage}
                 canRequestSupervisor={canRequestSupervisor}
                 canEscalatePastor={canEscalatePastor}
               />

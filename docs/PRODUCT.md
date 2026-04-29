@@ -128,7 +128,7 @@ Em casos graves ou sensíveis, o produto pode permitir:
 Líder -> Pastor
 ```
 
-Escalonar não deve criar task manager, SLA ou processo pesado. É uma decisão de visibilidade e apoio: quem estava cuidando localmente continua sendo referência, mas outra liderança passa a enxergar o caso. No MVP atual, esse escalonamento mínimo é representado por `CareSignal.assignedToId`: líder pode atribuir ao supervisor da célula; supervisor pode encaminhar a um pastor/admin. Casos urgentes continuam pastorais mesmo sem atribuição explícita.
+Escalonar não deve criar task manager, SLA ou processo pesado. É uma decisão de visibilidade e apoio: quem estava cuidando localmente continua sendo referência, mas outra liderança passa a enxergar o caso. No MVP atual, esse escalonamento mínimo é representado por `CareSignal.assignedToId`: líder pode atribuir ao supervisor da célula; supervisor pode encaminhar a um pastor/admin. Casos urgentes continuam pastorais mesmo sem atribuição explícita. Se um caso urgente foi atribuído apenas ao supervisor, o pastor continua vendo o caso por gravidade, mas não deve ver a mensagem de “apoio solicitado”; essa mensagem pertence ao líder e ao supervisor. O pastor só vê mensagem de encaminhamento quando o caso foi atribuído a pastor/admin.
 
 ### Líder
 
