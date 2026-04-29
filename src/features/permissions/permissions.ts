@@ -94,7 +94,7 @@ export function getVisibleGroupWhere(user: PermissionUser): Prisma.SmallGroupWhe
 
 export function getVisibleEventWhere(user: PermissionUser): Prisma.EventWhereInput {
   if (hasWholeChurchScope(user)) {
-    return { churchId: user.churchId };
+    return { churchId: user.churchId, group: { is: { churchId: user.churchId, isActive: true } } };
   }
 
   if (user.role === UserRole.SUPERVISOR) {

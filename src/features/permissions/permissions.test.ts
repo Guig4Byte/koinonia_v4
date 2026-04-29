@@ -68,6 +68,11 @@ describe("permission helpers", () => {
   });
 
   it("keeps query helpers scoped to active groups in the same church", () => {
+    expect(getVisibleEventWhere(pastor)).toEqual({
+      churchId: pastor.churchId,
+      group: { is: { churchId: pastor.churchId, isActive: true } },
+    });
+
     expect(getVisibleEventWhere(leader)).toEqual({
       churchId: leader.churchId,
       group: { is: { churchId: leader.churchId, isActive: true, leaderUserId: leader.id } },
