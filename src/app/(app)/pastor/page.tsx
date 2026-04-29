@@ -16,7 +16,7 @@ export default async function PastorPage() {
   const hasWeekPresence = dashboard.completedEvents > 0;
   const pastoralCasesCount = dashboard.attentionPeople.length;
   const groupsNeedingPastoralLook = dashboard.groups.filter((group) => (
-    group.attentionCount > 0 || (group.recordedEventsCount > 0 && group.presenceRate < 70)
+    group.pastoralCasesCount > 0 || (group.recordedEventsCount > 0 && group.presenceRate < 70)
   ));
 
   const phrase = pastoralCasesCount > 0
@@ -98,8 +98,8 @@ export default async function PastorPage() {
             name={group.name}
             subtitle={`${group.leaderName} · ${group.supervisorName}`}
             presenceRate={group.presenceRate}
-            attentionCount={group.pastoralCasesCount > 0 ? group.pastoralCasesCount : group.attentionCount}
-            attentionLabelKind={group.pastoralCasesCount > 0 ? "pastoral" : "local"}
+            attentionCount={group.pastoralCasesCount}
+            attentionLabelKind="pastoral"
             href={`/celulas/${group.id}`}
             hasPresenceData={group.recordedEventsCount > 0}
           />
