@@ -1,36 +1,42 @@
-# Koinonia — mobile polish step 1
+# Koinonia — mobile polish step 2
 
 ## Objetivo
 
-Primeira mini-etapa do ciclo de polimento mobile: reduzir ruído visual nas listas secundárias e padronizar cards curtos de pessoa sem alterar regra de negócio.
+Segunda mini-etapa do ciclo de polimento mobile: reduzir peso visual em telas secundárias de consulta e padronizar estados vazios/links de detalhe sem alterar regra de negócio.
 
 ## Arquivos alterados
 
 - `src/components/cards.tsx`
-  - Adiciona `PersonMiniCard`, um card compacto para listas de pessoas.
-  - Deixa mensagens vazias de seção com menor peso visual: fundo secundário, borda tracejada e sem sombra forte.
+  - Adiciona `EmptyState`, um estado vazio discreto com borda tracejada e fundo secundário.
+  - Adiciona `DetailLinkCard`, um card de link compacto para detalhe de encontro/célula.
+  - Faz `PastoralListSection` usar `EmptyState` internamente.
 
-- `src/app/(app)/pastor/page.tsx`
-  - Usa `PersonMiniCard` em `Acolhidos em cuidado`.
-  - Remove markup local duplicado.
+- `src/app/(app)/eventos/page.tsx`
+  - Substitui estados vazios locais por `EmptyState`.
+  - Mantém cálculo de presença e permissões inalterados.
 
-- `src/app/(app)/supervisor/page.tsx`
-  - Usa `PersonMiniCard` em `Acolhidos em cuidado`.
-  - Remove markup local duplicado.
+- `src/app/(app)/pessoas/[personId]/page.tsx`
+  - Substitui estados vazios locais por `EmptyState`.
+  - Usa `DetailLinkCard` para última presença e contexto da célula.
+  - Mantém ações de cuidado, apoio e encaminhamento inalteradas.
+
+- `src/app/(app)/celulas/[groupId]/page.tsx`
+  - Substitui estados vazios locais por `EmptyState`.
+  - Usa `DetailLinkCard` para encontro pendente e últimos encontros.
+  - Usa `PersonMiniCard` na lista de membros da célula.
 
 - `src/app/(app)/lider/page.tsx`
-  - Usa `PersonMiniCard` em `Acolhidos em cuidado`.
-  - Mantém o badge do evento de presença inalterado.
+  - Substitui o estado vazio de evento por `EmptyState`.
 
-- `src/app/(app)/pessoas/page.tsx`
-  - Usa `PersonMiniCard` em `Acolhidos em cuidado`.
-  - Usa `PersonMiniCard` na lista curta de membros do líder.
+- `src/app/(app)/pastor/page.tsx`
+  - Substitui o estado vazio de saúde das células por `EmptyState`.
 
 ## Impacto esperado
 
-- Listas de pessoas ficam mais escaneáveis no celular, com avatar/initials e hierarquia consistente.
-- Empty states deixam de competir visualmente com pessoas reais em atenção.
-- Reduz duplicação de markup entre `pastor`, `supervisor`, `lider` e `/pessoas`.
+- Telas de consulta ficam menos pesadas no celular.
+- Estados vazios deixam de competir visualmente com cards acionáveis.
+- Links secundários ficam mais consistentes entre pessoa e célula.
+- Reduz duplicação de markup sem mudar domínio, permissões, queries ou endpoints.
 
 ## O que não foi alterado
 
@@ -38,6 +44,7 @@ Primeira mini-etapa do ciclo de polimento mobile: reduzir ruído visual nas list
 - Nenhuma permissão.
 - Nenhuma regra de presença, sinal, cuidado ou escalonamento.
 - Nenhum endpoint.
+- Nenhum teste de domínio.
 
 ## Validação sugerida
 
@@ -51,6 +58,6 @@ npm run build
 
 Depois conferir manualmente no mobile:
 
-- `Visão` do pastor, supervisor e líder;
-- seção `Acolhidos em cuidado`;
-- `/pessoas` como líder, especialmente a lista `Membros da célula`.
+- `/eventos`, com e sem eventos nas seções;
+- `/pessoas/[personId]`, com e sem sinais/cuidado/presença;
+- `/celulas/[groupId]`, especialmente membros, encontros e estados vazios.

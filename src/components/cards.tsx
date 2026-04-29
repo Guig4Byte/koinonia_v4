@@ -127,12 +127,59 @@ export function PastoralListSection({
           <div className="mt-3 space-y-3">{hiddenChildren}</div>
         </details>
       ) : null}
-      {!hasChildren && emptyMessage ? (
-        <p className="rounded-2xl border border-dashed border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">
-          {emptyMessage}
-        </p>
-      ) : null}
+      {!hasChildren && emptyMessage ? <EmptyState>{emptyMessage}</EmptyState> : null}
     </section>
+  );
+}
+
+export function EmptyState({
+  children,
+  compact = false,
+}: {
+  children: ReactNode;
+  compact?: boolean;
+}) {
+  return (
+    <p
+      className={cn(
+        "rounded-2xl border border-dashed border-[var(--color-border-card)] bg-[var(--surface-alt)] text-sm leading-relaxed text-[var(--color-text-secondary)]",
+        compact ? "px-3 py-2.5" : "p-3",
+      )}
+    >
+      {children}
+    </p>
+  );
+}
+
+export function DetailLinkCard({
+  href,
+  title,
+  meta,
+  badgeLabel,
+  badgeTone = "neutral",
+  actionLabel,
+  children,
+}: {
+  href: string;
+  title: string;
+  meta?: ReactNode;
+  badgeLabel?: string;
+  badgeTone?: SignalBadgeTone;
+  actionLabel: string;
+  children?: ReactNode;
+}) {
+  return (
+    <Link href={href} className="block rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="truncate font-semibold text-[var(--color-text-primary)]">{title}</p>
+          {meta ? <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">{meta}</p> : null}
+        </div>
+        {badgeLabel ? <Badge tone={badgeTone}>{badgeLabel}</Badge> : null}
+      </div>
+      {children ? <div className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">{children}</div> : null}
+      <p className="mt-3 text-sm font-semibold text-[var(--color-brand)]">{actionLabel} →</p>
+    </Link>
   );
 }
 

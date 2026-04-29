@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/app-shell";
-import { ContextSummary, GroupCard, ListMoreHint, PastoralListSection, PersonMiniCard, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
+import { ContextSummary, EmptyState, GroupCard, ListMoreHint, PastoralListSection, PersonMiniCard, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
 import { getPastorDashboard } from "@/features/dashboard/queries";
 import { canUsePastorDashboard } from "@/features/permissions/permissions";
@@ -144,7 +144,7 @@ export default async function PastorPage() {
         ))}
         <ListMoreHint hiddenCount={Math.max(0, groupsNeedingPastoralLook.length - GROUPS_TO_REVIEW_LIMIT)} label="Abra Eventos ou busque uma célula quando precisar de contexto adicional." />
         {groupsNeedingPastoralLook.length === 0 ? (
-          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhuma célula pedindo olhar especial agora.</p>
+          <EmptyState>Nenhuma célula pedindo olhar especial agora.</EmptyState>
         ) : null}
       </div>
     </AppShell>

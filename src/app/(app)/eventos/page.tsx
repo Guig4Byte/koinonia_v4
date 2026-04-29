@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { endOfWeek, isAfter, isBefore, isToday, startOfDay, startOfWeek } from "date-fns";
 import { AppShell } from "@/components/app-shell";
-import { SectionTitle } from "@/components/cards";
+import { EmptyState, SectionTitle } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
 import { Badge } from "@/components/ui/badge";
 import { summarizeEventPresence } from "@/features/events/presence-summary";
@@ -105,27 +105,21 @@ export default async function EventsPage() {
       <SectionTitle>Hoje</SectionTitle>
       <div className="space-y-3">
         {todayEvents.length > 0 ? todayEvents.map((event) => <EventCard key={event.id} event={event} user={user} />) : (
-          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm text-[var(--color-text-secondary)] shadow-card">
-            Nenhum evento previsto para hoje.
-          </p>
+          <EmptyState>Nenhum evento previsto para hoje.</EmptyState>
         )}
       </div>
 
       <SectionTitle>Esta semana</SectionTitle>
       <div className="space-y-3">
         {weekEvents.length > 0 ? weekEvents.map((event) => <EventCard key={event.id} event={event} user={user} />) : (
-          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm text-[var(--color-text-secondary)] shadow-card">
-            Nenhum outro evento desta semana.
-          </p>
+          <EmptyState>Nenhum outro evento desta semana.</EmptyState>
         )}
       </div>
 
       <SectionTitle>Já realizados</SectionTitle>
       <div className="space-y-3">
         {completedEvents.length > 0 ? completedEvents.slice(0, 5).map((event) => <EventCard key={event.id} event={event} user={user} />) : (
-          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm text-[var(--color-text-secondary)] shadow-card">
-            Nenhum encontro realizado recentemente.
-          </p>
+          <EmptyState>Nenhum encontro realizado recentemente.</EmptyState>
         )}
       </div>
     </AppShell>

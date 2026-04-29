@@ -4,7 +4,7 @@ import { AttendanceStatus, CareKind, PersonStatus } from "../../../../generated/
 import { AppShell } from "@/components/app-shell";
 import { CareActions } from "@/components/care-actions";
 import { PersonStatusActions } from "@/components/person-status-actions";
-import { SectionTitle } from "@/components/cards";
+import { DetailLinkCard, EmptyState, SectionTitle } from "@/components/cards";
 import { SignalSupportActions } from "@/components/signal-support-actions";
 import { Badge } from "@/components/ui/badge";
 import { canRegisterCare, canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
@@ -166,14 +166,11 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
         })}
 
         {openSignalsCount === 0 ? (
-          <article className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
-            <p className="font-semibold text-[var(--color-text-primary)]">Sem motivo de atenção agora.</p>
-            <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">
-              {hasCareTouch
-                ? "O cuidado mais recente aparece abaixo. A pessoa continua no radar enquanto estiver em cuidado."
-                : "Esta pessoa pode ser consultada normalmente pela busca."}
-            </p>
-          </article>
+          <EmptyState>
+            {hasCareTouch
+              ? "Sem motivo de atenção agora. O cuidado mais recente aparece abaixo, e a pessoa continua no radar enquanto estiver em cuidado."
+              : "Sem motivo de atenção agora. Esta pessoa pode ser consultada normalmente pela busca."}
+          </EmptyState>
         ) : null}
       </div>
 
@@ -195,43 +192,38 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
         ))}
 
         {careTouches.length === 0 ? (
-          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm text-[var(--color-text-secondary)] shadow-card">
-            Nenhum contato registrado ainda. Use as ações acima quando houver ligação, WhatsApp ou cuidado real.
-          </p>
+          <EmptyState>Nenhum contato registrado ainda. Use as ações acima quando houver ligação, WhatsApp ou cuidado real.</EmptyState>
         ) : null}
       </div>
 
       <SectionTitle>Última presença</SectionTitle>
       {latestAttendance ? (
-        <Link href={`/eventos/${latestAttendance.event.id}`} className="block rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="font-semibold text-[var(--color-text-primary)]">{latestAttendance.event.title}</p>
-              <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
-                {latestAttendance.event.group?.name ?? "Evento"} · {formatShortDate(latestAttendance.event.startsAt)}, {formatTime(latestAttendance.event.startsAt)}
-              </p>
-            </div>
-            <Badge tone={attendanceTone(latestAttendance.status)}>{attendanceLabels[latestAttendance.status]}</Badge>
-          </div>
-          <p className="mt-3 text-sm font-semibold text-[var(--color-brand)]">Abrir encontro →</p>
-        </Link>
+        <DetailLinkCard
+          href={`/eventos/${latestAttendance.event.id}`}
+          title={latestAttendance.event.title}
+          meta={`${latestAttendance.event.group?.name ?? "Evento"} · ${formatShortDate(latestAttendance.event.startsAt)}, ${formatTime(latestAttendance.event.startsAt)}`}
+          badgeLabel={attendanceLabels[latestAttendance.status]}
+          badgeTone={attendanceTone(latestAttendance.status)}
+          actionLabel="Abrir encontro"
+        />
       ) : (
-        <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm text-[var(--color-text-secondary)] shadow-card">
-          Ainda não há presença registrada para esta pessoa.
-        </p>
+        <EmptyState>Ainda não há presença registrada para esta pessoa.</EmptyState>
       )}
 
       {primaryGroup ? (
         <>
           <SectionTitle>Contexto da célula</SectionTitle>
-          <Link href={`/celulas/${primaryGroup.id}`} className="block rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm leading-relaxed text-[var(--color-text-secondary)] shadow-card transition active:scale-[0.99]">
-            <p className="font-semibold text-[var(--color-text-primary)]">{primaryGroup.name}</p>
-            <p className="mt-1">
-              Líder: {primaryGroup.leader?.name ?? "não informado"}
-              {primaryGroup.supervisor?.name ? ` · Supervisor: ${primaryGroup.supervisor.name}` : ""}
-            </p>
-            <p className="mt-3 text-sm font-semibold text-[var(--color-brand)]">Abrir célula →</p>
-          </Link>
+          <DetailLinkCard
+            href={`/celulas/${primaryGroup.id}`}
+            title={primaryGroup.name}
+            meta={
+              <>
+                Líder: {primaryGroup.leader?.name ?? "não informado"}
+                {primaryGroup.supervisor?.name ? ` · Supervisor: ${primaryGroup.supervisor.name}` : ""}
+              </>
+            }
+            actionLabel="Abrir célula"
+          />
         </>
       ) : null}
     </AppShell>

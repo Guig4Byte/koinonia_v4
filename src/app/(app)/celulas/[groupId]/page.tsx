@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SignalSeverity, SignalStatus, UserRole } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
-import { ContextSummary, PersonSignalCard, SectionTitle } from "@/components/cards";
+import { ContextSummary, DetailLinkCard, EmptyState, PersonMiniCard, PersonSignalCard, SectionTitle } from "@/components/cards";
 import { Badge } from "@/components/ui/badge";
 import { summarizeEventPresence, summarizeEventsPresence } from "@/features/events/presence-summary";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
@@ -179,9 +179,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
               );
             })}
             {pastoralAttentionPeople.length === 0 ? (
-              <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm text-[var(--color-text-secondary)] shadow-card">
-                Nenhum caso urgente ou encaminhado ao pastor nesta célula.
-              </p>
+              <EmptyState>Nenhum caso urgente ou encaminhado ao pastor nesta célula.</EmptyState>
             ) : null}
           </div>
 
@@ -206,9 +204,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
               );
             })}
             {localAttentionPeople.length === 0 ? (
-              <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm text-[var(--color-text-secondary)] shadow-card">
-                Nenhuma atenção local fora dos casos pastorais agora.
-              </p>
+              <EmptyState>Nenhuma atenção local fora dos casos pastorais agora.</EmptyState>
             ) : null}
           </div>
         </>
@@ -235,9 +231,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
               );
             })}
             {attentionPeople.length === 0 ? (
-              <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm text-[var(--color-text-secondary)] shadow-card">
-                Nenhuma pessoa desta célula está em atenção agora.
-              </p>
+              <EmptyState>Nenhuma pessoa desta célula está em atenção agora.</EmptyState>
             ) : null}
           </div>
         </>
@@ -245,22 +239,16 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
 
       <SectionTitle>Encontro pendente</SectionTitle>
       {pendingEvent ? (
-        <Link href={`/eventos/${pendingEvent.id}`} className="block rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="font-semibold text-[var(--color-text-primary)]">{pendingEvent.title}</p>
-              <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
-                {formatShortDate(pendingEvent.startsAt)}, {formatTime(pendingEvent.startsAt)}
-              </p>
-            </div>
-            <Badge tone="warn">Presença pendente</Badge>
-          </div>
-          <p className="mt-3 text-sm font-semibold text-[var(--color-brand)]">Abrir encontro →</p>
-        </Link>
+        <DetailLinkCard
+          href={`/eventos/${pendingEvent.id}`}
+          title={pendingEvent.title}
+          meta={`${formatShortDate(pendingEvent.startsAt)}, ${formatTime(pendingEvent.startsAt)}`}
+          badgeLabel="Presença pendente"
+          badgeTone="warn"
+          actionLabel="Abrir encontro"
+        />
       ) : (
-        <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm text-[var(--color-text-secondary)] shadow-card">
-          Nenhum encontro pendente encontrado para esta célula.
-        </p>
+        <EmptyState>Nenhum encontro pendente encontrado para esta célula.</EmptyState>
       )}
 
       <SectionTitle>Últimos encontros</SectionTitle>
@@ -269,23 +257,19 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
           const metrics = summarizeEventPresence(event);
 
           return (
-            <Link key={event.id} href={`/eventos/${event.id}`} className="block rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="font-semibold text-[var(--color-text-primary)]">{event.title}</p>
-                  <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
-                    {formatShortDate(event.startsAt)}, {formatTime(event.startsAt)} · {metrics.visitorCount} {metrics.visitorCount === 1 ? "visitante" : "visitantes"}
-                  </p>
-                </div>
-                <Badge tone={metrics.hasPresenceData ? "ok" : "neutral"}>{metrics.hasPresenceData ? `${metrics.presenceRate}%` : "Sem registro"}</Badge>
-              </div>
-            </Link>
+            <DetailLinkCard
+              key={event.id}
+              href={`/eventos/${event.id}`}
+              title={event.title}
+              meta={`${formatShortDate(event.startsAt)}, ${formatTime(event.startsAt)} · ${metrics.visitorCount} ${metrics.visitorCount === 1 ? "visitante" : "visitantes"}`}
+              badgeLabel={metrics.hasPresenceData ? `${metrics.presenceRate}%` : "Sem registro"}
+              badgeTone={metrics.hasPresenceData ? "ok" : "neutral"}
+              actionLabel="Abrir encontro"
+            />
           );
         })}
         {completedEvents.length === 0 ? (
-          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm text-[var(--color-text-secondary)] shadow-card">
-            Ainda não há encontros registrados para resumir presença.
-          </p>
+          <EmptyState>Ainda não há encontros registrados para resumir presença.</EmptyState>
         ) : null}
       </div>
 
@@ -296,10 +280,15 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
           const memberBadge = personEffectiveBadgeForViewer(membership.person, attentionSignal, user);
 
           return (
-            <Link key={membership.id} href={`/pessoas/${membership.personId}`} className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]">
-              <span className="min-w-0 text-sm font-semibold text-[var(--color-text-primary)]">{membership.person.fullName}</span>
-              <Badge tone={memberBadge.tone}>{memberBadge.label}</Badge>
-            </Link>
+            <PersonMiniCard
+              key={membership.id}
+              href={`/pessoas/${membership.personId}`}
+              initials={initials(membership.person.fullName)}
+              name={membership.person.fullName}
+              context={group.name}
+              badgeLabel={memberBadge.label}
+              badgeTone={memberBadge.tone}
+            />
           );
         })}
       </div>

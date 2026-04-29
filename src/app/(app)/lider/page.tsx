@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/app-shell";
-import { ContextSummary, PastoralListSection, PersonMiniCard, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
+import { ContextSummary, EmptyState, PastoralListSection, PersonMiniCard, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
 import { CheckInList } from "@/components/check-in-list";
 import { SearchBox } from "@/components/search-box";
 import { Badge } from "@/components/ui/badge";
@@ -199,7 +199,7 @@ export default async function LeaderPage() {
           />
         </>
       ) : (
-        <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhum evento de célula encontrado. Rode o seed ou crie um evento.</p>
+        <EmptyState>Nenhum evento de célula encontrado. Rode o seed ou crie um evento.</EmptyState>
       )}
 
     </AppShell>
