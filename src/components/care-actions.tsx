@@ -73,9 +73,9 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
   }
 
   const buttonBase =
-    "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl px-3 text-sm font-semibold leading-none tracking-[-0.01em] shadow-card transition active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-brand)]";
+    "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-center text-sm font-semibold leading-tight tracking-[-0.01em] shadow-card transition active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-brand)]";
   const secondaryButton =
-    "inline-flex min-h-10 items-center justify-center rounded-xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)] transition active:scale-[0.98]";
+    "inline-flex min-h-10 w-full items-center justify-center rounded-xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-4 py-3 text-center text-sm font-semibold leading-tight text-[var(--color-btn-secondary-text)] transition active:scale-[0.98]";
   const disabled = "pointer-events-none cursor-not-allowed opacity-50";
 
   if (stage === "done") {
@@ -161,7 +161,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
                 setLastContactKind(null);
                 setStage("confirm-existing");
               }}
-              className={cn(secondaryButton, "w-full", isPending && disabled)}
+              className={cn(secondaryButton, isPending && disabled)}
             >
               Já houve contato?
             </button>
@@ -173,7 +173,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
         <div className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3">
           <p className="text-sm font-semibold text-[var(--color-text-primary)]">O contato aconteceu?</p>
           <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">Nada será registrado se você ainda não conseguiu falar com a pessoa.</p>
-          <div className="mt-2 grid grid-cols-2 gap-2">
+          <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
             <button
               type="button"
               disabled={!personId || isPending}
@@ -196,7 +196,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
           <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">
             Use quando você já ligou, mandou mensagem ou conversou fora do Koinonia. A atenção só será fechada depois da próxima confirmação.
           </p>
-          <div className="mt-2 grid grid-cols-2 gap-2">
+          <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
             <button
               type="button"
               disabled={!personId || isPending}
@@ -217,7 +217,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
         <div className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3">
           <p className="text-sm font-semibold text-[var(--color-text-primary)]">Quer deixar uma anotação?</p>
           <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">Salvar sem anotação também registra o cuidado e atualiza os motivos de atenção no seu escopo.</p>
-          <div className="mt-2 grid grid-cols-2 gap-2">
+          <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
             <button
               type="button"
               disabled={isPending}
@@ -235,7 +235,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
             type="button"
             disabled={isPending}
             onClick={resetFlow}
-            className={cn("mt-2 min-h-9 w-full text-xs font-semibold text-[var(--color-text-secondary)] transition active:scale-[0.98]", isPending && disabled)}
+            className={cn("mt-2 min-h-9 w-full text-center text-xs font-semibold leading-relaxed text-[var(--color-text-secondary)] transition active:scale-[0.98]", isPending && disabled)}
           >
             Cancelar e não registrar agora
           </button>
@@ -256,7 +256,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
             placeholder="Ex.: Orei com ele. Está melhor. Pediu ajuda pela família."
             className="w-full resize-none rounded-xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-2 text-sm leading-relaxed text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-secondary)] focus:border-[var(--color-brand)]"
           />
-          <div className="mt-2 grid grid-cols-2 gap-2">
+          <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
             <button
               type="button"
               disabled={isPending}
