@@ -2,8 +2,8 @@ import { AppShell } from "@/components/app-shell";
 import { ContextSummary, GroupCard, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
 import { getPastorDashboard } from "@/features/dashboard/queries";
+import { canUsePastorDashboard } from "@/features/permissions/permissions";
 import { signalBadgeForViewer } from "@/features/signals/display";
-import { UserRole } from "@/generated/prisma/client";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { redirect } from "next/navigation";
 
@@ -14,11 +14,11 @@ function initials(name: string) {
 export default async function PastorPage() {
   const user = await getCurrentUser();
 
-  if (user.role !== UserRole.PASTOR && user.role !== UserRole.ADMIN) {
+  if (!canUsePastorDashboard(user)) {
     redirect("/");
   }
 
-  const dashboard = await getPastorDashboard(user.churchId);
+  const dashboard = await getPastorDashboard(user);
   const pendingGroups = dashboard.pendingGroupsCount;
   const hasWeekPresence = dashboard.completedEvents > 0;
   const pastoralCasesCount = dashboard.attentionPeople.length;

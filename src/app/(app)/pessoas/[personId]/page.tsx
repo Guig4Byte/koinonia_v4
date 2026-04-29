@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AttendanceStatus, CareKind, PersonStatus, UserRole } from "../../../../generated/prisma/client";
+import { AttendanceStatus, CareKind, PersonStatus } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { CareActions } from "@/components/care-actions";
 import { PersonStatusActions } from "@/components/person-status-actions";
@@ -9,7 +9,7 @@ import { SignalSupportActions } from "@/components/signal-support-actions";
 import { Badge } from "@/components/ui/badge";
 import { canRegisterCare, canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
-import { escalationStatusDetailForViewer } from "@/features/signals/escalation";
+import { canEscalateSignalToPastor, canRequestSupervisorSupport, escalationStatusDetailForViewer } from "@/features/signals/escalation";
 import { signalBadgeForViewer, signalReasonForViewer } from "@/features/signals/display";
 import { getPrimarySignalsByPerson } from "@/features/signals/attention";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -145,15 +145,8 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
         {signals.map((signal) => {
           const signalBadge = signalBadgeForViewer(signal, user);
           const assignmentMessage = escalationStatusDetailForViewer(signal, user);
-          const isAssignedToPastor = signal.assignedTo?.role === UserRole.PASTOR || signal.assignedTo?.role === UserRole.ADMIN;
-          const isAssignedToSupervisor = signal.assignedTo?.role === UserRole.SUPERVISOR;
-          const canRequestSupervisor = user.role === UserRole.LEADER
-            && signal.group?.leaderUserId === user.id
-            && !isAssignedToSupervisor
-            && !isAssignedToPastor;
-          const canEscalatePastor = user.role === UserRole.SUPERVISOR
-            && signal.group?.supervisorUserId === user.id
-            && !isAssignedToPastor;
+          const canRequestSupervisor = canRequestSupervisorSupport(user, signal);
+          const canEscalatePastor = canEscalateSignalToPastor(user, signal);
 
           return (
             <article key={signal.id} className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">

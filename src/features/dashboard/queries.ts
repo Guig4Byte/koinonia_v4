@@ -1,6 +1,6 @@
 import { endOfWeek, startOfWeek } from "date-fns";
 import { AttendanceStatus, MembershipRole, PersonStatus, SignalSeverity, SignalStatus, UserRole } from "../../generated/prisma/client";
-import { getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
+import { canUsePastorDashboard, getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson } from "@/features/signals/attention";
 import { prisma } from "@/lib/prisma";
 import { percent } from "@/lib/format";
@@ -24,7 +24,12 @@ const pastoralSignalWhere = {
   ],
 };
 
-export async function getPastorDashboard(churchId: string) {
+export async function getPastorDashboard(user: PermissionUser) {
+  if (!canUsePastorDashboard(user)) {
+    throw new Error("getPastorDashboard requires pastor or admin scope");
+  }
+
+  const churchId = user.churchId;
   const now = new Date();
   const weekStart = startOfWeek(now, { weekStartsOn: 1 });
   const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
@@ -162,7 +167,7 @@ export function getLeaderDashboard(user: PermissionUser) {
 
 export async function getScopedDashboard(user: PermissionUser) {
   if (user.role === UserRole.PASTOR || user.role === UserRole.ADMIN) {
-    return getPastorDashboard(user.churchId);
+    return getPastorDashboard(user);
   }
 
   if (user.role === UserRole.SUPERVISOR) {

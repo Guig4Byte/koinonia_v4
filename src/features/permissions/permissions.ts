@@ -48,6 +48,18 @@ export function hasWholeChurchScope(user: PermissionUser) {
   return user.role === UserRole.ADMIN || user.role === UserRole.PASTOR;
 }
 
+export function canUsePastorDashboard(user: PermissionUser) {
+  return hasWholeChurchScope(user);
+}
+
+export function canUseSupervisorDashboard(user: PermissionUser) {
+  return user.role === UserRole.SUPERVISOR;
+}
+
+export function canUseLeaderDashboard(user: PermissionUser) {
+  return user.role === UserRole.LEADER;
+}
+
 export function canViewGroup(user: PermissionUser, group: ScopedGroup | null | undefined) {
   if (!group || group.churchId !== user.churchId || group.isActive === false) return false;
   if (hasWholeChurchScope(user)) return true;

@@ -4,9 +4,9 @@ import { CheckInList } from "@/components/check-in-list";
 import { SearchBox } from "@/components/search-box";
 import { Badge } from "@/components/ui/badge";
 import { getLeaderDashboard } from "@/features/dashboard/queries";
+import { canUseLeaderDashboard } from "@/features/permissions/permissions";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
 import { signalBadgeForViewer, signalReasonForViewer } from "@/features/signals/display";
-import { UserRole } from "@/generated/prisma/client";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { redirect } from "next/navigation";
 import { formatShortDate, formatTime } from "@/lib/format";
@@ -20,7 +20,7 @@ function initials(name: string) {
 export default async function LeaderPage() {
   const user = await getCurrentUser();
 
-  if (user.role !== UserRole.LEADER) {
+  if (!canUseLeaderDashboard(user)) {
     redirect("/");
   }
 

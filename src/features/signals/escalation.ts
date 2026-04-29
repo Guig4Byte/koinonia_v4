@@ -17,6 +17,15 @@ export type EscalationViewerLike = {
   role: UserRole;
 };
 
+export type EscalationGroupLike = {
+  leaderUserId?: string | null;
+  supervisorUserId?: string | null;
+};
+
+export type EscalationScopedSignalLike = EscalationSignalLike & {
+  group?: EscalationGroupLike | null;
+};
+
 export function isAssignedToSupervisor(signal: EscalationSignalLike) {
   return signal.assignedTo?.role === UserRole.SUPERVISOR;
 }
@@ -73,4 +82,24 @@ export function escalationStatusDetail(signal: EscalationSignalLike) {
 export function escalationStatusDetailForViewer(signal: EscalationSignalLike, viewer: EscalationViewerLike) {
   if (!shouldShowEscalationStatusForViewer(signal, viewer)) return null;
   return escalationStatusDetail(signal);
+}
+
+export function canRequestSupervisorSupport(viewer: EscalationViewerLike, signal: EscalationScopedSignalLike) {
+  return Boolean(
+    viewer.role === UserRole.LEADER
+    && viewer.id
+    && signal.group?.leaderUserId === viewer.id
+    && signal.group?.supervisorUserId
+    && !isAssignedToSupervisor(signal)
+    && !isAssignedToPastoralRole(signal),
+  );
+}
+
+export function canEscalateSignalToPastor(viewer: EscalationViewerLike, signal: EscalationScopedSignalLike) {
+  return Boolean(
+    viewer.role === UserRole.SUPERVISOR
+    && viewer.id
+    && signal.group?.supervisorUserId === viewer.id
+    && !isAssignedToPastoralRole(signal),
+  );
 }

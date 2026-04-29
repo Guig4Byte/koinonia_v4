@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SignalStatus, UserRole } from "@/generated/prisma/client";
 import { canViewGroup } from "@/features/permissions/permissions";
+import { canEscalateSignalToPastor, canRequestSupervisorSupport } from "@/features/signals/escalation";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 
@@ -51,17 +52,23 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
   }
 
   if (action === "REQUEST_SUPERVISOR") {
-    if (user.role !== UserRole.LEADER || signal.group?.leaderUserId !== user.id) {
+    if (user.role === UserRole.LEADER && signal.group?.leaderUserId === user.id && !signal.group?.supervisorUserId) {
+      return NextResponse.json({ error: "Esta célula ainda não tem supervisor definido" }, { status: 400 });
+    }
+
+    if (!canRequestSupervisorSupport(user, signal)) {
       return NextResponse.json({ error: "Apenas o líder da célula pode pedir apoio ao supervisor" }, { status: 403 });
     }
 
-    if (!signal.group?.supervisorUserId) {
+    const supervisorUserId = signal.group?.supervisorUserId;
+
+    if (!supervisorUserId) {
       return NextResponse.json({ error: "Esta célula ainda não tem supervisor definido" }, { status: 400 });
     }
 
     const updated = await prisma.careSignal.update({
       where: { id: signal.id },
-      data: { assignedToId: signal.group.supervisorUserId },
+      data: { assignedToId: supervisorUserId },
       include: { assignedTo: true },
     });
 
@@ -73,7 +80,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
     });
   }
 
-  if (user.role !== UserRole.SUPERVISOR || signal.group?.supervisorUserId !== user.id) {
+  if (!canEscalateSignalToPastor(user, signal)) {
     return NextResponse.json({ error: "Apenas o supervisor da célula pode encaminhar este caso ao pastor" }, { status: 403 });
   }
 

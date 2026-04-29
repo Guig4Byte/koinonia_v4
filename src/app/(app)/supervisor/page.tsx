@@ -2,8 +2,8 @@ import { AppShell } from "@/components/app-shell";
 import { ContextSummary, GroupCard, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
+import { canUseSupervisorDashboard } from "@/features/permissions/permissions";
 import { groupAttentionLabel, signalBadgeForViewer } from "@/features/signals/display";
-import { UserRole } from "@/generated/prisma/client";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { redirect } from "next/navigation";
 
@@ -19,7 +19,7 @@ function supportRequestsText(count: number) {
 export default async function SupervisorPage() {
   const user = await getCurrentUser();
 
-  if (user.role !== UserRole.SUPERVISOR) {
+  if (!canUseSupervisorDashboard(user)) {
     redirect("/");
   }
 

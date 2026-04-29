@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { UserRole } from "../../generated/prisma/client";
-import { canCheckInEvent, canRegisterCare, canViewEvent, canViewGroup, getOpenSignalInActiveGroupWhere, getPrimaryVisibleGroupIdForPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "./permissions";
+import { canCheckInEvent, canRegisterCare, canUseLeaderDashboard, canUsePastorDashboard, canUseSupervisorDashboard, canViewEvent, canViewGroup, getOpenSignalInActiveGroupWhere, getPrimaryVisibleGroupIdForPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "./permissions";
 
 const pastor = { id: "pastor-1", churchId: "church-1", role: UserRole.PASTOR };
 const supervisor = { id: "supervisor-1", churchId: "church-1", role: UserRole.SUPERVISOR };
@@ -19,6 +19,15 @@ const event = { churchId: "church-1", startsAt: new Date(), group };
 const person = { churchId: "church-1", memberships: [{ groupId: group.id, leftAt: null, group }] };
 
 describe("permission helpers", () => {
+  it("keeps dashboard entry permissions explicit by role", () => {
+    expect(canUsePastorDashboard(pastor)).toBe(true);
+    expect(canUsePastorDashboard(supervisor)).toBe(false);
+    expect(canUseSupervisorDashboard(supervisor)).toBe(true);
+    expect(canUseSupervisorDashboard(leader)).toBe(false);
+    expect(canUseLeaderDashboard(leader)).toBe(true);
+    expect(canUseLeaderDashboard(pastor)).toBe(false);
+  });
+
   it("allows whole-church users to view scoped pastoral data", () => {
     expect(canViewGroup(pastor, group)).toBe(true);
     expect(canViewEvent(pastor, event)).toBe(true);
