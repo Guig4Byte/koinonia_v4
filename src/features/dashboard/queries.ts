@@ -1,21 +1,10 @@
 import { endOfWeek, startOfWeek } from "date-fns";
-import { AttendanceStatus, MembershipRole, PersonStatus, SignalSeverity, SignalStatus, UserRole } from "../../generated/prisma/client";
+import { MembershipRole, PersonStatus, SignalSeverity, SignalStatus, UserRole } from "../../generated/prisma/client";
+import { summarizeEventsPresence, isPresenceRecordedEvent } from "@/features/events/presence-summary";
 import { canUsePastorDashboard, getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson } from "@/features/signals/attention";
+import { isSupportRequest } from "@/features/signals/sections";
 import { prisma } from "@/lib/prisma";
-import { percent } from "@/lib/format";
-
-function summarizePresence(events: Array<{ attendances: Array<{ status: AttendanceStatus }> }>) {
-  const attendances = events.flatMap((event) => event.attendances);
-  const accountable = attendances.filter((attendance) => attendance.status !== AttendanceStatus.VISITOR);
-  const present = accountable.filter((attendance) => attendance.status === AttendanceStatus.PRESENT).length;
-  const visitors = attendances.filter((attendance) => attendance.status === AttendanceStatus.VISITOR).length;
-
-  return {
-    presenceRate: percent(present, accountable.length),
-    visitors,
-  };
-}
 
 const pastoralSignalWhere = {
   OR: [
@@ -91,23 +80,25 @@ export async function getPastorDashboard(user: PermissionUser) {
   ]);
 
   const dueEvents = events.filter((event) => event.startsAt < tomorrow);
-  const completedEvents = dueEvents.filter((event) => event.status === "COMPLETED" || event.attendances.length > 0);
+  const completedEvents = dueEvents.filter(isPresenceRecordedEvent);
   const pendingGroupIds = new Set(dueEvents
     .filter((event) => event.status !== "COMPLETED" && event.attendances.length === 0 && event.groupId)
     .map((event) => event.groupId));
-  const presence = summarizePresence(completedEvents);
+  const presence = summarizeEventsPresence(completedEvents);
   const attentionPeople = getPastoralSignalsByPerson(openSignals);
   const urgentSignals = attentionPeople.length;
 
   const groupsWithPresence = groups.map((group) => {
-    const recordedEvents = group.events.filter((event) => event.status === "COMPLETED" || event.attendances.length > 0);
+    const groupPresence = summarizeEventsPresence(group.events);
+    const recordedEvents = group.events.filter(isPresenceRecordedEvent);
 
     return {
       id: group.id,
       name: group.name,
       leaderName: group.leader?.name ?? "Sem líder",
       supervisorName: group.supervisor?.name ?? "Sem supervisor",
-      presenceRate: summarizePresence(recordedEvents).presenceRate,
+      presenceRate: groupPresence.presenceRate,
+      hasPresenceData: groupPresence.hasPresenceData,
       recordedEventsCount: recordedEvents.length,
       attentionCount: getPrimarySignalsByPerson(group.signals).length,
       pastoralCasesCount: getPastoralSignalsByPerson(group.signals).length,
@@ -119,7 +110,8 @@ export async function getPastorDashboard(user: PermissionUser) {
     completedEvents: completedEvents.length,
     pendingGroupsCount: pendingGroupIds.size,
     presenceRate: presence.presenceRate,
-    visitors: presence.visitors,
+    visitors: presence.visitorCount,
+    hasPresenceData: presence.hasPresenceData,
     openSignals,
     attentionPeople,
     urgentSignals,
@@ -142,21 +134,23 @@ async function getGroupScopedDashboard(user: PermissionUser) {
   });
 
   const events = groups.flatMap((group) => group.events);
-  const recordedEvents = events.filter((event) => event.status === "COMPLETED" || event.attendances.length > 0);
+  const recordedEvents = events.filter(isPresenceRecordedEvent);
   const signals = groups.flatMap((group) => group.signals.map((signal) => ({ ...signal, group })));
   const attentionPeople = getPrimarySignalsByPerson(signals);
-  const supportRequests = signals.filter((signal) => signal.assignedToId === user.id);
+  const supportRequests = attentionPeople.filter((signal) => isSupportRequest(signal, user));
   const delegatedToPastor = signals.filter((signal) => signal.assignedTo?.role === UserRole.PASTOR || signal.assignedTo?.role === UserRole.ADMIN);
-  const presence = summarizePresence(recordedEvents);
+  const presence = summarizeEventsPresence(recordedEvents);
   const groupsWithPresence = groups.map((group) => {
-    const recordedGroupEvents = group.events.filter((event) => event.status === "COMPLETED" || event.attendances.length > 0);
+    const groupPresence = summarizeEventsPresence(group.events);
+    const recordedGroupEvents = group.events.filter(isPresenceRecordedEvent);
 
     return {
       ...group,
-      presenceRate: summarizePresence(recordedGroupEvents).presenceRate,
+      presenceRate: groupPresence.presenceRate,
+      hasPresenceData: groupPresence.hasPresenceData,
       recordedEventsCount: recordedGroupEvents.length,
       attentionCount: getPrimarySignalsByPerson(group.signals).length,
-      supportRequestsCount: group.signals.filter((signal) => signal.assignedToId === user.id).length,
+      supportRequestsCount: getPrimarySignalsByPerson(group.signals).filter((signal) => isSupportRequest(signal, user)).length,
       inCareCount: group.memberships.filter((membership) => membership.person.status === PersonStatus.COOLING_AWAY).length,
     };
   });
@@ -169,8 +163,9 @@ async function getGroupScopedDashboard(user: PermissionUser) {
     supportRequests,
     delegatedToPastor,
     presenceRate: presence.presenceRate,
+    hasPresenceData: presence.hasPresenceData,
     recordedEventsCount: recordedEvents.length,
-    visitors: presence.visitors,
+    visitors: presence.visitorCount,
   };
 }
 

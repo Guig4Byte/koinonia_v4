@@ -4,9 +4,10 @@ import { AppShell } from "@/components/app-shell";
 import { SectionTitle } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
 import { Badge } from "@/components/ui/badge";
+import { summarizeEventPresence } from "@/features/events/presence-summary";
 import { canCheckInEvent, getVisibleEventWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
-import { formatShortDate, formatTime, percent } from "@/lib/format";
+import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
 async function getEventsForUser(user: PermissionUser) {
@@ -19,21 +20,8 @@ async function getEventsForUser(user: PermissionUser) {
 }
 type EventWithRelations = Awaited<ReturnType<typeof getEventsForUser>>[number];
 
-function eventMetrics(event: EventWithRelations) {
-  const accountable = event.attendances.filter((attendance) => attendance.status !== "VISITOR");
-  const present = accountable.filter((attendance) => attendance.status === "PRESENT").length;
-  const visitors = event.attendances.filter((attendance) => attendance.status === "VISITOR").length;
-
-  return {
-    rate: percent(present, accountable.length),
-    visitors,
-    markings: event.attendances.length,
-    completed: event.status === "COMPLETED" || event.attendances.length > 0,
-  };
-}
-
 function EventCard({ event, user }: { event: EventWithRelations; user: PermissionUser }) {
-  const metrics = eventMetrics(event);
+  const metrics = summarizeEventPresence(event);
   const canEditPresence = canCheckInEvent(user, event);
   const canRegisterPresence = canEditPresence && !metrics.completed;
   const canAdjustPresence = canEditPresence && metrics.completed;
@@ -54,15 +42,17 @@ function EventCard({ event, user }: { event: EventWithRelations; user: Permissio
       {metrics.completed ? (
         <div className="mt-3 grid grid-cols-3 gap-2 text-center">
           <div className="rounded-2xl bg-[var(--metric-card-bg)] p-3">
-            <p className="text-lg font-bold text-[var(--color-metric-presenca)]">{metrics.rate}%</p>
+            <p className="text-lg font-bold text-[var(--color-metric-presenca)]">
+              {metrics.hasPresenceData ? `${metrics.presenceRate}%` : "—"}
+            </p>
             <p className="text-[11px] text-[var(--color-text-secondary)]">presença</p>
           </div>
           <div className="rounded-2xl bg-[var(--metric-card-bg)] p-3">
-            <p className="text-lg font-bold text-[var(--color-metric-visitantes)]">{metrics.visitors}</p>
+            <p className="text-lg font-bold text-[var(--color-metric-visitantes)]">{metrics.visitorCount}</p>
             <p className="text-[11px] text-[var(--color-text-secondary)]">visitantes</p>
           </div>
           <div className="rounded-2xl bg-[var(--metric-card-bg)] p-3">
-            <p className="text-lg font-bold text-[var(--color-text-primary)]">{metrics.markings}</p>
+            <p className="text-lg font-bold text-[var(--color-text-primary)]">{metrics.markingsCount}</p>
             <p className="text-[11px] text-[var(--color-text-secondary)]">marcações</p>
           </div>
         </div>
@@ -94,7 +84,7 @@ export default async function EventsPage() {
 
   const todayEvents = events.filter((event) => isToday(event.startsAt));
   const weekEvents = events.filter((event) => !isToday(event.startsAt) && isAfter(event.startsAt, weekStart) && isBefore(event.startsAt, weekEnd));
-  const completedEvents = events.filter((event) => eventMetrics(event).completed && isBefore(event.startsAt, today));
+  const completedEvents = events.filter((event) => summarizeEventPresence(event).completed && isBefore(event.startsAt, today));
 
   return (
     <AppShell

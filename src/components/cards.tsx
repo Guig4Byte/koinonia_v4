@@ -261,12 +261,14 @@ export function EventMacroCard({
   planned,
   presenceRate,
   visitors,
+  hasPresenceData = true,
 }: {
   title: string;
   realized: number;
   planned: number;
   presenceRate: number;
   visitors: number;
+  hasPresenceData?: boolean;
 }) {
   return (
     <article className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
@@ -277,7 +279,9 @@ export function EventMacroCard({
           <p className="text-[11px] text-[var(--color-text-secondary)]">realizadas</p>
         </div>
         <div className="rounded-2xl border border-[var(--metric-card-border)] bg-[var(--metric-card-bg)] p-3 shadow-[var(--metric-card-shadow)]">
-          <p className="text-lg font-bold text-[var(--color-metric-presenca)]">{presenceRate}%</p>
+          <p className="text-lg font-bold text-[var(--color-metric-presenca)]">
+            {hasPresenceData ? `${presenceRate}%` : "—"}
+          </p>
           <p className="text-[11px] text-[var(--color-text-secondary)]">presença</p>
         </div>
         <div className="rounded-2xl border border-[var(--metric-card-border)] bg-[var(--metric-card-bg)] p-3 shadow-[var(--metric-card-shadow)]">

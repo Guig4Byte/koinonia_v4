@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { getPastorDashboard } from "@/features/dashboard/queries";
 import { canUsePastorDashboard } from "@/features/permissions/permissions";
 import { signalBadgeForViewer, signalReasonForViewer } from "@/features/signals/display";
-import { isUrgentOrPastoralCase } from "@/features/signals/sections";
+import { splitPastoralSections } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { initials } from "@/lib/text";
 import Link from "next/link";
@@ -23,13 +23,17 @@ export default async function PastorPage() {
 
   const dashboard = await getPastorDashboard(user);
   const pendingGroups = dashboard.pendingGroupsCount;
-  const hasWeekPresence = dashboard.completedEvents > 0;
-  const pastoralCasesCount = dashboard.attentionPeople.length;
-  const activeAttentionPersonIds = new Set(dashboard.attentionPeople.map((signal) => signal.personId));
-  const urgentOrPastoralCases = dashboard.attentionPeople.filter(isUrgentOrPastoralCase);
-  const inCarePeople = dashboard.inCarePeople.filter((person) => !activeAttentionPersonIds.has(person.id));
+  const hasWeekPresence = dashboard.hasPresenceData;
+  const pastoralSections = splitPastoralSections({
+    signals: dashboard.attentionPeople,
+    inCarePeople: dashboard.inCarePeople,
+    viewer: user,
+  });
+  const urgentOrPastoralCases = pastoralSections.urgentOrPastoralCases;
+  const inCarePeople = pastoralSections.inCarePeople;
+  const pastoralCasesCount = urgentOrPastoralCases.length;
   const groupsNeedingPastoralLook = dashboard.groups.filter((group) => (
-    group.pastoralCasesCount > 0 || (group.recordedEventsCount > 0 && group.presenceRate < 70)
+    group.pastoralCasesCount > 0 || (group.hasPresenceData && group.presenceRate < 70)
   ));
 
   const phrase = pastoralCasesCount > 0
@@ -139,7 +143,7 @@ export default async function PastorPage() {
             attentionCount={group.pastoralCasesCount}
             attentionLabelKind="pastoral"
             href={`/celulas/${group.id}`}
-            hasPresenceData={group.recordedEventsCount > 0}
+            hasPresenceData={group.hasPresenceData}
           />
         ))}
         <ListMoreHint hiddenCount={Math.max(0, groupsNeedingPastoralLook.length - GROUPS_TO_REVIEW_LIMIT)} label="Abra Eventos ou busque uma célula quando precisar de contexto adicional." />

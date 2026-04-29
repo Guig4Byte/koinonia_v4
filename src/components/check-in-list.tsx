@@ -75,7 +75,7 @@ export function CheckInList({
   members,
   initialVisitors = [],
   initialVisitorCount = 0,
-  submitLabel = "Finalizar",
+  submitLabel = "Salvar presença",
   mode = "register",
   attentionHref = "/pessoas",
   attentionLabel = "Ver pessoas em atenção",
@@ -125,12 +125,14 @@ export function CheckInList({
     );
 
     const visitorTotal = fallbackSavedVisitorCount + visitors.length;
-    const presenceRate = counts.totalMembers === 0 ? 0 : Math.round((counts.present / counts.totalMembers) * 100);
+    const hasPresenceData = counts.totalMembers > 0 && counts.pending === 0;
+    const presenceRate = hasPresenceData ? Math.round((counts.present / counts.totalMembers) * 100) : 0;
 
     return {
       ...counts,
       visitorTotal,
       presenceRate,
+      hasPresenceData,
       attentionCount: counts.absent,
     };
   }, [fallbackSavedVisitorCount, items, visitors.length]);
@@ -139,8 +141,8 @@ export function CheckInList({
   const hasSavedAttention = savedAttentionCount !== null ? savedAttentionCount > 0 : summary.attentionCount > 0;
   const helperText =
     mode === "adjust"
-      ? "Revise as marcações já salvas e corrija somente o necessário."
-      : "Marque a presença sem transformar cuidado em relatório. O sistema só precisa saber quem pode merecer atenção.";
+      ? "Corrija apenas o que mudou neste encontro."
+      : "Marque quem veio. Só isso já ajuda a lembrar quem pode precisar de cuidado.";
 
   function clearTransientState() {
     setSaved(false);
@@ -180,7 +182,7 @@ export function CheckInList({
 
   function save() {
     if (summary.pending > 0) {
-      setErrorMessage("Marque todas as pessoas antes de finalizar a presença.");
+      setErrorMessage("Ainda falta marcar algumas pessoas antes de salvar a presença.");
       setSaved(false);
       return;
     }
@@ -220,13 +222,17 @@ export function CheckInList({
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-sm text-[var(--color-text-secondary)]">Presença do encontro</p>
-            <p className="text-3xl font-bold text-[var(--color-metric-presenca)]">{summary.presenceRate}%</p>
+            <p className="text-3xl font-bold text-[var(--color-metric-presenca)]">{summary.hasPresenceData ? `${summary.presenceRate}%` : "—"}</p>
             <p className="mt-1 text-xs text-[var(--color-text-secondary)]">
-              {summary.present} de {summary.totalMembers} presentes · {summary.visitorTotal} {summary.visitorTotal === 1 ? "visitante" : "visitantes"}
+              {summary.pending > 0
+                ? `${summary.totalMembers - summary.pending} de ${summary.totalMembers} marcados`
+                : `${summary.present} de ${summary.totalMembers} presentes`}
+              {" · "}
+              {summary.visitorTotal} {summary.visitorTotal === 1 ? "visitante" : "visitantes"}
             </p>
           </div>
           <div className="rounded-full border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-3 py-1 text-xs font-semibold text-[var(--color-text-secondary)]">
-            {summary.pending > 0 ? `${summary.pending} pendente${summary.pending === 1 ? "" : "s"}` : "Tudo marcado"}
+            {summary.pending > 0 ? `Faltam ${summary.pending}` : "Tudo marcado"}
           </div>
         </div>
 
@@ -235,11 +241,11 @@ export function CheckInList({
         {summary.pending > 0 ? (
           <div className="mt-4 rounded-2xl border border-[var(--color-badge-atencao-border)] bg-[var(--color-badge-atencao-bg)] p-3 text-sm text-[var(--color-badge-atencao-text)]">
             <p className="font-semibold">
-              {summary.pending} {summary.pending === 1 ? "pessoa ainda está pendente" : "pessoas ainda estão pendentes"}.
+              {summary.pending === 1 ? "Falta marcar 1 pessoa." : `Falta marcar ${summary.pending} pessoas.`}
             </p>
-            <p className="mt-1 text-xs leading-relaxed">Use o atalho se todos vieram e depois ajuste só ausências ou justificativas.</p>
+            <p className="mt-1 text-xs leading-relaxed">Se todos vieram, use o atalho e ajuste só exceções.</p>
             <GhostButton type="button" onClick={markPendingAsPresent} className="mt-3 min-h-10 w-full rounded-xl px-3 text-xs">
-              Marcar pendentes como presentes
+              Marcar todos como presentes
             </GhostButton>
           </div>
         ) : null}
@@ -259,11 +265,11 @@ export function CheckInList({
             <p className="mt-1 text-[var(--color-text-secondary)]">
               {savedAttentionCount !== null
                 ? savedAttentionCount > 0
-                  ? `${savedAttentionCount} ${savedAttentionCount === 1 ? "pessoa está" : "pessoas estão"} em atenção na célula.`
-                  : "Nenhum motivo de atenção ficou ativo na célula."
+                  ? `${savedAttentionCount} ${savedAttentionCount === 1 ? "pessoa continua" : "pessoas continuam"} no radar da célula.`
+                  : "Ninguém ficou em atenção por este encontro."
                 : summary.attentionCount > 0
-                  ? `${summary.attentionCount} ${summary.attentionCount === 1 ? "pessoa ficou" : "pessoas ficaram"} em atenção depois deste encontro.`
-                  : "Nenhuma ausência pediu atenção neste encontro."}
+                  ? `${summary.attentionCount} ${summary.attentionCount === 1 ? "pessoa pode precisar" : "pessoas podem precisar"} de um gesto de cuidado.`
+                  : "Ninguém pediu atenção neste encontro."}
             </p>
             {hasSavedAttention ? (
               <Link href={attentionHref} className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)]">
@@ -275,23 +281,23 @@ export function CheckInList({
       </div>
 
       <div className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
-        <p className="font-semibold text-[var(--color-text-primary)]">Visitantes</p>
+        <p className="font-semibold text-[var(--color-text-primary)]">Visitantes do encontro</p>
         {savedVisitors.length > 0 ? (
           <div className="mt-3 space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">Já registrados</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">Já salvos</p>
             {savedVisitors.map((visitor) => (
               <div key={visitor.id} className="flex items-center justify-between rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 text-sm">
                 <span className="font-medium text-[var(--color-text-primary)]">{visitor.fullName}</span>
-                <span className="text-xs font-semibold text-[var(--color-text-secondary)]">registrado</span>
+                <span className="text-xs font-semibold text-[var(--color-text-secondary)]">salvo</span>
               </div>
             ))}
           </div>
         ) : fallbackSavedVisitorCount > 0 ? (
           <p className="mt-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 text-sm text-[var(--color-text-secondary)]">
-            {fallbackSavedVisitorCount} {fallbackSavedVisitorCount === 1 ? "visitante já registrado" : "visitantes já registrados"}.
+            {fallbackSavedVisitorCount} {fallbackSavedVisitorCount === 1 ? "visitante já salvo" : "visitantes já salvos"}.
           </p>
         ) : (
-          <p className="mt-2 text-sm text-[var(--color-text-secondary)]">Nenhum visitante registrado neste encontro.</p>
+          <p className="mt-2 text-sm text-[var(--color-text-secondary)]">Nenhum visitante neste encontro até agora.</p>
         )}
 
         <div className="mt-4 flex gap-2">
@@ -314,7 +320,7 @@ export function CheckInList({
 
         {visitors.length > 0 ? (
           <div className="mt-3 space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">Para salvar agora</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">Para incluir ao salvar</p>
             {visitors.map((visitor) => (
               <div key={visitor.id} className="flex items-center justify-between rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 text-sm">
                 <span className="font-medium text-[var(--color-text-primary)]">{visitor.fullName}</span>
@@ -365,10 +371,10 @@ export function CheckInList({
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
             <p className="text-sm font-semibold text-[var(--color-text-primary)]">
-              {summary.pending > 0 ? `${summary.pending} pendente${summary.pending === 1 ? "" : "s"}` : "Presença pronta"}
+              {summary.pending > 0 ? `Faltam ${summary.pending}` : saved ? "Presença salva" : "Pronto para salvar"}
             </p>
             <p className="mt-0.5 text-xs text-[var(--color-text-secondary)]">
-              {summary.pending > 0 ? "Finalize depois de marcar todos." : saved ? "Altere alguma marcação para salvar de novo." : "Salve para atualizar a atenção da célula."}
+              {summary.pending > 0 ? "Marque todos para salvar." : saved ? "Altere alguma marcação para salvar de novo." : "Salve e siga para o cuidado de quem precisar."}
             </p>
           </div>
           <Button disabled={!canSave} onClick={save} className="min-w-28">

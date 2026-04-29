@@ -8,7 +8,7 @@ import { getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonW
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson } from "@/features/signals/attention";
 import { signalBadgeForViewer, signalReasonForViewer } from "@/features/signals/display";
-import { isInCarePerson, isSupportRequest, isUrgentOrPastoralCase } from "@/features/signals/sections";
+import { isSupportRequest, splitPastoralSections } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 import { initials } from "@/lib/text";
@@ -72,10 +72,14 @@ export default async function PeoplePage() {
   const visibleOpenSignalWhere = getVisibleOpenSignalWhere(user);
   const pastorSignalWhere = isPastoralOverview
     ? {
-        ...visibleOpenSignalWhere,
-        OR: [
-          { severity: SignalSeverity.URGENT },
-          { assignedTo: { is: { role: { in: [UserRole.PASTOR, UserRole.ADMIN] } } } },
+        AND: [
+          visibleOpenSignalWhere,
+          {
+            OR: [
+              { severity: SignalSeverity.URGENT },
+              { assignedTo: { is: { role: { in: [UserRole.PASTOR, UserRole.ADMIN] } } } },
+            ],
+          },
         ],
       }
     : visibleOpenSignalWhere;
@@ -128,12 +132,15 @@ export default async function PeoplePage() {
   const attentionPeople = isPastoralOverview
     ? getPastoralSignalsByPerson(openSignals)
     : getPrimarySignalsByPerson(openSignals);
-  const activeAttentionPersonIds = new Set(attentionPeople.map((signal) => signal.personId));
-  const urgentSignals = attentionPeople.filter(isUrgentOrPastoralCase);
-  const supportSignals = attentionPeople.filter((signal) => isSupportRequest(signal, user));
-  const handledSignalIds = new Set([...urgentSignals, ...supportSignals].map((signal) => signal.id));
-  const attentionSignals = attentionPeople.filter((signal) => !handledSignalIds.has(signal.id));
-  const scopedInCarePeople = inCarePeople.filter((person) => isInCarePerson(person) && !activeAttentionPersonIds.has(person.id));
+  const pastoralSections = splitPastoralSections({
+    signals: attentionPeople,
+    inCarePeople,
+    viewer: user,
+  });
+  const urgentSignals = pastoralSections.urgentOrPastoralCases;
+  const supportSignals = pastoralSections.supportRequests;
+  const attentionSignals = pastoralSections.localAttention;
+  const scopedInCarePeople = pastoralSections.inCarePeople;
   const visibleMemberList = visibleMembers.slice(0, MEMBER_LIST_LIMIT);
   const attentionSignalByPersonId = new Map(attentionPeople.map((signal) => [signal.personId, signal]));
   const emptyAttentionMessage = isLeader
@@ -179,7 +186,7 @@ export default async function PeoplePage() {
 
       <PastoralListSection
         title="Pedidos de apoio"
-        detail="Casos trazidos para apoio de supervisão, sem virar fila burocrática."
+        detail="Casos trazidos para apoio de supervisão, sem virar obrigação administrativa."
         emptyMessage="Nenhum pedido de apoio agora."
         hiddenChildren={renderSignalCards(supportSignals.slice(SECTION_LIMIT), user)}
       >
@@ -234,7 +241,7 @@ export default async function PeoplePage() {
           <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm leading-relaxed text-[var(--color-text-secondary)] shadow-card">
             {isPastoralOverview
               ? "Esta tela organiza os casos por intenção pastoral. Use a busca para consultar qualquer pessoa quando precisar."
-              : "As seções acima mostram quem merece atenção. Para consultar outra pessoa do seu escopo, use a busca pelo nome."}
+              : "As seções acima mostram quem merece atenção. Para consultar outra pessoa dentro da sua responsabilidade, use a busca pelo nome."}
           </p>
         </>
       )}

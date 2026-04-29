@@ -5,9 +5,10 @@ import { AppShell } from "@/components/app-shell";
 import { CheckInList } from "@/components/check-in-list";
 import { SectionTitle } from "@/components/cards";
 import { Badge } from "@/components/ui/badge";
+import { summarizeEventPresence } from "@/features/events/presence-summary";
 import { canCheckInEvent, canViewEvent } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
-import { formatShortDate, formatTime, percent } from "@/lib/format";
+import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
 const attendanceLabels: Record<AttendanceStatus, string> = {
@@ -120,12 +121,10 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
   if (!canViewEvent(user, event)) notFound();
 
   const canEditCheckIn = canCheckInEvent(user, event);
-  const accountable = event.attendances.filter((attendance) => attendance.status !== "VISITOR");
-  const present = accountable.filter((attendance) => attendance.status === "PRESENT").length;
+  const presence = summarizeEventPresence(event);
   const visitors = event.attendances.filter((attendance) => attendance.status === "VISITOR");
-  const presenceRate = percent(present, accountable.length);
-  const completed = event.status === "COMPLETED" || event.attendances.length > 0;
-  const hasPresenceData = completed && accountable.length > 0;
+  const completed = presence.completed;
+  const hasPresenceData = presence.hasPresenceData;
 
   const members = event.group?.memberships.map((membership) => ({
     personId: membership.personId,
@@ -141,7 +140,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
 
   const checkInLabel = canEditCheckIn ? (completed ? "Ajuste de presença" : "Registrar presença") : "Resumo de presença";
   const checkInSectionTitle = canEditCheckIn ? (completed ? "Ajustar presença" : "Registrar presença") : "Resumo da presença";
-  const checkInSubmitLabel = completed ? "Atualizar" : "Finalizar";
+  const checkInSubmitLabel = completed ? "Salvar ajuste" : "Salvar presença";
   const eventStatusLabel = completed ? "Presença registrada" : canEditCheckIn ? "Presença pendente" : "Aguardando líder";
 
   return (
@@ -179,7 +178,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
 
         <div className="mt-4 grid grid-cols-3 gap-2 text-center">
           <div className="rounded-2xl bg-[var(--metric-card-bg)] p-3">
-            <p className="text-lg font-bold text-[var(--color-metric-presenca)]">{hasPresenceData ? `${presenceRate}%` : "—"}</p>
+            <p className="text-lg font-bold text-[var(--color-metric-presenca)]">{hasPresenceData ? `${presence.presenceRate}%` : "—"}</p>
             <p className="text-[11px] text-[var(--color-text-secondary)]">presença</p>
           </div>
           <div className="rounded-2xl bg-[var(--metric-card-bg)] p-3">

@@ -7,7 +7,7 @@ import { getLeaderDashboard } from "@/features/dashboard/queries";
 import { canUseLeaderDashboard } from "@/features/permissions/permissions";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
 import { signalBadgeForViewer, signalReasonForViewer } from "@/features/signals/display";
-import { isSupportRequest, isUrgentOrPastoralCase } from "@/features/signals/sections";
+import { isSupportRequest, splitPastoralSections } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -45,7 +45,7 @@ export default async function LeaderPage() {
     : [];
 
   const currentEvent = selectRelevantCheckInEvent(visibleEvents);
-  const hasRecentPresence = dashboard.recordedEventsCount > 0;
+  const hasRecentPresence = dashboard.hasPresenceData;
   const currentGroup = currentEvent?.group ?? dashboard.groups[0] ?? null;
 
   const members = currentGroup?.memberships.map((membership) => ({
@@ -57,14 +57,17 @@ export default async function LeaderPage() {
   const currentVisitors = currentEvent?.attendances
     .filter((attendance) => attendance.status === "VISITOR")
     .map((attendance) => ({ id: attendance.id, fullName: attendance.person.fullName })) ?? [];
-  const urgentSignals = dashboard.attentionPeople.filter(isUrgentOrPastoralCase);
-  const supportSignals = dashboard.attentionPeople.filter((signal) => isSupportRequest(signal, user));
-  const handledSignalIds = new Set([...urgentSignals, ...supportSignals].map((signal) => signal.id));
-  const attentionSignals = dashboard.attentionPeople.filter((signal) => !handledSignalIds.has(signal.id));
-  const activeAttentionPersonIds = new Set(dashboard.attentionPeople.map((signal) => signal.personId));
-  const inCarePeople = dashboard.groups
-    .flatMap((group) => group.memberships.map((membership) => ({ ...membership.person, groupName: group.name })))
-    .filter((person, index, people) => person.status === "COOLING_AWAY" && !activeAttentionPersonIds.has(person.id) && people.findIndex((item) => item.id === person.id) === index);
+  const rawInCarePeople = dashboard.groups
+    .flatMap((group) => group.memberships.map((membership) => ({ ...membership.person, groupName: group.name })));
+  const pastoralSections = splitPastoralSections({
+    signals: dashboard.attentionPeople,
+    inCarePeople: rawInCarePeople,
+    viewer: user,
+  });
+  const urgentSignals = pastoralSections.urgentOrPastoralCases;
+  const supportSignals = pastoralSections.supportRequests;
+  const attentionSignals = pastoralSections.localAttention;
+  const inCarePeople = pastoralSections.inCarePeople;
 
   const renderSignalCards = (signals: typeof dashboard.attentionPeople) => signals.map((signal) => {
     const badge = signalBadgeForViewer(signal, user);
@@ -194,7 +197,7 @@ export default async function LeaderPage() {
             eventId={currentEvent.id}
             members={members}
             initialVisitors={currentVisitors}
-            submitLabel={currentEventCompleted ? "Atualizar" : "Finalizar"}
+            submitLabel={currentEventCompleted ? "Salvar ajuste" : "Salvar presença"}
             mode={currentEventCompleted ? "adjust" : "register"}
             attentionHref={currentGroup ? `/celulas/${currentGroup.id}` : "/pessoas"}
             attentionLabel="Ver atenção da célula"

@@ -35,7 +35,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
   const action = parseAction(await readJsonBody(request));
 
   if (!action) {
-    return NextResponse.json({ error: "Ação de apoio inválida" }, { status: 400 });
+    return NextResponse.json({ error: "Pedido de apoio inválido" }, { status: 400 });
   }
 
   const signal = await prisma.careSignal.findUnique({
@@ -48,7 +48,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
   }
 
   if (!canViewGroup(user, signal.group)) {
-    return NextResponse.json({ error: "Sem permissão para atualizar este sinal" }, { status: 403 });
+    return NextResponse.json({ error: "Sem permissão para este cuidado" }, { status: 403 });
   }
 
   if (action === "REQUEST_SUPERVISOR") {
@@ -57,7 +57,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
     }
 
     if (!canRequestSupervisorSupport(user, signal)) {
-      return NextResponse.json({ error: "Apenas o líder da célula pode pedir apoio ao supervisor" }, { status: 403 });
+      return NextResponse.json({ error: "Apenas o líder da célula pode pedir apoio à supervisão" }, { status: 403 });
     }
 
     const supervisorUserId = signal.group?.supervisorUserId;
@@ -76,18 +76,18 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
       ok: true,
       assignedToId: updated.assignedToId,
       assignedToName: updated.assignedTo?.name,
-      message: "Pedido de apoio enviado ao supervisor.",
+      message: "Apoio solicitado à supervisão.",
     });
   }
 
   if (!canEscalateSignalToPastor(user, signal)) {
-    return NextResponse.json({ error: "Apenas o supervisor da célula pode encaminhar este caso ao pastor" }, { status: 403 });
+    return NextResponse.json({ error: "Apenas a supervisão da célula pode encaminhar este caso ao pastor" }, { status: 403 });
   }
 
   const pastoralAssignee = await findPastoralAssignee(user.churchId);
 
   if (!pastoralAssignee) {
-    return NextResponse.json({ error: "Nenhum pastor/admin disponível para receber este caso" }, { status: 400 });
+    return NextResponse.json({ error: "Nenhum pastor/admin disponível para encaminhamento pastoral" }, { status: 400 });
   }
 
   const updated = await prisma.careSignal.update({
@@ -100,6 +100,6 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
     ok: true,
     assignedToId: updated.assignedToId,
     assignedToName: updated.assignedTo?.name,
-    message: "Caso encaminhado ao pastor.",
+    message: "Encaminhado ao pastor.",
   });
 }

@@ -38,7 +38,7 @@ export function SignalSupportActions({
       const body = await readApiMessage(response);
 
       if (!response.ok) {
-        setErrorMessage(body?.error ?? "Não foi possível atualizar o apoio agora.");
+        setErrorMessage(body?.error ?? "Não foi possível pedir apoio agora.");
         return;
       }
 
@@ -53,6 +53,11 @@ export function SignalSupportActions({
 
   return (
     <div className="mt-3 space-y-2 border-t border-[var(--color-border-divider)] pt-3">
+      {canRequestSupervisor || canEscalatePastor ? (
+        <p className="text-xs leading-relaxed text-[var(--color-text-secondary)]">
+          Use apoio quando o próximo gesto precisa de outra liderança. A responsabilidade local continua simples.
+        </p>
+      ) : null}
       {label ? (
         <p className="rounded-2xl border border-[var(--color-badge-apoio-border)] bg-[var(--color-badge-apoio-bg)] px-3 py-2 text-xs font-semibold leading-relaxed text-[var(--color-badge-apoio-text)]">
           {label}
@@ -68,7 +73,7 @@ export function SignalSupportActions({
       {canRequestSupervisor ? (
         <button type="button" disabled={isPending} onClick={() => send("REQUEST_SUPERVISOR")} className={buttonClass}>
           <LifeBuoy className="h-4 w-4" strokeWidth={2.2} />
-          Pedir apoio ao supervisor
+          Pedir apoio
         </button>
       ) : null}
 

@@ -1,16 +1,17 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AttendanceStatus, SignalSeverity, SignalStatus, UserRole } from "../../../../generated/prisma/client";
+import { SignalSeverity, SignalStatus, UserRole } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { ContextSummary, PersonSignalCard, SectionTitle } from "@/components/cards";
 import { Badge } from "@/components/ui/badge";
+import { summarizeEventPresence, summarizeEventsPresence } from "@/features/events/presence-summary";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { canViewGroup } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson, isPastoralSignal } from "@/features/signals/attention";
 import { groupAttentionLabel, signalBadgeForViewer, signalReasonForViewer, type SignalBadge } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
-import { formatShortDate, formatTime, percent } from "@/lib/format";
+import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { initials } from "@/lib/text";
 
@@ -23,19 +24,6 @@ const dayLabels: Record<number, string> = {
   5: "Sexta",
   6: "Sábado",
 };
-
-function eventMetrics(event: { status: string; attendances: Array<{ status: AttendanceStatus }> }) {
-  const accountable = event.attendances.filter((attendance) => attendance.status !== AttendanceStatus.VISITOR);
-  const present = accountable.filter((attendance) => attendance.status === AttendanceStatus.PRESENT).length;
-  const visitors = event.attendances.filter((attendance) => attendance.status === AttendanceStatus.VISITOR).length;
-  const completed = event.status === "COMPLETED" || event.attendances.length > 0;
-
-  return {
-    completed,
-    presenceRate: percent(present, accountable.length),
-    visitors,
-  };
-}
 
 function groupMeetingText(day?: number | null, time?: string | null) {
   if (day === null || day === undefined) return time ? `Horário: ${time}` : "Encontro sem horário fixo informado.";
@@ -81,10 +69,9 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
   const supportRequests = group.signals.filter((signal) => signal.assignedToId === user.id);
   const urgentAttentionPeople = attentionPeople.filter((signal) => signal.severity === SignalSeverity.URGENT);
   const inCareCount = group.memberships.filter((membership) => membership.person.status === "COOLING_AWAY").length;
-  const completedEvents = group.events.filter((event) => eventMetrics(event).completed);
-  const accountableAttendances = completedEvents.flatMap((event) => event.attendances.filter((attendance) => attendance.status !== AttendanceStatus.VISITOR));
-  const presentAttendances = accountableAttendances.filter((attendance) => attendance.status === AttendanceStatus.PRESENT);
-  const presenceRate = percent(presentAttendances.length, accountableAttendances.length);
+  const completedEvents = group.events.filter((event) => summarizeEventPresence(event).completed);
+  const presence = summarizeEventsPresence(group.events);
+  const hasRecentPresence = presence.hasPresenceData;
   const relevantEvent = selectRelevantCheckInEvent(group.events);
   const pendingEvent = relevantEvent && !hasRecordedPresence(relevantEvent) ? relevantEvent : null;
   const headerBadge: SignalBadge = (() => {
@@ -151,9 +138,9 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
           { label: "Membros", value: String(group.memberships.length), detail: inCareCount > 0 ? `${inCareCount} em cuidado nesta célula.` : "Pessoas ativas nesta célula.", tone: "neutral" },
           {
             label: "Presença recente",
-            value: completedEvents.length > 0 ? `${presenceRate}%` : "—",
-            detail: completedEvents.length > 0 ? "Nos últimos encontros registrados." : "Ainda sem presença registrada.",
-            tone: completedEvents.length === 0 ? "neutral" : presenceRate < 65 ? "risk" : presenceRate < 75 ? "warn" : "ok",
+            value: hasRecentPresence ? `${presence.presenceRate}%` : "—",
+            detail: hasRecentPresence ? "Nos últimos encontros registrados." : completedEvents.length > 0 ? "Encontros registrados sem marcação de membros." : "Ainda sem presença registrada.",
+            tone: !hasRecentPresence ? "neutral" : presence.presenceRate < 65 ? "risk" : presence.presenceRate < 75 ? "warn" : "ok",
           },
           {
             label: isPastorView ? "Atenções da célula" : "Pessoas em atenção",
@@ -273,8 +260,8 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
 
       <SectionTitle>Últimos encontros</SectionTitle>
       <div className="space-y-3">
-        {group.events.filter((event) => eventMetrics(event).completed).slice(0, 3).map((event) => {
-          const metrics = eventMetrics(event);
+        {group.events.filter((event) => summarizeEventPresence(event).completed).slice(0, 3).map((event) => {
+          const metrics = summarizeEventPresence(event);
 
           return (
             <Link key={event.id} href={`/eventos/${event.id}`} className="block rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
@@ -282,10 +269,10 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
                 <div>
                   <p className="font-semibold text-[var(--color-text-primary)]">{event.title}</p>
                   <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
-                    {formatShortDate(event.startsAt)}, {formatTime(event.startsAt)} · {metrics.visitors} {metrics.visitors === 1 ? "visitante" : "visitantes"}
+                    {formatShortDate(event.startsAt)}, {formatTime(event.startsAt)} · {metrics.visitorCount} {metrics.visitorCount === 1 ? "visitante" : "visitantes"}
                   </p>
                 </div>
-                <Badge tone="ok">{metrics.presenceRate}%</Badge>
+                <Badge tone={metrics.hasPresenceData ? "ok" : "neutral"}>{metrics.hasPresenceData ? `${metrics.presenceRate}%` : "Sem registro"}</Badge>
               </div>
             </Link>
           );

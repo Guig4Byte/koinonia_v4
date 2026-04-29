@@ -64,7 +64,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
       }
 
       setSavedMessage(noteValue?.trim() ? "Cuidado realizado com anotação." : "Cuidado realizado.");
-      setResolvedMessage(responseBody?.message ?? "Os motivos de atenção foram atualizados sem formalizar acompanhamento.");
+      setResolvedMessage(responseBody?.message ?? "A atenção ficou em dia sem criar acompanhamento formal.");
       setErrorMessage("");
       setStage("done");
       setNote("");
@@ -217,7 +217,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
       {stage === "ask-note" ? (
         <div className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3">
           <p className="text-sm font-semibold text-[var(--color-text-primary)]">Quer deixar uma anotação?</p>
-          <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">Salvar sem anotação também registra o cuidado e atualiza os motivos de atenção no seu escopo.</p>
+          <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">Salvar sem anotação também registra o cuidado e mantém a pessoa no radar certo.</p>
           <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
             <button
               type="button"

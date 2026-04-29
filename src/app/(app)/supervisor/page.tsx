@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { canUseSupervisorDashboard } from "@/features/permissions/permissions";
 import { groupAttentionLabel, signalBadgeForViewer, type SignalBadge } from "@/features/signals/display";
-import { isSupportRequest, isUrgentOrPastoralCase } from "@/features/signals/sections";
+import { splitPastoralSections } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -26,17 +26,20 @@ export default async function SupervisorPage() {
   }
 
   const dashboard = await getSupervisorDashboard(user);
-  const firstSupportRequest = dashboard.supportRequests[0];
+  const rawInCarePeople = dashboard.groups
+    .flatMap((group) => group.memberships.map((membership) => ({ ...membership.person, groupName: group.name })));
+  const pastoralSections = splitPastoralSections({
+    signals: dashboard.attentionPeople,
+    inCarePeople: rawInCarePeople,
+    viewer: user,
+  });
+  const firstSupportRequest = pastoralSections.supportRequests[0];
   const firstSignal = dashboard.attentionPeople[0];
-  const hasRecentPresence = dashboard.recordedEventsCount > 0;
-  const urgentSignals = dashboard.attentionPeople.filter(isUrgentOrPastoralCase);
-  const supportSignals = dashboard.attentionPeople.filter((signal) => isSupportRequest(signal, user));
-  const handledSignalIds = new Set([...urgentSignals, ...supportSignals].map((signal) => signal.id));
-  const attentionSignals = dashboard.attentionPeople.filter((signal) => !handledSignalIds.has(signal.id));
-  const activeAttentionPersonIds = new Set(dashboard.attentionPeople.map((signal) => signal.personId));
-  const inCarePeople = dashboard.groups
-    .flatMap((group) => group.memberships.map((membership) => ({ ...membership.person, groupName: group.name })))
-    .filter((person, index, people) => person.status === "COOLING_AWAY" && !activeAttentionPersonIds.has(person.id) && people.findIndex((item) => item.id === person.id) === index);
+  const hasRecentPresence = dashboard.hasPresenceData;
+  const urgentSignals = pastoralSections.urgentOrPastoralCases;
+  const supportSignals = pastoralSections.supportRequests;
+  const attentionSignals = pastoralSections.localAttention;
+  const inCarePeople = pastoralSections.inCarePeople;
 
   const renderSignalCards = (signals: typeof dashboard.attentionPeople, ctaLabel = "Abrir pessoa") => signals.map((signal) => {
     const badge = signalBadgeForViewer(signal, user);
@@ -69,8 +72,8 @@ export default async function SupervisorPage() {
     >
       <SearchBox placeholder="Buscar pessoa..." />
       <PulseCard
-        title={firstSupportRequest ? `${firstSupportRequest.person.fullName} pediu apoio da supervisão.` : firstSignal ? `${firstSignal.person.fullName} merece atenção.` : "Suas células estão estáveis agora."}
-        subtitle={firstSupportRequest ? `${firstSupportRequest.group.name}: ${firstSupportRequest.reason}` : firstSignal ? `${firstSignal.group.name}: ${firstSignal.reason}` : "Continue acompanhando presença e apoiando os líderes quando algo aparecer."}
+        title={firstSupportRequest ? "Essa célula pediu apoio da supervisão." : firstSignal ? `${firstSignal.person.fullName} merece atenção.` : "Suas células estão estáveis agora."}
+        subtitle={firstSupportRequest ? `${firstSupportRequest.person.fullName} · ${firstSupportRequest.group.name}: ${firstSupportRequest.reason}` : firstSignal ? `${firstSignal.group.name}: ${firstSignal.reason}` : "Continue acompanhando presença e apoiando os líderes quando algo aparecer."}
         tone={firstSupportRequest || firstSignal ? "attention" : "ok"}
       />
 
@@ -168,7 +171,7 @@ export default async function SupervisorPage() {
               badgeLabel={badge?.label}
               badgeTone={badge?.tone}
               href={`/celulas/${group.id}`}
-              hasPresenceData={group.recordedEventsCount > 0}
+              hasPresenceData={group.hasPresenceData}
             />
           );
         })}

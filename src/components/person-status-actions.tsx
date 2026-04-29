@@ -24,7 +24,7 @@ export function PersonStatusActions({ personId }: { personId: string }) {
       const body = await readApiMessage(response);
 
       if (!response.ok) {
-        setErrorMessage(body?.error ?? "Não foi possível atualizar esta pessoa agora.");
+        setErrorMessage(body?.error ?? "Não foi possível marcar como ativo agora.");
         return;
       }
 
