@@ -3,7 +3,9 @@ import { ContextSummary, GroupCard, PersonSignalCard, PulseCard, SectionTitle } 
 import { SearchBox } from "@/components/search-box";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { groupAttentionLabel, signalBadgeForViewer } from "@/features/signals/display";
+import { UserRole } from "@/generated/prisma/client";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { redirect } from "next/navigation";
 
 function initials(name: string) {
   return name.split(" ").slice(0, 2).map((part) => part[0]).join("").toUpperCase();
@@ -16,6 +18,11 @@ function supportRequestsText(count: number) {
 
 export default async function SupervisorPage() {
   const user = await getCurrentUser();
+
+  if (user.role !== UserRole.SUPERVISOR) {
+    redirect("/");
+  }
+
   const dashboard = await getSupervisorDashboard(user);
   const firstSupportRequest = dashboard.supportRequests[0];
   const firstSignal = dashboard.attentionPeople[0];

@@ -15,7 +15,7 @@ const group = {
   supervisorUserId: supervisor.id,
 };
 
-const event = { churchId: "church-1", group };
+const event = { churchId: "church-1", startsAt: new Date(), group };
 const person = { churchId: "church-1", memberships: [{ groupId: group.id, leftAt: null, group }] };
 
 describe("permission helpers", () => {
@@ -48,6 +48,12 @@ describe("permission helpers", () => {
     expect(canCheckInEvent(supervisor, event)).toBe(false);
     expect(canCheckInEvent(pastor, event)).toBe(false);
     expect(canCheckInEvent(otherLeader, event)).toBe(false);
+  });
+
+  it("blocks check-in for future events", () => {
+    const futureEvent = { ...event, startsAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000) };
+
+    expect(canCheckInEvent(leader, futureEvent)).toBe(false);
   });
 
   it("returns the first visible active group when registering care", () => {

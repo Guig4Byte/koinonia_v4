@@ -29,14 +29,30 @@ export async function getPastorDashboard(churchId: string) {
   const weekStart = startOfWeek(now, { weekStartsOn: 1 });
   const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
 
+  const tomorrow = new Date(now);
+  tomorrow.setHours(0, 0, 0, 0);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
   const [events, openSignals, groups] = await Promise.all([
     prisma.event.findMany({
-      where: { churchId, type: "CELL_MEETING", startsAt: { gte: weekStart, lte: weekEnd } },
+      where: {
+        churchId,
+        type: "CELL_MEETING",
+        startsAt: { gte: weekStart, lte: weekEnd },
+        group: { is: { churchId, isActive: true } },
+      },
       include: { attendances: true, group: { include: { leader: true, supervisor: true } } },
       orderBy: { startsAt: "asc" },
     }),
     prisma.careSignal.findMany({
-      where: { churchId, status: SignalStatus.OPEN, ...pastoralSignalWhere },
+      where: {
+        churchId,
+        status: SignalStatus.OPEN,
+        AND: [
+          pastoralSignalWhere,
+          { OR: [{ groupId: null }, { group: { is: { churchId, isActive: true } } }] },
+        ],
+      },
       include: { person: true, assignedTo: true, group: { include: { leader: true, supervisor: true } } },
       orderBy: [{ detectedAt: "desc" }],
       take: 50,
@@ -53,7 +69,11 @@ export async function getPastorDashboard(churchId: string) {
     }),
   ]);
 
-  const completedEvents = events.filter((event) => event.status === "COMPLETED" || event.attendances.length > 0);
+  const dueEvents = events.filter((event) => event.startsAt < tomorrow);
+  const completedEvents = dueEvents.filter((event) => event.status === "COMPLETED" || event.attendances.length > 0);
+  const pendingGroupIds = new Set(dueEvents
+    .filter((event) => event.status !== "COMPLETED" && event.attendances.length === 0 && event.groupId)
+    .map((event) => event.groupId));
   const presence = summarizePresence(completedEvents);
   const attentionPeople = getPastoralSignalsByPerson(openSignals);
   const urgentSignals = attentionPeople.length;
@@ -74,8 +94,9 @@ export async function getPastorDashboard(churchId: string) {
   });
 
   return {
-    plannedEvents: events.length,
+    plannedEvents: dueEvents.length,
     completedEvents: completedEvents.length,
+    pendingGroupsCount: pendingGroupIds.size,
     presenceRate: presence.presenceRate,
     visitors: presence.visitors,
     openSignals,

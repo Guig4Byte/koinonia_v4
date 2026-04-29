@@ -29,16 +29,12 @@ export function selectRelevantCheckInEvent<T extends RelevantEventCandidate>(eve
 
   const ascending = [...events].sort((left, right) => left.startsAt.getTime() - right.startsAt.getTime());
   const descending = [...events].sort((left, right) => right.startsAt.getTime() - left.startsAt.getTime());
-  const today = startOfLocalDay(referenceDate);
 
   const pendingToday = ascending.find((event) => isSameLocalDay(event.startsAt, referenceDate) && !hasRecordedPresence(event));
   if (pendingToday) return pendingToday;
 
-  const nextPending = ascending.find((event) => event.startsAt >= today && !hasRecordedPresence(event));
-  if (nextPending) return nextPending;
-
   const latestDone = descending.find((event) => hasRecordedPresence(event) && event.startsAt < nextLocalDay(referenceDate));
   if (latestDone) return latestDone;
 
-  return descending[0];
+  return null;
 }

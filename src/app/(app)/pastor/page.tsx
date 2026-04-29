@@ -3,7 +3,9 @@ import { ContextSummary, GroupCard, PersonSignalCard, PulseCard, SectionTitle } 
 import { SearchBox } from "@/components/search-box";
 import { getPastorDashboard } from "@/features/dashboard/queries";
 import { signalBadgeForViewer } from "@/features/signals/display";
+import { UserRole } from "@/generated/prisma/client";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { redirect } from "next/navigation";
 
 function initials(name: string) {
   return name.split(" ").slice(0, 2).map((part) => part[0]).join("").toUpperCase();
@@ -11,8 +13,13 @@ function initials(name: string) {
 
 export default async function PastorPage() {
   const user = await getCurrentUser();
+
+  if (user.role !== UserRole.PASTOR && user.role !== UserRole.ADMIN) {
+    redirect("/");
+  }
+
   const dashboard = await getPastorDashboard(user.churchId);
-  const pendingEvents = Math.max(dashboard.plannedEvents - dashboard.completedEvents, 0);
+  const pendingGroups = dashboard.pendingGroupsCount;
   const hasWeekPresence = dashboard.completedEvents > 0;
   const pastoralCasesCount = dashboard.attentionPeople.length;
   const groupsNeedingPastoralLook = dashboard.groups.filter((group) => (
@@ -36,7 +43,7 @@ export default async function PastorPage() {
       <SearchBox placeholder="Buscar qualquer pessoa..." />
       <PulseCard
         title={phrase}
-        subtitle={pendingEvents > 0 ? `${pendingEvents} ${pendingEvents === 1 ? "célula ainda não registrou" : "células ainda não registraram"} presença nesta semana.` : "A atenção local segue com líderes e supervisores."}
+        subtitle={pendingGroups > 0 ? `${pendingGroups} ${pendingGroups === 1 ? "célula ainda não registrou" : "células ainda não registraram"} presença nesta semana.` : "A atenção local segue com líderes e supervisores."}
         tone={pastoralCasesCount > 0 ? "attention" : "ok"}
       />
 
@@ -50,9 +57,9 @@ export default async function PastorPage() {
           },
           {
             label: "Células pendentes",
-            value: String(pendingEvents),
-            detail: pendingEvents > 0 ? "Ainda não entram na leitura da semana." : "Tudo registrado até aqui.",
-            tone: pendingEvents > 0 ? "warn" : "ok",
+            value: String(pendingGroups),
+            detail: pendingGroups > 0 ? "Ainda não entram na leitura da semana." : "Tudo registrado até aqui.",
+            tone: pendingGroups > 0 ? "warn" : "ok",
           },
           {
             label: "Casos pastorais",

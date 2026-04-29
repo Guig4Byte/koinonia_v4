@@ -6,7 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { getLeaderDashboard } from "@/features/dashboard/queries";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
 import { signalBadgeForViewer } from "@/features/signals/display";
+import { UserRole } from "@/generated/prisma/client";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { redirect } from "next/navigation";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
@@ -20,6 +22,11 @@ function reasonForLeader(reason: string) {
 
 export default async function LeaderPage() {
   const user = await getCurrentUser();
+
+  if (user.role !== UserRole.LEADER) {
+    redirect("/");
+  }
+
   const dashboard = await getLeaderDashboard(user);
   const groupIds = dashboard.groups.map((group) => group.id);
 
