@@ -113,6 +113,9 @@ http://localhost:3000
 A tela tem um seletor de perfil de demonstração: Pastor, Supervisor e Líder.
 Isso é intencional nesta base. A autenticação real deve entrar depois, por trás do mesmo contrato de `getCurrentUser()`.
 
+A seed demo simula uma igreja um pouco maior para validar escopo real:
+1 pastor, 3 supervisores, 7 células e 12 membros ativos por célula. O seletor atual entra nos perfis principais: Roberto/Pastor, Ana/Supervisora e Bruno/Líder. Os demais supervisores e líderes existem para validar a visão pastoral, a saúde das células e a separação de escopo.
+
 ## Scripts úteis
 
 ```bash

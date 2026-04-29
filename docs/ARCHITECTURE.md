@@ -152,7 +152,7 @@ A visibilidade deve separar escopo de relevância:
 - supervisor: atenção dos grupos supervisionados, com prioridade para exceções, acúmulos, pedidos de apoio e recorrência;
 - pastor: saúde geral e apenas casos graves, sensíveis, recorrentes ou escalados.
 
-Não use `getVisibleOpenSignalWhere(user)` como única regra para alimentar a visão padrão do pastor, porque ela expressa escopo permitido, não necessariamente relevância pastoral. No MVP atual, a filtragem pastoral considera sinais `URGENT` e sinais abertos atribuídos a pastor/admin por `CareSignal.assignedToId`. Um sinal `URGENT` atribuído ao supervisor continua visível para o pastor por gravidade, mas a UI não deve exibir para pastor/admin a mensagem de “apoio solicitado”, porque esse pedido foi direcionado à supervisão.
+Não use `getVisibleOpenSignalWhere(user)` como única regra para alimentar a visão padrão do pastor, porque ela expressa escopo permitido, não necessariamente relevância pastoral. No MVP atual, a filtragem pastoral considera sinais `URGENT` e sinais abertos atribuídos a pastor/admin por `CareSignal.assignedToId`.
 
 O backend do check-in deve retornar contagem de pessoas distintas em atenção, não quantidade bruta de sinais.
 
@@ -280,12 +280,22 @@ A seed deve validar escopo e fluxo, não apenas preencher telas.
 Cenário atual esperado:
 
 - Roberto (`PASTOR`) vê a igreja inteira.
-- Ana (`SUPERVISOR`) supervisiona `Célula Esperança` e `Célula Ágape`.
-- Bruno (`LEADER`) lidera apenas `Célula Esperança`.
-- Carla (`LEADER`) lidera apenas `Célula Ágape`.
-- A aba demo de líder seleciona Bruno para testar que ele não vê a célula da Carla.
-- `Célula Esperança` mantém encontros concluídos, visitante já registrado, evento de hoje aberto para check-in e próximo evento agendado.
-- `Célula Ágape` mantém eventos próprios para validar leitura de supervisor/pastor sem liberar check-in para Bruno.
+- Existem 3 supervisores: Ana, Marcos e Helena.
+- Cada supervisor tem 2 ou 3 células ativas:
+  - Ana: `Célula Esperança`, `Célula Ágape`, `Célula Betel`;
+  - Marcos: `Célula Videira`, `Célula Semente`;
+  - Helena: `Célula Caminho`, `Célula Graça`.
+- Cada célula tem 1 líder e 12 membros ativos, além de um visitante demo.
+- A aba demo de supervisor seleciona Ana, para validar 3 células sob uma supervisão.
+- A aba demo de líder seleciona Bruno, para validar uma célula com 12 membros e check-in aberto.
+- A visão do pastor deve conseguir testar:
+  - saúde geral das células;
+  - células com presença baixa;
+  - casos urgentes;
+  - casos encaminhados explicitamente ao pastor;
+  - casos que ficam apenas com supervisor/líder e não viram ruído pastoral.
+- `Célula Esperança` mantém evento de hoje aberto para check-in.
+- Outras células mantêm eventos concluídos, pendentes ou agendados para testar presença, células pendentes e escopo.
 
 ## O que não existe de propósito
 
