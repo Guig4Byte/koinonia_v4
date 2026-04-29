@@ -330,7 +330,7 @@ a {
   max-width: 480px;
   margin: 0 auto;
   min-height: 100vh;
-  padding: 14px 14px 86px;
+  padding: 14px 14px calc(128px + env(safe-area-inset-bottom));
 }
 
 .app-header {

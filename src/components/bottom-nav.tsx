@@ -21,7 +21,7 @@ const iconMap: Record<NavIcon, LucideIcon> = {
 
 export function BottomNav({ items }: { items: NavItem[] }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-[480px] px-4 pb-3">
+    <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-[480px] px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
       <div
         className="grid gap-1 rounded-[1.55rem] border border-[var(--color-border-card)] bg-[var(--color-bg-tab)] p-1 backdrop-blur-xl shadow-card"
         style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}

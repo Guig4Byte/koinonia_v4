@@ -87,7 +87,7 @@ export function PersonSignalCard({
   severity = "risk",
   detailHref,
   href,
-  ctaLabel = "Abrir cuidado",
+  ctaLabel = "Abrir pessoa",
 }: {
   initials: string;
   name: string;
@@ -136,6 +136,7 @@ export function GroupCard({
   attentionCount,
   href,
   hasPresenceData = true,
+  attentionLabelKind = "default",
 }: {
   name: string;
   subtitle: string;
@@ -143,12 +144,17 @@ export function GroupCard({
   attentionCount: number;
   href?: string;
   hasPresenceData?: boolean;
+  attentionLabelKind?: "default" | "local" | "pastoral";
 }) {
   const tone = !hasPresenceData ? "neutral" : presenceRate < 65 ? "risk" : presenceRate < 75 ? "warn" : "ok";
   const hasLowPresence = hasPresenceData && presenceRate < 70;
-  const badgeTone = attentionCount > 0 ? "warn" : tone === "risk" ? "risk" : hasLowPresence ? "warn" : "ok";
-  const badgeLabel = attentionCount > 0 ? `Em atenção (${attentionCount})` : hasLowPresence ? "Presença baixa" : "Estável";
-
+  const badgeTone: "ok" | "warn" | "risk" = attentionCount > 0 ? (attentionLabelKind === "pastoral" ? "risk" : "warn") : tone === "risk" ? "risk" : hasLowPresence ? "warn" : "ok";
+  const attentionLabel = attentionLabelKind === "pastoral"
+    ? `${attentionCount} ${attentionCount === 1 ? "caso pastoral" : "casos pastorais"}`
+    : attentionLabelKind === "local"
+      ? `${attentionCount} ${attentionCount === 1 ? "atenção local" : "atenções locais"}`
+      : `Em atenção (${attentionCount})`;
+  const badgeLabel = attentionCount > 0 ? attentionLabel : hasLowPresence ? "Presença baixa" : "Estável";
   const content = (
     <article className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
       <div className="flex items-start justify-between gap-3">

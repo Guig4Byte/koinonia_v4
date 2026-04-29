@@ -8,13 +8,19 @@ function initials(name: string) {
   return name.split(" ").slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 }
 
+function supportRequestsText(count: number) {
+  if (count === 0) return "";
+  return `${count} ${count === 1 ? "pedido de apoio" : "pedidos de apoio"}`;
+}
+
 export default async function SupervisorPage() {
   const user = await getCurrentUser();
   const dashboard = await getSupervisorDashboard(user);
   const firstSupportRequest = dashboard.supportRequests[0];
   const firstSignal = dashboard.attentionPeople[0];
   const hasRecentPresence = dashboard.recordedEventsCount > 0;
-  const pendingLocalAttention = Math.max(dashboard.attentionPeople.length - dashboard.supportRequests.length, 0);
+  const supportRequestIds = new Set(dashboard.supportRequests.map((signal) => signal.id));
+  const otherAttentionPeople = dashboard.attentionPeople.filter((signal) => !supportRequestIds.has(signal.id));
 
   return (
     <AppShell
@@ -70,9 +76,9 @@ export default async function SupervisorPage() {
         ) : null}
       </div>
 
-      <SectionTitle>Pessoas para acompanhar</SectionTitle>
+      <SectionTitle>Outros casos para acompanhar</SectionTitle>
       <div className="space-y-3">
-        {dashboard.attentionPeople.slice(0, 4).map((signal) => (
+        {otherAttentionPeople.slice(0, 4).map((signal) => (
           <PersonSignalCard
             key={signal.id}
             initials={initials(signal.person.fullName)}
@@ -81,27 +87,31 @@ export default async function SupervisorPage() {
             context={signal.group.name}
             reason={signal.reason}
             severity={signal.severity === "URGENT" ? "risk" : "warn"}
-            ctaLabel={signal.assignedToId === user.id ? "Abrir apoio" : "Abrir cuidado"}
+            ctaLabel="Abrir pessoa"
           />
         ))}
-        {dashboard.attentionPeople.length === 0 ? (
-          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhuma pessoa em atenção agora.</p>
+        {otherAttentionPeople.length === 0 ? (
+          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhum outro caso em atenção agora.</p>
         ) : null}
       </div>
 
       <SectionTitle>Suas células</SectionTitle>
       <div className="space-y-3">
-        {dashboard.groups.map((group) => (
-          <GroupCard
-            key={group.id}
-            name={group.name}
-            subtitle={`${group.leader?.name ?? "Sem líder"} · ${group.memberships.length} pessoas${group.supportRequestsCount > 0 ? ` · ${group.supportRequestsCount} pedido(s) de apoio` : ""}`}
-            presenceRate={group.presenceRate}
-            attentionCount={group.attentionCount}
-            href={`/celulas/${group.id}`}
-            hasPresenceData={group.recordedEventsCount > 0}
-          />
-        ))}
+        {dashboard.groups.map((group) => {
+          const supportText = supportRequestsText(group.supportRequestsCount);
+
+          return (
+            <GroupCard
+              key={group.id}
+              name={group.name}
+              subtitle={`${group.leader?.name ?? "Sem líder"} · ${group.memberships.length} pessoas${supportText ? ` · ${supportText}` : ""}`}
+              presenceRate={group.presenceRate}
+              attentionCount={group.attentionCount}
+              href={`/celulas/${group.id}`}
+              hasPresenceData={group.recordedEventsCount > 0}
+            />
+          );
+        })}
       </div>
     </AppShell>
   );

@@ -60,6 +60,11 @@ function statusTone(status: PersonStatus): "ok" | "warn" | "risk" | "info" {
   return "warn";
 }
 
+function reasonForViewer(reason: string, role: UserRole) {
+  if (role !== UserRole.LEADER) return reason;
+  return reason.replace("Líder pediu apoio da supervisão", "Apoio solicitado à supervisão");
+}
+
 export default async function PersonDetailPage({ params }: { params: Promise<{ personId: string }> }) {
   const user = await getCurrentUser();
   const { personId } = await params;
@@ -170,7 +175,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
             <article key={signal.id} className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="font-semibold text-[var(--color-text-primary)]">{signal.reason}</p>
+                  <p className="font-semibold text-[var(--color-text-primary)]">{reasonForViewer(signal.reason, user.role)}</p>
                   <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
                     {signal.group?.name ?? primaryGroup?.name ?? "Sem célula"} · {formatShortDate(signal.detectedAt)}, {formatTime(signal.detectedAt)}
                   </p>

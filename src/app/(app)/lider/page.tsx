@@ -13,6 +13,10 @@ function initials(name: string) {
   return name.split(" ").slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 }
 
+function reasonForLeader(reason: string) {
+  return reason.replace("Líder pediu apoio da supervisão", "Apoio solicitado à supervisão");
+}
+
 export default async function LeaderPage() {
   const user = await getCurrentUser();
   const dashboard = await getLeaderDashboard(user);
@@ -64,7 +68,7 @@ export default async function LeaderPage() {
       <SearchBox placeholder="Buscar membro..." />
       <PulseCard
         title={dashboard.attentionPeople[0] ? `${dashboard.attentionPeople[0].person.fullName} precisa de você.` : `${currentGroup?.name ?? "Sua célula"} está tranquila agora.`}
-        subtitle={dashboard.attentionPeople[0] ? dashboard.attentionPeople[0].reason : "Registre a presença quando a célula acontecer."}
+        subtitle={dashboard.attentionPeople[0] ? reasonForLeader(dashboard.attentionPeople[0].reason) : "Registre a presença quando a célula acontecer."}
         tone={dashboard.attentionPeople.length > 0 ? "attention" : "ok"}
       />
 
@@ -127,7 +131,7 @@ export default async function LeaderPage() {
             initials={initials(signal.person.fullName)}
             name={signal.person.fullName}
             detailHref={`/pessoas/${signal.person.id}`}
-            context={signal.reason}
+            context={reasonForLeader(signal.reason)}
             severity={signal.severity === "URGENT" ? "risk" : "warn"}
           />
         ))}

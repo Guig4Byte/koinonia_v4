@@ -68,7 +68,8 @@ export async function getPastorDashboard(churchId: string) {
       supervisorName: group.supervisor?.name ?? "Sem supervisor",
       presenceRate: summarizePresence(recordedEvents).presenceRate,
       recordedEventsCount: recordedEvents.length,
-      attentionCount: getPastoralSignalsByPerson(group.signals).length,
+      attentionCount: getPrimarySignalsByPerson(group.signals).length,
+      pastoralCasesCount: getPastoralSignalsByPerson(group.signals).length,
     };
   });
 

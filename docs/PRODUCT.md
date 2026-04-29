@@ -296,7 +296,7 @@ A visibilidade da atenção deve respeitar a responsabilidade do perfil:
 - supervisor vê exceções e padrões dentro das células supervisionadas;
 - pastor vê saúde geral e somente atenções graves, sensíveis, recorrentes ou escaladas.
 
-Um sinal comum não deve aparecer para o pastor apenas porque existe. Ele precisa ter gravidade, recorrência, sensibilidade pastoral ou escalonamento explícito.
+Um sinal comum não deve aparecer para o pastor apenas porque existe. Ele precisa ter gravidade, recorrência, sensibilidade pastoral ou escalonamento explícito. Quando o pastor abre o detalhe de uma célula, ele pode ver as atenções locais daquela célula em seção própria, porque entrou voluntariamente naquele contexto; isso não transforma a visão inicial em fila operacional.
 
 Depois de salvar check-in, a UI pode informar quantas pessoas ficaram em atenção naquela célula, para fechar o ciclo:
 
@@ -315,7 +315,7 @@ Já houve contato? -> confirmar -> anotar se precisar -> fechar atenção
 Nas listas de atenção, o fluxo correto é abrir o cuidado da pessoa primeiro:
 
 ```txt
-Pessoa em atenção -> Abrir cuidado -> detalhe da pessoa
+Pessoa em atenção -> Abrir pessoa -> detalhe da pessoa
 ```
 
 No detalhe da pessoa, o fluxo de contato é:

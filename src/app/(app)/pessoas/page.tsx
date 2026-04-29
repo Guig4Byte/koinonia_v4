@@ -28,6 +28,11 @@ function statusTone(status: PersonStatus): "ok" | "warn" | "risk" | "info" {
   return "warn";
 }
 
+function reasonForViewer(reason: string, role: UserRole) {
+  if (role !== UserRole.LEADER) return reason;
+  return reason.replace("Líder pediu apoio da supervisão", "Apoio solicitado à supervisão");
+}
+
 export default async function PeoplePage() {
   const user = await getCurrentUser();
   const isLeader = user.role === UserRole.LEADER;
@@ -116,9 +121,9 @@ export default async function PeoplePage() {
             name={signal.person.fullName}
             detailHref={`/pessoas/${signal.person.id}`}
             context={`${signal.group?.name ?? "Sem célula"} · ${signal.group?.leader?.name ?? "Sem líder"}`}
-            reason={signal.reason}
+            reason={reasonForViewer(signal.reason, user.role)}
             severity={signal.severity === "URGENT" ? "risk" : "warn"}
-            ctaLabel={isPastoralOverview ? "Abrir pessoa" : "Abrir cuidado"}
+            ctaLabel={!isPastoralOverview && signal.assignedToId === user.id ? "Abrir apoio" : "Abrir pessoa"}
           />
         ))}
         {attentionPeople.length === 0 ? (

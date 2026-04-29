@@ -152,7 +152,7 @@ A visibilidade deve separar escopo de relevância:
 - supervisor: atenção dos grupos supervisionados, com prioridade para exceções, acúmulos, pedidos de apoio e recorrência;
 - pastor: saúde geral e apenas casos graves, sensíveis, recorrentes ou escalados.
 
-Não use `getVisibleOpenSignalWhere(user)` como única regra para alimentar a visão padrão do pastor, porque ela expressa escopo permitido, não necessariamente relevância pastoral. No MVP atual, a filtragem pastoral considera sinais `URGENT` e sinais abertos atribuídos a pastor/admin por `CareSignal.assignedToId`.
+Não use `getVisibleOpenSignalWhere(user)` como única regra para alimentar a visão padrão do pastor, porque ela expressa escopo permitido, não necessariamente relevância pastoral. No MVP atual, a filtragem pastoral considera sinais `URGENT` e sinais abertos atribuídos a pastor/admin por `CareSignal.assignedToId`. No detalhe da célula, o pastor pode ver atenções locais em seção separada, pois isso é consulta contextual e não fila inicial.
 
 O backend do check-in deve retornar contagem de pessoas distintas em atenção, não quantidade bruta de sinais.
 

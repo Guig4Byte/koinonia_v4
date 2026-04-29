@@ -120,7 +120,8 @@ Funcionalidades fora desse recorte exigem pedido explícito do usuário.
 - A lista principal deve continuar sendo por pessoa, não por sinal bruto.
 - Para líder, `/pessoas` pode aparecer como `Membros` e listar membros ativos da própria célula; para pastor/supervisor, não transforme `/pessoas` em diretório completo por padrão.
 - Em listas padrão, pastor deve ver apenas casos graves, sensíveis, recorrentes ou escalados; não uma fila bruta de atenção operacional.
-- Cards de atenção devem manter uma ação primária simples: `Abrir cuidado`; ações diretas ficam no detalhe da pessoa.
+- Ao abrir uma célula específica, o pastor pode ver atenções locais contextualizadas, separadas dos casos pastorais. Isso é consulta contextual, não fila inicial do pastor.
+- Cards de atenção devem manter uma ação primária simples: `Abrir pessoa`; ações diretas ficam no detalhe da pessoa.
 - `Já houve contato?` deve ser uma pergunta com confirmação; não pode resolver atenção por clique acidental.
 - Quando um cuidado/contato resolve todos os motivos de atenção da pessoa, a pessoa deve voltar ao status `Ativo`; o histórico recente deve mostrar `Cuidado realizado`.
 - Recalcular presença não deve reabrir o mesmo motivo já cuidado se não houver nova evidência posterior ao cuidado.

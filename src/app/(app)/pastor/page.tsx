@@ -91,13 +91,14 @@ export default async function PastorPage() {
             name={group.name}
             subtitle={`${group.leaderName} · ${group.supervisorName}`}
             presenceRate={group.presenceRate}
-            attentionCount={group.attentionCount}
+            attentionCount={group.pastoralCasesCount > 0 ? group.pastoralCasesCount : group.attentionCount}
+            attentionLabelKind={group.pastoralCasesCount > 0 ? "pastoral" : "local"}
             href={`/celulas/${group.id}`}
             hasPresenceData={group.recordedEventsCount > 0}
           />
         ))}
         {groupsNeedingPastoralLook.length === 0 ? (
-          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhuma célula pedindo atenção pastoral especial agora.</p>
+          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhuma célula pedindo olhar especial agora.</p>
         ) : null}
       </div>
     </AppShell>

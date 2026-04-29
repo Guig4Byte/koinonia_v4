@@ -461,7 +461,7 @@ async function main() {
     assignedToId: ana.id,
     severity: SignalSeverity.ATTENTION,
     source: SignalSource.MANUAL,
-    reason: "Líder pediu apoio da supervisão após tentativa de contato.",
+    reason: "Apoio solicitado à supervisão após tentativa de contato.",
     evidence: "João está desempregado e ainda não respondeu esta semana.",
   });
 
@@ -494,7 +494,7 @@ async function main() {
     assignedToId: marcos.id,
     severity: SignalSeverity.ATTENTION,
     source: SignalSource.MANUAL,
-    reason: "Líder pediu apoio para retomar contato.",
+    reason: "Apoio solicitado para retomar contato.",
     evidence: "Pedido fica no escopo do supervisor Marcos, não vira caso pastoral por padrão.",
   });
 
