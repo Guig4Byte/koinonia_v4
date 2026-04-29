@@ -6,6 +6,7 @@ import { SearchBox } from "@/components/search-box";
 import { Badge } from "@/components/ui/badge";
 import { getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson } from "@/features/signals/attention";
+import { signalBadgeForViewer } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 
@@ -92,7 +93,7 @@ export default async function PeoplePage() {
   const attentionPeople = isPastoralOverview
     ? getPastoralSignalsByPerson(openSignals)
     : getPrimarySignalsByPerson(openSignals);
-  const attentionPersonIds = new Set(attentionPeople.map((signal) => signal.personId));
+  const attentionSignalByPersonId = new Map(attentionPeople.map((signal) => [signal.personId, signal]));
   const attentionTitle = isLeader ? "Membros em atenção" : isPastoralOverview ? "Casos pastorais" : "Pessoas em atenção";
   const emptyAttentionMessage = isLeader
     ? "Nenhum membro da sua célula está em atenção agora."
@@ -114,18 +115,24 @@ export default async function PeoplePage() {
 
       <SectionTitle>{attentionTitle}</SectionTitle>
       <div className="space-y-3">
-        {attentionPeople.map((signal) => (
-          <PersonSignalCard
-            key={signal.id}
-            initials={initials(signal.person.fullName)}
-            name={signal.person.fullName}
-            detailHref={`/pessoas/${signal.person.id}`}
-            context={`${signal.group?.name ?? "Sem célula"} · ${signal.group?.leader?.name ?? "Sem líder"}`}
-            reason={reasonForViewer(signal.reason, user.role)}
-            severity={signal.severity === "URGENT" ? "risk" : "warn"}
-            ctaLabel={!isPastoralOverview && signal.assignedToId === user.id ? "Abrir apoio" : "Abrir pessoa"}
-          />
-        ))}
+        {attentionPeople.map((signal) => {
+          const badge = signalBadgeForViewer(signal, user);
+
+          return (
+            <PersonSignalCard
+              key={signal.id}
+              initials={initials(signal.person.fullName)}
+              name={signal.person.fullName}
+              detailHref={`/pessoas/${signal.person.id}`}
+              context={`${signal.group?.name ?? "Sem célula"} · ${signal.group?.leader?.name ?? "Sem líder"}`}
+              reason={reasonForViewer(signal.reason, user.role)}
+              severity={signal.severity === "URGENT" ? "risk" : "warn"}
+              badgeLabel={badge.label}
+              badgeTone={badge.tone}
+              ctaLabel={!isPastoralOverview && signal.assignedToId === user.id ? "Abrir apoio" : "Abrir pessoa"}
+            />
+          );
+        })}
         {attentionPeople.length === 0 ? (
           <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">
             {emptyAttentionMessage}
@@ -138,7 +145,8 @@ export default async function PeoplePage() {
           <SectionTitle>Membros da célula</SectionTitle>
           <div className="space-y-2">
             {visibleMembers.map((person) => {
-              const isInAttention = attentionPersonIds.has(person.id);
+              const attentionSignal = attentionSignalByPersonId.get(person.id);
+              const badge = attentionSignal ? signalBadgeForViewer(attentionSignal, user) : null;
 
               return (
                 <Link
@@ -150,8 +158,8 @@ export default async function PeoplePage() {
                     <span className="block text-sm font-semibold text-[var(--color-text-primary)]">{person.fullName}</span>
                     <span className="mt-0.5 block text-xs text-[var(--color-text-secondary)]">{person.memberships[0]?.group.name ?? "Sua célula"}</span>
                   </span>
-                  <Badge tone={isInAttention ? "warn" : statusTone(person.status)}>
-                    {isInAttention ? "Em atenção" : personStatusLabels[person.status]}
+                  <Badge tone={badge?.tone ?? statusTone(person.status)}>
+                    {badge?.label ?? personStatusLabels[person.status]}
                   </Badge>
                 </Link>
               );

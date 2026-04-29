@@ -35,6 +35,11 @@ export function escalationStatusLabel(signal: EscalationSignalLike) {
   return null;
 }
 
+function supervisorAssignmentLabelForViewer(viewer: EscalationViewerLike) {
+  if (viewer.role === UserRole.SUPERVISOR) return "Pedido de apoio";
+  return "Apoio solicitado";
+}
+
 export function shouldShowEscalationStatusForViewer(signal: EscalationSignalLike, viewer: EscalationViewerLike) {
   if (isAssignedToPastoralRole(signal)) return true;
 
@@ -47,6 +52,7 @@ export function shouldShowEscalationStatusForViewer(signal: EscalationSignalLike
 
 export function escalationStatusLabelForViewer(signal: EscalationSignalLike, viewer: EscalationViewerLike) {
   if (!shouldShowEscalationStatusForViewer(signal, viewer)) return null;
+  if (isAssignedToSupervisor(signal)) return supervisorAssignmentLabelForViewer(viewer);
   return escalationStatusLabel(signal);
 }
 

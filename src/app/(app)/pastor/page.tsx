@@ -2,6 +2,7 @@ import { AppShell } from "@/components/app-shell";
 import { ContextSummary, GroupCard, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
 import { getPastorDashboard } from "@/features/dashboard/queries";
+import { signalBadgeForViewer } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
 
 function initials(name: string) {
@@ -64,18 +65,24 @@ export default async function PastorPage() {
 
       <SectionTitle>Casos pastorais em destaque</SectionTitle>
       <div className="space-y-3">
-        {dashboard.attentionPeople.slice(0, 3).map((signal) => (
-          <PersonSignalCard
-            key={signal.id}
-            initials={initials(signal.person.fullName)}
-            name={signal.person.fullName}
-            detailHref={`/pessoas/${signal.person.id}`}
-            context={`${signal.group?.name ?? "Sem célula"} · ${signal.group?.leader?.name ?? "Sem líder"}`}
-            reason={signal.reason}
-            severity="risk"
-            ctaLabel="Abrir pessoa"
-          />
-        ))}
+        {dashboard.attentionPeople.slice(0, 3).map((signal) => {
+          const badge = signalBadgeForViewer(signal, user);
+
+          return (
+            <PersonSignalCard
+              key={signal.id}
+              initials={initials(signal.person.fullName)}
+              name={signal.person.fullName}
+              detailHref={`/pessoas/${signal.person.id}`}
+              context={`${signal.group?.name ?? "Sem célula"} · ${signal.group?.leader?.name ?? "Sem líder"}`}
+              reason={signal.reason}
+              severity={signal.severity === "URGENT" ? "risk" : "warn"}
+              badgeLabel={badge.label}
+              badgeTone={badge.tone}
+              ctaLabel="Abrir pessoa"
+            />
+          );
+        })}
         {pastoralCasesCount === 0 ? (
           <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm leading-relaxed text-[var(--color-text-secondary)]">
             Nada grave ou encaminhado chegou para o pastor agora. Para consultar alguém específico, use a busca pelo nome.

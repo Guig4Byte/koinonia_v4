@@ -41,5 +41,6 @@ export function getPrimarySignalsByPerson<T extends AttentionSignalLike>(signals
 }
 
 export function getPastoralSignalsByPerson<T extends AttentionSignalLike>(signals: T[]) {
-  return getPrimarySignalsByPerson(signals.filter(isPastoralSignal));
+  const pastoralSignals = signals.filter((signal) => isPastoralSignal(signal));
+  return getPrimarySignalsByPerson<T>(pastoralSignals);
 }

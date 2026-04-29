@@ -2,6 +2,7 @@ import { AppShell } from "@/components/app-shell";
 import { ContextSummary, GroupCard, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
+import { groupAttentionLabel, signalBadgeForViewer } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
 
 function initials(name: string) {
@@ -59,18 +60,24 @@ export default async function SupervisorPage() {
 
       <SectionTitle>Pedidos de apoio</SectionTitle>
       <div className="space-y-3">
-        {dashboard.supportRequests.slice(0, 4).map((signal) => (
-          <PersonSignalCard
-            key={signal.id}
-            initials={initials(signal.person.fullName)}
-            name={signal.person.fullName}
-            detailHref={`/pessoas/${signal.person.id}`}
-            context={signal.group.name}
-            reason={signal.reason}
-            severity={signal.severity === "URGENT" ? "risk" : "warn"}
-            ctaLabel="Abrir apoio"
-          />
-        ))}
+        {dashboard.supportRequests.slice(0, 4).map((signal) => {
+          const badge = signalBadgeForViewer(signal, user);
+
+          return (
+            <PersonSignalCard
+              key={signal.id}
+              initials={initials(signal.person.fullName)}
+              name={signal.person.fullName}
+              detailHref={`/pessoas/${signal.person.id}`}
+              context={signal.group.name}
+              reason={signal.reason}
+              severity={signal.severity === "URGENT" ? "risk" : "warn"}
+              badgeLabel={badge.label}
+              badgeTone={badge.tone}
+              ctaLabel="Abrir apoio"
+            />
+          );
+        })}
         {dashboard.supportRequests.length === 0 ? (
           <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhum líder pediu apoio agora.</p>
         ) : null}
@@ -78,18 +85,24 @@ export default async function SupervisorPage() {
 
       <SectionTitle>Outros casos para acompanhar</SectionTitle>
       <div className="space-y-3">
-        {otherAttentionPeople.slice(0, 4).map((signal) => (
-          <PersonSignalCard
-            key={signal.id}
-            initials={initials(signal.person.fullName)}
-            name={signal.person.fullName}
-            detailHref={`/pessoas/${signal.person.id}`}
-            context={signal.group.name}
-            reason={signal.reason}
-            severity={signal.severity === "URGENT" ? "risk" : "warn"}
-            ctaLabel="Abrir pessoa"
-          />
-        ))}
+        {otherAttentionPeople.slice(0, 4).map((signal) => {
+          const badge = signalBadgeForViewer(signal, user);
+
+          return (
+            <PersonSignalCard
+              key={signal.id}
+              initials={initials(signal.person.fullName)}
+              name={signal.person.fullName}
+              detailHref={`/pessoas/${signal.person.id}`}
+              context={signal.group.name}
+              reason={signal.reason}
+              severity={signal.severity === "URGENT" ? "risk" : "warn"}
+              badgeLabel={badge.label}
+              badgeTone={badge.tone}
+              ctaLabel="Abrir pessoa"
+            />
+          );
+        })}
         {otherAttentionPeople.length === 0 ? (
           <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhum outro caso em atenção agora.</p>
         ) : null}
@@ -99,6 +112,14 @@ export default async function SupervisorPage() {
       <div className="space-y-3">
         {dashboard.groups.map((group) => {
           const supportText = supportRequestsText(group.supportRequestsCount);
+          const urgentCount = group.signals.filter((signal) => signal.severity === "URGENT").length;
+          const badge = group.supportRequestsCount > 0
+            ? { label: groupAttentionLabel(group.supportRequestsCount, "pedido de apoio", "pedidos de apoio"), tone: "care" as const }
+            : urgentCount > 0
+              ? { label: groupAttentionLabel(urgentCount, "urgente", "urgentes"), tone: "risk" as const }
+              : group.attentionCount > 0
+                ? { label: groupAttentionLabel(group.attentionCount, "pessoa em atenção", "pessoas em atenção"), tone: "warn" as const }
+                : null;
 
           return (
             <GroupCard
@@ -107,6 +128,8 @@ export default async function SupervisorPage() {
               subtitle={`${group.leader?.name ?? "Sem líder"} · ${group.memberships.length} pessoas${supportText ? ` · ${supportText}` : ""}`}
               presenceRate={group.presenceRate}
               attentionCount={group.attentionCount}
+              badgeLabel={badge?.label}
+              badgeTone={badge?.tone}
               href={`/celulas/${group.id}`}
               hasPresenceData={group.recordedEventsCount > 0}
             />

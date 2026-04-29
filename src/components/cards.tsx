@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/cn";
+import type { SignalBadgeTone } from "@/features/signals/display";
 
 export function PulseCard({
   title,
@@ -85,6 +86,8 @@ export function PersonSignalCard({
   context,
   reason,
   severity = "risk",
+  badgeLabel,
+  badgeTone,
   detailHref,
   href,
   ctaLabel = "Abrir pessoa",
@@ -94,11 +97,14 @@ export function PersonSignalCard({
   context: string;
   reason?: string;
   severity?: "ok" | "warn" | "risk" | "info";
+  badgeLabel?: string;
+  badgeTone?: SignalBadgeTone;
   detailHref?: string;
   href?: string;
   ctaLabel?: string;
 }) {
-  const badgeTone = severity === "risk" ? "risk" : severity === "ok" ? "ok" : severity === "info" ? "info" : "warn";
+  const resolvedBadgeTone = badgeTone ?? (severity === "risk" ? "risk" : severity === "ok" ? "ok" : severity === "info" ? "info" : "warn");
+  const resolvedBadgeLabel = badgeLabel ?? (severity === "risk" ? "Urgente" : "Em atenção");
 
   const content = (
     <article className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
@@ -112,7 +118,7 @@ export function PersonSignalCard({
               <p className="font-semibold text-[var(--color-text-primary)]">{name}</p>
               <p className="mt-0.5 text-sm leading-relaxed text-[var(--color-text-secondary)]">{context}</p>
             </div>
-            <Badge tone={badgeTone}>{severity === "risk" ? "Urgente" : "Em atenção"}</Badge>
+            <Badge tone={resolvedBadgeTone}>{resolvedBadgeLabel}</Badge>
           </div>
           {reason ? <p className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-primary)]">{reason}</p> : null}
           {detailHref ? (
@@ -137,6 +143,8 @@ export function GroupCard({
   href,
   hasPresenceData = true,
   attentionLabelKind = "default",
+  badgeLabel,
+  badgeTone,
 }: {
   name: string;
   subtitle: string;
@@ -145,16 +153,18 @@ export function GroupCard({
   href?: string;
   hasPresenceData?: boolean;
   attentionLabelKind?: "default" | "local" | "pastoral";
+  badgeLabel?: string;
+  badgeTone?: SignalBadgeTone;
 }) {
   const tone = !hasPresenceData ? "neutral" : presenceRate < 65 ? "risk" : presenceRate < 75 ? "warn" : "ok";
   const hasLowPresence = hasPresenceData && presenceRate < 70;
-  const badgeTone: "ok" | "warn" | "risk" = attentionCount > 0 ? (attentionLabelKind === "pastoral" ? "risk" : "warn") : tone === "risk" ? "risk" : hasLowPresence ? "warn" : "ok";
+  const resolvedBadgeTone: SignalBadgeTone = badgeTone ?? (attentionCount > 0 ? (attentionLabelKind === "pastoral" ? "risk" : "warn") : tone === "risk" ? "risk" : hasLowPresence ? "warn" : "ok");
   const attentionLabel = attentionLabelKind === "pastoral"
     ? `${attentionCount} ${attentionCount === 1 ? "caso pastoral" : "casos pastorais"}`
     : attentionLabelKind === "local"
       ? `${attentionCount} ${attentionCount === 1 ? "atenção local" : "atenções locais"}`
-      : `Em atenção (${attentionCount})`;
-  const badgeLabel = attentionCount > 0 ? attentionLabel : hasLowPresence ? "Presença baixa" : "Estável";
+      : `${attentionCount} ${attentionCount === 1 ? "pessoa em atenção" : "pessoas em atenção"}`;
+  const resolvedBadgeLabel = badgeLabel ?? (attentionCount > 0 ? attentionLabel : hasLowPresence ? "Presença baixa" : "Estável");
   const content = (
     <article className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
       <div className="flex items-start justify-between gap-3">
@@ -162,7 +172,7 @@ export function GroupCard({
           <p className="font-semibold text-[var(--color-text-primary)]">{name}</p>
           <p className="mt-0.5 text-sm text-[var(--color-text-secondary)]">{subtitle}</p>
         </div>
-        <Badge tone={badgeTone}>{badgeLabel}</Badge>
+        <Badge tone={resolvedBadgeTone}>{resolvedBadgeLabel}</Badge>
       </div>
       <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--surface-alt)]">
         <div

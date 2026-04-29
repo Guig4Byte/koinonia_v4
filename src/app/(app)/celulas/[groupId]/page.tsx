@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
 import { canViewGroup } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson, isPastoralSignal } from "@/features/signals/attention";
+import { groupAttentionLabel, signalBadgeForViewer } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime, percent } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -98,20 +99,37 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
   const attentionPeople = getPrimarySignalsByPerson(group.signals);
   const pastoralAttentionPeople = getPastoralSignalsByPerson(group.signals);
   const localAttentionPeople = attentionPeople.filter((signal) => !isPastoralSignal(signal));
-  const attentionPersonIds = new Set(attentionPeople.map((signal) => signal.personId));
   const attentionSignalByPersonId = new Map(attentionPeople.map((signal) => [signal.personId, signal]));
+  const supportRequests = group.signals.filter((signal) => signal.assignedToId === user.id);
+  const urgentAttentionPeople = attentionPeople.filter((signal) => signal.severity === SignalSeverity.URGENT);
   const completedEvents = group.events.filter((event) => eventMetrics(event).completed);
   const accountableAttendances = completedEvents.flatMap((event) => event.attendances.filter((attendance) => attendance.status !== AttendanceStatus.VISITOR));
   const presentAttendances = accountableAttendances.filter((attendance) => attendance.status === AttendanceStatus.PRESENT);
   const presenceRate = percent(presentAttendances.length, accountableAttendances.length);
   const relevantEvent = selectRelevantCheckInEvent(group.events);
   const pendingEvent = relevantEvent && !hasRecordedPresence(relevantEvent) ? relevantEvent : null;
-  const headerBadgeTone: "ok" | "warn" | "risk" = pastoralAttentionPeople.length > 0 ? "risk" : attentionPeople.length > 0 ? "warn" : "ok";
-  const headerBadgeLabel = pastoralAttentionPeople.length > 0
-    ? `${pastoralAttentionPeople.length} ${pastoralAttentionPeople.length === 1 ? "caso pastoral" : "casos pastorais"}`
-    : attentionPeople.length > 0
-      ? isPastorView ? "Atenções locais" : "Em atenção"
-      : "Estável";
+  const headerBadge = (() => {
+    if (isPastorView && pastoralAttentionPeople.length > 0) {
+      return { tone: "risk" as const, label: groupAttentionLabel(pastoralAttentionPeople.length, "caso pastoral", "casos pastorais") };
+    }
+
+    if (!isPastorView && supportRequests.length > 0) {
+      return { tone: "care" as const, label: groupAttentionLabel(supportRequests.length, "pedido de apoio", "pedidos de apoio") };
+    }
+
+    if (urgentAttentionPeople.length > 0) {
+      return { tone: "risk" as const, label: groupAttentionLabel(urgentAttentionPeople.length, "urgente", "urgentes") };
+    }
+
+    if (attentionPeople.length > 0) {
+      return {
+        tone: "warn" as const,
+        label: isPastorView ? groupAttentionLabel(attentionPeople.length, "atenção local", "atenções locais") : groupAttentionLabel(attentionPeople.length, "pessoa em atenção", "pessoas em atenção"),
+      };
+    }
+
+    return { tone: "ok" as const, label: "Estável" };
+  })();
 
   return (
     <AppShell
@@ -137,7 +155,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
               {group.supervisor?.name ? ` · Supervisor: ${group.supervisor.name}` : ""}
             </p>
           </div>
-          <Badge tone={headerBadgeTone}>{headerBadgeLabel}</Badge>
+          <Badge tone={headerBadge.tone}>{headerBadge.label}</Badge>
         </div>
         <p className="mt-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 text-sm leading-relaxed text-[var(--color-text-secondary)]">
           {groupMeetingText(group.meetingDayOfWeek, group.meetingTime)}
@@ -167,18 +185,24 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
         <>
           <SectionTitle>Casos pastorais da célula</SectionTitle>
           <div className="space-y-3">
-            {pastoralAttentionPeople.slice(0, 4).map((signal) => (
-              <PersonSignalCard
-                key={signal.id}
-                initials={initials(signal.person.fullName)}
-                name={signal.person.fullName}
-                detailHref={`/pessoas/${signal.person.id}`}
-                context="Membro da célula"
-                reason={signal.reason}
-                severity={signal.severity === SignalSeverity.URGENT ? "risk" : "warn"}
-                ctaLabel="Abrir pessoa"
-              />
-            ))}
+            {pastoralAttentionPeople.slice(0, 4).map((signal) => {
+              const badge = signalBadgeForViewer(signal, user);
+
+              return (
+                <PersonSignalCard
+                  key={signal.id}
+                  initials={initials(signal.person.fullName)}
+                  name={signal.person.fullName}
+                  detailHref={`/pessoas/${signal.person.id}`}
+                  context="Membro da célula"
+                  reason={signal.reason}
+                  severity={signal.severity === SignalSeverity.URGENT ? "risk" : "warn"}
+                  badgeLabel={badge.label}
+                  badgeTone={badge.tone}
+                  ctaLabel="Abrir pessoa"
+                />
+              );
+            })}
             {pastoralAttentionPeople.length === 0 ? (
               <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm text-[var(--color-text-secondary)] shadow-card">
                 Nenhum caso urgente ou encaminhado ao pastor nesta célula.
@@ -188,18 +212,24 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
 
           <SectionTitle>Atenções locais da célula</SectionTitle>
           <div className="space-y-3">
-            {localAttentionPeople.slice(0, 4).map((signal) => (
-              <PersonSignalCard
-                key={signal.id}
-                initials={initials(signal.person.fullName)}
-                name={signal.person.fullName}
-                detailHref={`/pessoas/${signal.person.id}`}
-                context="No cuidado do líder ou da supervisão"
-                reason={signal.reason}
-                severity={signal.severity === SignalSeverity.URGENT ? "risk" : signal.severity === SignalSeverity.ATTENTION ? "warn" : "info"}
-                ctaLabel="Abrir pessoa"
-              />
-            ))}
+            {localAttentionPeople.slice(0, 4).map((signal) => {
+              const badge = signalBadgeForViewer(signal, user);
+
+              return (
+                <PersonSignalCard
+                  key={signal.id}
+                  initials={initials(signal.person.fullName)}
+                  name={signal.person.fullName}
+                  detailHref={`/pessoas/${signal.person.id}`}
+                  context="No cuidado do líder ou da supervisão"
+                  reason={signal.reason}
+                  severity={signal.severity === SignalSeverity.URGENT ? "risk" : signal.severity === SignalSeverity.ATTENTION ? "warn" : "info"}
+                  badgeLabel={badge.label}
+                  badgeTone={badge.tone}
+                  ctaLabel="Abrir pessoa"
+                />
+              );
+            })}
             {localAttentionPeople.length === 0 ? (
               <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm text-[var(--color-text-secondary)] shadow-card">
                 Nenhuma atenção local fora dos casos pastorais agora.
@@ -211,18 +241,24 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
         <>
           <SectionTitle>Quem merece atenção</SectionTitle>
           <div className="space-y-3">
-            {attentionPeople.slice(0, 4).map((signal) => (
-              <PersonSignalCard
-                key={signal.id}
-                initials={initials(signal.person.fullName)}
-                name={signal.person.fullName}
-                detailHref={`/pessoas/${signal.person.id}`}
-                context="Membro da célula"
-                reason={reasonForViewer(signal.reason, user.role)}
-                severity={signal.severity === SignalSeverity.URGENT ? "risk" : signal.severity === SignalSeverity.ATTENTION ? "warn" : "info"}
-                ctaLabel="Abrir pessoa"
-              />
-            ))}
+            {attentionPeople.slice(0, 4).map((signal) => {
+              const badge = signalBadgeForViewer(signal, user);
+
+              return (
+                <PersonSignalCard
+                  key={signal.id}
+                  initials={initials(signal.person.fullName)}
+                  name={signal.person.fullName}
+                  detailHref={`/pessoas/${signal.person.id}`}
+                  context="Membro da célula"
+                  reason={reasonForViewer(signal.reason, user.role)}
+                  severity={signal.severity === SignalSeverity.URGENT ? "risk" : signal.severity === SignalSeverity.ATTENTION ? "warn" : "info"}
+                  badgeLabel={badge.label}
+                  badgeTone={badge.tone}
+                  ctaLabel="Abrir pessoa"
+                />
+              );
+            })}
             {attentionPeople.length === 0 ? (
               <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm text-[var(--color-text-secondary)] shadow-card">
                 Nenhuma pessoa desta célula está em atenção agora.
@@ -282,14 +318,9 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
       <div className="space-y-2">
         {group.memberships.map((membership) => {
           const attentionSignal = attentionSignalByPersonId.get(membership.personId);
-          const isInAttention = attentionPersonIds.has(membership.personId);
-          const isPastoralAttention = attentionSignal ? isPastoralSignal(attentionSignal) : false;
-          const memberBadgeLabel = isInAttention
-            ? isPastorView
-              ? isPastoralAttention ? "Caso pastoral" : "Atenção local"
-              : "Em atenção"
-            : personStatusLabels[membership.person.status];
-          const memberBadgeTone: "ok" | "warn" | "risk" | "info" = isInAttention ? (isPastoralAttention ? "risk" : "warn") : statusTone(membership.person.status);
+          const memberSignalBadge = attentionSignal ? signalBadgeForViewer(attentionSignal, user) : null;
+          const memberBadgeLabel = memberSignalBadge?.label ?? personStatusLabels[membership.person.status];
+          const memberBadgeTone = memberSignalBadge?.tone ?? statusTone(membership.person.status);
 
           return (
             <Link key={membership.id} href={`/pessoas/${membership.personId}`} className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]">

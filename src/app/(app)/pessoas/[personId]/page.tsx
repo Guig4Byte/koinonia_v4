@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AttendanceStatus, CareKind, PersonStatus, SignalSeverity, UserRole } from "../../../../generated/prisma/client";
+import { AttendanceStatus, CareKind, PersonStatus, UserRole } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { CareActions } from "@/components/care-actions";
 import { SectionTitle } from "@/components/cards";
@@ -8,6 +8,7 @@ import { SignalSupportActions } from "@/components/signal-support-actions";
 import { Badge } from "@/components/ui/badge";
 import { canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
 import { escalationStatusLabelForViewer, shouldShowEscalationStatusForViewer } from "@/features/signals/escalation";
+import { signalBadgeForViewer } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -48,11 +49,6 @@ function attendanceTone(status?: AttendanceStatus | null): "ok" | "warn" | "risk
   return "info";
 }
 
-function signalTone(severity: SignalSeverity): "warn" | "risk" | "info" {
-  if (severity === SignalSeverity.URGENT) return "risk";
-  if (severity === SignalSeverity.ATTENTION) return "warn";
-  return "info";
-}
 
 function statusTone(status: PersonStatus): "ok" | "warn" | "risk" | "info" {
   if (status === PersonStatus.ACTIVE) return "ok";
@@ -159,6 +155,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       <SectionTitle>{openSignalsCount > 0 ? "Por que merece atenção" : "Situação atual"}</SectionTitle>
       <div className="space-y-3">
         {signals.map((signal) => {
+          const signalBadge = signalBadgeForViewer(signal, user);
           const escalationLabel = escalationStatusLabelForViewer(signal, user);
           const shouldShowAssignmentMessage = shouldShowEscalationStatusForViewer(signal, user);
           const isAssignedToPastor = signal.assignedTo?.role === UserRole.PASTOR || signal.assignedTo?.role === UserRole.ADMIN;
@@ -181,7 +178,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
                   </p>
                 </div>
                 <div className="flex shrink-0 flex-col items-end gap-1.5">
-                  <Badge tone={signalTone(signal.severity)}>{signal.severity === "URGENT" ? "Urgente" : "Atenção"}</Badge>
+                  <Badge tone={signalBadge.tone}>{signalBadge.label}</Badge>
                   {escalationLabel ? <Badge tone="care">{escalationLabel}</Badge> : null}
                 </div>
               </div>

@@ -30,7 +30,7 @@ describe("signal escalation helpers", () => {
     const supervisorRequest = { severity: SignalSeverity.ATTENTION, assignedTo: { role: UserRole.SUPERVISOR } };
 
     expect(escalationStatusLabelForViewer(supervisorRequest, { role: UserRole.LEADER })).toBe("Apoio solicitado");
-    expect(escalationStatusLabelForViewer(supervisorRequest, { role: UserRole.SUPERVISOR })).toBe("Apoio solicitado");
+    expect(escalationStatusLabelForViewer(supervisorRequest, { role: UserRole.SUPERVISOR })).toBe("Pedido de apoio");
   });
 
   it("shows pastoral assignment messages to pastor viewers", () => {

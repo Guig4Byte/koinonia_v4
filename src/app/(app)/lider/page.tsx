@@ -5,6 +5,7 @@ import { SearchBox } from "@/components/search-box";
 import { Badge } from "@/components/ui/badge";
 import { getLeaderDashboard } from "@/features/dashboard/queries";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
+import { signalBadgeForViewer } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -125,16 +126,22 @@ export default async function LeaderPage() {
 
       <SectionTitle>Quem merece atenção</SectionTitle>
       <div className="space-y-3">
-        {dashboard.attentionPeople.slice(0, 3).map((signal) => (
-          <PersonSignalCard
-            key={signal.id}
-            initials={initials(signal.person.fullName)}
-            name={signal.person.fullName}
-            detailHref={`/pessoas/${signal.person.id}`}
-            context={reasonForLeader(signal.reason)}
-            severity={signal.severity === "URGENT" ? "risk" : "warn"}
-          />
-        ))}
+        {dashboard.attentionPeople.slice(0, 3).map((signal) => {
+          const badge = signalBadgeForViewer(signal, user);
+
+          return (
+            <PersonSignalCard
+              key={signal.id}
+              initials={initials(signal.person.fullName)}
+              name={signal.person.fullName}
+              detailHref={`/pessoas/${signal.person.id}`}
+              context={reasonForLeader(signal.reason)}
+              severity={signal.severity === "URGENT" ? "risk" : "warn"}
+              badgeLabel={badge.label}
+              badgeTone={badge.tone}
+            />
+          );
+        })}
         {dashboard.attentionPeople.length === 0 ? (
           <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhuma pessoa em atenção agora.</p>
         ) : null}
