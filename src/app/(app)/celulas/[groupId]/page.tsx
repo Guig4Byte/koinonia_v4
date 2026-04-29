@@ -8,7 +8,7 @@ import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/even
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { canViewGroup } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson, isPastoralSignal } from "@/features/signals/attention";
-import { groupAttentionLabel, signalBadgeForViewer } from "@/features/signals/display";
+import { groupAttentionLabel, signalBadgeForViewer, signalReasonForViewer } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime, percent } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -45,10 +45,6 @@ function groupMeetingText(day?: number | null, time?: string | null) {
   return `${dayLabels[day] ?? "Dia informado"}${time ? ` · ${time}` : ""}`;
 }
 
-function reasonForViewer(reason: string, role: UserRole) {
-  if (role !== UserRole.LEADER) return reason;
-  return reason.replace("Líder pediu apoio da supervisão", "Apoio solicitado à supervisão");
-}
 
 export default async function GroupDetailPage({ params }: { params: Promise<{ groupId: string }> }) {
   const user = await getCurrentUser();
@@ -242,7 +238,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
                   name={signal.person.fullName}
                   detailHref={`/pessoas/${signal.person.id}`}
                   context="Membro da célula"
-                  reason={reasonForViewer(signal.reason, user.role)}
+                  reason={signalReasonForViewer(signal.reason, user)}
                   severity={signal.severity === SignalSeverity.URGENT ? "risk" : signal.severity === SignalSeverity.ATTENTION ? "warn" : "info"}
                   badgeLabel={badge.label}
                   badgeTone={badge.tone}

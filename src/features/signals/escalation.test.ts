@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { SignalSeverity, UserRole } from "../../generated/prisma/client";
-import { escalationStatusLabel, escalationStatusLabelForViewer, isPastoralEscalation, shouldShowEscalationStatusForViewer } from "./escalation";
+import { escalationStatusDetailForViewer, escalationStatusLabel, escalationStatusLabelForViewer, isPastoralEscalation, shouldShowEscalationStatusForViewer } from "./escalation";
 
 describe("signal escalation helpers", () => {
   it("treats urgent signals as pastoral even without assignment", () => {
@@ -37,5 +37,18 @@ describe("signal escalation helpers", () => {
     const pastoralRequest = { severity: SignalSeverity.ATTENTION, assignedTo: { role: UserRole.PASTOR } };
 
     expect(escalationStatusLabelForViewer(pastoralRequest, { role: UserRole.PASTOR })).toBe("Encaminhado ao pastor");
+  });
+
+  it("hides supervisor support details from pastor viewers", () => {
+    const supervisorRequest = { severity: SignalSeverity.URGENT, assignedTo: { name: "Ana", role: UserRole.SUPERVISOR } };
+
+    expect(escalationStatusDetailForViewer(supervisorRequest, { role: UserRole.PASTOR })).toBeNull();
+    expect(escalationStatusDetailForViewer(supervisorRequest, { role: UserRole.SUPERVISOR })).toBe("Ana recebeu este pedido de apoio.");
+  });
+
+  it("uses one detail helper for pastoral assignment messages", () => {
+    const pastoralRequest = { severity: SignalSeverity.ATTENTION, assignedTo: { name: "Roberto", role: UserRole.PASTOR } };
+
+    expect(escalationStatusDetailForViewer(pastoralRequest, { role: UserRole.PASTOR })).toBe("Roberto recebeu este caso para olhar mais de perto.");
   });
 });

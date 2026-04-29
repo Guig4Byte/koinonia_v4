@@ -9,8 +9,8 @@ import { SignalSupportActions } from "@/components/signal-support-actions";
 import { Badge } from "@/components/ui/badge";
 import { canRegisterCare, canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
-import { shouldShowEscalationStatusForViewer } from "@/features/signals/escalation";
-import { signalBadgeForViewer } from "@/features/signals/display";
+import { escalationStatusDetailForViewer } from "@/features/signals/escalation";
+import { signalBadgeForViewer, signalReasonForViewer } from "@/features/signals/display";
 import { getPrimarySignalsByPerson } from "@/features/signals/attention";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
@@ -44,10 +44,6 @@ function attendanceTone(status?: AttendanceStatus | null): "ok" | "warn" | "risk
 }
 
 
-function reasonForViewer(reason: string, role: UserRole) {
-  if (role !== UserRole.LEADER) return reason;
-  return reason.replace("Líder pediu apoio da supervisão", "Apoio solicitado à supervisão");
-}
 
 export default async function PersonDetailPage({ params }: { params: Promise<{ personId: string }> }) {
   const user = await getCurrentUser();
@@ -148,7 +144,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       <div className="space-y-3">
         {signals.map((signal) => {
           const signalBadge = signalBadgeForViewer(signal, user);
-          const shouldShowAssignmentMessage = shouldShowEscalationStatusForViewer(signal, user);
+          const assignmentMessage = escalationStatusDetailForViewer(signal, user);
           const isAssignedToPastor = signal.assignedTo?.role === UserRole.PASTOR || signal.assignedTo?.role === UserRole.ADMIN;
           const isAssignedToSupervisor = signal.assignedTo?.role === UserRole.SUPERVISOR;
           const canRequestSupervisor = user.role === UserRole.LEADER
@@ -163,7 +159,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
             <article key={signal.id} className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
-                  <p className="font-semibold text-[var(--color-text-primary)]">{reasonForViewer(signal.reason, user.role)}</p>
+                  <p className="font-semibold text-[var(--color-text-primary)]">{signalReasonForViewer(signal.reason, user)}</p>
                   <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
                     {signal.group?.name ?? primaryGroup?.name ?? "Sem célula"} · {formatShortDate(signal.detectedAt)}, {formatTime(signal.detectedAt)}
                   </p>
@@ -173,9 +169,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
               {signal.evidence ? <p className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">{signal.evidence}</p> : null}
               <SignalSupportActions
                 signalId={signal.id}
-                assignedToName={signal.assignedTo?.name}
-                assignedToRole={signal.assignedTo?.role}
-                showAssignmentMessage={shouldShowAssignmentMessage}
+                assignmentMessage={assignmentMessage}
                 canRequestSupervisor={canRequestSupervisor}
                 canEscalatePastor={canEscalatePastor}
               />

@@ -39,7 +39,7 @@ export function PersonStatusActions({ personId }: { personId: string }) {
     <div className="mt-3 rounded-2xl border border-[var(--color-badge-cuidado-border)] bg-[var(--color-badge-cuidado-bg)] p-3 text-sm text-[var(--color-text-primary)]">
       <p className="font-semibold text-[var(--color-badge-cuidado-text)]">Esta pessoa está em cuidado.</p>
       <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-        Use quando ela respondeu bem ao contato e não precisa mais ficar em destaque.
+        Use quando a pessoa respondeu bem ao contato ou quando não precisa mais ficar em destaque.
       </p>
 
       {errorMessage ? (

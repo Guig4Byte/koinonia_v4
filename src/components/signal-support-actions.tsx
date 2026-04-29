@@ -8,39 +8,21 @@ import { cn } from "@/lib/cn";
 type SupportAction = "REQUEST_SUPERVISOR" | "ESCALATE_PASTOR";
 type SignalSupportActionsProps = {
   signalId: string;
-  assignedToName?: string | null;
-  assignedToRole?: string | null;
-  showAssignmentMessage?: boolean;
+  assignmentMessage?: string | null;
   canRequestSupervisor?: boolean;
   canEscalatePastor?: boolean;
 };
 
-function assignedLabel(assignedToName?: string | null, assignedToRole?: string | null) {
-  if (!assignedToRole) return null;
-
-  if (assignedToRole === "PASTOR" || assignedToRole === "ADMIN") {
-    return `${assignedToName ?? "Pastor"} recebeu este caso para olhar mais de perto.`;
-  }
-
-  if (assignedToRole === "SUPERVISOR") {
-    return `${assignedToName ?? "Supervisor"} recebeu este pedido de apoio.`;
-  }
-
-  return null;
-}
-
 export function SignalSupportActions({
   signalId,
-  assignedToName,
-  assignedToRole,
-  showAssignmentMessage = true,
+  assignmentMessage,
   canRequestSupervisor = false,
   canEscalatePastor = false,
 }: SignalSupportActionsProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [errorMessage, setErrorMessage] = useState("");
-  const label = showAssignmentMessage ? assignedLabel(assignedToName, assignedToRole) : null;
+  const label = assignmentMessage ?? null;
 
   function send(action: SupportAction) {
     setErrorMessage("");

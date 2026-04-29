@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "@/features/permissions/permissions";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson } from "@/features/signals/attention";
-import { signalBadgeForViewer } from "@/features/signals/display";
+import { signalBadgeForViewer, signalReasonForViewer } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 
@@ -15,10 +15,6 @@ function initials(name: string) {
   return name.split(" ").slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 }
 
-function reasonForViewer(reason: string, role: UserRole) {
-  if (role !== UserRole.LEADER) return reason;
-  return reason.replace("Líder pediu apoio da supervisão", "Apoio solicitado à supervisão");
-}
 
 export default async function PeoplePage() {
   const user = await getCurrentUser();
@@ -111,7 +107,7 @@ export default async function PeoplePage() {
               name={signal.person.fullName}
               detailHref={`/pessoas/${signal.person.id}`}
               context={`${signal.group?.name ?? "Sem célula"} · ${signal.group?.leader?.name ?? "Sem líder"}`}
-              reason={reasonForViewer(signal.reason, user.role)}
+              reason={signalReasonForViewer(signal.reason, user)}
               severity={signal.severity === "URGENT" ? "risk" : "warn"}
               badgeLabel={badge.label}
               badgeTone={badge.tone}

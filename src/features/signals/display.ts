@@ -1,5 +1,5 @@
 import { SignalSeverity, UserRole } from "../../generated/prisma/client";
-import { isAssignedToPastoralRole, isAssignedToSupervisor, type SignalAssigneeLike } from "./escalation";
+import { escalationStatusLabelForViewer, isAssignedToPastoralRole, isAssignedToSupervisor, type SignalAssigneeLike } from "./escalation";
 
 export type SignalBadgeTone = "neutral" | "ok" | "warn" | "risk" | "info" | "care" | "support";
 
@@ -28,11 +28,8 @@ export function signalBadgeForViewer(signal: SignalDisplayLike, viewer?: SignalD
       return { label: "Atenção local", tone: "warn" as const };
     }
 
-    if (viewer?.role === UserRole.LEADER) {
-      return { label: "Apoio solicitado", tone: "support" as const };
-    }
-
-    return { label: "Pedido de apoio", tone: "support" as const };
+    const escalationLabel = viewer ? escalationStatusLabelForViewer(signal, viewer) : null;
+    return { label: escalationLabel ?? "Pedido de apoio", tone: "support" as const };
   }
 
   if (isAssignedToPastoralRole(signal)) {
@@ -52,4 +49,9 @@ export function signalBadgeForViewer(signal: SignalDisplayLike, viewer?: SignalD
 
 export function groupAttentionLabel(count: number, singular: string, plural: string) {
   return `${count} ${count === 1 ? singular : plural}`;
+}
+
+export function signalReasonForViewer(reason: string, viewer: { role: UserRole }) {
+  if (viewer.role !== UserRole.LEADER) return reason;
+  return reason.replace("Líder pediu apoio da supervisão", "Apoio solicitado à supervisão");
 }
