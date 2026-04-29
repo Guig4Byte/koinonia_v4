@@ -1,26 +1,47 @@
-# CHANGED_FILES — pós-auditoria
+# Koinonia — mobile polish step 1
 
-## Arquivo alterado
+## Objetivo
 
-- `src/app/(app)/celulas/[groupId]/page.tsx`
+Primeira mini-etapa do ciclo de polimento mobile: reduzir ruído visual nas listas secundárias e padronizar cards curtos de pessoa sem alterar regra de negócio.
 
-## Motivo
+## Arquivos alterados
 
-A auditoria pós-patch encontrou uma inconsistência residual no detalhe de célula: a contagem de apoio ainda usava `assignedToId === user.id`, enquanto as demais telas já usam o helper central `isSupportRequest(...)`.
+- `src/components/cards.tsx`
+  - Adiciona `PersonMiniCard`, um card compacto para listas de pessoas.
+  - Deixa mensagens vazias de seção com menor peso visual: fundo secundário, borda tracejada e sem sombra forte.
 
-Isso podia gerar diferença de leitura entre telas, especialmente para o líder vendo um apoio solicitado à supervisão.
+- `src/app/(app)/pastor/page.tsx`
+  - Usa `PersonMiniCard` em `Acolhidos em cuidado`.
+  - Remove markup local duplicado.
 
-## Ajustes
+- `src/app/(app)/supervisor/page.tsx`
+  - Usa `PersonMiniCard` em `Acolhidos em cuidado`.
+  - Remove markup local duplicado.
 
-- O detalhe da célula agora usa `isSupportRequest(signal, user)` para identificar apoio.
-- O badge de cabeçalho passa a respeitar o contexto do papel:
-  - líder: `apoio solicitado` / `apoios solicitados`;
-  - supervisor: `pedido de apoio` / `pedidos de apoio`.
-- Cards de atenção no detalhe da célula passam a usar CTA `Abrir apoio` quando o sinal for um pedido/apoio no contexto do usuário.
+- `src/app/(app)/lider/page.tsx`
+  - Usa `PersonMiniCard` em `Acolhidos em cuidado`.
+  - Mantém o badge do evento de presença inalterado.
+
+- `src/app/(app)/pessoas/page.tsx`
+  - Usa `PersonMiniCard` em `Acolhidos em cuidado`.
+  - Usa `PersonMiniCard` na lista curta de membros do líder.
+
+## Impacto esperado
+
+- Listas de pessoas ficam mais escaneáveis no celular, com avatar/initials e hierarquia consistente.
+- Empty states deixam de competir visualmente com pessoas reais em atenção.
+- Reduz duplicação de markup entre `pastor`, `supervisor`, `lider` e `/pessoas`.
+
+## O que não foi alterado
+
+- Nenhuma query.
+- Nenhuma permissão.
+- Nenhuma regra de presença, sinal, cuidado ou escalonamento.
+- Nenhum endpoint.
 
 ## Validação sugerida
 
-Rode novamente:
+Rodar:
 
 ```bash
 npm run test
@@ -28,4 +49,8 @@ npm run typecheck
 npm run build
 ```
 
-Também vale abrir uma célula como líder após pedir apoio ao supervisor e confirmar se o cabeçalho deixa de tratar o caso como atenção comum.
+Depois conferir manualmente no mobile:
+
+- `Visão` do pastor, supervisor e líder;
+- seção `Acolhidos em cuidado`;
+- `/pessoas` como líder, especialmente a lista `Membros da célula`.

@@ -1,9 +1,7 @@
-import Link from "next/link";
 import { MembershipRole, PersonStatus, SignalSeverity, UserRole } from "../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
-import { PastoralListSection, PersonSignalCard, SectionTitle } from "@/components/cards";
+import { PastoralListSection, PersonMiniCard, PersonSignalCard, SectionTitle } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
-import { Badge } from "@/components/ui/badge";
 import { getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "@/features/permissions/permissions";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson } from "@/features/signals/attention";
@@ -150,17 +148,15 @@ export default async function PeoplePage() {
       : "Nenhuma pessoa em atenção agora.";
 
   const renderInCareLinks = (people: typeof scopedInCarePeople) => people.map((person) => (
-    <Link
+    <PersonMiniCard
       key={person.id}
       href={`/pessoas/${person.id}`}
-      className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]"
-    >
-      <span className="min-w-0">
-        <span className="block text-sm font-semibold text-[var(--color-text-primary)]">{person.fullName}</span>
-        <span className="mt-0.5 block text-xs text-[var(--color-text-secondary)]">{person.memberships[0]?.group.name ?? "Sem célula"}</span>
-      </span>
-      <Badge tone="care">Em cuidado</Badge>
-    </Link>
+      initials={initials(person.fullName)}
+      name={person.fullName}
+      context={person.memberships[0]?.group.name ?? "Sem célula"}
+      badgeLabel="Em cuidado"
+      badgeTone="care"
+    />
   ));
 
   return (
@@ -220,17 +216,15 @@ export default async function PeoplePage() {
               const badge = personEffectiveBadgeForViewer(person, attentionSignal, user);
 
               return (
-                <Link
+                <PersonMiniCard
                   key={person.id}
                   href={`/pessoas/${person.id}`}
-                  className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]"
-                >
-                  <span className="min-w-0">
-                    <span className="block text-sm font-semibold text-[var(--color-text-primary)]">{person.fullName}</span>
-                    <span className="mt-0.5 block text-xs text-[var(--color-text-secondary)]">{person.memberships[0]?.group.name ?? "Sua célula"}</span>
-                  </span>
-                  <Badge tone={badge.tone}>{badge.label}</Badge>
-                </Link>
+                  initials={initials(person.fullName)}
+                  name={person.fullName}
+                  context={person.memberships[0]?.group.name ?? "Sua célula"}
+                  badgeLabel={badge.label}
+                  badgeTone={badge.tone}
+                />
               );
             })}
           </div>

@@ -1,14 +1,12 @@
 import { AppShell } from "@/components/app-shell";
-import { ContextSummary, GroupCard, ListMoreHint, PastoralListSection, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
+import { ContextSummary, GroupCard, ListMoreHint, PastoralListSection, PersonMiniCard, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
-import { Badge } from "@/components/ui/badge";
 import { getPastorDashboard } from "@/features/dashboard/queries";
 import { canUsePastorDashboard } from "@/features/permissions/permissions";
 import { signalBadgeForViewer, signalReasonForViewer } from "@/features/signals/display";
 import { splitPastoralSections } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { initials } from "@/lib/text";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 const SECTION_LIMIT = 4;
@@ -60,17 +58,15 @@ export default async function PastorPage() {
   });
 
   const renderInCareLinks = (people: typeof inCarePeople) => people.map((person) => (
-    <Link
+    <PersonMiniCard
       key={person.id}
       href={`/pessoas/${person.id}`}
-      className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]"
-    >
-      <span className="min-w-0">
-        <span className="block text-sm font-semibold text-[var(--color-text-primary)]">{person.fullName}</span>
-        <span className="mt-0.5 block text-xs text-[var(--color-text-secondary)]">{person.memberships[0]?.group.name ?? "Sem célula"}</span>
-      </span>
-      <Badge tone="care">Em cuidado</Badge>
-    </Link>
+      initials={initials(person.fullName)}
+      name={person.fullName}
+      context={person.memberships[0]?.group.name ?? "Sem célula"}
+      badgeLabel="Em cuidado"
+      badgeTone="care"
+    />
   ));
 
   return (

@@ -1,13 +1,11 @@
 import { AppShell } from "@/components/app-shell";
-import { ContextSummary, GroupCard, PastoralListSection, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
+import { ContextSummary, GroupCard, PastoralListSection, PersonMiniCard, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
-import { Badge } from "@/components/ui/badge";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { canUseSupervisorDashboard } from "@/features/permissions/permissions";
 import { groupAttentionLabel, signalBadgeForViewer, type SignalBadge } from "@/features/signals/display";
 import { splitPastoralSections } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { initials } from "@/lib/text";
 
@@ -59,6 +57,18 @@ export default async function SupervisorPage() {
       />
     );
   });
+
+  const renderInCareLinks = (people: typeof inCarePeople) => people.map((person) => (
+    <PersonMiniCard
+      key={person.id}
+      href={`/pessoas/${person.id}`}
+      initials={initials(person.fullName)}
+      name={person.fullName}
+      context={person.groupName}
+      badgeLabel="Em cuidado"
+      badgeTone="care"
+    />
+  ));
 
   return (
     <AppShell
@@ -126,25 +136,9 @@ export default async function SupervisorPage() {
         title="Acolhidos em cuidado"
         detail="Pessoas que já receberam cuidado e seguem no radar."
         emptyMessage="Nenhuma pessoa em cuidado agora."
-        hiddenChildren={inCarePeople.slice(SECTION_LIMIT).map((person) => (
-          <Link key={person.id} href={`/pessoas/${person.id}`} className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]">
-            <span className="min-w-0">
-              <span className="block text-sm font-semibold text-[var(--color-text-primary)]">{person.fullName}</span>
-              <span className="mt-0.5 block text-xs text-[var(--color-text-secondary)]">{person.groupName}</span>
-            </span>
-            <Badge tone="care">Em cuidado</Badge>
-          </Link>
-        ))}
+        hiddenChildren={renderInCareLinks(inCarePeople.slice(SECTION_LIMIT))}
       >
-        {inCarePeople.slice(0, SECTION_LIMIT).map((person) => (
-          <Link key={person.id} href={`/pessoas/${person.id}`} className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]">
-            <span className="min-w-0">
-              <span className="block text-sm font-semibold text-[var(--color-text-primary)]">{person.fullName}</span>
-              <span className="mt-0.5 block text-xs text-[var(--color-text-secondary)]">{person.groupName}</span>
-            </span>
-            <Badge tone="care">Em cuidado</Badge>
-          </Link>
-        ))}
+        {renderInCareLinks(inCarePeople.slice(0, SECTION_LIMIT))}
       </PastoralListSection>
       <SectionTitle>Suas células</SectionTitle>
       <div className="space-y-3">

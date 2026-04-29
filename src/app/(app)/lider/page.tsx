@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/app-shell";
-import { ContextSummary, PastoralListSection, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
+import { ContextSummary, PastoralListSection, PersonMiniCard, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
 import { CheckInList } from "@/components/check-in-list";
 import { SearchBox } from "@/components/search-box";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +9,6 @@ import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/even
 import { signalBadgeForViewer, signalReasonForViewer } from "@/features/signals/display";
 import { isSupportRequest, splitPastoralSections } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -87,6 +86,18 @@ export default async function LeaderPage() {
     );
   });
 
+  const renderInCareLinks = (people: typeof inCarePeople) => people.map((person) => (
+    <PersonMiniCard
+      key={person.id}
+      href={`/pessoas/${person.id}`}
+      initials={initials(person.fullName)}
+      name={person.fullName}
+      context={person.groupName}
+      badgeLabel="Em cuidado"
+      badgeTone="care"
+    />
+  ));
+
   return (
     <AppShell
       userName={user.name}
@@ -153,25 +164,9 @@ export default async function LeaderPage() {
         title="Acolhidos em cuidado"
         detail="Pessoas que já receberam cuidado e seguem no radar."
         emptyMessage="Nenhuma pessoa em cuidado agora."
-        hiddenChildren={inCarePeople.slice(4).map((person) => (
-          <Link key={person.id} href={`/pessoas/${person.id}`} className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]">
-            <span className="min-w-0">
-              <span className="block text-sm font-semibold text-[var(--color-text-primary)]">{person.fullName}</span>
-              <span className="mt-0.5 block text-xs text-[var(--color-text-secondary)]">{person.groupName}</span>
-            </span>
-            <Badge tone="care">Em cuidado</Badge>
-          </Link>
-        ))}
+        hiddenChildren={renderInCareLinks(inCarePeople.slice(4))}
       >
-        {inCarePeople.slice(0, 4).map((person) => (
-          <Link key={person.id} href={`/pessoas/${person.id}`} className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]">
-            <span className="min-w-0">
-              <span className="block text-sm font-semibold text-[var(--color-text-primary)]">{person.fullName}</span>
-              <span className="mt-0.5 block text-xs text-[var(--color-text-secondary)]">{person.groupName}</span>
-            </span>
-            <Badge tone="care">Em cuidado</Badge>
-          </Link>
-        ))}
+        {renderInCareLinks(inCarePeople.slice(0, 4))}
       </PastoralListSection>
 
       <SectionTitle>Presença do encontro</SectionTitle>

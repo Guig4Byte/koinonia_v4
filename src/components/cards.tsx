@@ -128,11 +128,53 @@ export function PastoralListSection({
         </details>
       ) : null}
       {!hasChildren && emptyMessage ? (
-        <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">
+        <p className="rounded-2xl border border-dashed border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">
           {emptyMessage}
         </p>
       ) : null}
     </section>
+  );
+}
+
+export function PersonMiniCard({
+  href,
+  initials,
+  name,
+  context,
+  badgeLabel,
+  badgeTone = "neutral",
+  ctaLabel = "Abrir pessoa",
+}: {
+  href: string;
+  initials: string;
+  name: string;
+  context?: string;
+  badgeLabel?: string;
+  badgeTone?: SignalBadgeTone;
+  ctaLabel?: string;
+}) {
+  return (
+    <Link
+      href={href}
+      aria-label={`${ctaLabel}: ${name}`}
+      className="group flex min-h-[4.25rem] items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]"
+    >
+      <span className="flex min-w-0 items-center gap-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-avatar-bg)] text-xs font-bold text-[var(--color-avatar-text)]">
+          {initials}
+        </span>
+        <span className="min-w-0">
+          <span className="block truncate text-sm font-semibold text-[var(--color-text-primary)]">{name}</span>
+          {context ? <span className="mt-0.5 block truncate text-xs text-[var(--color-text-secondary)]">{context}</span> : null}
+        </span>
+      </span>
+      <span className="flex shrink-0 items-center gap-2">
+        {badgeLabel ? <Badge tone={badgeTone}>{badgeLabel}</Badge> : null}
+        <span className="text-sm font-bold text-[var(--color-brand)] opacity-60 transition group-active:translate-x-0.5" aria-hidden="true">
+          →
+        </span>
+      </span>
+    </Link>
   );
 }
 
