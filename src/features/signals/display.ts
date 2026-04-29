@@ -19,11 +19,13 @@ function isPastoralViewer(viewer?: SignalDisplayViewerLike | null) {
 }
 
 export function signalBadgeForViewer(signal: SignalDisplayLike, viewer?: SignalDisplayViewerLike | null) {
+  if (signal.severity === SignalSeverity.URGENT) {
+    return { label: "Urgente", tone: "risk" as const };
+  }
+
   if (isAssignedToSupervisor(signal)) {
     if (isPastoralViewer(viewer)) {
-      return signal.severity === SignalSeverity.URGENT
-        ? { label: "Urgente", tone: "risk" as const }
-        : { label: "Atenção local", tone: "warn" as const };
+      return { label: "Atenção local", tone: "warn" as const };
     }
 
     if (viewer?.role === UserRole.LEADER) {
@@ -35,10 +37,6 @@ export function signalBadgeForViewer(signal: SignalDisplayLike, viewer?: SignalD
 
   if (isAssignedToPastoralRole(signal)) {
     return { label: isPastoralViewer(viewer) ? "Caso pastoral" : "Encaminhado", tone: "risk" as const };
-  }
-
-  if (signal.severity === SignalSeverity.URGENT) {
-    return { label: "Urgente", tone: "risk" as const };
   }
 
   if (isPastoralViewer(viewer)) {

@@ -1,33 +1,18 @@
 import Link from "next/link";
-import { MembershipRole, PersonStatus, SignalSeverity, UserRole } from "../../../generated/prisma/client";
+import { MembershipRole, SignalSeverity, UserRole } from "../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { PersonSignalCard, SectionTitle } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
 import { Badge } from "@/components/ui/badge";
 import { getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "@/features/permissions/permissions";
+import { personStatusDisplay } from "@/features/people/status-display";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson } from "@/features/signals/attention";
 import { signalBadgeForViewer } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 
-const personStatusLabels: Record<PersonStatus, string> = {
-  ACTIVE: "Ativo",
-  VISITOR: "Visitante",
-  NEW: "Novo",
-  NEEDS_ATTENTION: "Em atenção",
-  COOLING_AWAY: "Em cuidado",
-  INACTIVE: "Inativo",
-};
-
 function initials(name: string) {
   return name.split(" ").slice(0, 2).map((part) => part[0]).join("").toUpperCase();
-}
-
-function statusTone(status: PersonStatus): "ok" | "warn" | "risk" | "info" | "care" {
-  if (status === PersonStatus.ACTIVE) return "ok";
-  if (status === PersonStatus.COOLING_AWAY) return "care";
-  if (status === PersonStatus.VISITOR || status === PersonStatus.NEW) return "info";
-  return "warn";
 }
 
 function reasonForViewer(reason: string, role: UserRole) {
@@ -147,7 +132,7 @@ export default async function PeoplePage() {
           <div className="space-y-2">
             {visibleMembers.map((person) => {
               const attentionSignal = attentionSignalByPersonId.get(person.id);
-              const badge = attentionSignal ? signalBadgeForViewer(attentionSignal, user) : null;
+              const badge = attentionSignal ? signalBadgeForViewer(attentionSignal, user) : personStatusDisplay(person.status);
 
               return (
                 <Link
@@ -159,8 +144,8 @@ export default async function PeoplePage() {
                     <span className="block text-sm font-semibold text-[var(--color-text-primary)]">{person.fullName}</span>
                     <span className="mt-0.5 block text-xs text-[var(--color-text-secondary)]">{person.memberships[0]?.group.name ?? "Sua célula"}</span>
                   </span>
-                  <Badge tone={badge?.tone ?? statusTone(person.status)}>
-                    {badge?.label ?? personStatusLabels[person.status]}
+                  <Badge tone={badge.tone}>
+                    {badge.label}
                   </Badge>
                 </Link>
               );

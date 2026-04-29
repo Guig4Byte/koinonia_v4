@@ -333,8 +333,8 @@ Regras:
 - Nenhum clique acidental deve fechar atenção.
 - `Salvar sem anotação` é válido.
 - `Anotar` salva observação curta.
-- Cuidado resolve sinais ativos dentro do escopo do usuário.
-- Se não restar sinal ativo, a pessoa volta para `Ativo`.
+- Cuidado resolve sinais ativos dentro do escopo do usuário e mantém a pessoa em `Em cuidado` quando não restar sinal ativo.
+- Se o cuidado resolver todos os sinais ativos, a pessoa fica `Em cuidado`; só volta para `Ativo` por ação explícita quando respondeu bem ao cuidado.
 - O mesmo motivo não deve reabrir apenas por recalcular presença; precisa haver nova evidência posterior.
 
 ## Busca
@@ -355,7 +355,7 @@ Use linguagem curta, pastoral e concreta. Prefira:
 
 - `Visão` em vez de `Dashboard`.
 - `Pessoas` ou `Membros` em vez de diretório.
-- `Em atenção`, `Urgente`, `Cuidado realizado`.
+- `Em atenção`, `Em cuidado`, `Urgente`, `Cuidado realizado`.
 - `Abrir pessoa` em listas.
 - `Já houve contato?` no detalhe.
 

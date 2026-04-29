@@ -1,5 +1,5 @@
 import { endOfWeek, startOfWeek } from "date-fns";
-import { AttendanceStatus, MembershipRole, SignalSeverity, SignalStatus, UserRole } from "../../generated/prisma/client";
+import { AttendanceStatus, MembershipRole, PersonStatus, SignalSeverity, SignalStatus, UserRole } from "../../generated/prisma/client";
 import { getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson } from "@/features/signals/attention";
 import { prisma } from "@/lib/prisma";
@@ -114,6 +114,7 @@ async function getGroupScopedDashboard(user: PermissionUser) {
       recordedEventsCount: recordedGroupEvents.length,
       attentionCount: getPrimarySignalsByPerson(group.signals).length,
       supportRequestsCount: group.signals.filter((signal) => signal.assignedToId === user.id).length,
+      inCareCount: group.memberships.filter((membership) => membership.person.status === PersonStatus.COOLING_AWAY).length,
     };
   });
 

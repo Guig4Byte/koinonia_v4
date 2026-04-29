@@ -113,19 +113,21 @@ export default async function SupervisorPage() {
         {dashboard.groups.map((group) => {
           const supportText = supportRequestsText(group.supportRequestsCount);
           const urgentCount = group.signals.filter((signal) => signal.severity === "URGENT").length;
-          const badge = group.supportRequestsCount > 0
-            ? { label: groupAttentionLabel(group.supportRequestsCount, "pedido de apoio", "pedidos de apoio"), tone: "support" as const }
-            : urgentCount > 0
-              ? { label: groupAttentionLabel(urgentCount, "urgente", "urgentes"), tone: "risk" as const }
+          const badge = urgentCount > 0
+            ? { label: groupAttentionLabel(urgentCount, "urgente", "urgentes"), tone: "risk" as const }
+            : group.supportRequestsCount > 0
+              ? { label: groupAttentionLabel(group.supportRequestsCount, "pedido de apoio", "pedidos de apoio"), tone: "support" as const }
               : group.attentionCount > 0
                 ? { label: groupAttentionLabel(group.attentionCount, "pessoa em atenção", "pessoas em atenção"), tone: "warn" as const }
-                : null;
+                : group.inCareCount > 0
+                  ? { label: groupAttentionLabel(group.inCareCount, "em cuidado", "em cuidado"), tone: "care" as const }
+                  : null;
 
           return (
             <GroupCard
               key={group.id}
               name={group.name}
-              subtitle={`${group.leader?.name ?? "Sem líder"} · ${group.memberships.length} pessoas${supportText ? ` · ${supportText}` : ""}`}
+              subtitle={`${group.leader?.name ?? "Sem líder"} · ${group.memberships.length} pessoas${supportText ? ` · ${supportText}` : ""}${group.inCareCount > 0 ? ` · ${group.inCareCount} em cuidado` : ""}`}
               presenceRate={group.presenceRate}
               attentionCount={group.attentionCount}
               badgeLabel={badge?.label}

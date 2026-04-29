@@ -191,6 +191,7 @@ No MVP atual, cuidado não é prontuário pastoral completo.
 
 Use:
 
+- `Em cuidado`, quando a pessoa já recebeu contato e deve continuar no radar sem acompanhamento formal;
 - `Cuidado realizado`;
 - `Registrar cuidado`;
 - `Anotar cuidado`;
@@ -217,12 +218,13 @@ Use `Visão` em vez de `Dashboard` na UI.
 | `Ativo` | pessoa sem sinal ativo relevante | verde |
 | `Em atenção` | atenção comum para líder/supervisor | âmbar |
 | `Atenção local` | pastor vendo atenção comum dentro de contexto | âmbar |
-| `Apoio solicitado` | líder vendo pedido enviado ao supervisor | azul/care |
-| `Pedido de apoio` | supervisor vendo pedido recebido | azul/care |
+| `Apoio solicitado` | líder vendo pedido enviado ao supervisor | roxo/lilás discreto |
+| `Pedido de apoio` | supervisor vendo pedido recebido | roxo/lilás discreto |
 | `Urgente` | severidade real `URGENT` | vermelho |
 | `Caso pastoral` | pastor vendo sinal encaminhado ao pastor/admin | vermelho |
 | `Encaminhado` | líder/supervisor vendo envio ao pastor | vermelho |
-| `Cuidado realizado` | contato/cuidado registrado | azul |
+| `Em cuidado` | pessoa que recebeu cuidado e deve continuar no radar | azul/care |
+| `Cuidado realizado` | contato/cuidado registrado | azul/care |
 | `Informativo` | sinal `INFO`, quando exibido | informativo/neutro |
 
 Não rebaixar `Urgente` para `Em atenção` em outra tela. O contexto pode mudar a mensagem de escalonamento, mas a severidade continua sendo severidade.

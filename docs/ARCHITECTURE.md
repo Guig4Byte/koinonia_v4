@@ -190,7 +190,7 @@ Fonte:
 src/features/signals/display.ts
 ```
 
-Use `signalBadgeForViewer(signal, viewer)` para evitar rótulos incoerentes entre telas.
+Use `signalBadgeForViewer(signal, viewer)` para sinais e `personStatusDisplay(status)` para status de pessoa, evitando rótulos incoerentes entre telas.
 
 Regras de consistência:
 
@@ -221,7 +221,7 @@ Pastor, supervisor e admin não salvam check-in nesta fase.
 Ao recalcular presença:
 
 - criar/atualizar sinal ativo deve colocar `Person.status` em `NEEDS_ATTENTION`, preservando severidade no sinal;
-- se não houver nenhum sinal ativo restante, voltar `Person.status` para `ACTIVE` quando estava em `NEEDS_ATTENTION` ou `COOLING_AWAY`;
+- se não houver nenhum sinal ativo restante após recalcular presença, voltar para `ACTIVE` apenas quando estava em `NEEDS_ATTENTION`; preservar `COOLING_AWAY` como `Em cuidado`;
 - motivo já resolvido não deve reabrir sem nova evidência posterior ao cuidado.
 
 ## Contato e cuidado
@@ -239,8 +239,8 @@ Deve:
 - validar escopo com helpers de permissão;
 - associar o cuidado a uma célula visível quando aplicável;
 - resolver somente sinais ativos dentro do escopo do usuário;
-- resetar `Person.status` para `ACTIVE` se não restar sinal ativo;
-- retornar `resolvedSignalsCount`, `personStatusReset` e mensagem curta.
+- mudar `Person.status` para `COOLING_AWAY` (`Em cuidado`) se o cuidado resolver todos os sinais ativos;
+- retornar `resolvedSignalsCount`, `personStatusChangedToCare` e mensagem curta.
 
 `Já houve contato?` só chama a rota depois de confirmação explícita. Isso não cria acompanhamento formal.
 

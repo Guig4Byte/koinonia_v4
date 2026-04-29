@@ -1,25 +1,17 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AttendanceStatus, PersonStatus, SignalSeverity, SignalStatus, UserRole } from "../../../../generated/prisma/client";
+import { AttendanceStatus, SignalSeverity, SignalStatus, UserRole } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { ContextSummary, PersonSignalCard, SectionTitle } from "@/components/cards";
 import { Badge } from "@/components/ui/badge";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
+import { personStatusDisplay } from "@/features/people/status-display";
 import { canViewGroup } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson, isPastoralSignal } from "@/features/signals/attention";
 import { groupAttentionLabel, signalBadgeForViewer } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime, percent } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
-
-const personStatusLabels: Record<PersonStatus, string> = {
-  ACTIVE: "Ativo",
-  VISITOR: "Visitante",
-  NEW: "Novo",
-  NEEDS_ATTENTION: "Em atenção",
-  COOLING_AWAY: "Em cuidado",
-  INACTIVE: "Inativo",
-};
 
 const dayLabels: Record<number, string> = {
   0: "Domingo",
@@ -33,13 +25,6 @@ const dayLabels: Record<number, string> = {
 
 function initials(name: string) {
   return name.split(" ").slice(0, 2).map((part) => part[0]).join("").toUpperCase();
-}
-
-function statusTone(status: PersonStatus): "ok" | "warn" | "risk" | "info" | "care" {
-  if (status === PersonStatus.ACTIVE) return "ok";
-  if (status === PersonStatus.COOLING_AWAY) return "care";
-  if (status === PersonStatus.VISITOR || status === PersonStatus.NEW) return "info";
-  return "warn";
 }
 
 function eventMetrics(event: { status: string; attendances: Array<{ status: AttendanceStatus }> }) {
@@ -103,6 +88,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
   const attentionSignalByPersonId = new Map(attentionPeople.map((signal) => [signal.personId, signal]));
   const supportRequests = group.signals.filter((signal) => signal.assignedToId === user.id);
   const urgentAttentionPeople = attentionPeople.filter((signal) => signal.severity === SignalSeverity.URGENT);
+  const inCareCount = group.memberships.filter((membership) => membership.person.status === "COOLING_AWAY").length;
   const completedEvents = group.events.filter((event) => eventMetrics(event).completed);
   const accountableAttendances = completedEvents.flatMap((event) => event.attendances.filter((attendance) => attendance.status !== AttendanceStatus.VISITOR));
   const presentAttendances = accountableAttendances.filter((attendance) => attendance.status === AttendanceStatus.PRESENT);
@@ -110,6 +96,10 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
   const relevantEvent = selectRelevantCheckInEvent(group.events);
   const pendingEvent = relevantEvent && !hasRecordedPresence(relevantEvent) ? relevantEvent : null;
   const headerBadge = (() => {
+    if (urgentAttentionPeople.length > 0) {
+      return { tone: "risk" as const, label: groupAttentionLabel(urgentAttentionPeople.length, "urgente", "urgentes") };
+    }
+
     if (isPastorView && pastoralAttentionPeople.length > 0) {
       return { tone: "risk" as const, label: groupAttentionLabel(pastoralAttentionPeople.length, "caso pastoral", "casos pastorais") };
     }
@@ -118,15 +108,15 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
       return { tone: "support" as const, label: groupAttentionLabel(supportRequests.length, "pedido de apoio", "pedidos de apoio") };
     }
 
-    if (urgentAttentionPeople.length > 0) {
-      return { tone: "risk" as const, label: groupAttentionLabel(urgentAttentionPeople.length, "urgente", "urgentes") };
-    }
-
     if (attentionPeople.length > 0) {
       return {
         tone: "warn" as const,
         label: isPastorView ? groupAttentionLabel(attentionPeople.length, "atenção local", "atenções locais") : groupAttentionLabel(attentionPeople.length, "pessoa em atenção", "pessoas em atenção"),
       };
+    }
+
+    if (inCareCount > 0) {
+      return { tone: "care" as const, label: groupAttentionLabel(inCareCount, "em cuidado", "em cuidado") };
     }
 
     return { tone: "ok" as const, label: "Estável" };
@@ -166,7 +156,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
 
       <ContextSummary
         items={[
-          { label: "Membros", value: String(group.memberships.length), detail: "Pessoas ativas nesta célula.", tone: "neutral" },
+          { label: "Membros", value: String(group.memberships.length), detail: inCareCount > 0 ? `${inCareCount} em cuidado nesta célula.` : "Pessoas ativas nesta célula.", tone: "neutral" },
           {
             label: "Presença recente",
             value: completedEvents.length > 0 ? `${presenceRate}%` : "—",
@@ -319,14 +309,12 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
       <div className="space-y-2">
         {group.memberships.map((membership) => {
           const attentionSignal = attentionSignalByPersonId.get(membership.personId);
-          const memberSignalBadge = attentionSignal ? signalBadgeForViewer(attentionSignal, user) : null;
-          const memberBadgeLabel = memberSignalBadge?.label ?? personStatusLabels[membership.person.status];
-          const memberBadgeTone = memberSignalBadge?.tone ?? statusTone(membership.person.status);
+          const memberBadge = attentionSignal ? signalBadgeForViewer(attentionSignal, user) : personStatusDisplay(membership.person.status);
 
           return (
             <Link key={membership.id} href={`/pessoas/${membership.personId}`} className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]">
               <span className="min-w-0 text-sm font-semibold text-[var(--color-text-primary)]">{membership.person.fullName}</span>
-              <Badge tone={memberBadgeTone}>{memberBadgeLabel}</Badge>
+              <Badge tone={memberBadge.tone}>{memberBadge.label}</Badge>
             </Link>
           );
         })}

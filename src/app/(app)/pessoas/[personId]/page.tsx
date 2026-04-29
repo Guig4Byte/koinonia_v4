@@ -8,6 +8,7 @@ import { SectionTitle } from "@/components/cards";
 import { SignalSupportActions } from "@/components/signal-support-actions";
 import { Badge } from "@/components/ui/badge";
 import { canRegisterCare, canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
+import { personStatusDisplay } from "@/features/people/status-display";
 import { shouldShowEscalationStatusForViewer } from "@/features/signals/escalation";
 import { signalBadgeForViewer } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -30,15 +31,6 @@ const careKindLabels: Record<CareKind, string> = {
   NOTE: "Anotação",
 };
 
-const personStatusLabels: Record<PersonStatus, string> = {
-  ACTIVE: "Ativo",
-  VISITOR: "Visitante",
-  NEW: "Novo",
-  NEEDS_ATTENTION: "Em atenção",
-  COOLING_AWAY: "Em cuidado",
-  INACTIVE: "Inativo",
-};
-
 function initials(name: string) {
   return name.split(" ").slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 }
@@ -50,13 +42,6 @@ function attendanceTone(status?: AttendanceStatus | null): "ok" | "warn" | "risk
   return "info";
 }
 
-
-function statusTone(status: PersonStatus): "ok" | "warn" | "risk" | "info" | "care" {
-  if (status === PersonStatus.ACTIVE) return "ok";
-  if (status === PersonStatus.COOLING_AWAY) return "care";
-  if (status === PersonStatus.VISITOR || status === PersonStatus.NEW) return "info";
-  return "warn";
-}
 
 function reasonForViewer(reason: string, role: UserRole) {
   if (role !== UserRole.LEADER) return reason;
@@ -112,6 +97,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const hasCareTouch = careTouches.length > 0;
   const peopleLabel = user.role === "LEADER" ? "Membros" : "Pessoas";
   const canMarkActive = person.status === PersonStatus.COOLING_AWAY && canRegisterCare(user, person);
+  const personBadge = personStatusDisplay(person.status);
 
   return (
     <AppShell
@@ -141,7 +127,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
                   {primaryGroup?.leader?.name ? ` · ${primaryGroup.leader.name}` : ""}
                 </p>
               </div>
-              <Badge tone={statusTone(person.status)}>{personStatusLabels[person.status]}</Badge>
+              <Badge tone={personBadge.tone}>{personBadge.label}</Badge>
             </div>
 
             {person.shortNote ? (

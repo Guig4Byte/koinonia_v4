@@ -100,18 +100,19 @@ Regra de mensagem:
 
 ## Status e badges
 
-Use os helpers de `src/features/signals/display.ts` em vez de reinventar rótulos.
+Use `src/features/signals/display.ts` para sinais e `src/features/people/status-display.ts` para status de pessoa, em vez de reinventar rótulos.
 
 Rótulos de referência:
 
 - `Ativo`: verde.
 - `Em atenção`: âmbar.
 - `Atenção local`: âmbar, quando o pastor vê atenção comum dentro de contexto.
-- `Apoio solicitado`: líder vendo pedido já enviado ao supervisor.
-- `Pedido de apoio`: supervisor vendo pedido recebido.
+- `Apoio solicitado`: líder vendo pedido já enviado ao supervisor, em tom roxo/lilás discreto.
+- `Pedido de apoio`: supervisor vendo pedido recebido, em tom roxo/lilás discreto.
 - `Urgente`: vermelho.
 - `Caso pastoral`: pastor vendo caso encaminhado a pastor/admin.
-- `Cuidado realizado`: azul.
+- `Em cuidado`: azul/care, para pessoa que recebeu cuidado e continua no radar.
+- `Cuidado realizado`: azul/care.
 
 Não misture `Urgente` com `Em atenção` para o mesmo sinal. Severidade urgente deve permanecer urgente.
 
@@ -125,7 +126,7 @@ Não misture `Urgente` com `Em atenção` para o mesmo sinal. Severidade urgente
 - Listas de atenção agregam por pessoa, não por sinal bruto.
 - Cards de lista devem ter CTA neutro, normalmente `Abrir pessoa`; ações diretas ficam no detalhe.
 - `Já houve contato?` precisa confirmar antes de resolver atenção.
-- Se todos os sinais ativos forem resolvidos, a pessoa volta para `Ativo`.
+- Se o cuidado resolver todos os sinais ativos, a pessoa fica `Em cuidado`; só volta para `Ativo` por ação explícita quando respondeu bem ao cuidado.
 - Recalcular presença não reabre motivo já cuidado sem nova evidência posterior.
 - `/pessoas` não é diretório completo para pastor/supervisor por padrão.
 - A busca atual é busca de pessoa; não prometa busca de evento/célula se a API não suportar.

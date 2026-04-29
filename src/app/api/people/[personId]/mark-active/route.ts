@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { PersonStatus, SignalStatus } from "@/generated/prisma/client";
-import { canRegisterCare } from "@/features/permissions/permissions";
+import { canRegisterCare, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 
@@ -21,12 +21,22 @@ export async function POST(_request: Request, context: { params: Promise<{ perso
     return NextResponse.json({ error: "Sem permissão para atualizar esta pessoa" }, { status: 403 });
   }
 
-  const openSignalsCount = await prisma.careSignal.count({
-    where: { churchId: user.churchId, personId, status: SignalStatus.OPEN },
-  });
+  const visibleOpenSignalWhere = getVisibleOpenSignalWhere(user);
+  const [visibleOpenSignalsCount, openSignalsCount] = await Promise.all([
+    prisma.careSignal.count({
+      where: { ...visibleOpenSignalWhere, personId },
+    }),
+    prisma.careSignal.count({
+      where: { churchId: user.churchId, personId, status: SignalStatus.OPEN },
+    }),
+  ]);
 
   if (openSignalsCount > 0) {
-    return NextResponse.json({ error: "Ainda há motivo de atenção aberto para esta pessoa." }, { status: 409 });
+    const error = visibleOpenSignalsCount > 0
+      ? "Ainda há motivo de atenção aberto para esta pessoa. Registre o cuidado antes de marcar como ativo."
+      : "Ainda há motivo de atenção aberto fora do seu recorte atual. Peça apoio antes de marcar como ativo.";
+
+    return NextResponse.json({ error }, { status: 409 });
   }
 
   await prisma.person.updateMany({
