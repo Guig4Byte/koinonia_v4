@@ -90,7 +90,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
     }),
   ]);
 
-  const primaryMembership = person.memberships.find((membership) => canViewGroup(user, membership.group)) ?? person.memberships[0];
+  const primaryMembership = person.memberships.find((membership) => canViewGroup(user, membership.group));
   const primaryGroup = primaryMembership?.group;
   const latestAttendance = attendances[0];
   const homeHref = user.role === "LEADER" ? "/lider" : user.role === "SUPERVISOR" ? "/supervisor" : "/pastor";

@@ -154,9 +154,20 @@ export function getVisiblePersonWhere(user: PermissionUser): Prisma.PersonWhereI
   };
 }
 
+export function getOpenSignalInActiveGroupWhere(churchId: string): Prisma.CareSignalWhereInput {
+  return {
+    churchId,
+    status: SignalStatus.OPEN,
+    OR: [
+      { groupId: null },
+      { group: { is: { churchId, isActive: true } } },
+    ],
+  };
+}
+
 export function getVisibleOpenSignalWhere(user: PermissionUser): Prisma.CareSignalWhereInput {
   if (hasWholeChurchScope(user)) {
-    return { churchId: user.churchId, status: SignalStatus.OPEN };
+    return getOpenSignalInActiveGroupWhere(user.churchId);
   }
 
   if (user.role === UserRole.SUPERVISOR) {

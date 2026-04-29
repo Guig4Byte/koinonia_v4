@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { UserRole } from "../../generated/prisma/client";
-import { canCheckInEvent, canRegisterCare, canViewEvent, canViewGroup, getPrimaryVisibleGroupIdForPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "./permissions";
+import { canCheckInEvent, canRegisterCare, canViewEvent, canViewGroup, getOpenSignalInActiveGroupWhere, getPrimaryVisibleGroupIdForPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "./permissions";
 
 const pastor = { id: "pastor-1", churchId: "church-1", role: UserRole.PASTOR };
 const supervisor = { id: "supervisor-1", churchId: "church-1", role: UserRole.SUPERVISOR };
@@ -89,10 +89,31 @@ describe("permission helpers", () => {
       memberships: { some: { leftAt: null, group: { is: { churchId: leader.churchId, isActive: true, leaderUserId: leader.id } } } },
     });
 
+
+    expect(getVisibleOpenSignalWhere(pastor)).toEqual({
+      churchId: pastor.churchId,
+      status: "OPEN",
+      OR: [
+        { groupId: null },
+        { group: { is: { churchId: pastor.churchId, isActive: true } } },
+      ],
+    });
+
     expect(getVisibleOpenSignalWhere(supervisor)).toEqual({
       churchId: supervisor.churchId,
       status: "OPEN",
       group: { is: { churchId: supervisor.churchId, isActive: true, supervisorUserId: supervisor.id } },
+    });
+  });
+
+  it("builds active-group open signal filters for whole-church signal checks", () => {
+    expect(getOpenSignalInActiveGroupWhere(pastor.churchId)).toEqual({
+      churchId: pastor.churchId,
+      status: "OPEN",
+      OR: [
+        { groupId: null },
+        { group: { is: { churchId: pastor.churchId, isActive: true } } },
+      ],
     });
   });
 

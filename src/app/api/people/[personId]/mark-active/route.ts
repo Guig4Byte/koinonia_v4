@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { PersonStatus, SignalStatus } from "@/generated/prisma/client";
-import { canRegisterCare, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
+import { PersonStatus } from "@/generated/prisma/client";
+import { canRegisterCare, getOpenSignalInActiveGroupWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 
@@ -27,7 +27,7 @@ export async function POST(_request: Request, context: { params: Promise<{ perso
       where: { ...visibleOpenSignalWhere, personId },
     }),
     prisma.careSignal.count({
-      where: { churchId: user.churchId, personId, status: SignalStatus.OPEN },
+      where: { ...getOpenSignalInActiveGroupWhere(user.churchId), personId },
     }),
   ]);
 
