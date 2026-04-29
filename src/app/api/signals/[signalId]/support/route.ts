@@ -3,18 +3,11 @@ import { SignalStatus, UserRole } from "@/generated/prisma/client";
 import { canViewGroup } from "@/features/permissions/permissions";
 import { canEscalateSignalToPastor, canRequestSupervisorSupport } from "@/features/signals/escalation";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { readJsonBody } from "@/lib/json";
 import { prisma } from "@/lib/prisma";
 
 const supportActions = ["REQUEST_SUPERVISOR", "ESCALATE_PASTOR"] as const;
 type SupportAction = (typeof supportActions)[number];
-
-async function readJson(request: NextRequest): Promise<unknown> {
-  try {
-    return await request.json();
-  } catch {
-    return null;
-  }
-}
 
 const supportActionValues = new Set<string>(supportActions);
 
@@ -25,7 +18,7 @@ function isSupportAction(value: unknown): value is SupportAction {
 function parseAction(input: unknown): SupportAction | null {
   if (typeof input !== "object" || input === null || !("action" in input)) return null;
 
-  const { action } = input as { action: unknown };
+  const action = input.action;
   return isSupportAction(action) ? action : null;
 }
 
@@ -39,7 +32,7 @@ async function findPastoralAssignee(churchId: string) {
 export async function PATCH(request: NextRequest, context: { params: Promise<{ signalId: string }> }) {
   const user = await getCurrentUser();
   const { signalId } = await context.params;
-  const action = parseAction(await readJson(request));
+  const action = parseAction(await readJsonBody(request));
 
   if (!action) {
     return NextResponse.json({ error: "Ação de apoio inválida" }, { status: 400 });

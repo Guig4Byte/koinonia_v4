@@ -6,6 +6,7 @@ import { AttendanceStatus, SignalStatus } from "../../../../../generated/prisma/
 import { canCheckInEvent } from "@/features/permissions/permissions";
 import { recalculateAttendanceSignalsForGroup } from "@/features/signals/rules";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { readJsonBody } from "@/lib/json";
 import { prisma } from "@/lib/prisma";
 
 const memberAttendanceStatusSchema = z.union([
@@ -32,7 +33,7 @@ const payloadSchema = z.object({
 export async function POST(request: NextRequest, context: { params: Promise<{ eventId: string }> }) {
   const user = await getCurrentUser();
   const { eventId } = await context.params;
-  const json: unknown = await request.json().catch(() => null);
+  const json = await readJsonBody(request);
   const parsedBody = payloadSchema.safeParse(json);
 
   if (!parsedBody.success) {

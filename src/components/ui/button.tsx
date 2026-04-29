@@ -1,6 +1,7 @@
+import type { ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/cn";
 
-export function Button({ className, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+export function Button({ className, ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       className={cn(
@@ -13,7 +14,7 @@ export function Button({ className, ...props }: React.ButtonHTMLAttributes<HTMLB
   );
 }
 
-export function GhostButton({ className, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+export function GhostButton({ className, ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       className={cn(

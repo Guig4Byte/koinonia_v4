@@ -3,20 +3,13 @@ import { PersonStatus, SignalStatus } from "@/generated/prisma/client";
 import { parseCarePayload, resolvedAttentionMessage } from "@/features/care/care-validation";
 import { canRegisterCare, getPrimaryVisibleGroupIdForPerson, hasWholeChurchScope } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { readJsonBody } from "@/lib/json";
 import { prisma } from "@/lib/prisma";
-
-async function readJson(request: NextRequest): Promise<unknown> {
-  try {
-    return await request.json();
-  } catch {
-    return null;
-  }
-}
 
 export async function POST(request: NextRequest, context: { params: Promise<{ personId: string }> }) {
   const user = await getCurrentUser();
   const { personId } = await context.params;
-  const parsedBody = parseCarePayload(await readJson(request));
+  const parsedBody = parseCarePayload(await readJsonBody(request));
 
   if (!parsedBody.success) {
     return NextResponse.json({ error: "Dados de cuidado inválidos" }, { status: 400 });

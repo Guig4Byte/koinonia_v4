@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Search } from "lucide-react";
-import { Badge, type BadgeTone } from "@/components/ui/badge";
+import { Badge, isBadgeTone, type BadgeTone } from "@/components/ui/badge";
 
 type SearchResult = {
   id: string;
@@ -17,28 +17,24 @@ type SearchResponse = {
   people: SearchResult[];
 };
 
-function isSearchResult(value: unknown): value is SearchResult {
-  if (typeof value !== "object" || value === null) return false;
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
 
-  const candidate = value as Record<string, unknown>;
-  const statusTone = candidate.statusTone;
+function isSearchResult(value: unknown): value is SearchResult {
+  if (!isRecord(value)) return false;
 
   return (
-    typeof candidate.id === "string"
-    && typeof candidate.fullName === "string"
-    && typeof candidate.context === "string"
-    && typeof candidate.status === "string"
-    && (statusTone === undefined || typeof statusTone === "string")
+    typeof value.id === "string"
+    && typeof value.fullName === "string"
+    && typeof value.context === "string"
+    && typeof value.status === "string"
+    && (value.statusTone === undefined || isBadgeTone(value.statusTone))
   );
 }
 
 function isSearchResponse(value: unknown): value is SearchResponse {
-  return (
-    typeof value === "object"
-    && value !== null
-    && Array.isArray((value as { people?: unknown }).people)
-    && (value as { people: unknown[] }).people.every(isSearchResult)
-  );
+  return isRecord(value) && Array.isArray(value.people) && value.people.every(isSearchResult);
 }
 
 export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: string }) {

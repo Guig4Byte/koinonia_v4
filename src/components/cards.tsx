@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/cn";
 import type { SignalBadgeTone } from "@/features/signals/display";
@@ -76,7 +77,7 @@ export function MetricRow({ metrics }: { metrics: Array<{ label: string; value: 
   );
 }
 
-export function SectionTitle({ children }: { children: React.ReactNode }) {
+export function SectionTitle({ children }: { children: ReactNode }) {
   return <h2 className="mb-2 mt-6 text-xs font-bold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">{children}</h2>;
 }
 

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { BottomNav, type NavItem } from "@/components/bottom-nav";
 import { RoleSwitcher } from "@/components/role-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -19,7 +20,7 @@ export function AppShell({
   userName: string;
   role: UserRole;
   nav: NavItem[];
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const firstName = userName.split(" ")[0];
 

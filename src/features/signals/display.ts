@@ -23,33 +23,38 @@ function isPastoralViewer(viewer?: SignalDisplayViewerLike | null): boolean {
   return viewer?.role === UserRole.PASTOR || viewer?.role === UserRole.ADMIN;
 }
 
+/**
+ * Resolves the user-facing signal badge for a specific viewer role.
+ *
+ * Urgency always wins over assignment labels so a severe case is never softened.
+ */
 export function signalBadgeForViewer(signal: SignalDisplayLike, viewer?: SignalDisplayViewerLike | null): SignalBadge {
   if (signal.severity === SignalSeverity.URGENT) {
-    return { label: "Urgente", tone: "risk" as const };
+    return { label: "Urgente", tone: "risk" };
   }
 
   if (isAssignedToSupervisor(signal)) {
     if (isPastoralViewer(viewer)) {
-      return { label: "Atenção local", tone: "warn" as const };
+      return { label: "Atenção local", tone: "warn" };
     }
 
     const escalationLabel = viewer ? escalationStatusLabelForViewer(signal, viewer) : null;
-    return { label: escalationLabel ?? "Pedido de apoio", tone: "support" as const };
+    return { label: escalationLabel ?? "Pedido de apoio", tone: "support" };
   }
 
   if (isAssignedToPastoralRole(signal)) {
-    return { label: isPastoralViewer(viewer) ? "Caso pastoral" : "Encaminhado", tone: "risk" as const };
+    return { label: isPastoralViewer(viewer) ? "Caso pastoral" : "Encaminhado", tone: "risk" };
   }
 
   if (isPastoralViewer(viewer)) {
-    return { label: "Atenção local", tone: "warn" as const };
+    return { label: "Atenção local", tone: "warn" };
   }
 
   if (signal.severity === SignalSeverity.INFO) {
-    return { label: "Informativo", tone: "info" as const };
+    return { label: "Informativo", tone: "info" };
   }
 
-  return { label: "Em atenção", tone: "warn" as const };
+  return { label: "Em atenção", tone: "warn" };
 }
 
 export function groupAttentionLabel(count: number, singular: string, plural: string): string {
