@@ -66,14 +66,12 @@ export function escalationStatusLabelForViewer(signal: EscalationSignalLike, vie
 }
 
 export function escalationStatusDetail(signal: EscalationSignalLike): string | null {
-  if (!signal.assignedTo) return null;
-
   if (isAssignedToPastoralRole(signal)) {
-    return `${signal.assignedTo.name ?? "Pastor"} recebeu este caso para olhar mais de perto.`;
+    return "Encaminhado ao cuidado pastoral.";
   }
 
   if (isAssignedToSupervisor(signal)) {
-    return `${signal.assignedTo.name ?? "Supervisor"} recebeu este pedido de apoio.`;
+    return "Apoio solicitado à supervisão.";
   }
 
   return null;
@@ -81,7 +79,21 @@ export function escalationStatusDetail(signal: EscalationSignalLike): string | n
 
 export function escalationStatusDetailForViewer(signal: EscalationSignalLike, viewer: EscalationViewerLike): string | null {
   if (!shouldShowEscalationStatusForViewer(signal, viewer)) return null;
-  return escalationStatusDetail(signal);
+
+  if (isAssignedToSupervisor(signal)) {
+    if (viewer.role === UserRole.SUPERVISOR) return "Essa célula pediu apoio da supervisão.";
+    return "Apoio solicitado à supervisão.";
+  }
+
+  if (isAssignedToPastoralRole(signal)) {
+    if (viewer.role === UserRole.PASTOR || viewer.role === UserRole.ADMIN) {
+      return "Encaminhado ao cuidado pastoral.";
+    }
+
+    return "Encaminhado ao pastor.";
+  }
+
+  return null;
 }
 
 export function canRequestSupervisorSupport(viewer: EscalationViewerLike, signal: EscalationScopedSignalLike): boolean {

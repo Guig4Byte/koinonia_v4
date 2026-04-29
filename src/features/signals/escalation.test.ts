@@ -43,13 +43,15 @@ describe("signal escalation helpers", () => {
     const supervisorRequest = { severity: SignalSeverity.URGENT, assignedTo: { name: "Ana", role: UserRole.SUPERVISOR } };
 
     expect(escalationStatusDetailForViewer(supervisorRequest, { role: UserRole.PASTOR })).toBeNull();
-    expect(escalationStatusDetailForViewer(supervisorRequest, { role: UserRole.SUPERVISOR })).toBe("Ana recebeu este pedido de apoio.");
+    expect(escalationStatusDetailForViewer(supervisorRequest, { role: UserRole.LEADER })).toBe("Apoio solicitado à supervisão.");
+    expect(escalationStatusDetailForViewer(supervisorRequest, { role: UserRole.SUPERVISOR })).toBe("Essa célula pediu apoio da supervisão.");
   });
 
-  it("uses one detail helper for pastoral assignment messages", () => {
+  it("uses neutral detail messages for pastoral assignments", () => {
     const pastoralRequest = { severity: SignalSeverity.ATTENTION, assignedTo: { name: "Roberto", role: UserRole.PASTOR } };
 
-    expect(escalationStatusDetailForViewer(pastoralRequest, { role: UserRole.PASTOR })).toBe("Roberto recebeu este caso para olhar mais de perto.");
+    expect(escalationStatusDetailForViewer(pastoralRequest, { role: UserRole.PASTOR })).toBe("Encaminhado ao cuidado pastoral.");
+    expect(escalationStatusDetailForViewer(pastoralRequest, { role: UserRole.LEADER })).toBe("Encaminhado ao pastor.");
   });
 });
 
