@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Search } from "lucide-react";
 import { Badge, isBadgeTone, type BadgeTone } from "@/components/ui/badge";
+import { isRecord, readJsonResponse } from "@/lib/json";
 
 type SearchResult = {
   id: string;
@@ -16,10 +17,6 @@ type SearchResult = {
 type SearchResponse = {
   people: SearchResult[];
 };
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
-}
 
 function isSearchResult(value: unknown): value is SearchResult {
   if (!isRecord(value)) return false;
@@ -50,7 +47,7 @@ export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: 
 
     const response = await fetch(`/api/search?q=${encodeURIComponent(value)}`);
     if (!response.ok) return;
-    const data: unknown = await response.json();
+    const data = await readJsonResponse(response);
     setResults(isSearchResponse(data) ? data.people : []);
   }
 

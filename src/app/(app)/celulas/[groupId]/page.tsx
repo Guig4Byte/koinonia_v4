@@ -8,7 +8,7 @@ import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/even
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { canViewGroup } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson, isPastoralSignal } from "@/features/signals/attention";
-import { groupAttentionLabel, signalBadgeForViewer, signalReasonForViewer } from "@/features/signals/display";
+import { groupAttentionLabel, signalBadgeForViewer, signalReasonForViewer, type SignalBadge } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime, percent } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -87,31 +87,31 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
   const presenceRate = percent(presentAttendances.length, accountableAttendances.length);
   const relevantEvent = selectRelevantCheckInEvent(group.events);
   const pendingEvent = relevantEvent && !hasRecordedPresence(relevantEvent) ? relevantEvent : null;
-  const headerBadge = (() => {
+  const headerBadge: SignalBadge = (() => {
     if (urgentAttentionPeople.length > 0) {
-      return { tone: "risk" as const, label: groupAttentionLabel(urgentAttentionPeople.length, "urgente", "urgentes") };
+      return { tone: "risk", label: groupAttentionLabel(urgentAttentionPeople.length, "urgente", "urgentes") };
     }
 
     if (isPastorView && pastoralAttentionPeople.length > 0) {
-      return { tone: "risk" as const, label: groupAttentionLabel(pastoralAttentionPeople.length, "caso pastoral", "casos pastorais") };
+      return { tone: "risk", label: groupAttentionLabel(pastoralAttentionPeople.length, "caso pastoral", "casos pastorais") };
     }
 
     if (!isPastorView && supportRequests.length > 0) {
-      return { tone: "support" as const, label: groupAttentionLabel(supportRequests.length, "pedido de apoio", "pedidos de apoio") };
+      return { tone: "support", label: groupAttentionLabel(supportRequests.length, "pedido de apoio", "pedidos de apoio") };
     }
 
     if (attentionPeople.length > 0) {
       return {
-        tone: "warn" as const,
+        tone: "warn",
         label: isPastorView ? groupAttentionLabel(attentionPeople.length, "atenção local", "atenções locais") : groupAttentionLabel(attentionPeople.length, "pessoa em atenção", "pessoas em atenção"),
       };
     }
 
     if (inCareCount > 0) {
-      return { tone: "care" as const, label: groupAttentionLabel(inCareCount, "em cuidado", "em cuidado") };
+      return { tone: "care", label: groupAttentionLabel(inCareCount, "em cuidado", "em cuidado") };
     }
 
-    return { tone: "ok" as const, label: "Estável" };
+    return { tone: "ok", label: "Estável" };
   })();
 
   return (

@@ -10,7 +10,7 @@ function getStringProperty(value: Record<string, unknown>, key: keyof ApiMessage
   return typeof prop === "string" ? prop : undefined;
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
+export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
@@ -28,8 +28,12 @@ export async function readJsonBody(request: NextRequest): Promise<unknown> {
 /**
  * Safely extracts the small error/message envelope returned by API routes.
  */
+export async function readJsonResponse(response: Response): Promise<unknown> {
+  return response.json().catch(() => null);
+}
+
 export async function readApiMessage(response: Response): Promise<ApiMessage | null> {
-  const body: unknown = await response.json().catch(() => null);
+  const body = await readJsonResponse(response);
 
   if (!isRecord(body)) return null;
 

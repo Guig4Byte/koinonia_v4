@@ -6,6 +6,7 @@ import { useMemo, useState, useTransition } from "react";
 import { Button, GhostButton } from "@/components/ui/button";
 import { findDuplicateVisitorName } from "@/features/check-in/visitor-validation";
 import { cn } from "@/lib/cn";
+import { isRecord, readJsonResponse } from "@/lib/json";
 
 type MemberAttendanceStatus = "PRESENT" | "ABSENT" | "JUSTIFIED";
 type AttendanceStatus = MemberAttendanceStatus | "VISITOR";
@@ -40,13 +41,10 @@ type CheckInResponse = {
 };
 
 function isCheckInResponse(value: unknown): value is CheckInResponse {
-  if (typeof value !== "object" || value === null) return false;
-
-  const candidate = value as Record<string, unknown>;
-
   return (
-    (candidate.error === undefined || typeof candidate.error === "string")
-    && (candidate.openSignalPeopleCount === undefined || typeof candidate.openSignalPeopleCount === "number")
+    isRecord(value)
+    && (value.error === undefined || typeof value.error === "string")
+    && (value.openSignalPeopleCount === undefined || typeof value.openSignalPeopleCount === "number")
   );
 }
 
@@ -201,7 +199,7 @@ export function CheckInList({
         }),
       });
 
-      const payload: unknown = await response.json().catch(() => null);
+      const payload = await readJsonResponse(response);
       const responseBody = isCheckInResponse(payload) ? payload : null;
 
       if (!response.ok) {

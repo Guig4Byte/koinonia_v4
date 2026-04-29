@@ -3,7 +3,7 @@ import { ContextSummary, GroupCard, PersonSignalCard, PulseCard, SectionTitle } 
 import { SearchBox } from "@/components/search-box";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { canUseSupervisorDashboard } from "@/features/permissions/permissions";
-import { groupAttentionLabel, signalBadgeForViewer } from "@/features/signals/display";
+import { groupAttentionLabel, signalBadgeForViewer, type SignalBadge } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { redirect } from "next/navigation";
 import { initials } from "@/lib/text";
@@ -117,14 +117,14 @@ export default async function SupervisorPage() {
         {dashboard.groups.map((group) => {
           const supportText = supportRequestsText(group.supportRequestsCount);
           const urgentCount = group.signals.filter((signal) => signal.severity === "URGENT").length;
-          const badge = urgentCount > 0
-            ? { label: groupAttentionLabel(urgentCount, "urgente", "urgentes"), tone: "risk" as const }
+          const badge: SignalBadge | null = urgentCount > 0
+            ? { label: groupAttentionLabel(urgentCount, "urgente", "urgentes"), tone: "risk" }
             : group.supportRequestsCount > 0
-              ? { label: groupAttentionLabel(group.supportRequestsCount, "pedido de apoio", "pedidos de apoio"), tone: "support" as const }
+              ? { label: groupAttentionLabel(group.supportRequestsCount, "pedido de apoio", "pedidos de apoio"), tone: "support" }
               : group.attentionCount > 0
-                ? { label: groupAttentionLabel(group.attentionCount, "pessoa em atenção", "pessoas em atenção"), tone: "warn" as const }
+                ? { label: groupAttentionLabel(group.attentionCount, "pessoa em atenção", "pessoas em atenção"), tone: "warn" }
                 : group.inCareCount > 0
-                  ? { label: groupAttentionLabel(group.inCareCount, "em cuidado", "em cuidado"), tone: "care" as const }
+                  ? { label: groupAttentionLabel(group.inCareCount, "em cuidado", "em cuidado"), tone: "care" }
                   : null;
 
           return (
