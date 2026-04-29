@@ -1,6 +1,6 @@
 import { cn } from "@/lib/cn";
 
-type BadgeTone = "neutral" | "ok" | "warn" | "risk" | "info" | "care" | "support";
+export type BadgeTone = "neutral" | "ok" | "warn" | "risk" | "info" | "care" | "support";
 
 const tones: Record<BadgeTone, string> = {
   neutral: "border border-[var(--color-border-card)] bg-[var(--surface-alt)] text-[var(--color-text-secondary)]",

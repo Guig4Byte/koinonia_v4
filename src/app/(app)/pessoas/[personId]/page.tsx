@@ -8,9 +8,10 @@ import { SectionTitle } from "@/components/cards";
 import { SignalSupportActions } from "@/components/signal-support-actions";
 import { Badge } from "@/components/ui/badge";
 import { canRegisterCare, canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
-import { personStatusDisplay } from "@/features/people/status-display";
+import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { shouldShowEscalationStatusForViewer } from "@/features/signals/escalation";
 import { signalBadgeForViewer } from "@/features/signals/display";
+import { getPrimarySignalsByPerson } from "@/features/signals/attention";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -97,7 +98,8 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const hasCareTouch = careTouches.length > 0;
   const peopleLabel = user.role === "LEADER" ? "Membros" : "Pessoas";
   const canMarkActive = person.status === PersonStatus.COOLING_AWAY && canRegisterCare(user, person);
-  const personBadge = personStatusDisplay(person.status);
+  const primarySignal = getPrimarySignalsByPerson(signals)[0];
+  const personBadge = personEffectiveBadgeForViewer(person, primarySignal, user);
 
   return (
     <AppShell

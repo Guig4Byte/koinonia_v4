@@ -3,10 +3,19 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Search } from "lucide-react";
+import { Badge, type BadgeTone } from "@/components/ui/badge";
+
+type SearchResult = {
+  id: string;
+  fullName: string;
+  context: string;
+  status: string;
+  statusTone?: BadgeTone;
+};
 
 export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: string }) {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<Array<{ id: string; fullName: string; context: string; status: string }>>([]);
+  const [results, setResults] = useState<SearchResult[]>([]);
 
   async function onChange(value: string) {
     setQuery(value);
@@ -38,8 +47,13 @@ export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: 
         <div className="absolute left-0 right-0 top-14 z-30 overflow-hidden rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] shadow-card">
           {results.map((person) => (
             <Link key={person.id} href={`/pessoas/${person.id}`} className="block border-b border-[var(--color-border-divider)] px-4 py-3 last:border-0">
-              <p className="text-sm font-semibold text-[var(--color-text-primary)]">{person.fullName}</p>
-              <p className="mt-0.5 text-xs text-[var(--color-text-secondary)]">{person.context} · {person.status}</p>
+              <div className="flex items-start justify-between gap-3">
+                <span className="min-w-0">
+                  <span className="block text-sm font-semibold text-[var(--color-text-primary)]">{person.fullName}</span>
+                  <span className="mt-0.5 block text-xs text-[var(--color-text-secondary)]">{person.context}</span>
+                </span>
+                <Badge tone={person.statusTone ?? "neutral"} className="shrink-0">{person.status}</Badge>
+              </div>
             </Link>
           ))}
         </div>

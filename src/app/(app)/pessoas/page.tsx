@@ -5,7 +5,7 @@ import { PersonSignalCard, SectionTitle } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
 import { Badge } from "@/components/ui/badge";
 import { getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "@/features/permissions/permissions";
-import { personStatusDisplay } from "@/features/people/status-display";
+import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson } from "@/features/signals/attention";
 import { signalBadgeForViewer } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -132,7 +132,7 @@ export default async function PeoplePage() {
           <div className="space-y-2">
             {visibleMembers.map((person) => {
               const attentionSignal = attentionSignalByPersonId.get(person.id);
-              const badge = attentionSignal ? signalBadgeForViewer(attentionSignal, user) : personStatusDisplay(person.status);
+              const badge = personEffectiveBadgeForViewer(person, attentionSignal, user);
 
               return (
                 <Link

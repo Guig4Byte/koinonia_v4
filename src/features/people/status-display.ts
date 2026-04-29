@@ -1,4 +1,5 @@
 import { PersonStatus } from "../../generated/prisma/client";
+import { signalBadgeForViewer, type SignalDisplayLike, type SignalDisplayViewerLike } from "../signals/display";
 
 export type PersonStatusTone = "neutral" | "ok" | "warn" | "risk" | "info" | "care";
 
@@ -21,4 +22,21 @@ export function personStatusTone(status: PersonStatus): PersonStatusTone {
 
 export function personStatusDisplay(status: PersonStatus) {
   return { label: personStatusLabels[status], tone: personStatusTone(status) };
+}
+
+
+export type PersonEffectiveBadgePersonLike = {
+  status: PersonStatus;
+};
+
+export function personEffectiveBadgeForViewer(
+  person: PersonEffectiveBadgePersonLike,
+  primarySignal?: SignalDisplayLike | null,
+  viewer?: SignalDisplayViewerLike | null,
+) {
+  if (primarySignal) {
+    return signalBadgeForViewer(primarySignal, viewer);
+  }
+
+  return personStatusDisplay(person.status);
 }

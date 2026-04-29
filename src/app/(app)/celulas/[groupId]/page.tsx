@@ -5,7 +5,7 @@ import { AppShell } from "@/components/app-shell";
 import { ContextSummary, PersonSignalCard, SectionTitle } from "@/components/cards";
 import { Badge } from "@/components/ui/badge";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
-import { personStatusDisplay } from "@/features/people/status-display";
+import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { canViewGroup } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson, isPastoralSignal } from "@/features/signals/attention";
 import { groupAttentionLabel, signalBadgeForViewer } from "@/features/signals/display";
@@ -309,7 +309,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
       <div className="space-y-2">
         {group.memberships.map((membership) => {
           const attentionSignal = attentionSignalByPersonId.get(membership.personId);
-          const memberBadge = attentionSignal ? signalBadgeForViewer(attentionSignal, user) : personStatusDisplay(membership.person.status);
+          const memberBadge = personEffectiveBadgeForViewer(membership.person, attentionSignal, user);
 
           return (
             <Link key={membership.id} href={`/pessoas/${membership.personId}`} className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]">
