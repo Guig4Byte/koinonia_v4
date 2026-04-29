@@ -10,11 +10,7 @@ import { getPastoralSignalsByPerson, getPrimarySignalsByPerson } from "@/feature
 import { signalBadgeForViewer, signalReasonForViewer } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
-
-function initials(name: string) {
-  return name.split(" ").slice(0, 2).map((part) => part[0]).join("").toUpperCase();
-}
-
+import { initials } from "@/lib/text";
 
 export default async function PeoplePage() {
   const user = await getCurrentUser();

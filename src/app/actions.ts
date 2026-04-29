@@ -2,18 +2,12 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { UserRole } from "../generated/prisma/client";
-
-const roleHome: Record<UserRole, string> = {
-  ADMIN: "/pastor",
-  PASTOR: "/pastor",
-  SUPERVISOR: "/supervisor",
-  LEADER: "/lider",
-};
+import { isUserRole, roleHome } from "@/lib/roles";
 
 export async function switchDemoRole(formData: FormData) {
-  const role = String(formData.get("role"));
-  if (!Object.values(UserRole).includes(role as UserRole)) {
+  const role = formData.get("role");
+
+  if (!isUserRole(role)) {
     throw new Error("Perfil inválido");
   }
 
@@ -25,5 +19,5 @@ export async function switchDemoRole(formData: FormData) {
     maxAge: 60 * 60 * 24 * 30,
   });
 
-  redirect(roleHome[role as UserRole]);
+  redirect(roleHome[role]);
 }

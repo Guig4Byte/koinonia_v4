@@ -6,10 +6,7 @@ import { canUsePastorDashboard } from "@/features/permissions/permissions";
 import { signalBadgeForViewer } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { redirect } from "next/navigation";
-
-function initials(name: string) {
-  return name.split(" ").slice(0, 2).map((part) => part[0]).join("").toUpperCase();
-}
+import { initials } from "@/lib/text";
 
 export default async function PastorPage() {
   const user = await getCurrentUser();

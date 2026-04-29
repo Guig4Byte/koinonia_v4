@@ -1,13 +1,12 @@
 import { cookies } from "next/headers";
-import { UserRole } from "../../generated/prisma/client";
+import { UserRole } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { isUserRole } from "@/lib/roles";
 
 const DEFAULT_ROLE = UserRole.PASTOR;
 
 function parseRole(value: string | undefined): UserRole {
-  if (!value) return DEFAULT_ROLE;
-  if (Object.values(UserRole).includes(value as UserRole)) return value as UserRole;
-  return DEFAULT_ROLE;
+  return isUserRole(value) ? value : DEFAULT_ROLE;
 }
 
 export async function getCurrentUser() {

@@ -5,9 +5,10 @@ import { canEscalateSignalToPastor, canRequestSupervisorSupport } from "@/featur
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 
-type SupportAction = "REQUEST_SUPERVISOR" | "ESCALATE_PASTOR";
+const supportActions = ["REQUEST_SUPERVISOR", "ESCALATE_PASTOR"] as const;
+type SupportAction = (typeof supportActions)[number];
 
-async function readJson(request: NextRequest) {
+async function readJson(request: NextRequest): Promise<unknown> {
   try {
     return await request.json();
   } catch {
@@ -15,11 +16,17 @@ async function readJson(request: NextRequest) {
   }
 }
 
+const supportActionValues = new Set<string>(supportActions);
+
+function isSupportAction(value: unknown): value is SupportAction {
+  return typeof value === "string" && supportActionValues.has(value);
+}
+
 function parseAction(input: unknown): SupportAction | null {
-  if (!input || typeof input !== "object") return null;
-  const action = (input as { action?: unknown }).action;
-  if (action === "REQUEST_SUPERVISOR" || action === "ESCALATE_PASTOR") return action;
-  return null;
+  if (typeof input !== "object" || input === null || !("action" in input)) return null;
+
+  const { action } = input as { action: unknown };
+  return isSupportAction(action) ? action : null;
 }
 
 async function findPastoralAssignee(churchId: string) {

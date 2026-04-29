@@ -3,6 +3,11 @@ import { escalationStatusLabelForViewer, isAssignedToPastoralRole, isAssignedToS
 
 export type SignalBadgeTone = "neutral" | "ok" | "warn" | "risk" | "info" | "care" | "support";
 
+export type SignalBadge = {
+  label: string;
+  tone: SignalBadgeTone;
+};
+
 export type SignalDisplayLike = {
   severity: SignalSeverity;
   assignedToId?: string | null;
@@ -14,11 +19,11 @@ export type SignalDisplayViewerLike = {
   role: UserRole;
 };
 
-function isPastoralViewer(viewer?: SignalDisplayViewerLike | null) {
+function isPastoralViewer(viewer?: SignalDisplayViewerLike | null): boolean {
   return viewer?.role === UserRole.PASTOR || viewer?.role === UserRole.ADMIN;
 }
 
-export function signalBadgeForViewer(signal: SignalDisplayLike, viewer?: SignalDisplayViewerLike | null) {
+export function signalBadgeForViewer(signal: SignalDisplayLike, viewer?: SignalDisplayViewerLike | null): SignalBadge {
   if (signal.severity === SignalSeverity.URGENT) {
     return { label: "Urgente", tone: "risk" as const };
   }
@@ -47,11 +52,11 @@ export function signalBadgeForViewer(signal: SignalDisplayLike, viewer?: SignalD
   return { label: "Em atenção", tone: "warn" as const };
 }
 
-export function groupAttentionLabel(count: number, singular: string, plural: string) {
+export function groupAttentionLabel(count: number, singular: string, plural: string): string {
   return `${count} ${count === 1 ? singular : plural}`;
 }
 
-export function signalReasonForViewer(reason: string, viewer: { role: UserRole }) {
+export function signalReasonForViewer(reason: string, viewer: { role: UserRole }): string {
   if (viewer.role !== UserRole.LEADER) return reason;
   return reason.replace("Líder pediu apoio da supervisão", "Apoio solicitado à supervisão");
 }

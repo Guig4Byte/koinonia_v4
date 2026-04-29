@@ -4,6 +4,7 @@ import { CheckCircle2, MessageCircleMore, NotebookPen, Phone } from "lucide-reac
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { cn } from "@/lib/cn";
+import { readApiMessage } from "@/lib/json";
 
 type ContactKind = "CALL" | "WHATSAPP";
 type FlowStage = "idle" | "confirm" | "confirm-existing" | "ask-note" | "note" | "done";
@@ -55,7 +56,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
         }),
       });
 
-      const responseBody = await response.json().catch(() => null) as { error?: string; message?: string } | null;
+      const responseBody = await readApiMessage(response);
 
       if (!response.ok) {
         setErrorMessage(responseBody?.error ?? "Não foi possível registrar o cuidado agora.");

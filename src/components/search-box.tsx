@@ -13,6 +13,34 @@ type SearchResult = {
   statusTone?: BadgeTone;
 };
 
+type SearchResponse = {
+  people: SearchResult[];
+};
+
+function isSearchResult(value: unknown): value is SearchResult {
+  if (typeof value !== "object" || value === null) return false;
+
+  const candidate = value as Record<string, unknown>;
+  const statusTone = candidate.statusTone;
+
+  return (
+    typeof candidate.id === "string"
+    && typeof candidate.fullName === "string"
+    && typeof candidate.context === "string"
+    && typeof candidate.status === "string"
+    && (statusTone === undefined || typeof statusTone === "string")
+  );
+}
+
+function isSearchResponse(value: unknown): value is SearchResponse {
+  return (
+    typeof value === "object"
+    && value !== null
+    && Array.isArray((value as { people?: unknown }).people)
+    && (value as { people: unknown[] }).people.every(isSearchResult)
+  );
+}
+
 export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: string }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -26,8 +54,8 @@ export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: 
 
     const response = await fetch(`/api/search?q=${encodeURIComponent(value)}`);
     if (!response.ok) return;
-    const data = await response.json();
-    setResults(data.people ?? []);
+    const data: unknown = await response.json();
+    setResults(isSearchResponse(data) ? data.people : []);
   }
 
   return (
@@ -52,7 +80,9 @@ export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: 
                   <span className="block text-sm font-semibold text-[var(--color-text-primary)]">{person.fullName}</span>
                   <span className="mt-0.5 block text-xs text-[var(--color-text-secondary)]">{person.context}</span>
                 </span>
-                <Badge tone={person.statusTone ?? "neutral"} className="shrink-0">{person.status}</Badge>
+                <Badge tone={person.statusTone ?? "neutral"} className="shrink-0">
+                  {person.status}
+                </Badge>
               </div>
             </Link>
           ))}

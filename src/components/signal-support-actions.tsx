@@ -4,6 +4,7 @@ import { LifeBuoy, SendHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { cn } from "@/lib/cn";
+import { readApiMessage } from "@/lib/json";
 
 type SupportAction = "REQUEST_SUPERVISOR" | "ESCALATE_PASTOR";
 type SignalSupportActionsProps = {
@@ -34,7 +35,7 @@ export function SignalSupportActions({
         body: JSON.stringify({ action }),
       });
 
-      const body = await response.json().catch(() => null) as { error?: string } | null;
+      const body = await readApiMessage(response);
 
       if (!response.ok) {
         setErrorMessage(body?.error ?? "Não foi possível atualizar o apoio agora.");

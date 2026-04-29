@@ -15,6 +15,7 @@ import { getPrimarySignalsByPerson } from "@/features/signals/attention";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { initials } from "@/lib/text";
 
 const attendanceLabels: Record<AttendanceStatus, string> = {
   PRESENT: "Presente",
@@ -32,17 +33,12 @@ const careKindLabels: Record<CareKind, string> = {
   NOTE: "Anotação",
 };
 
-function initials(name: string) {
-  return name.split(" ").slice(0, 2).map((part) => part[0]).join("").toUpperCase();
-}
-
 function attendanceTone(status?: AttendanceStatus | null): "ok" | "warn" | "risk" | "info" {
   if (status === AttendanceStatus.PRESENT) return "ok";
   if (status === AttendanceStatus.JUSTIFIED) return "warn";
   if (status === AttendanceStatus.ABSENT) return "risk";
   return "info";
 }
-
 
 
 export default async function PersonDetailPage({ params }: { params: Promise<{ personId: string }> }) {

@@ -26,30 +26,30 @@ export type EscalationScopedSignalLike = EscalationSignalLike & {
   group?: EscalationGroupLike | null;
 };
 
-export function isAssignedToSupervisor(signal: EscalationSignalLike) {
+export function isAssignedToSupervisor(signal: EscalationSignalLike): boolean {
   return signal.assignedTo?.role === UserRole.SUPERVISOR;
 }
 
-export function isAssignedToPastoralRole(signal: EscalationSignalLike) {
+export function isAssignedToPastoralRole(signal: EscalationSignalLike): boolean {
   return signal.assignedTo?.role === UserRole.PASTOR || signal.assignedTo?.role === UserRole.ADMIN;
 }
 
-export function isPastoralEscalation(signal: EscalationSignalLike) {
+export function isPastoralEscalation(signal: EscalationSignalLike): boolean {
   return signal.severity === SignalSeverity.URGENT || isAssignedToPastoralRole(signal);
 }
 
-export function escalationStatusLabel(signal: EscalationSignalLike) {
+export function escalationStatusLabel(signal: EscalationSignalLike): string | null {
   if (isAssignedToPastoralRole(signal)) return "Encaminhado ao pastor";
   if (isAssignedToSupervisor(signal)) return "Apoio solicitado";
   return null;
 }
 
-function supervisorAssignmentLabelForViewer(viewer: EscalationViewerLike) {
+function supervisorAssignmentLabelForViewer(viewer: EscalationViewerLike): string {
   if (viewer.role === UserRole.SUPERVISOR) return "Pedido de apoio";
   return "Apoio solicitado";
 }
 
-export function shouldShowEscalationStatusForViewer(signal: EscalationSignalLike, viewer: EscalationViewerLike) {
+export function shouldShowEscalationStatusForViewer(signal: EscalationSignalLike, viewer: EscalationViewerLike): boolean {
   if (isAssignedToPastoralRole(signal)) return true;
 
   if (isAssignedToSupervisor(signal)) {
@@ -59,13 +59,13 @@ export function shouldShowEscalationStatusForViewer(signal: EscalationSignalLike
   return false;
 }
 
-export function escalationStatusLabelForViewer(signal: EscalationSignalLike, viewer: EscalationViewerLike) {
+export function escalationStatusLabelForViewer(signal: EscalationSignalLike, viewer: EscalationViewerLike): string | null {
   if (!shouldShowEscalationStatusForViewer(signal, viewer)) return null;
   if (isAssignedToSupervisor(signal)) return supervisorAssignmentLabelForViewer(viewer);
   return escalationStatusLabel(signal);
 }
 
-export function escalationStatusDetail(signal: EscalationSignalLike) {
+export function escalationStatusDetail(signal: EscalationSignalLike): string | null {
   if (!signal.assignedTo) return null;
 
   if (isAssignedToPastoralRole(signal)) {
@@ -79,12 +79,12 @@ export function escalationStatusDetail(signal: EscalationSignalLike) {
   return null;
 }
 
-export function escalationStatusDetailForViewer(signal: EscalationSignalLike, viewer: EscalationViewerLike) {
+export function escalationStatusDetailForViewer(signal: EscalationSignalLike, viewer: EscalationViewerLike): string | null {
   if (!shouldShowEscalationStatusForViewer(signal, viewer)) return null;
   return escalationStatusDetail(signal);
 }
 
-export function canRequestSupervisorSupport(viewer: EscalationViewerLike, signal: EscalationScopedSignalLike) {
+export function canRequestSupervisorSupport(viewer: EscalationViewerLike, signal: EscalationScopedSignalLike): boolean {
   return Boolean(
     viewer.role === UserRole.LEADER
     && viewer.id
@@ -95,7 +95,7 @@ export function canRequestSupervisorSupport(viewer: EscalationViewerLike, signal
   );
 }
 
-export function canEscalateSignalToPastor(viewer: EscalationViewerLike, signal: EscalationScopedSignalLike) {
+export function canEscalateSignalToPastor(viewer: EscalationViewerLike, signal: EscalationScopedSignalLike): boolean {
   return Boolean(
     viewer.role === UserRole.SUPERVISOR
     && viewer.id

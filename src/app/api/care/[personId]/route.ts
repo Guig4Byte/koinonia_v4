@@ -5,7 +5,7 @@ import { canRegisterCare, getPrimaryVisibleGroupIdForPerson, hasWholeChurchScope
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 
-async function readJson(request: NextRequest) {
+async function readJson(request: NextRequest): Promise<unknown> {
   try {
     return await request.json();
   } catch {

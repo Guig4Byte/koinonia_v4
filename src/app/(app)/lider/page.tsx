@@ -11,11 +11,7 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { redirect } from "next/navigation";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
-
-function initials(name: string) {
-  return name.split(" ").slice(0, 2).map((part) => part[0]).join("").toUpperCase();
-}
-
+import { initials } from "@/lib/text";
 
 export default async function LeaderPage() {
   const user = await getCurrentUser();

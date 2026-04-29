@@ -32,7 +32,7 @@ const payloadSchema = z.object({
 export async function POST(request: NextRequest, context: { params: Promise<{ eventId: string }> }) {
   const user = await getCurrentUser();
   const { eventId } = await context.params;
-  const json = await request.json().catch(() => null);
+  const json: unknown = await request.json().catch(() => null);
   const parsedBody = payloadSchema.safeParse(json);
 
   if (!parsedBody.success) {

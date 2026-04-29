@@ -28,6 +28,28 @@ type VisitorDraft = {
   fullName: string;
 };
 
+type CheckInItem = {
+  personId: string;
+  fullName: string;
+  status: AttendanceSelection;
+};
+
+type CheckInResponse = {
+  error?: string;
+  openSignalPeopleCount?: number;
+};
+
+function isCheckInResponse(value: unknown): value is CheckInResponse {
+  if (typeof value !== "object" || value === null) return false;
+
+  const candidate = value as Record<string, unknown>;
+
+  return (
+    (candidate.error === undefined || typeof candidate.error === "string")
+    && (candidate.openSignalPeopleCount === undefined || typeof candidate.openSignalPeopleCount === "number")
+  );
+}
+
 const ATTENDANCE = {
   PRESENT: "PRESENT",
   ABSENT: "ABSENT",
@@ -77,7 +99,7 @@ export function CheckInList({
   const [savedVisitors, setSavedVisitors] = useState<VisitorRecord[]>(initialVisitors);
   const fallbackSavedVisitorCount = Math.max(initialVisitorCount, savedVisitors.length);
   const [visitors, setVisitors] = useState<VisitorDraft[]>([]);
-  const [items, setItems] = useState(
+  const [items, setItems] = useState<CheckInItem[]>(
     members.map((member) => ({
       personId: member.personId,
       fullName: member.fullName,
@@ -86,23 +108,32 @@ export function CheckInList({
   );
 
   const summary = useMemo(() => {
-    const marked = items.filter((item) => item.status !== null);
-    const present = items.filter((item) => item.status === ATTENDANCE.PRESENT).length;
-    const justified = items.filter((item) => item.status === ATTENDANCE.JUSTIFIED).length;
-    const absent = items.filter((item) => item.status === ATTENDANCE.ABSENT).length;
-    const pending = items.length - marked.length;
+    const counts = items.reduce(
+      (acc, item) => {
+        if (item.status === ATTENDANCE.PRESENT) acc.present += 1;
+        else if (item.status === ATTENDANCE.JUSTIFIED) acc.justified += 1;
+        else if (item.status === ATTENDANCE.ABSENT) acc.absent += 1;
+        else acc.pending += 1;
+
+        return acc;
+      },
+      {
+        totalMembers: items.length,
+        present: 0,
+        justified: 0,
+        absent: 0,
+        pending: 0,
+      },
+    );
+
     const visitorTotal = fallbackSavedVisitorCount + visitors.length;
-    const presenceRate = items.length === 0 ? 0 : Math.round((present / items.length) * 100);
+    const presenceRate = counts.totalMembers === 0 ? 0 : Math.round((counts.present / counts.totalMembers) * 100);
 
     return {
-      totalMembers: items.length,
-      present,
-      justified,
-      absent,
-      pending,
+      ...counts,
       visitorTotal,
       presenceRate,
-      attentionCount: absent,
+      attentionCount: counts.absent,
     };
   }, [fallbackSavedVisitorCount, items, visitors.length]);
 
@@ -170,14 +201,15 @@ export function CheckInList({
         }),
       });
 
-      const payload = await response.json().catch(() => null);
+      const payload: unknown = await response.json().catch(() => null);
+      const responseBody = isCheckInResponse(payload) ? payload : null;
 
       if (!response.ok) {
-        setErrorMessage(payload?.error ?? "Não foi possível salvar a presença.");
+        setErrorMessage(responseBody?.error ?? "Não foi possível salvar a presença.");
         return;
       }
 
-      setSavedAttentionCount(typeof payload?.openSignalPeopleCount === "number" ? payload.openSignalPeopleCount : null);
+      setSavedAttentionCount(responseBody?.openSignalPeopleCount ?? null);
       setSaved(true);
       setSavedVisitors((current) => [...current, ...visitors]);
       setVisitors([]);

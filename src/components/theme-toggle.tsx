@@ -2,11 +2,7 @@
 
 import { Moon, ScrollText, Sun, type LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-
-const STORAGE_KEY = "koinonia-theme";
-const themes = ["light", "parchment", "dark"] as const;
-
-type Theme = (typeof themes)[number];
+import { applyTheme, getNextTheme, isTheme, THEME_STORAGE_KEY, type Theme } from "@/features/theme/theme";
 
 const themeMeta: Record<Theme, { label: string; Icon: LucideIcon }> = {
   light: { label: "Claro", Icon: Sun },
@@ -14,24 +10,10 @@ const themeMeta: Record<Theme, { label: string; Icon: LucideIcon }> = {
   dark: { label: "Escuro", Icon: Moon },
 };
 
-function isTheme(value: string | null): value is Theme {
-  return themes.includes(value as Theme);
-}
-
 function getInitialTheme(): Theme {
   if (typeof window === "undefined") return "light";
-  const stored = window.localStorage.getItem(STORAGE_KEY);
+  const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
   return isTheme(stored) ? stored : "light";
-}
-
-function applyTheme(theme: Theme) {
-  document.documentElement.setAttribute("data-theme", theme);
-  document.documentElement.style.colorScheme = theme === "dark" ? "dark" : "light";
-}
-
-function getNextTheme(theme: Theme): Theme {
-  const index = themes.indexOf(theme);
-  return themes[(index + 1) % themes.length];
 }
 
 export function ThemeToggle() {
@@ -46,7 +28,7 @@ export function ThemeToggle() {
   function toggleTheme() {
     const nextTheme = getNextTheme(theme);
     setTheme(nextTheme);
-    window.localStorage.setItem(STORAGE_KEY, nextTheme);
+    window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
     applyTheme(nextTheme);
   }
 

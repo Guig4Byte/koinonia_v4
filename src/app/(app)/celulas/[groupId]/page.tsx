@@ -12,6 +12,7 @@ import { groupAttentionLabel, signalBadgeForViewer, signalReasonForViewer } from
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime, percent } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { initials } from "@/lib/text";
 
 const dayLabels: Record<number, string> = {
   0: "Domingo",
@@ -22,10 +23,6 @@ const dayLabels: Record<number, string> = {
   5: "Sexta",
   6: "Sábado",
 };
-
-function initials(name: string) {
-  return name.split(" ").slice(0, 2).map((part) => part[0]).join("").toUpperCase();
-}
 
 function eventMetrics(event: { status: string; attendances: Array<{ status: AttendanceStatus }> }) {
   const accountable = event.attendances.filter((attendance) => attendance.status !== AttendanceStatus.VISITOR);
@@ -44,7 +41,6 @@ function groupMeetingText(day?: number | null, time?: string | null) {
   if (day === null || day === undefined) return time ? `Horário: ${time}` : "Encontro sem horário fixo informado.";
   return `${dayLabels[day] ?? "Dia informado"}${time ? ` · ${time}` : ""}`;
 }
-
 
 export default async function GroupDetailPage({ params }: { params: Promise<{ groupId: string }> }) {
   const user = await getCurrentUser();

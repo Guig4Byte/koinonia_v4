@@ -4,6 +4,7 @@ import { CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { cn } from "@/lib/cn";
+import { readApiMessage } from "@/lib/json";
 
 export function PersonStatusActions({ personId }: { personId: string }) {
   const router = useRouter();
@@ -20,7 +21,7 @@ export function PersonStatusActions({ personId }: { personId: string }) {
         headers: { "Content-Type": "application/json" },
       });
 
-      const body = await response.json().catch(() => null) as { error?: string } | null;
+      const body = await readApiMessage(response);
 
       if (!response.ok) {
         setErrorMessage(body?.error ?? "Não foi possível atualizar esta pessoa agora.");
