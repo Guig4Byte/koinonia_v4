@@ -47,13 +47,19 @@ export default async function PeoplePage() {
 
   const visibleOpenSignalWhere = getVisibleOpenSignalWhere(user);
   const pastorSignalWhere = isPastoralOverview
-    ? { ...visibleOpenSignalWhere, severity: SignalSeverity.URGENT }
+    ? {
+        ...visibleOpenSignalWhere,
+        OR: [
+          { severity: SignalSeverity.URGENT },
+          { assignedTo: { is: { role: { in: [UserRole.PASTOR, UserRole.ADMIN] } } } },
+        ],
+      }
     : visibleOpenSignalWhere;
 
   const [openSignals, visibleMembers] = await Promise.all([
     prisma.careSignal.findMany({
       where: pastorSignalWhere,
-      include: { person: true, group: { include: { leader: true } } },
+      include: { person: true, assignedTo: true, group: { include: { leader: true } } },
       orderBy: { detectedAt: "desc" },
       take: 50,
     }),
@@ -86,7 +92,7 @@ export default async function PeoplePage() {
   const emptyAttentionMessage = isLeader
     ? "Nenhum membro da sua célula está em atenção agora."
     : isPastoralOverview
-      ? "Nenhum caso pastoral urgente agora. Use a busca para consultar uma pessoa específica."
+      ? "Nenhum caso pastoral urgente ou encaminhado agora. Use a busca para consultar uma pessoa específica."
       : "Nenhuma pessoa em atenção agora.";
 
   return (

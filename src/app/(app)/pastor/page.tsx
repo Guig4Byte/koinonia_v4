@@ -20,7 +20,7 @@ export default async function PastorPage() {
 
   const phrase = pastoralCasesCount > 0
     ? `${pastoralCasesCount} ${pastoralCasesCount === 1 ? "caso pastoral pede" : "casos pastorais pedem"} olhar mais próximo.`
-    : "Nenhum caso pastoral urgente agora.";
+    : "Nenhum caso pastoral urgente ou encaminhado agora.";
 
   return (
     <AppShell
@@ -56,7 +56,7 @@ export default async function PastorPage() {
           {
             label: "Casos pastorais",
             value: String(pastoralCasesCount),
-            detail: "Somente graves no padrão atual; a atenção comum fica no cuidado local.",
+            detail: "Graves ou encaminhados; a atenção comum fica no cuidado local.",
             tone: pastoralCasesCount > 0 ? "risk" : "ok",
           },
         ]}
@@ -78,7 +78,7 @@ export default async function PastorPage() {
         ))}
         {pastoralCasesCount === 0 ? (
           <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm leading-relaxed text-[var(--color-text-secondary)]">
-            Nada grave chegou para o pastor agora. Para consultar alguém específico, use a busca pelo nome.
+            Nada grave ou encaminhado chegou para o pastor agora. Para consultar alguém específico, use a busca pelo nome.
           </p>
         ) : null}
       </div>

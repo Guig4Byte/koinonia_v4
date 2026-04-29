@@ -11,8 +11,10 @@ function initials(name: string) {
 export default async function SupervisorPage() {
   const user = await getCurrentUser();
   const dashboard = await getSupervisorDashboard(user);
+  const firstSupportRequest = dashboard.supportRequests[0];
   const firstSignal = dashboard.attentionPeople[0];
   const hasRecentPresence = dashboard.recordedEventsCount > 0;
+  const pendingLocalAttention = Math.max(dashboard.attentionPeople.length - dashboard.supportRequests.length, 0);
 
   return (
     <AppShell
@@ -26,9 +28,9 @@ export default async function SupervisorPage() {
     >
       <SearchBox placeholder="Buscar pessoa..." />
       <PulseCard
-        title={firstSignal ? `${firstSignal.person.fullName} merece atenção.` : "Suas células estão estáveis agora."}
-        subtitle={firstSignal ? `${firstSignal.group.name}: ${firstSignal.reason}` : "Continue acompanhando presença e apoiando os líderes quando algo aparecer."}
-        tone={firstSignal ? "attention" : "ok"}
+        title={firstSupportRequest ? `${firstSupportRequest.person.fullName} pediu apoio da supervisão.` : firstSignal ? `${firstSignal.person.fullName} merece atenção.` : "Suas células estão estáveis agora."}
+        subtitle={firstSupportRequest ? `${firstSupportRequest.group.name}: ${firstSupportRequest.reason}` : firstSignal ? `${firstSignal.group.name}: ${firstSignal.reason}` : "Continue acompanhando presença e apoiando os líderes quando algo aparecer."}
+        tone={firstSupportRequest || firstSignal ? "attention" : "ok"}
       />
 
       <ContextSummary
@@ -41,13 +43,32 @@ export default async function SupervisorPage() {
             tone: !hasRecentPresence ? "neutral" : dashboard.presenceRate < 65 ? "risk" : dashboard.presenceRate < 75 ? "warn" : "ok",
           },
           {
-            label: "Pessoas em atenção",
-            value: String(dashboard.attentionPeople.length),
-            detail: "Casos onde o líder pode precisar de apoio.",
-            tone: dashboard.attentionPeople.length > 0 ? "warn" : "ok",
+            label: "Pedidos de apoio",
+            value: String(dashboard.supportRequests.length),
+            detail: "Casos que líderes trouxeram para você.",
+            tone: dashboard.supportRequests.length > 0 ? "warn" : "ok",
           },
         ]}
       />
+
+      <SectionTitle>Pedidos de apoio</SectionTitle>
+      <div className="space-y-3">
+        {dashboard.supportRequests.slice(0, 4).map((signal) => (
+          <PersonSignalCard
+            key={signal.id}
+            initials={initials(signal.person.fullName)}
+            name={signal.person.fullName}
+            detailHref={`/pessoas/${signal.person.id}`}
+            context={signal.group.name}
+            reason={signal.reason}
+            severity={signal.severity === "URGENT" ? "risk" : "warn"}
+            ctaLabel="Abrir apoio"
+          />
+        ))}
+        {dashboard.supportRequests.length === 0 ? (
+          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhum líder pediu apoio agora.</p>
+        ) : null}
+      </div>
 
       <SectionTitle>Pessoas para acompanhar</SectionTitle>
       <div className="space-y-3">
@@ -60,6 +81,7 @@ export default async function SupervisorPage() {
             context={signal.group.name}
             reason={signal.reason}
             severity={signal.severity === "URGENT" ? "risk" : "warn"}
+            ctaLabel={signal.assignedToId === user.id ? "Abrir apoio" : "Abrir cuidado"}
           />
         ))}
         {dashboard.attentionPeople.length === 0 ? (
@@ -73,7 +95,7 @@ export default async function SupervisorPage() {
           <GroupCard
             key={group.id}
             name={group.name}
-            subtitle={`${group.leader?.name ?? "Sem líder"} · ${group.memberships.length} pessoas`}
+            subtitle={`${group.leader?.name ?? "Sem líder"} · ${group.memberships.length} pessoas${group.supportRequestsCount > 0 ? ` · ${group.supportRequestsCount} pedido(s) de apoio` : ""}`}
             presenceRate={group.presenceRate}
             attentionCount={group.attentionCount}
             href={`/celulas/${group.id}`}

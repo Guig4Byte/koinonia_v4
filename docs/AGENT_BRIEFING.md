@@ -179,8 +179,8 @@ Antes de implementar qualquer mudança, verifique:
 Com check-in, eventos, atenção por pessoa, detalhe de célula e leitura de membros do líder estabilizados, os próximos passos naturais são:
 
 1. revalidar visualmente os fluxos principais em mobile;
-2. ajustar a visibilidade por perfil para que o pastor veja saúde geral e somente casos graves/escalados por padrão;
-3. introduzir escalonamento simples sem virar task manager;
+2. revalidar a visão do pastor com saúde geral, casos urgentes e casos encaminhados;
+3. refinar o escalonamento simples já implementado via `CareSignal.assignedToId`, sem virar task manager;
 4. autenticação real;
 5. remoção do seletor demo da interface pública;
 6. só depois considerar novas capacidades.

@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AttendanceStatus, CareKind, PersonStatus, SignalSeverity } from "../../../../generated/prisma/client";
+import { AttendanceStatus, CareKind, PersonStatus, SignalSeverity, UserRole } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { CareActions } from "@/components/care-actions";
 import { SectionTitle } from "@/components/cards";
+import { SignalSupportActions } from "@/components/signal-support-actions";
 import { Badge } from "@/components/ui/badge";
 import { canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
+import { escalationStatusLabel } from "@/features/signals/escalation";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -82,7 +84,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const [signals, attendances, careTouches] = await Promise.all([
     prisma.careSignal.findMany({
       where: { ...visibleOpenSignalWhere, personId: person.id },
-      include: { group: { include: { leader: true, supervisor: true } } },
+      include: { assignedTo: true, group: { include: { leader: true, supervisor: true } } },
       orderBy: [{ severity: "desc" }, { detectedAt: "desc" }],
     }),
     prisma.attendance.findMany({
@@ -151,20 +153,43 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
 
       <SectionTitle>{openSignalsCount > 0 ? "Por que merece atenção" : "Situação atual"}</SectionTitle>
       <div className="space-y-3">
-        {signals.map((signal) => (
-          <article key={signal.id} className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="font-semibold text-[var(--color-text-primary)]">{signal.reason}</p>
-                <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
-                  {signal.group?.name ?? primaryGroup?.name ?? "Sem célula"} · {formatShortDate(signal.detectedAt)}, {formatTime(signal.detectedAt)}
-                </p>
+        {signals.map((signal) => {
+          const escalationLabel = escalationStatusLabel(signal);
+          const isAssignedToPastor = signal.assignedTo?.role === UserRole.PASTOR || signal.assignedTo?.role === UserRole.ADMIN;
+          const isAssignedToSupervisor = signal.assignedTo?.role === UserRole.SUPERVISOR;
+          const canRequestSupervisor = user.role === UserRole.LEADER
+            && signal.group?.leaderUserId === user.id
+            && !isAssignedToSupervisor
+            && !isAssignedToPastor;
+          const canEscalatePastor = user.role === UserRole.SUPERVISOR
+            && signal.group?.supervisorUserId === user.id
+            && !isAssignedToPastor;
+
+          return (
+            <article key={signal.id} className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-semibold text-[var(--color-text-primary)]">{signal.reason}</p>
+                  <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
+                    {signal.group?.name ?? primaryGroup?.name ?? "Sem célula"} · {formatShortDate(signal.detectedAt)}, {formatTime(signal.detectedAt)}
+                  </p>
+                </div>
+                <div className="flex shrink-0 flex-col items-end gap-1.5">
+                  <Badge tone={signalTone(signal.severity)}>{signal.severity === "URGENT" ? "Urgente" : "Atenção"}</Badge>
+                  {escalationLabel ? <Badge tone="care">{escalationLabel}</Badge> : null}
+                </div>
               </div>
-              <Badge tone={signalTone(signal.severity)}>{signal.severity === "URGENT" ? "Urgente" : "Atenção"}</Badge>
-            </div>
-            {signal.evidence ? <p className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">{signal.evidence}</p> : null}
-          </article>
-        ))}
+              {signal.evidence ? <p className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">{signal.evidence}</p> : null}
+              <SignalSupportActions
+                signalId={signal.id}
+                assignedToName={signal.assignedTo?.name}
+                assignedToRole={signal.assignedTo?.role}
+                canRequestSupervisor={canRequestSupervisor}
+                canEscalatePastor={canEscalatePastor}
+              />
+            </article>
+          );
+        })}
 
         {openSignalsCount === 0 ? (
           <article className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">

@@ -17,6 +17,13 @@ function summarizePresence(events: Array<{ attendances: Array<{ status: Attendan
   };
 }
 
+const pastoralSignalWhere = {
+  OR: [
+    { severity: SignalSeverity.URGENT },
+    { assignedTo: { is: { role: { in: [UserRole.PASTOR, UserRole.ADMIN] } } } },
+  ],
+};
+
 export async function getPastorDashboard(churchId: string) {
   const now = new Date();
   const weekStart = startOfWeek(now, { weekStartsOn: 1 });
@@ -29,14 +36,19 @@ export async function getPastorDashboard(churchId: string) {
       orderBy: { startsAt: "asc" },
     }),
     prisma.careSignal.findMany({
-      where: { churchId, status: SignalStatus.OPEN, severity: SignalSeverity.URGENT },
-      include: { person: true, group: { include: { leader: true, supervisor: true } } },
+      where: { churchId, status: SignalStatus.OPEN, ...pastoralSignalWhere },
+      include: { person: true, assignedTo: true, group: { include: { leader: true, supervisor: true } } },
       orderBy: [{ detectedAt: "desc" }],
       take: 50,
     }),
     prisma.smallGroup.findMany({
       where: { churchId, isActive: true },
-      include: { leader: true, supervisor: true, signals: { where: { status: SignalStatus.OPEN } }, events: { orderBy: { startsAt: "desc" }, take: 4, include: { attendances: true } } },
+      include: {
+        leader: true,
+        supervisor: true,
+        signals: { where: { status: SignalStatus.OPEN }, include: { assignedTo: true } },
+        events: { orderBy: { startsAt: "desc" }, take: 4, include: { attendances: true } },
+      },
       orderBy: { name: "asc" },
     }),
   ]);
@@ -79,7 +91,7 @@ async function getGroupScopedDashboard(user: PermissionUser) {
       leader: true,
       supervisor: true,
       memberships: { where: { leftAt: null, role: { not: MembershipRole.VISITOR } }, include: { person: true } },
-      signals: { where: { status: SignalStatus.OPEN }, include: { person: true } },
+      signals: { where: { status: SignalStatus.OPEN }, include: { person: true, assignedTo: true } },
       events: { orderBy: { startsAt: "desc" }, take: 4, include: { attendances: true } },
     },
     orderBy: { name: "asc" },
@@ -89,6 +101,8 @@ async function getGroupScopedDashboard(user: PermissionUser) {
   const recordedEvents = events.filter((event) => event.status === "COMPLETED" || event.attendances.length > 0);
   const signals = groups.flatMap((group) => group.signals.map((signal) => ({ ...signal, group })));
   const attentionPeople = getPrimarySignalsByPerson(signals);
+  const supportRequests = signals.filter((signal) => signal.assignedToId === user.id);
+  const delegatedToPastor = signals.filter((signal) => signal.assignedTo?.role === UserRole.PASTOR || signal.assignedTo?.role === UserRole.ADMIN);
   const presence = summarizePresence(recordedEvents);
   const groupsWithPresence = groups.map((group) => {
     const recordedGroupEvents = group.events.filter((event) => event.status === "COMPLETED" || event.attendances.length > 0);
@@ -98,6 +112,7 @@ async function getGroupScopedDashboard(user: PermissionUser) {
       presenceRate: summarizePresence(recordedGroupEvents).presenceRate,
       recordedEventsCount: recordedGroupEvents.length,
       attentionCount: getPrimarySignalsByPerson(group.signals).length,
+      supportRequestsCount: group.signals.filter((signal) => signal.assignedToId === user.id).length,
     };
   });
 
@@ -106,6 +121,8 @@ async function getGroupScopedDashboard(user: PermissionUser) {
     events,
     signals,
     attentionPeople,
+    supportRequests,
+    delegatedToPastor,
     presenceRate: presence.presenceRate,
     recordedEventsCount: recordedEvents.length,
     visitors: presence.visitors,

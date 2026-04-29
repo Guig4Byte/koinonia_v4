@@ -147,8 +147,8 @@ docs                 Briefing, produto e arquitetura
 ## Próximos passos recomendados
 
 1. Revalidar os fluxos principais em mobile.
-2. Ajustar a visibilidade por perfil para o pastor ver saúde geral e somente casos graves/escalados por padrão.
-3. Introduzir escalonamento simples sem virar task manager.
+2. Revalidar a visão do pastor: saúde geral, casos urgentes e casos encaminhados.
+3. Refinar o escalonamento simples já implementado via `CareSignal.assignedToId`, sem virar task manager.
 4. Implementar autenticação real substituindo o seletor demo.
 5. Só depois considerar novas capacidades.
 

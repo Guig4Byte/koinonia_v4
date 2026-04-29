@@ -128,7 +128,7 @@ async function main() {
       churchId: church.id,
       personId: joao.id,
       groupId: group.id,
-      assignedToId: leader.id,
+      assignedToId: supervisor.id,
       source: "MANUAL",
       severity: "ATTENTION",
       reason: "Está desempregado e ainda não teve retorno esta semana.",
