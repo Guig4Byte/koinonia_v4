@@ -1,14 +1,17 @@
 import { AppShell } from "@/components/app-shell";
-import { ContextSummary, GroupCard, ListMoreHint, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
+import { ContextSummary, GroupCard, ListMoreHint, PastoralListSection, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
+import { Badge } from "@/components/ui/badge";
 import { getPastorDashboard } from "@/features/dashboard/queries";
 import { canUsePastorDashboard } from "@/features/permissions/permissions";
-import { signalBadgeForViewer } from "@/features/signals/display";
+import { signalBadgeForViewer, signalReasonForViewer } from "@/features/signals/display";
+import { isUrgentOrPastoralCase } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { initials } from "@/lib/text";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
-const PASTORAL_CASES_LIMIT = 5;
+const SECTION_LIMIT = 4;
 const GROUPS_TO_REVIEW_LIMIT = 4;
 
 export default async function PastorPage() {
@@ -22,8 +25,9 @@ export default async function PastorPage() {
   const pendingGroups = dashboard.pendingGroupsCount;
   const hasWeekPresence = dashboard.completedEvents > 0;
   const pastoralCasesCount = dashboard.attentionPeople.length;
-  const highlightedPastoralCases = dashboard.attentionPeople.slice(0, PASTORAL_CASES_LIMIT);
-  const hiddenPastoralCasesCount = Math.max(0, pastoralCasesCount - highlightedPastoralCases.length);
+  const activeAttentionPersonIds = new Set(dashboard.attentionPeople.map((signal) => signal.personId));
+  const urgentOrPastoralCases = dashboard.attentionPeople.filter(isUrgentOrPastoralCase);
+  const inCarePeople = dashboard.inCarePeople.filter((person) => !activeAttentionPersonIds.has(person.id));
   const groupsNeedingPastoralLook = dashboard.groups.filter((group) => (
     group.pastoralCasesCount > 0 || (group.recordedEventsCount > 0 && group.presenceRate < 70)
   ));
@@ -31,6 +35,39 @@ export default async function PastorPage() {
   const phrase = pastoralCasesCount > 0
     ? `${pastoralCasesCount} ${pastoralCasesCount === 1 ? "caso pastoral pede" : "casos pastorais pedem"} olhar mais próximo.`
     : "Nenhum caso pastoral urgente ou encaminhado agora.";
+
+  const renderSignalCards = (signals: typeof urgentOrPastoralCases) => signals.map((signal) => {
+    const badge = signalBadgeForViewer(signal, user);
+
+    return (
+      <PersonSignalCard
+        key={signal.id}
+        initials={initials(signal.person.fullName)}
+        name={signal.person.fullName}
+        detailHref={`/pessoas/${signal.person.id}`}
+        context={`${signal.group?.name ?? "Sem célula"} · ${signal.group?.leader?.name ?? "Sem líder"}`}
+        reason={signalReasonForViewer(signal.reason, user)}
+        severity={signal.severity === "URGENT" ? "risk" : "warn"}
+        badgeLabel={badge.label}
+        badgeTone={badge.tone}
+        ctaLabel="Abrir pessoa"
+      />
+    );
+  });
+
+  const renderInCareLinks = (people: typeof inCarePeople) => people.map((person) => (
+    <Link
+      key={person.id}
+      href={`/pessoas/${person.id}`}
+      className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]"
+    >
+      <span className="min-w-0">
+        <span className="block text-sm font-semibold text-[var(--color-text-primary)]">{person.fullName}</span>
+        <span className="mt-0.5 block text-xs text-[var(--color-text-secondary)]">{person.memberships[0]?.group.name ?? "Sem célula"}</span>
+      </span>
+      <Badge tone="care">Em cuidado</Badge>
+    </Link>
+  ));
 
   return (
     <AppShell
@@ -49,33 +86,23 @@ export default async function PastorPage() {
         tone={pastoralCasesCount > 0 ? "attention" : "ok"}
       />
 
-      <SectionTitle detail="Primeiro o que pede gesto pastoral; depois, a saúde geral.">Precisa de cuidado agora</SectionTitle>
-      <div className="space-y-3">
-        {highlightedPastoralCases.map((signal) => {
-          const badge = signalBadgeForViewer(signal, user);
+      <PastoralListSection
+        title="Irmãos que precisam de um olhar especial"
+        detail="Urgentes ou encaminhados ao pastor aparecem antes das métricas."
+        emptyMessage="Nada grave ou encaminhado chegou para o pastor agora."
+        hiddenChildren={renderSignalCards(urgentOrPastoralCases.slice(SECTION_LIMIT))}
+      >
+        {renderSignalCards(urgentOrPastoralCases.slice(0, SECTION_LIMIT))}
+      </PastoralListSection>
 
-          return (
-            <PersonSignalCard
-              key={signal.id}
-              initials={initials(signal.person.fullName)}
-              name={signal.person.fullName}
-              detailHref={`/pessoas/${signal.person.id}`}
-              context={`${signal.group?.name ?? "Sem célula"} · ${signal.group?.leader?.name ?? "Sem líder"}`}
-              reason={signal.reason}
-              severity={signal.severity === "URGENT" ? "risk" : "warn"}
-              badgeLabel={badge.label}
-              badgeTone={badge.tone}
-              ctaLabel="Abrir pessoa"
-            />
-          );
-        })}
-        <ListMoreHint hiddenCount={hiddenPastoralCasesCount} label="Use Pessoas ou a busca para consultar o restante sem transformar a visão em fila." />
-        {pastoralCasesCount === 0 ? (
-          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm leading-relaxed text-[var(--color-text-secondary)]">
-            Nada grave ou encaminhado chegou para o pastor agora. Para consultar alguém específico, use a busca pelo nome.
-          </p>
-        ) : null}
-      </div>
+      <PastoralListSection
+        title="Acolhidos em cuidado"
+        detail="Pessoas que já receberam cuidado e seguem no radar."
+        emptyMessage="Nenhuma pessoa em cuidado para destacar agora."
+        hiddenChildren={renderInCareLinks(inCarePeople.slice(SECTION_LIMIT))}
+      >
+        {renderInCareLinks(inCarePeople.slice(0, SECTION_LIMIT))}
+      </PastoralListSection>
 
       <SectionTitle>Saúde geral</SectionTitle>
       <ContextSummary

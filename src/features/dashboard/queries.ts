@@ -38,7 +38,7 @@ export async function getPastorDashboard(user: PermissionUser) {
   tomorrow.setHours(0, 0, 0, 0);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  const [events, openSignals, groups] = await Promise.all([
+  const [events, openSignals, groups, inCarePeople] = await Promise.all([
     prisma.event.findMany({
       where: {
         churchId,
@@ -71,6 +71,22 @@ export async function getPastorDashboard(user: PermissionUser) {
         events: { orderBy: { startsAt: "desc" }, take: 4, include: { attendances: true } },
       },
       orderBy: { name: "asc" },
+    }),
+    prisma.person.findMany({
+      where: {
+        churchId,
+        status: PersonStatus.COOLING_AWAY,
+        memberships: { some: { leftAt: null, group: { is: { churchId, isActive: true } } } },
+      },
+      include: {
+        memberships: {
+          where: { leftAt: null, group: { is: { churchId, isActive: true } } },
+          include: { group: true },
+          take: 1,
+        },
+      },
+      orderBy: { updatedAt: "desc" },
+      take: 30,
     }),
   ]);
 
@@ -107,6 +123,7 @@ export async function getPastorDashboard(user: PermissionUser) {
     openSignals,
     attentionPeople,
     urgentSignals,
+    inCarePeople,
     groups: groupsWithPresence,
   };
 }

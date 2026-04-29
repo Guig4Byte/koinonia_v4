@@ -1,15 +1,17 @@
 import { AppShell } from "@/components/app-shell";
-import { ContextSummary, GroupCard, ListMoreHint, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
+import { ContextSummary, GroupCard, PastoralListSection, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
+import { Badge } from "@/components/ui/badge";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { canUseSupervisorDashboard } from "@/features/permissions/permissions";
 import { groupAttentionLabel, signalBadgeForViewer, type SignalBadge } from "@/features/signals/display";
+import { isSupportRequest, isUrgentOrPastoralCase } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { initials } from "@/lib/text";
 
-const SUPPORT_REQUESTS_LIMIT = 4;
-const OTHER_ATTENTION_LIMIT = 4;
+const SECTION_LIMIT = 4;
 
 function supportRequestsText(count: number) {
   if (count === 0) return "";
@@ -27,12 +29,33 @@ export default async function SupervisorPage() {
   const firstSupportRequest = dashboard.supportRequests[0];
   const firstSignal = dashboard.attentionPeople[0];
   const hasRecentPresence = dashboard.recordedEventsCount > 0;
-  const supportRequestIds = new Set(dashboard.supportRequests.map((signal) => signal.id));
-  const otherAttentionPeople = dashboard.attentionPeople.filter((signal) => !supportRequestIds.has(signal.id));
-  const visibleSupportRequests = dashboard.supportRequests.slice(0, SUPPORT_REQUESTS_LIMIT);
-  const hiddenSupportRequestsCount = Math.max(0, dashboard.supportRequests.length - visibleSupportRequests.length);
-  const visibleOtherAttentionPeople = otherAttentionPeople.slice(0, OTHER_ATTENTION_LIMIT);
-  const hiddenOtherAttentionCount = Math.max(0, otherAttentionPeople.length - visibleOtherAttentionPeople.length);
+  const urgentSignals = dashboard.attentionPeople.filter(isUrgentOrPastoralCase);
+  const supportSignals = dashboard.attentionPeople.filter((signal) => isSupportRequest(signal, user));
+  const handledSignalIds = new Set([...urgentSignals, ...supportSignals].map((signal) => signal.id));
+  const attentionSignals = dashboard.attentionPeople.filter((signal) => !handledSignalIds.has(signal.id));
+  const activeAttentionPersonIds = new Set(dashboard.attentionPeople.map((signal) => signal.personId));
+  const inCarePeople = dashboard.groups
+    .flatMap((group) => group.memberships.map((membership) => ({ ...membership.person, groupName: group.name })))
+    .filter((person, index, people) => person.status === "COOLING_AWAY" && !activeAttentionPersonIds.has(person.id) && people.findIndex((item) => item.id === person.id) === index);
+
+  const renderSignalCards = (signals: typeof dashboard.attentionPeople, ctaLabel = "Abrir pessoa") => signals.map((signal) => {
+    const badge = signalBadgeForViewer(signal, user);
+
+    return (
+      <PersonSignalCard
+        key={signal.id}
+        initials={initials(signal.person.fullName)}
+        name={signal.person.fullName}
+        detailHref={`/pessoas/${signal.person.id}`}
+        context={signal.group.name}
+        reason={signal.reason}
+        severity={signal.severity === "URGENT" ? "risk" : "warn"}
+        badgeLabel={badge.label}
+        badgeTone={badge.tone}
+        ctaLabel={ctaLabel}
+      />
+    );
+  });
 
   return (
     <AppShell
@@ -69,58 +92,57 @@ export default async function SupervisorPage() {
         ]}
       />
 
-      <SectionTitle detail="Pedidos trazidos pelos líderes aparecem primeiro, para você apoiar sem virar operador da célula.">Pedidos de apoio</SectionTitle>
-      <div className="space-y-3">
-        {visibleSupportRequests.map((signal) => {
-          const badge = signalBadgeForViewer(signal, user);
+      <PastoralListSection
+        title="Irmãos que precisam de um olhar especial"
+        detail="Urgentes ou encaminhados ao pastor aparecem antes dos demais."
+        emptyMessage="Nenhum caso urgente ou encaminhado agora."
+        hiddenChildren={renderSignalCards(urgentSignals.slice(SECTION_LIMIT))}
+      >
+        {renderSignalCards(urgentSignals.slice(0, SECTION_LIMIT))}
+      </PastoralListSection>
 
-          return (
-            <PersonSignalCard
-              key={signal.id}
-              initials={initials(signal.person.fullName)}
-              name={signal.person.fullName}
-              detailHref={`/pessoas/${signal.person.id}`}
-              context={signal.group.name}
-              reason={signal.reason}
-              severity={signal.severity === "URGENT" ? "risk" : "warn"}
-              badgeLabel={badge.label}
-              badgeTone={badge.tone}
-              ctaLabel="Abrir apoio"
-            />
-          );
-        })}
-        <ListMoreHint hiddenCount={hiddenSupportRequestsCount} label="Use Pessoas ou a busca para abrir outro pedido sem percorrer uma lista longa." />
-        {dashboard.supportRequests.length === 0 ? (
-          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhum líder pediu apoio agora.</p>
-        ) : null}
-      </div>
+      <PastoralListSection
+        title="Pedidos de apoio"
+        detail="Pedidos trazidos pelos líderes aparecem primeiro, para você apoiar sem virar operador da célula."
+        emptyMessage="Nenhum líder pediu apoio agora."
+        hiddenChildren={renderSignalCards(supportSignals.slice(SECTION_LIMIT), "Abrir apoio")}
+      >
+        {renderSignalCards(supportSignals.slice(0, SECTION_LIMIT), "Abrir apoio")}
+      </PastoralListSection>
 
-      <SectionTitle>Outros casos para acompanhar</SectionTitle>
-      <div className="space-y-3">
-        {visibleOtherAttentionPeople.map((signal) => {
-          const badge = signalBadgeForViewer(signal, user);
+      <PastoralListSection
+        title="Acompanhar de perto"
+        detail="Atenções locais das células supervisionadas."
+        emptyMessage="Nenhum outro caso em atenção agora."
+        hiddenChildren={renderSignalCards(attentionSignals.slice(SECTION_LIMIT))}
+      >
+        {renderSignalCards(attentionSignals.slice(0, SECTION_LIMIT))}
+      </PastoralListSection>
 
-          return (
-            <PersonSignalCard
-              key={signal.id}
-              initials={initials(signal.person.fullName)}
-              name={signal.person.fullName}
-              detailHref={`/pessoas/${signal.person.id}`}
-              context={signal.group.name}
-              reason={signal.reason}
-              severity={signal.severity === "URGENT" ? "risk" : "warn"}
-              badgeLabel={badge.label}
-              badgeTone={badge.tone}
-              ctaLabel="Abrir pessoa"
-            />
-          );
-        })}
-        <ListMoreHint hiddenCount={hiddenOtherAttentionCount} label="Use a busca quando precisar consultar os demais casos." />
-        {otherAttentionPeople.length === 0 ? (
-          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhum outro caso em atenção agora.</p>
-        ) : null}
-      </div>
-
+      <PastoralListSection
+        title="Acolhidos em cuidado"
+        detail="Pessoas que já receberam cuidado e seguem no radar."
+        emptyMessage="Nenhuma pessoa em cuidado agora."
+        hiddenChildren={inCarePeople.slice(SECTION_LIMIT).map((person) => (
+          <Link key={person.id} href={`/pessoas/${person.id}`} className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]">
+            <span className="min-w-0">
+              <span className="block text-sm font-semibold text-[var(--color-text-primary)]">{person.fullName}</span>
+              <span className="mt-0.5 block text-xs text-[var(--color-text-secondary)]">{person.groupName}</span>
+            </span>
+            <Badge tone="care">Em cuidado</Badge>
+          </Link>
+        ))}
+      >
+        {inCarePeople.slice(0, SECTION_LIMIT).map((person) => (
+          <Link key={person.id} href={`/pessoas/${person.id}`} className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]">
+            <span className="min-w-0">
+              <span className="block text-sm font-semibold text-[var(--color-text-primary)]">{person.fullName}</span>
+              <span className="mt-0.5 block text-xs text-[var(--color-text-secondary)]">{person.groupName}</span>
+            </span>
+            <Badge tone="care">Em cuidado</Badge>
+          </Link>
+        ))}
+      </PastoralListSection>
       <SectionTitle>Suas células</SectionTitle>
       <div className="space-y-3">
         {dashboard.groups.map((group) => {

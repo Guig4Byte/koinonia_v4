@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { Children, type ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/cn";
 import type { SignalBadgeTone } from "@/features/signals/display";
@@ -93,6 +93,46 @@ export function ListMoreHint({ hiddenCount, label }: { hiddenCount: number; labe
     <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 text-sm leading-relaxed text-[var(--color-text-secondary)] shadow-card">
       Mais {hiddenCount} {hiddenCount === 1 ? "item" : "itens"}. {label}
     </p>
+  );
+}
+
+export function PastoralListSection({
+  title,
+  detail,
+  children,
+  hiddenChildren,
+  emptyMessage,
+  moreLabel = "Ver mais",
+}: {
+  title: ReactNode;
+  detail?: string;
+  children?: ReactNode;
+  hiddenChildren?: ReactNode;
+  emptyMessage?: string;
+  moreLabel?: string;
+}) {
+  const hasChildren = Children.count(children) > 0;
+  const hasHiddenChildren = Children.count(hiddenChildren) > 0;
+
+  return (
+    <section className="space-y-3">
+      <SectionTitle detail={detail}>{title}</SectionTitle>
+      {children}
+      {hasHiddenChildren ? (
+        <details className="group rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card">
+          <summary className="flex min-h-10 cursor-pointer list-none items-center justify-center rounded-xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)] transition active:scale-[0.98] [&::-webkit-details-marker]:hidden">
+            <span className="group-open:hidden">{moreLabel}</span>
+            <span className="hidden group-open:inline">Mostrar menos</span>
+          </summary>
+          <div className="mt-3 space-y-3">{hiddenChildren}</div>
+        </details>
+      ) : null}
+      {!hasChildren && emptyMessage ? (
+        <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">
+          {emptyMessage}
+        </p>
+      ) : null}
+    </section>
   );
 }
 

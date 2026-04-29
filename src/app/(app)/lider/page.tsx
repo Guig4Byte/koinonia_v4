@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/app-shell";
-import { ContextSummary, ListMoreHint, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
+import { ContextSummary, PastoralListSection, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
 import { CheckInList } from "@/components/check-in-list";
 import { SearchBox } from "@/components/search-box";
 import { Badge } from "@/components/ui/badge";
@@ -7,7 +7,9 @@ import { getLeaderDashboard } from "@/features/dashboard/queries";
 import { canUseLeaderDashboard } from "@/features/permissions/permissions";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
 import { signalBadgeForViewer, signalReasonForViewer } from "@/features/signals/display";
+import { isSupportRequest, isUrgentOrPastoralCase } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -55,8 +57,32 @@ export default async function LeaderPage() {
   const currentVisitors = currentEvent?.attendances
     .filter((attendance) => attendance.status === "VISITOR")
     .map((attendance) => ({ id: attendance.id, fullName: attendance.person.fullName })) ?? [];
-  const highlightedAttentionPeople = dashboard.attentionPeople.slice(0, 4);
-  const hiddenAttentionPeopleCount = Math.max(0, dashboard.attentionPeople.length - highlightedAttentionPeople.length);
+  const urgentSignals = dashboard.attentionPeople.filter(isUrgentOrPastoralCase);
+  const supportSignals = dashboard.attentionPeople.filter((signal) => isSupportRequest(signal, user));
+  const handledSignalIds = new Set([...urgentSignals, ...supportSignals].map((signal) => signal.id));
+  const attentionSignals = dashboard.attentionPeople.filter((signal) => !handledSignalIds.has(signal.id));
+  const activeAttentionPersonIds = new Set(dashboard.attentionPeople.map((signal) => signal.personId));
+  const inCarePeople = dashboard.groups
+    .flatMap((group) => group.memberships.map((membership) => ({ ...membership.person, groupName: group.name })))
+    .filter((person, index, people) => person.status === "COOLING_AWAY" && !activeAttentionPersonIds.has(person.id) && people.findIndex((item) => item.id === person.id) === index);
+
+  const renderSignalCards = (signals: typeof dashboard.attentionPeople) => signals.map((signal) => {
+    const badge = signalBadgeForViewer(signal, user);
+
+    return (
+      <PersonSignalCard
+        key={signal.id}
+        initials={initials(signal.person.fullName)}
+        name={signal.person.fullName}
+        detailHref={`/pessoas/${signal.person.id}`}
+        context={signalReasonForViewer(signal.reason, user)}
+        severity={signal.severity === "URGENT" ? "risk" : "warn"}
+        badgeLabel={badge.label}
+        badgeTone={badge.tone}
+        ctaLabel={isSupportRequest(signal, user) ? "Abrir apoio" : "Abrir pessoa"}
+      />
+    );
+  });
 
   return (
     <AppShell
@@ -93,29 +119,57 @@ export default async function LeaderPage() {
         ]}
       />
 
-      <SectionTitle detail="Antes de rolar o check-in, veja se alguém precisa de um gesto simples de cuidado.">Quem merece atenção</SectionTitle>
-      <div className="space-y-3">
-        {highlightedAttentionPeople.map((signal) => {
-          const badge = signalBadgeForViewer(signal, user);
+      <PastoralListSection
+        title="Irmãos que precisam de um olhar especial"
+        detail="Antes de rolar o check-in, veja se alguém precisa de um gesto simples de cuidado."
+        emptyMessage="Nenhuma pessoa urgente ou encaminhada agora."
+        hiddenChildren={renderSignalCards(urgentSignals.slice(4))}
+      >
+        {renderSignalCards(urgentSignals.slice(0, 4))}
+      </PastoralListSection>
 
-          return (
-            <PersonSignalCard
-              key={signal.id}
-              initials={initials(signal.person.fullName)}
-              name={signal.person.fullName}
-              detailHref={`/pessoas/${signal.person.id}`}
-              context={signalReasonForViewer(signal.reason, user)}
-              severity={signal.severity === "URGENT" ? "risk" : "warn"}
-              badgeLabel={badge.label}
-              badgeTone={badge.tone}
-            />
-          );
-        })}
-        <ListMoreHint hiddenCount={hiddenAttentionPeopleCount} label="Abra Membros ou busque pelo nome para ver os demais." />
-        {dashboard.attentionPeople.length === 0 ? (
-          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhuma pessoa em atenção agora.</p>
-        ) : null}
-      </div>
+      <PastoralListSection
+        title="Pedidos de apoio"
+        detail="Pedidos enviados à supervisão continuam visíveis para acompanhamento local."
+        emptyMessage="Nenhum pedido de apoio aberto agora."
+        hiddenChildren={renderSignalCards(supportSignals.slice(4))}
+      >
+        {renderSignalCards(supportSignals.slice(0, 4))}
+      </PastoralListSection>
+
+      <PastoralListSection
+        title="Acompanhar de perto"
+        detail="Atenções locais que merecem contato simples."
+        emptyMessage="Nenhum membro da sua célula está em atenção agora."
+        hiddenChildren={renderSignalCards(attentionSignals.slice(4))}
+      >
+        {renderSignalCards(attentionSignals.slice(0, 4))}
+      </PastoralListSection>
+
+      <PastoralListSection
+        title="Acolhidos em cuidado"
+        detail="Pessoas que já receberam cuidado e seguem no radar."
+        emptyMessage="Nenhuma pessoa em cuidado agora."
+        hiddenChildren={inCarePeople.slice(4).map((person) => (
+          <Link key={person.id} href={`/pessoas/${person.id}`} className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]">
+            <span className="min-w-0">
+              <span className="block text-sm font-semibold text-[var(--color-text-primary)]">{person.fullName}</span>
+              <span className="mt-0.5 block text-xs text-[var(--color-text-secondary)]">{person.groupName}</span>
+            </span>
+            <Badge tone="care">Em cuidado</Badge>
+          </Link>
+        ))}
+      >
+        {inCarePeople.slice(0, 4).map((person) => (
+          <Link key={person.id} href={`/pessoas/${person.id}`} className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]">
+            <span className="min-w-0">
+              <span className="block text-sm font-semibold text-[var(--color-text-primary)]">{person.fullName}</span>
+              <span className="mt-0.5 block text-xs text-[var(--color-text-secondary)]">{person.groupName}</span>
+            </span>
+            <Badge tone="care">Em cuidado</Badge>
+          </Link>
+        ))}
+      </PastoralListSection>
 
       <SectionTitle>Presença do encontro</SectionTitle>
       {currentEvent ? (
