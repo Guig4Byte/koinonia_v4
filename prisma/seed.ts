@@ -7,21 +7,21 @@ import {
   PersonStatus,
   SignalSeverity,
   SignalSource,
+  SignalStatus,
   UserRole,
 } from "../src/generated/prisma/client";
 import { prisma } from "../src/lib/prisma";
 
-function daysFromNow(days: number, hour = 20) {
+function daysFromNow(days: number, hour = 20): Date {
   const date = new Date();
   date.setDate(date.getDate() + days);
   date.setHours(hour, 0, 0, 0);
   return date;
 }
 
-
 let demoPhoneCounter = 0;
 
-function nextDemoPhone() {
+function nextDemoPhone(): string {
   demoPhoneCounter += 1;
   return `+558199${String(demoPhoneCounter).padStart(6, "0")}`;
 }
@@ -235,9 +235,9 @@ async function createGroupWithMembers({
         churchId,
         fullName,
         phone: `+55819${String(91000000 + Object.keys(memberNamesByGroup).indexOf(key) * 1000 + index).padStart(8, "0")}`,
-        status: index === 0 && ["esperanca", "semente", "caminho"].includes(key)
+        status: index === 0 && key === "esperanca"
           ? PersonStatus.COOLING_AWAY
-          : index === 1 && key === "esperanca"
+          : (index === 1 && key === "esperanca") || (index === 0 && ["semente", "caminho"].includes(key))
             ? PersonStatus.NEEDS_ATTENTION
             : PersonStatus.ACTIVE,
         shortNote: index === 0 && key === "esperanca" ? "Família pediu oração nas últimas semanas." : undefined,
@@ -443,15 +443,19 @@ async function main() {
     });
   }
 
-  await createSignal({
-    churchId,
-    group: esperanca,
-    personIndex: 0,
-    assignedToId: bruno.id,
-    severity: SignalSeverity.URGENT,
-    source: SignalSource.ATTENDANCE,
-    reason: "3 faltas seguidas. Pode estar se afastando.",
-    evidence: "Último pedido: oração pela saúde da família.",
+  await prisma.careSignal.create({
+    data: {
+      churchId,
+      personId: esperanca.members[0].id,
+      groupId: esperanca.id,
+      source: SignalSource.ATTENDANCE,
+      severity: SignalSeverity.ATTENTION,
+      status: SignalStatus.RESOLVED,
+      reason: "Ausência acompanhada pelo líder.",
+      evidence: "Contato realizado e família pediu oração nas últimas semanas.",
+      resolvedAt: daysFromNow(-2, 18),
+      lastEvidenceAt: daysFromNow(-7, 20),
+    },
   });
 
   await createSignal({
@@ -469,7 +473,7 @@ async function main() {
     churchId,
     group: agape,
     personIndex: 0,
-    assignedToId: carla.id,
+    assignedToId: null,
     severity: SignalSeverity.ATTENTION,
     source: SignalSource.NO_CONTACT,
     reason: "Sem contato recente depois de justificar ausência.",
@@ -502,7 +506,7 @@ async function main() {
     churchId,
     group: semente,
     personIndex: 0,
-    assignedToId: gabriel.id,
+    assignedToId: null,
     severity: SignalSeverity.URGENT,
     source: SignalSource.ATTENDANCE,
     reason: "Faltas consecutivas com histórico de esfriamento.",
@@ -520,22 +524,67 @@ async function main() {
     evidence: "Não é urgente automático, mas aparece ao pastor por encaminhamento explícito.",
   });
 
+  const inactiveGroup = await prisma.smallGroup.create({
+    data: {
+      churchId,
+      name: "Célula Arquivada",
+      kind: "CELL",
+      leaderUserId: bruno.id,
+      supervisorUserId: ana.id,
+      meetingDayOfWeek: 5,
+      meetingTime: "20:00",
+      locationName: "Endereço antigo",
+      isActive: false,
+    },
+  });
+
+  const inactivePerson = await prisma.person.create({
+    data: {
+      churchId,
+      fullName: "Membro de Célula Arquivada",
+      phone: nextDemoPhone(),
+      status: PersonStatus.NEEDS_ATTENTION,
+      shortNote: "Cenário de regressão: não deve aparecer em listas padrão por estar em grupo inativo.",
+    },
+  });
+
+  await prisma.groupMembership.create({
+    data: {
+      groupId: inactiveGroup.id,
+      personId: inactivePerson.id,
+      role: MembershipRole.MEMBER,
+    },
+  });
+
+  await prisma.careSignal.create({
+    data: {
+      churchId,
+      personId: inactivePerson.id,
+      groupId: inactiveGroup.id,
+      source: SignalSource.MANUAL,
+      severity: SignalSeverity.URGENT,
+      reason: "Sinal de regressão em célula inativa.",
+      evidence: "Não deve aparecer para pastor, supervisor ou líder nas superfícies padrão.",
+    },
+  });
+
   await prisma.careTouch.create({
     data: {
       churchId,
-      personId: esperanca.members[2].id,
+      personId: esperanca.members[0].id,
       groupId: esperanca.id,
       actorId: bruno.id,
       kind: CareKind.MARKED_CARED,
-      note: "Conversa rápida após a célula. Sem necessidade de manter em atenção.",
+      note: "Conversa rápida após a célula. Pessoa fica em cuidado, sem sinal aberto.",
       happenedAt: daysFromNow(-2, 18),
     },
   });
 
   console.log("Seed concluído.");
-  console.log("Estrutura demo: 1 pastor, 3 supervisores, 7 células e 12 membros por célula.");
+  console.log("Estrutura demo: 1 pastor, 3 supervisores, 7 células ativas, 1 célula inativa e 12 membros por célula ativa.");
   console.log("Perfis principais pelo seletor atual: pastor@koinonia.local / ana@koinonia.local / bruno@koinonia.local");
   console.log("Outros usuários demo: marcos@koinonia.local / helena@koinonia.local / carla@koinonia.local / diego@koinonia.local / fernanda@koinonia.local / gabriel@koinonia.local / juliana@koinonia.local / lucas@koinonia.local");
+  console.log("Cenários de regressão: urgente sem atribuição, apoio à supervisão, encaminhamento pastoral, sinal resolvido e célula inativa.");
   console.log("Senha: koinonia123");
 }
 
