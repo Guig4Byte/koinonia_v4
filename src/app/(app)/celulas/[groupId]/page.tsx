@@ -10,6 +10,7 @@ import { personEffectiveBadgeForViewer } from "@/features/people/status-display"
 import { canViewGroup } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson, isPastoralSignal } from "@/features/signals/attention";
 import { groupAttentionLabel, signalBadgeForViewer, signalReasonForViewer, type SignalBadge } from "@/features/signals/display";
+import { isSupportRequest } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -66,7 +67,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
   const pastoralAttentionPeople = getPastoralSignalsByPerson(group.signals);
   const localAttentionPeople = attentionPeople.filter((signal) => !isPastoralSignal(signal));
   const attentionSignalByPersonId = new Map(attentionPeople.map((signal) => [signal.personId, signal]));
-  const supportRequests = group.signals.filter((signal) => signal.assignedToId === user.id);
+  const supportRequests = attentionPeople.filter((signal) => isSupportRequest(signal, user));
   const urgentAttentionPeople = attentionPeople.filter((signal) => signal.severity === SignalSeverity.URGENT);
   const inCareCount = group.memberships.filter((membership) => membership.person.status === "COOLING_AWAY").length;
   const completedEvents = group.events.filter((event) => summarizeEventPresence(event).completed);
@@ -84,7 +85,11 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
     }
 
     if (!isPastorView && supportRequests.length > 0) {
-      return { tone: "support", label: groupAttentionLabel(supportRequests.length, "pedido de apoio", "pedidos de apoio") };
+      const supportLabel = user.role === UserRole.LEADER
+        ? groupAttentionLabel(supportRequests.length, "apoio solicitado", "apoios solicitados")
+        : groupAttentionLabel(supportRequests.length, "pedido de apoio", "pedidos de apoio");
+
+      return { tone: "support", label: supportLabel };
     }
 
     if (attentionPeople.length > 0) {
@@ -225,7 +230,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
                   severity={signal.severity === SignalSeverity.URGENT ? "risk" : signal.severity === SignalSeverity.ATTENTION ? "warn" : "info"}
                   badgeLabel={badge.label}
                   badgeTone={badge.tone}
-                  ctaLabel="Abrir pessoa"
+                  ctaLabel={isSupportRequest(signal, user) ? "Abrir apoio" : "Abrir pessoa"}
                 />
               );
             })}

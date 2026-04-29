@@ -1,5 +1,5 @@
 import { AttendanceStatus } from "../../generated/prisma/client";
-import { percent } from "@/lib/format";
+import { percent } from "../../lib/format";
 
 export type PresenceAttendance = {
   status: AttendanceStatus;
