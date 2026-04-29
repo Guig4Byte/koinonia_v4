@@ -1,7 +1,7 @@
 import { SignalSeverity, UserRole } from "../../generated/prisma/client";
 import { isAssignedToPastoralRole, isAssignedToSupervisor, type SignalAssigneeLike } from "./escalation";
 
-export type SignalBadgeTone = "neutral" | "ok" | "warn" | "risk" | "info" | "care";
+export type SignalBadgeTone = "neutral" | "ok" | "warn" | "risk" | "info" | "care" | "support";
 
 export type SignalDisplayLike = {
   severity: SignalSeverity;
@@ -27,10 +27,10 @@ export function signalBadgeForViewer(signal: SignalDisplayLike, viewer?: SignalD
     }
 
     if (viewer?.role === UserRole.LEADER) {
-      return { label: "Apoio solicitado", tone: "care" as const };
+      return { label: "Apoio solicitado", tone: "support" as const };
     }
 
-    return { label: "Pedido de apoio", tone: "care" as const };
+    return { label: "Pedido de apoio", tone: "support" as const };
   }
 
   if (isAssignedToPastoralRole(signal)) {

@@ -22,5 +22,7 @@ describe("care validation", () => {
     expect(resolvedAttentionMessage(0)).toBe("Nenhum motivo de atenção foi alterado.");
     expect(resolvedAttentionMessage(1)).toBe("1 motivo de atenção foi resolvido.");
     expect(resolvedAttentionMessage(2)).toBe("2 motivos de atenção foram resolvidos.");
+    expect(resolvedAttentionMessage(0, true)).toBe("Cuidado registrado. Pessoa ficou em cuidado.");
+    expect(resolvedAttentionMessage(1, true)).toBe("1 motivo de atenção foi resolvido. Pessoa ficou em cuidado.");
   });
 });

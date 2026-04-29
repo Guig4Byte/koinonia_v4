@@ -1,6 +1,6 @@
 import { cn } from "@/lib/cn";
 
-type BadgeTone = "neutral" | "ok" | "warn" | "risk" | "info" | "care";
+type BadgeTone = "neutral" | "ok" | "warn" | "risk" | "info" | "care" | "support";
 
 const tones: Record<BadgeTone, string> = {
   neutral: "border border-[var(--color-border-card)] bg-[var(--surface-alt)] text-[var(--color-text-secondary)]",
@@ -9,6 +9,7 @@ const tones: Record<BadgeTone, string> = {
   risk: "border border-[var(--color-badge-risco-border)] bg-[var(--color-badge-risco-bg)] text-[var(--color-badge-risco-text)]",
   info: "border border-[var(--color-border-card)] bg-[var(--info-soft)] text-[var(--color-brand)]",
   care: "border border-[var(--color-badge-cuidado-border)] bg-[var(--color-badge-cuidado-bg)] text-[var(--color-badge-cuidado-text)]",
+  support: "border border-[var(--color-badge-apoio-border)] bg-[var(--color-badge-apoio-bg)] text-[var(--color-badge-apoio-text)]",
 };
 
 export function Badge({ tone = "neutral", className, children }: { tone?: BadgeTone; className?: string; children: React.ReactNode }) {

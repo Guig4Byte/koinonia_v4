@@ -56,7 +56,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pe
     });
 
     let resolvedSignalsCount = 0;
-    let personStatusReset = false;
+    let personStatusChangedToCare = false;
 
     if (body.resolveOpenSignals) {
       const updateResult = await tx.careSignal.updateMany({
@@ -71,34 +71,32 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pe
 
       resolvedSignalsCount = updateResult.count;
 
-      if (resolvedSignalsCount > 0) {
-        const remainingOpenSignals = await tx.careSignal.count({
-          where: { churchId: user.churchId, personId, status: SignalStatus.OPEN },
+      const remainingOpenSignals = await tx.careSignal.count({
+        where: { churchId: user.churchId, personId, status: SignalStatus.OPEN },
+      });
+
+      if (remainingOpenSignals === 0) {
+        const personUpdate = await tx.person.updateMany({
+          where: {
+            id: personId,
+            churchId: user.churchId,
+            status: { in: [PersonStatus.ACTIVE, PersonStatus.NEW, PersonStatus.NEEDS_ATTENTION, PersonStatus.COOLING_AWAY] },
+          },
+          data: { status: PersonStatus.COOLING_AWAY },
         });
 
-        if (remainingOpenSignals === 0) {
-          const personUpdate = await tx.person.updateMany({
-            where: {
-              id: personId,
-              churchId: user.churchId,
-              status: { in: [PersonStatus.NEEDS_ATTENTION, PersonStatus.COOLING_AWAY] },
-            },
-            data: { status: PersonStatus.ACTIVE },
-          });
-
-          personStatusReset = personUpdate.count > 0;
-        }
+        personStatusChangedToCare = personUpdate.count > 0;
       }
     }
 
-    return { careTouchId: careTouch.id, resolvedSignalsCount, personStatusReset };
+    return { careTouchId: careTouch.id, resolvedSignalsCount, personStatusChangedToCare };
   });
 
   return NextResponse.json({
     ok: true,
     careTouchId: result.careTouchId,
     resolvedSignalsCount: result.resolvedSignalsCount,
-    personStatusReset: result.personStatusReset,
-    message: resolvedAttentionMessage(result.resolvedSignalsCount),
+    personStatusChangedToCare: result.personStatusChangedToCare,
+    message: resolvedAttentionMessage(result.resolvedSignalsCount, result.personStatusChangedToCare),
   });
 }

@@ -17,7 +17,7 @@ const personStatusLabels: Record<PersonStatus, string> = {
   VISITOR: "Visitante",
   NEW: "Novo",
   NEEDS_ATTENTION: "Em atenção",
-  COOLING_AWAY: "Esfriando",
+  COOLING_AWAY: "Em cuidado",
   INACTIVE: "Inativo",
 };
 
@@ -35,8 +35,9 @@ function initials(name: string) {
   return name.split(" ").slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 }
 
-function statusTone(status: PersonStatus): "ok" | "warn" | "risk" | "info" {
+function statusTone(status: PersonStatus): "ok" | "warn" | "risk" | "info" | "care" {
   if (status === PersonStatus.ACTIVE) return "ok";
+  if (status === PersonStatus.COOLING_AWAY) return "care";
   if (status === PersonStatus.VISITOR || status === PersonStatus.NEW) return "info";
   return "warn";
 }
@@ -114,7 +115,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
     }
 
     if (!isPastorView && supportRequests.length > 0) {
-      return { tone: "care" as const, label: groupAttentionLabel(supportRequests.length, "pedido de apoio", "pedidos de apoio") };
+      return { tone: "support" as const, label: groupAttentionLabel(supportRequests.length, "pedido de apoio", "pedidos de apoio") };
     }
 
     if (urgentAttentionPeople.length > 0) {

@@ -48,6 +48,8 @@
   --info-soft: color-mix(in srgb, var(--color-brand-accent) 18%, var(--color-bg-card));
   --care: var(--color-badge-cuidado-text);
   --care-soft: var(--color-badge-cuidado-bg);
+  --support: var(--color-badge-apoio-text);
+  --support-soft: var(--color-badge-apoio-bg);
   --nav-bg: var(--color-bg-tab);
   --page-glow: color-mix(in srgb, var(--color-brand-accent) 14%, transparent);
   --action-primary-bg: var(--color-btn-primary-bg);
@@ -123,6 +125,9 @@ html[data-theme="light"] {
   --color-badge-cuidado-bg: #e6f0fb;
   --color-badge-cuidado-border: #7fb0e3;
   --color-badge-cuidado-text: #245f9a;
+  --color-badge-apoio-bg: #f1eafa;
+  --color-badge-apoio-border: #b99ee5;
+  --color-badge-apoio-text: #61429b;
   --color-badge-estavel-bg: #eaf3de;
   --color-badge-estavel-border: #97c459;
   --color-badge-estavel-text: #3b6d11;
@@ -198,6 +203,9 @@ html[data-theme="parchment"] {
   --color-badge-cuidado-bg: rgba(32, 94, 143, 0.16);
   --color-badge-cuidado-border: rgba(32, 94, 143, 0.36);
   --color-badge-cuidado-text: #184e78;
+  --color-badge-apoio-bg: rgba(91, 54, 143, 0.14);
+  --color-badge-apoio-border: rgba(91, 54, 143, 0.34);
+  --color-badge-apoio-text: #4f327c;
   --color-badge-estavel-bg: rgba(59, 109, 17, 0.15);
   --color-badge-estavel-border: rgba(59, 109, 17, 0.35);
   --color-badge-estavel-text: #2a4c0a;
@@ -271,6 +279,9 @@ html[data-theme="dark"] {
   --color-badge-cuidado-bg: #172b3c;
   --color-badge-cuidado-border: #31597a;
   --color-badge-cuidado-text: #8ec7f1;
+  --color-badge-apoio-bg: #2b2338;
+  --color-badge-apoio-border: #584275;
+  --color-badge-apoio-text: #c8b3f3;
   --color-badge-estavel-bg: #21321c;
   --color-badge-estavel-border: #39522d;
   --color-badge-estavel-text: #a9d889;

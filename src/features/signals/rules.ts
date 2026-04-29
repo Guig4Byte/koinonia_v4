@@ -24,7 +24,7 @@ async function markPersonActiveIfNoOpenSignals(churchId: string, personId: strin
   if (openSignalsCount > 0) return;
 
   await prisma.person.updateMany({
-    where: { id: personId, status: { in: [PersonStatus.NEEDS_ATTENTION, PersonStatus.COOLING_AWAY] } },
+    where: { id: personId, status: PersonStatus.NEEDS_ATTENTION },
     data: { status: PersonStatus.ACTIVE },
   });
 }

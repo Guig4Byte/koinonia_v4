@@ -9,7 +9,7 @@ const statusLabels: Record<PersonStatus, string> = {
   VISITOR: "Visitante",
   NEW: "Novo",
   NEEDS_ATTENTION: "Em atenção",
-  COOLING_AWAY: "Esfriando",
+  COOLING_AWAY: "Em cuidado",
   INACTIVE: "Inativo",
 };
 

@@ -114,7 +114,7 @@ export default async function SupervisorPage() {
           const supportText = supportRequestsText(group.supportRequestsCount);
           const urgentCount = group.signals.filter((signal) => signal.severity === "URGENT").length;
           const badge = group.supportRequestsCount > 0
-            ? { label: groupAttentionLabel(group.supportRequestsCount, "pedido de apoio", "pedidos de apoio"), tone: "care" as const }
+            ? { label: groupAttentionLabel(group.supportRequestsCount, "pedido de apoio", "pedidos de apoio"), tone: "support" as const }
             : urgentCount > 0
               ? { label: groupAttentionLabel(urgentCount, "urgente", "urgentes"), tone: "risk" as const }
               : group.attentionCount > 0

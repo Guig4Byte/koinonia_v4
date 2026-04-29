@@ -3,10 +3,11 @@ import { notFound } from "next/navigation";
 import { AttendanceStatus, CareKind, PersonStatus, UserRole } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { CareActions } from "@/components/care-actions";
+import { PersonStatusActions } from "@/components/person-status-actions";
 import { SectionTitle } from "@/components/cards";
 import { SignalSupportActions } from "@/components/signal-support-actions";
 import { Badge } from "@/components/ui/badge";
-import { canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
+import { canRegisterCare, canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
 import { shouldShowEscalationStatusForViewer } from "@/features/signals/escalation";
 import { signalBadgeForViewer } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -34,7 +35,7 @@ const personStatusLabels: Record<PersonStatus, string> = {
   VISITOR: "Visitante",
   NEW: "Novo",
   NEEDS_ATTENTION: "Em atenção",
-  COOLING_AWAY: "Esfriando",
+  COOLING_AWAY: "Em cuidado",
   INACTIVE: "Inativo",
 };
 
@@ -50,8 +51,9 @@ function attendanceTone(status?: AttendanceStatus | null): "ok" | "warn" | "risk
 }
 
 
-function statusTone(status: PersonStatus): "ok" | "warn" | "risk" | "info" {
+function statusTone(status: PersonStatus): "ok" | "warn" | "risk" | "info" | "care" {
   if (status === PersonStatus.ACTIVE) return "ok";
+  if (status === PersonStatus.COOLING_AWAY) return "care";
   if (status === PersonStatus.VISITOR || status === PersonStatus.NEW) return "info";
   return "warn";
 }
@@ -109,6 +111,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const openSignalsCount = signals.length;
   const hasCareTouch = careTouches.length > 0;
   const peopleLabel = user.role === "LEADER" ? "Membros" : "Pessoas";
+  const canMarkActive = person.status === PersonStatus.COOLING_AWAY && canRegisterCare(user, person);
 
   return (
     <AppShell
@@ -150,6 +153,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
         </div>
 
         <CareActions personId={person.id} phone={person.phone} />
+        {canMarkActive ? <PersonStatusActions personId={person.id} /> : null}
       </section>
 
       <SectionTitle>{openSignalsCount > 0 ? "Por que merece atenção" : "Situação atual"}</SectionTitle>
@@ -196,7 +200,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
             <p className="font-semibold text-[var(--color-text-primary)]">Sem motivo de atenção agora.</p>
             <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">
               {hasCareTouch
-                ? "O cuidado mais recente aparece abaixo, sem manter esta pessoa em atenção."
+                ? "O cuidado mais recente aparece abaixo. A pessoa continua no radar enquanto estiver em cuidado."
                 : "Esta pessoa pode ser consultada normalmente pela busca."}
             </p>
           </article>

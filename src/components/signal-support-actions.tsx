@@ -71,7 +71,7 @@ export function SignalSupportActions({
   return (
     <div className="mt-3 space-y-2 border-t border-[var(--color-border-divider)] pt-3">
       {label ? (
-        <p className="rounded-2xl border border-[var(--color-badge-cuidado-border)] bg-[var(--color-badge-cuidado-bg)] px-3 py-2 text-xs font-semibold leading-relaxed text-[var(--color-badge-cuidado-text)]">
+        <p className="rounded-2xl border border-[var(--color-badge-apoio-border)] bg-[var(--color-badge-apoio-bg)] px-3 py-2 text-xs font-semibold leading-relaxed text-[var(--color-badge-apoio-text)]">
           {label}
         </p>
       ) : null}
