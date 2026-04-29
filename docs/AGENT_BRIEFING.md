@@ -11,15 +11,15 @@ Este é o documento de entrada para qualquer IA/agente que vá alterar o projeto
 5. `docs/Perfil.txt` — sensação de uso mobile/pastoral.
 6. `docs/Koinonia.txt` — visão futura/legada, sem autoridade sobre o MVP atual.
 
-Quando os documentos parecerem conflitantes, preserve o MVP atual. Não use a visão futura para antecipar complexidade.
+Quando houver conflito, preserve o MVP atual. Não use a visão futura para antecipar complexidade.
 
 ## Ideia central
 
 > O Koinonia não registra cuidado por obrigação. Ele ajuda a não esquecer pessoas.
 
-O MVP é um radar pastoral mobile-first para células/grupos. Ele existe para ajudar liderança a perceber quem pode estar se afastando e facilitar um gesto simples de cuidado.
+O MVP é um radar pastoral mobile-first para células/grupos. Ele ajuda a liderança a perceber quem pode estar se afastando e facilitar um gesto simples de cuidado.
 
-A pergunta de corte é:
+Pergunta de corte:
 
 ```txt
 Isso ajuda alguém a cuidar melhor de uma pessoa com menos esforço?
@@ -27,19 +27,13 @@ Isso ajuda alguém a cuidar melhor de uma pessoa com menos esforço?
 
 Se a resposta for não, não entra agora.
 
-## Ciclo oficial do MVP
+## Ciclo oficial
 
 ```txt
 Evento -> Presença -> Atenção -> Contato -> Cuidado
 ```
 
-- `Evento`: encontro real da célula.
-- `Presença`: registro simples do encontro.
-- `Atenção`: pessoa trazida à consciência por um sinal.
-- `Contato`: ação humana: ligação, WhatsApp ou conversa.
-- `Cuidado`: registro mínimo de que alguém percebeu e agiu.
-
-A presença não é fiscalização. Sinal não é tarefa. Cuidado não é prontuário.
+Presença não é fiscalização. Sinal não é tarefa. Cuidado não é prontuário.
 
 ## Papéis
 
@@ -53,83 +47,81 @@ Pastor interpreta.
 | --- | --- | --- |
 | Líder | Registrar presença e resolver atenção local da própria célula. | Operador de outras células. |
 | Supervisor | Apoiar líderes, exceções, padrões e pedidos de apoio. | Substituto do líder no check-in. |
-| Pastor | Interpretar saúde geral, ver casos graves/escalados e buscar pessoas quando necessário. | Central de tickets ou fila de ausências. |
+| Pastor | Interpretar saúde geral, ver casos graves/encaminhados e buscar pessoas quando necessário. | Central de tickets ou fila de ausências. |
 
-## Regra de visibilidade pastoral
+## Superfície padrão
 
-```txt
-Líder resolve a atenção local.
-Supervisor apoia exceções e padrões.
-Pastor vê saúde geral, casos graves/escalados e busca qualquer pessoa quando precisar.
-```
+Listas iniciais são para decisão, não exploração. Mostre primeiro quem pede cuidado agora, com poucos itens e ação clara.
 
-Importante:
+Seções pastorais atuais:
 
-- Pastor não recebe toda atenção comum como fila inicial.
-- Pastor pode buscar qualquer pessoa dentro do seu escopo.
-- Pastor pode abrir uma célula e ver atenções locais contextualizadas.
-- Ver atenção local dentro de uma célula não transforma a visão inicial do pastor em fila operacional.
+1. `Irmãos que precisam de um olhar especial`: urgentes ou encaminhados ao cuidado pastoral.
+2. `Pedidos de apoio`: pedidos recebidos pela supervisão ou enviados pelo líder.
+3. `Acompanhar de perto`: atenção local comum.
+4. `Acolhidos em cuidado`: pessoas em `Em cuidado`.
 
-## Camadas de atenção
+Regra de lista:
 
-| Camada | Quem vê por padrão | Exemplo | Linguagem sugerida |
-| --- | --- | --- | --- |
-| Atenção local | Líder | ausência comum, retorno simples, visitante, contato cotidiano | `Em atenção`, `Atenção local` |
-| Apoio de supervisão | Líder + supervisor | líder pediu ajuda ou célula acumula casos | `Apoio solicitado`, `Pedido de apoio` |
-| Cuidado pastoral | Pastor, e contexto local quando fizer sentido | urgente, sensível, recorrente ou encaminhado | `Urgente`, `Caso pastoral`, `Encaminhado ao pastor` |
+- mostrar até 4 itens por seção;
+- usar `Ver mais` / `Mostrar menos` quando houver excedente;
+- não transformar a lista em diretório amplo;
+- busca continua sendo busca de pessoa.
 
-## Escalonamento atual
+## Escalonamento
 
-O MVP usa implementação mínima, sem entidade nova de task:
+O MVP usa `CareSignal.assignedToId`, sem entidade de tarefa.
 
-```txt
-CareSignal.assignedToId
-```
+- `assignedToId` para supervisor = pedido de apoio.
+- `assignedToId` para pastor/admin = encaminhamento pastoral.
+- `severity = URGENT` = caso pastoral por gravidade, mesmo sem atribuição ao pastor.
 
-Interpretação atual:
+Mensagens devem ser contextuais ao perfil que está vendo. Não use frases como `Ana recebeu...` ou `Roberto recebeu...`.
 
-- `assignedToId` apontando para supervisor: pedido de apoio da supervisão.
-- `assignedToId` apontando para pastor/admin: encaminhamento pastoral.
-- `severity = URGENT`: caso pastoral por gravidade, mesmo sem atribuição ao pastor.
+Exemplos corretos:
 
-Regra de mensagem:
-
-- Caso urgente atribuído ao supervisor aparece para o pastor por gravidade.
-- Nesse cenário, o pastor não deve ver a mensagem de apoio ao supervisor.
-- Pastor só vê mensagem de encaminhamento quando o sinal foi atribuído a pastor/admin.
+- líder: `Apoio solicitado à supervisão.`
+- supervisor: `Essa célula pediu apoio da supervisão.`
+- pastor/admin: `Encaminhado ao cuidado pastoral.`
+- líder/supervisor vendo encaminhamento pastoral: `Encaminhado ao pastor.`
 
 ## Status e badges
 
-Use `src/features/signals/display.ts` para sinais e `src/features/people/status-display.ts` para status de pessoa, em vez de reinventar rótulos.
+Use helpers centrais, não rótulos locais:
+
+- sinais: `src/features/signals/display.ts`;
+- status de pessoa: `src/features/people/status-display.ts`;
+- seções pastorais: `src/features/signals/sections.ts`.
+
+Status efetivo de pessoa deve priorizar o sinal aberto visível. Sem sinal primário, use o status persistido da pessoa.
 
 Rótulos de referência:
 
 - `Ativo`: verde.
 - `Em atenção`: âmbar.
-- `Atenção local`: âmbar, quando o pastor vê atenção comum dentro de contexto.
-- `Apoio solicitado`: líder vendo pedido já enviado ao supervisor, em tom roxo/lilás discreto.
-- `Pedido de apoio`: supervisor vendo pedido recebido, em tom roxo/lilás discreto.
+- `Atenção local`: âmbar, quando pastor vê atenção comum dentro de contexto.
+- `Apoio solicitado`: líder vendo pedido enviado à supervisão.
+- `Pedido de apoio`: supervisor vendo pedido recebido.
 - `Urgente`: vermelho.
 - `Caso pastoral`: pastor vendo caso encaminhado a pastor/admin.
+- `Encaminhado`: líder/supervisor vendo envio ao pastor.
 - `Em cuidado`: azul/care, para pessoa que recebeu cuidado e continua no radar.
 - `Cuidado realizado`: azul/care.
-
-Não misture `Urgente` com `Em atenção` para o mesmo sinal. Severidade urgente deve permanecer urgente.
 
 ## Regras que não devem quebrar
 
 - Check-in é operação do líder da célula.
 - Pastor/supervisor veem presença em resumo; não registram presença pelo líder.
+- Check-in futuro não pode ser salvo.
 - Pessoa sem marcação explícita fica `Pendente`, nunca falta presumida.
 - Atenção por ausência só nasce de encontro real, passado e com presença registrada.
 - Métrica sem dado deve aparecer como ausência de dado, não `0%` de risco.
 - Listas de atenção agregam por pessoa, não por sinal bruto.
-- Cards de lista devem ter CTA neutro, normalmente `Abrir pessoa`; ações diretas ficam no detalhe.
+- Cards de lista usam CTA neutro, normalmente `Abrir pessoa`; ações sensíveis ficam no detalhe.
 - `Já houve contato?` precisa confirmar antes de resolver atenção.
-- Se o cuidado resolver todos os sinais ativos, a pessoa fica `Em cuidado`; só volta para `Ativo` por ação explícita quando respondeu bem ao cuidado.
+- Se o cuidado resolver todos os sinais ativos, a pessoa fica `Em cuidado`; só volta para `Ativo` por ação explícita.
 - Recalcular presença não reabre motivo já cuidado sem nova evidência posterior.
 - `/pessoas` não é diretório completo para pastor/supervisor por padrão.
-- A busca atual é busca de pessoa; não prometa busca de evento/célula se a API não suportar.
+- Grupo inativo não deve liberar visibilidade, evento, check-in ou histórico padrão.
 
 ## Limites do MVP
 
@@ -150,23 +142,13 @@ Não implementar sem pedido explícito:
 - Permissões/escopo: `src/features/permissions/permissions.ts`.
 - Regras de sinais: `src/features/signals`.
 - Status visual de sinais: `src/features/signals/display.ts`.
+- Seções pastorais: `src/features/signals/sections.ts`.
+- Status de pessoa: `src/features/people/status-display.ts`.
 - Queries de dashboard: `src/features/dashboard/queries.ts`.
 - Validação de cuidado: `src/features/care/care-validation.ts`.
-- Componentes de cards/listas: `src/components`.
 - Rotas e APIs: `src/app`.
 
 Consulte `ARCHITECTURE.md` antes de criar regra nova.
-
-## Autenticação
-
-Ainda existe seletor demo de perfil. Ele é temporário.
-
-Quando autenticação real entrar:
-
-- preserve o contrato `getCurrentUser()`;
-- substitua cookie demo por sessão real com cookie HttpOnly;
-- mantenha validação de backend por papel/escopo;
-- não implemente OAuth, convites ou recuperação de senha antes de estabilizar o fluxo principal.
 
 ## Checklist antes de responder ou codar
 

@@ -20,12 +20,24 @@ A tela deve aliviar o peso pastoral, não gerar mais uma obrigação administrat
 
 A primeira tela deve responder em poucos segundos:
 
-- está tudo razoavelmente bem?
-- existe alguém que pede cuidado mais próximo?
+- quem precisa de um olhar especial agora?
+- há algum pedido de apoio?
+- quem precisa ser acompanhado de perto?
+- existe alguém já acolhido em cuidado?
 - alguma célula está sem presença ou com presença baixa?
-- preciso agir agora ou só acompanhar?
 
 Evite telas iniciais com muitos cards, gráficos, tabelas ou linguagem executiva.
+
+## Decisão antes de exploração
+
+Listas não devem obrigar o usuário a procurar prioridade. A tela deve apresentar a decisão em camadas curtas:
+
+1. `Irmãos que precisam de um olhar especial`.
+2. `Pedidos de apoio`.
+3. `Acompanhar de perto`.
+4. `Acolhidos em cuidado`.
+
+Cada seção deve mostrar poucos itens, normalmente até 4, e oferecer `Ver mais` quando necessário. A busca existe para consulta explícita, não para compensar uma lista mal organizada.
 
 ## Navegação mobile
 
@@ -65,6 +77,23 @@ Cada card deve mostrar:
 
 Ações mais sensíveis pertencem ao detalhe da pessoa.
 
+## Mensagens humanas
+
+Evite frases centradas no destinatário técnico do escalonamento, como:
+
+```txt
+Ana recebeu este pedido.
+Roberto recebeu este caso.
+```
+
+Prefira frases contextuais:
+
+```txt
+Apoio solicitado à supervisão.
+Essa célula pediu apoio da supervisão.
+Encaminhado ao cuidado pastoral.
+```
+
 ## O que evitar no mobile
 
 Evite:
@@ -75,6 +104,7 @@ Evite:
 - filtros avançados prematuros;
 - blocos repetidos de botões;
 - linguagem de cobrança;
+- listas longas e homogêneas;
 - “fila de tarefas” pastoral.
 
 ## Tom

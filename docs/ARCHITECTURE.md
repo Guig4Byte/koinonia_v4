@@ -57,12 +57,6 @@ docs
 | `CareSignal` | sinal que sustenta atenção |
 | `CareTouch` | contato/cuidado registrado |
 
-Leitura de domínio:
-
-```txt
-Event -> Attendance -> CareSignal -> CareTouch
-```
-
 ## Regras de arquitetura
 
 1. API handler não deve concentrar regra pastoral complexa.
@@ -104,10 +98,10 @@ Regras:
 - Pastor/Admin: escopo amplo para busca/leitura autorizada, mas listas padrão filtram relevância pastoral.
 - Supervisor: grupos supervisionados.
 - Líder: grupos liderados.
-- Check-in: somente líder da célula do evento.
+- Check-in: somente líder da célula do evento e nunca para evento futuro.
 - Contato/cuidado: somente quem tem escopo pastoral sobre a pessoa.
-
-Grupo inativo não deve liberar visibilidade, evento, check-in ou histórico.
+- Grupo inativo não deve liberar visibilidade, evento, check-in ou histórico padrão.
+- Sinais sem grupo podem continuar visíveis quando estiverem dentro do escopo institucional.
 
 ## Escopo técnico x superfície padrão
 
@@ -115,12 +109,6 @@ Não confunda:
 
 - **escopo técnico**: o que o usuário pode acessar quando consulta explicitamente;
 - **superfície padrão**: o que a tela mostra sem busca/contexto.
-
-Exemplo crítico:
-
-- Pastor pode buscar qualquer pessoa da igreja/campus.
-- Pastor não deve receber todos os sinais abertos como fila inicial.
-- Pastor pode abrir uma célula e ver atenções locais em seção separada.
 
 Para visão inicial do pastor, aplique relevância pastoral, não apenas `getVisibleOpenSignalWhere(user)`.
 
@@ -139,6 +127,8 @@ getPrimarySignalsByPerson()
 getPastoralSignalsByPerson()
 isPastoralSignal()
 signalBadgeForViewer()
+escalationStatusLabelForViewer()
+escalationStatusDetailForViewer()
 ```
 
 Regras:
@@ -148,6 +138,46 @@ Regras:
 - Listas de atenção agregam por pessoa, não por sinal bruto.
 - Sinal primário deve priorizar severidade e depois recência.
 - Backend de check-in deve retornar contagem de pessoas distintas em atenção.
+
+## Status efetivo de pessoa
+
+Fonte principal:
+
+```txt
+src/features/people/status-display.ts
+```
+
+Use `personEffectiveBadgeForViewer(person, primarySignal, viewer)` quando uma tela precisa exibir o status principal de uma pessoa.
+
+Regra:
+
+- se houver sinal primário visível, o badge vem do sinal;
+- se não houver sinal primário visível, o badge vem de `Person.status`;
+- busca, listas e perfil devem usar a mesma regra para evitar divergência visual.
+
+## Seções pastorais
+
+Fonte principal:
+
+```txt
+src/features/signals/sections.ts
+```
+
+As seções pastorais são derivação de sinais/status, não entidade nova.
+
+| Função | Uso |
+| --- | --- |
+| `isUrgentOrPastoralCase()` | classifica urgentes e encaminhados ao cuidado pastoral |
+| `isSupportRequest()` | classifica pedidos de apoio da supervisão |
+| `isInCarePerson()` | classifica pessoas em cuidado |
+
+Regras:
+
+- uma pessoa deve aparecer na seção mais específica possível;
+- urgência/caso pastoral vence pedido de apoio;
+- pedido de apoio vence atenção comum;
+- `Em cuidado` só aparece quando não houver sinal mais prioritário;
+- a UI limita a quantidade inicial, mas a query deve continuar respeitando escopo.
 
 ## Relevância pastoral atual
 
@@ -163,23 +193,18 @@ Um sinal atribuído ao supervisor não vira caso pastoral por atribuição. Se t
 
 ## Escalonamento técnico
 
-O escalonamento mínimo usa:
-
-```txt
-CareSignal.assignedToId
-```
-
-Interpretação:
+O escalonamento mínimo usa `CareSignal.assignedToId`.
 
 - supervisor: pedido de apoio;
 - pastor/admin: encaminhamento pastoral;
-- urgente: visibilidade pastoral por gravidade, independentemente de atribuição.
+- urgente: visibilidade pastoral por gravidade.
 
 Rotas/ações relacionadas devem preservar estas regras:
 
 - líder pode pedir apoio ao supervisor da célula;
 - supervisor pode encaminhar ao pastor/admin;
 - mensagens de escalonamento aparecem somente para perfis que devem recebê-las;
+- mensagens não devem depender do nome do destinatário;
 - escalonamento não cria task, SLA ou histórico complexo.
 
 ## Status visual de sinal
@@ -190,13 +215,13 @@ Fonte:
 src/features/signals/display.ts
 ```
 
-Use `signalBadgeForViewer(signal, viewer)` para sinais e `personStatusDisplay(status)` para status de pessoa, evitando rótulos incoerentes entre telas.
+Use `signalBadgeForViewer(signal, viewer)` para sinais. Não crie rótulos locais em componentes.
 
 Regras de consistência:
 
-- `URGENT` aparece como `Urgente`, salvo quando o contexto pastoral específico justificar `Caso pastoral` por encaminhamento.
-- pedido ao supervisor aparece como `Apoio solicitado` para líder e `Pedido de apoio` para supervisor;
-- pastor vendo caso comum atribuído ao supervisor deve ver `Atenção local`, não mensagem de apoio;
+- `URGENT` aparece como `Urgente`.
+- pedido ao supervisor aparece como `Apoio solicitado` para líder e `Pedido de apoio` para supervisor.
+- pastor vendo caso comum atribuído ao supervisor deve ver `Atenção local`, não mensagem de apoio.
 - sinal encaminhado a pastor/admin aparece como `Caso pastoral` para pastor e `Encaminhado` para outros perfis.
 
 ## Check-in
@@ -207,6 +232,7 @@ A rota de escrita deve validar:
 
 - evento pertence à igreja do usuário;
 - usuário é líder da célula do evento;
+- evento não é futuro;
 - cada membro ativo não visitante aparece exatamente uma vez no payload;
 - ninguém de fora da célula entra como membro;
 - status de membro aceita `PRESENT`, `ABSENT` ou `JUSTIFIED`;
@@ -221,7 +247,8 @@ Pastor, supervisor e admin não salvam check-in nesta fase.
 Ao recalcular presença:
 
 - criar/atualizar sinal ativo deve colocar `Person.status` em `NEEDS_ATTENTION`, preservando severidade no sinal;
-- se não houver nenhum sinal ativo restante após recalcular presença, voltar para `ACTIVE` apenas quando estava em `NEEDS_ATTENTION`; preservar `COOLING_AWAY` como `Em cuidado`;
+- se não houver nenhum sinal ativo restante após recalcular presença, voltar para `ACTIVE` apenas quando estava em `NEEDS_ATTENTION`;
+- preservar `COOLING_AWAY` como `Em cuidado`;
 - motivo já resolvido não deve reabrir sem nova evidência posterior ao cuidado.
 
 ## Contato e cuidado
@@ -232,15 +259,7 @@ Rota:
 /api/care/[personId]
 ```
 
-Deve:
-
-- validar payload com `src/features/care/care-validation.ts`;
-- aparar anotação vazia;
-- validar escopo com helpers de permissão;
-- associar o cuidado a uma célula visível quando aplicável;
-- resolver somente sinais ativos dentro do escopo do usuário;
-- mudar `Person.status` para `COOLING_AWAY` (`Em cuidado`) se o cuidado resolver todos os sinais ativos;
-- retornar `resolvedSignalsCount`, `personStatusChangedToCare` e mensagem curta.
+Deve validar payload, validar escopo, associar cuidado a uma célula visível quando aplicável, resolver somente sinais ativos dentro do escopo do usuário e mudar `Person.status` para `COOLING_AWAY` se o cuidado resolver todos os sinais ativos.
 
 `Já houve contato?` só chama a rota depois de confirmação explícita. Isso não cria acompanhamento formal.
 
@@ -270,63 +289,21 @@ Métricas de presença:
 
 ### `/celulas/[groupId]`
 
-Deve:
-
-- carregar célula por id;
-- validar `canViewGroup(user, group)`;
-- mostrar membros ativos não visitantes;
-- agregar sinais por pessoa;
-- calcular presença com encontros registrados;
-- separar, para pastor, casos pastorais e atenções locais;
-- apontar pessoas para `/pessoas/[personId]`.
-
-Não deve virar área administrativa de célula.
+Valida `canViewGroup(user, group)`, mostra membros ativos não visitantes, agrega sinais por pessoa, calcula presença com encontros registrados e separa casos pastorais de atenções locais quando o viewer é pastor.
 
 ### `/pessoas`
 
-Deve:
-
-- respeitar escopo do usuário;
-- para líder, permitir visão de membros da própria célula;
-- para supervisor, mostrar casos no escopo, priorizando pedidos e exceções;
-- para pastor, mostrar casos pastorais, não diretório completo;
-- depender de busca para consulta explícita fora da lista padrão.
+Respeita escopo do usuário. Para líder mostra membros da própria célula; para supervisor prioriza pedidos/exceções; para pastor mostra casos pastorais, não diretório completo. Deve organizar em seções pastorais, limitar a lista inicial e depender de busca para consulta explícita.
 
 ### `/pessoas/[personId]`
 
-Deve:
-
-- validar `canViewPerson(user, person)`;
-- respeitar escopo também para sinais, presenças, cuidados e vínculos exibidos;
-- usar `getVisibleCareTouchWhere(user, personId)` para cuidado recente;
-- manter leitura curta para ação, não timeline infinita.
+Valida `canViewPerson(user, person)`, usa status efetivo, respeita escopo para sinais/presenças/cuidados/vínculos e mantém leitura curta para ação.
 
 ### `/api/search`
 
-Deve:
-
-- respeitar `getVisiblePersonWhere(user)`;
-- retornar pessoas e contexto visível;
-- levar para `/pessoas/[personId]`;
-- não prometer busca de evento/célula enquanto não existir suporte.
-
-## Autenticação atual e futura
-
-Atual: cookie demo/seletor de perfil.
-
-Futuro:
-
-```ts
-getCurrentUser(): Promise<User>
-```
-
-A origem deve migrar para sessão real com cookie HttpOnly. Mesmo antes disso, backend já deve respeitar escopo.
-
-Não implementar OAuth, recuperação de senha ou convites antes do fluxo principal estar validado.
+Respeita `getVisiblePersonWhere(user)`, retorna pessoas e contexto visível, retorna status efetivo quando houver sinal primário visível e não promete busca de evento/célula.
 
 ## Design system
-
-A interface usa tokens CSS e temas.
 
 Prioridades:
 
@@ -336,38 +313,17 @@ Prioridades:
 4. consistência semântica de status;
 5. beleza.
 
-Regra:
-
-```txt
-O token orienta. A tela real decide.
-```
-
 Tons semânticos:
 
 - `ok`: ativo/presença positiva;
 - `warn`: atenção/pendência;
 - `risk`: urgente/caso pastoral;
-- `care`: apoio solicitado/cuidado realizado;
+- `care`: cuidado realizado/em cuidado;
+- `support`: apoio solicitado/pedido de apoio;
 - `info`: informativo.
 
 ## Seed demo
 
-A seed deve validar escopo e fluxo.
+A seed deve validar escopo e fluxo: pastor/supervisores/líderes, células ativas e inativas, eventos concluídos/pendentes/futuros, ausência de dado, visitantes, casos locais, pedidos de apoio, urgentes, resolvidos e encaminhados.
 
-Cenário esperado:
-
-- Roberto: pastor.
-- Ana, Marcos, Helena: supervisores.
-- 7 células ativas.
-- 12 membros ativos por célula.
-- 1 visitante demo por célula.
-- eventos concluídos, pendentes e abertos.
-- casos locais, pedidos de apoio, urgentes e encaminhados ao pastor.
-
-Ela deve permitir testar:
-
-- pastor vendo saúde geral;
-- pastor vendo urgentes e encaminhados;
-- pastor não recebendo atenção comum como fila;
-- supervisor vendo pedidos de apoio;
-- líder operando uma célula realista.
+Ela deve permitir testar pastor fora da fila comum, supervisor recebendo apoio, líder operando check-in, sem dado como `Sem registro` e recalcular presença sem reabrir motivo já cuidado sem nova evidência.

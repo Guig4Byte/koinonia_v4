@@ -18,69 +18,29 @@ Se não ajudar, simplifique.
 
 Centro operacional do Koinonia.
 
-Use:
+Use `Pessoa`, `Pessoas`, `Membros` quando o líder olha a própria célula, e `Quem precisa de cuidado`.
 
-- `Pessoa`;
-- `Pessoas`;
-- `Membros`, quando o líder olha a própria célula;
-- `Quem precisa de cuidado`.
-
-Evite: `lead`, `cliente`, `contato comercial`.
+Evite `lead`, `cliente` e `contato comercial`.
 
 ### Célula / grupo
 
-Comunidade local onde presença, vínculo e cuidado acontecem.
-
-Use `Célula` na UI. Use `grupo` apenas quando a abstração técnica pedir.
-
-Exemplos:
-
-- `Minha célula`;
-- `Células acompanhadas`;
-- `Saúde das células`.
+Comunidade local onde presença, vínculo e cuidado acontecem. Use `Célula` na UI. Use `grupo` apenas quando a abstração técnica pedir.
 
 ### Evento / encontro
 
-Encontro real que pode gerar presença.
-
-No MVP, normalmente é reunião de célula. Não transformar em calendário amplo antes da hora.
-
-Use:
-
-- `Evento`;
-- `Encontro`;
-- `Reunião da célula`.
+Encontro real que pode gerar presença. Use `Evento`, `Encontro` ou `Reunião da célula`. Não transformar em calendário amplo antes da hora.
 
 ### Presença
 
 Registro de quem esteve, faltou ou justificou.
 
-Presença não é fiscalização. É fonte de leitura pastoral.
+Use `Presença`, `Registrar presença`, `Presença da semana`, `Presença recente` e `Ver resumo`.
 
-Use:
-
-- `Presença`;
-- `Registrar presença`;
-- `Presença da semana`;
-- `Presença recente`;
-- `Ver resumo`.
-
-Evite: `controle de presença`, `fiscalização`.
+Evite `controle de presença` e `fiscalização`.
 
 ### Sinal
 
-Evidência que sustenta uma atenção.
-
-No código atual: `CareSignal`.
-
-Exemplos:
-
-- faltas consecutivas;
-- queda recente de presença;
-- retorno que merece acolhimento;
-- pessoa sem contato recente.
-
-Regra oficial:
+Evidência que sustenta uma atenção. No código: `CareSignal`.
 
 ```txt
 Sinal não é tarefa.
@@ -92,27 +52,9 @@ Sinal não é ticket, SLA, cobrança ou fila burocrática.
 
 Forma visível de apresentar um sinal para alguém agir.
 
-Use:
+Use `Em atenção`, `Pessoas em atenção`, `Atenção local`, `Quem merece atenção` e `Acompanhar de perto` como título de seção.
 
-- `Em atenção`;
-- `Pessoas em atenção`;
-- `Atenção local`;
-- `Quem merece atenção`.
-
-Evite: `alerta`, `incidente`, `pendência crítica`, salvo quando houver decisão explícita de severidade.
-
-### Atenção local
-
-Atenção cotidiana da célula, normalmente cuidada pelo líder.
-
-Exemplos:
-
-- ausência comum;
-- retorno simples;
-- visitante que precisa ser lembrado;
-- contato cotidiano.
-
-Para pastor, `Atenção local` pode aparecer dentro do detalhe de uma célula. Não deve aparecer como fila inicial ampla.
+Evite `alerta`, `incidente` e `pendência crítica`, salvo quando houver severidade real.
 
 ### Apoio de supervisão
 
@@ -123,22 +65,32 @@ Rótulos por contexto:
 - líder vendo o caso: `Apoio solicitado`;
 - supervisor vendo o caso: `Pedido de apoio`.
 
+Mensagens recomendadas:
+
+- líder: `Apoio solicitado à supervisão.`
+- supervisor: `Essa célula pediu apoio da supervisão.`
+
+Evite mensagens com nome do destinatário, como `Ana recebeu este pedido de apoio`.
+
 ### Cuidado pastoral / caso pastoral
 
-Caso que pede olhar pastoral mais próximo.
-
-Entra aqui quando for:
-
-- urgente;
-- sensível;
-- recorrente grave;
-- explicitamente encaminhado ao pastor/admin.
+Caso que pede olhar pastoral mais próximo: urgente, sensível, recorrente grave ou encaminhado ao pastor/admin.
 
 Rótulos possíveis:
 
 - `Urgente`;
 - `Caso pastoral`;
-- `Encaminhado ao pastor`.
+- `Encaminhado`;
+- `Encaminhado ao pastor`;
+- `Encaminhado ao cuidado pastoral`.
+
+Mensagens recomendadas:
+
+- pastor/admin: `Encaminhado ao cuidado pastoral.`
+- líder/supervisor: `Encaminhado ao pastor.`
+- urgente: `Caso que pede atenção imediata.`
+
+Evite mensagens com nome do destinatário, como `Roberto recebeu este caso`.
 
 ### Escalonamento
 
@@ -158,76 +110,51 @@ Líder -> Pastor
 
 Escalonamento não transfere toda responsabilidade, não cria SLA e não vira task manager.
 
-No MVP atual:
-
-- `CareSignal.assignedToId` para supervisor = pedido de apoio;
-- `CareSignal.assignedToId` para pastor/admin = encaminhamento pastoral;
-- `severity = URGENT` = pastor vê por gravidade.
-
 ### Contato
 
-Ação concreta de aproximação.
-
-Exemplos:
-
-- ligação;
-- WhatsApp;
-- conversa pessoal;
-- tentativa de contato.
-
-Use:
-
-- `Ligar`;
-- `WhatsApp`;
-- `Já houve contato?`;
-- `Sim, houve contato`;
-- `Ainda não consegui contato`.
+Ação concreta de aproximação. Use `Ligar`, `WhatsApp`, `Já houve contato?`, `Sim, houve contato` e `Ainda não consegui contato`.
 
 ### Cuidado
 
 Registro mínimo de que alguém percebeu e agiu.
 
-No MVP atual, cuidado não é prontuário pastoral completo.
+Use `Em cuidado`, `Acolhidos em cuidado`, `Cuidado realizado`, `Registrar cuidado`, `Anotar cuidado` e `Salvar sem anotação`.
 
-Use:
-
-- `Em cuidado`, quando a pessoa já recebeu contato e deve continuar no radar sem acompanhamento formal;
-- `Cuidado realizado`;
-- `Registrar cuidado`;
-- `Anotar cuidado`;
-- `Salvar sem anotação`.
-
-Evite: `task`, `workflow`, `chamado`, `SLA`.
-
-### Acompanhamento
-
-Fluxo futuro de continuidade para casos que exigirem mais do que um contato simples.
-
-No MVP atual, não usar acompanhamento como task manager, kanban, SLA ou fila complexa.
+Evite `task`, `workflow`, `chamado` e `SLA`.
 
 ### Visão
 
-Leitura curta e orientada à ação.
-
-Use `Visão` em vez de `Dashboard` na UI.
+Leitura curta e orientada à ação. Use `Visão` em vez de `Dashboard` na UI.
 
 ## Rótulos e tons oficiais
 
 | Rótulo | Quando usar | Tom |
 | --- | --- | --- |
 | `Ativo` | pessoa sem sinal ativo relevante | verde |
+| `Visitante` | pessoa visitante | informativo/neutro |
+| `Novo` | pessoa recém-adicionada | informativo/neutro |
 | `Em atenção` | atenção comum para líder/supervisor | âmbar |
 | `Atenção local` | pastor vendo atenção comum dentro de contexto | âmbar |
-| `Apoio solicitado` | líder vendo pedido enviado ao supervisor | roxo/lilás discreto |
+| `Apoio solicitado` | líder vendo pedido enviado à supervisão | roxo/lilás discreto |
 | `Pedido de apoio` | supervisor vendo pedido recebido | roxo/lilás discreto |
 | `Urgente` | severidade real `URGENT` | vermelho |
-| `Caso pastoral` | pastor vendo sinal encaminhado ao pastor/admin | vermelho |
+| `Caso pastoral` | pastor vendo sinal encaminhado a pastor/admin | vermelho |
 | `Encaminhado` | líder/supervisor vendo envio ao pastor | vermelho |
 | `Em cuidado` | pessoa que recebeu cuidado e deve continuar no radar | azul/care |
 | `Cuidado realizado` | contato/cuidado registrado | azul/care |
 | `Informativo` | sinal `INFO`, quando exibido | informativo/neutro |
+| `Sem registro` | ausência de dado de presença | neutro |
 
-Não rebaixar `Urgente` para `Em atenção` em outra tela. O contexto pode mudar a mensagem de escalonamento, mas a severidade continua sendo severidade.
+Não rebaixar `Urgente` para `Em atenção`. O contexto pode mudar a mensagem, mas a severidade continua sendo severidade.
+
+## Seções pastorais
+
+| Seção | Conteúdo |
+| --- | --- |
+| `Irmãos que precisam de um olhar especial` | urgentes e encaminhados ao cuidado pastoral |
+| `Pedidos de apoio` | pedidos de apoio da supervisão |
+| `Acompanhar de perto` | atenções locais comuns |
+| `Acolhidos em cuidado` | pessoas em `Em cuidado` |
 
 ## CTAs oficiais
 
@@ -235,11 +162,12 @@ Não rebaixar `Urgente` para `Em atenção` em outra tela. O contexto pode mudar
 | --- | --- |
 | Lista de pessoas/casos | `Abrir pessoa` |
 | Pedido recebido pelo supervisor | `Abrir apoio` |
+| Lista com muitos itens | `Ver mais`, `Mostrar menos` |
 | Detalhe da pessoa | `Ligar`, `WhatsApp`, `Já houve contato?` |
 | Célula | `Abrir célula` |
 | Evento | `Registrar presença` ou `Ver resumo` |
 
-Evite usar `Abrir cuidado` em lista, porque sugere um módulo formal de acompanhamento. O cuidado acontece no detalhe da pessoa.
+Evite `Abrir cuidado` em lista, porque sugere módulo formal de acompanhamento.
 
 ## Mapeamento técnico -> UI
 
@@ -250,4 +178,4 @@ Evite usar `Abrir cuidado` em lista, porque sugere um módulo formal de acompanh
 | `Event` | evento / encontro | não virar calendário amplo |
 | `Attendance` | presença | fonte pastoral, não fiscalização |
 | `assignedToId` | apoio/encaminhamento | escalonamento mínimo |
-| dashboard | visão | evitar linguagem executiva pesada |
+| `dashboard` | visão | evitar linguagem executiva pesada |
