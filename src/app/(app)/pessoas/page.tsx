@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { MembershipRole, PersonStatus, UserRole } from "../../../generated/prisma/client";
+import { MembershipRole, PersonStatus, SignalSeverity, UserRole } from "../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { PersonSignalCard, SectionTitle } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
 import { Badge } from "@/components/ui/badge";
 import { getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "@/features/permissions/permissions";
-import { getPrimarySignalsByPerson } from "@/features/signals/attention";
+import { getPastoralSignalsByPerson, getPrimarySignalsByPerson } from "@/features/signals/attention";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 
@@ -31,18 +31,28 @@ function statusTone(status: PersonStatus): "ok" | "warn" | "risk" | "info" {
 export default async function PeoplePage() {
   const user = await getCurrentUser();
   const isLeader = user.role === UserRole.LEADER;
+  const isPastoralOverview = user.role === UserRole.PASTOR || user.role === UserRole.ADMIN;
   const homeHref = isLeader ? "/lider" : user.role === UserRole.SUPERVISOR ? "/supervisor" : "/pastor";
   const peopleLabel = isLeader ? "Membros" : "Pessoas";
-  const searchPlaceholder = isLeader ? "Buscar membro..." : user.role === UserRole.SUPERVISOR ? "Buscar pessoa nas suas células..." : "Buscar pessoa...";
+  const searchPlaceholder = isLeader
+    ? "Buscar membro..."
+    : user.role === UserRole.SUPERVISOR
+      ? "Buscar pessoa nas suas células..."
+      : "Buscar qualquer pessoa...";
 
   const memberMembershipWhere = {
     ...getVisibleMembershipWhere(user),
     role: { not: MembershipRole.VISITOR },
   };
 
+  const visibleOpenSignalWhere = getVisibleOpenSignalWhere(user);
+  const pastorSignalWhere = isPastoralOverview
+    ? { ...visibleOpenSignalWhere, severity: SignalSeverity.URGENT }
+    : visibleOpenSignalWhere;
+
   const [openSignals, visibleMembers] = await Promise.all([
     prisma.careSignal.findMany({
-      where: getVisibleOpenSignalWhere(user),
+      where: pastorSignalWhere,
       include: { person: true, group: { include: { leader: true } } },
       orderBy: { detectedAt: "desc" },
       take: 50,
@@ -68,8 +78,16 @@ export default async function PeoplePage() {
       : Promise.resolve([]),
   ]);
 
-  const attentionPeople = getPrimarySignalsByPerson(openSignals);
+  const attentionPeople = isPastoralOverview
+    ? getPastoralSignalsByPerson(openSignals)
+    : getPrimarySignalsByPerson(openSignals);
   const attentionPersonIds = new Set(attentionPeople.map((signal) => signal.personId));
+  const attentionTitle = isLeader ? "Membros em atenção" : isPastoralOverview ? "Casos pastorais" : "Pessoas em atenção";
+  const emptyAttentionMessage = isLeader
+    ? "Nenhum membro da sua célula está em atenção agora."
+    : isPastoralOverview
+      ? "Nenhum caso pastoral urgente agora. Use a busca para consultar uma pessoa específica."
+      : "Nenhuma pessoa em atenção agora.";
 
   return (
     <AppShell
@@ -83,7 +101,7 @@ export default async function PeoplePage() {
     >
       <SearchBox placeholder={searchPlaceholder} />
 
-      <SectionTitle>{isLeader ? "Membros em atenção" : "Pessoas em atenção"}</SectionTitle>
+      <SectionTitle>{attentionTitle}</SectionTitle>
       <div className="space-y-3">
         {attentionPeople.map((signal) => (
           <PersonSignalCard
@@ -94,11 +112,12 @@ export default async function PeoplePage() {
             context={`${signal.group?.name ?? "Sem célula"} · ${signal.group?.leader?.name ?? "Sem líder"}`}
             reason={signal.reason}
             severity={signal.severity === "URGENT" ? "risk" : "warn"}
+            ctaLabel={isPastoralOverview ? "Abrir pessoa" : "Abrir cuidado"}
           />
         ))}
         {attentionPeople.length === 0 ? (
           <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">
-            {isLeader ? "Nenhum membro da sua célula está em atenção agora." : "Nenhuma pessoa em atenção agora."}
+            {emptyAttentionMessage}
           </p>
         ) : null}
       </div>
@@ -132,7 +151,9 @@ export default async function PeoplePage() {
         <>
           <SectionTitle>Consulta</SectionTitle>
           <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm leading-relaxed text-[var(--color-text-secondary)] shadow-card">
-            A lista acima mostra apenas quem merece atenção. Para consultar outra pessoa do seu escopo, use a busca pelo nome.
+            {isPastoralOverview
+              ? "Esta tela não lista toda atenção operacional. O pastor vê casos graves por padrão e pode buscar qualquer pessoa quando precisar."
+              : "A lista acima mostra apenas quem merece atenção. Para consultar outra pessoa do seu escopo, use a busca pelo nome."}
           </p>
         </>
       )}

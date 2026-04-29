@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { SignalSeverity } from "../../generated/prisma/client";
-import { getPrimarySignalsByPerson } from "./attention";
+import { getPastoralSignalsByPerson, getPrimarySignalsByPerson, isPastoralSignal } from "./attention";
 
 function signal(personId: string, severity: SignalSeverity, detectedAt: string) {
   return { personId, severity, detectedAt: new Date(detectedAt) };
@@ -27,5 +27,24 @@ describe("getPrimarySignalsByPerson", () => {
 
     expect(result).toHaveLength(1);
     expect(result[0].detectedAt.toISOString()).toBe("2026-04-26T10:00:00.000Z");
+  });
+});
+
+describe("pastoral signal helpers", () => {
+  it("treats only urgent signals as pastoral by default", () => {
+    expect(isPastoralSignal(signal("person-1", SignalSeverity.URGENT, "2026-04-24T10:00:00.000Z"))).toBe(true);
+    expect(isPastoralSignal(signal("person-1", SignalSeverity.ATTENTION, "2026-04-24T10:00:00.000Z"))).toBe(false);
+    expect(isPastoralSignal(signal("person-1", SignalSeverity.INFO, "2026-04-24T10:00:00.000Z"))).toBe(false);
+  });
+
+  it("keeps pastor defaults focused on severe cases, not local operational attention", () => {
+    const result = getPastoralSignalsByPerson([
+      signal("person-1", SignalSeverity.ATTENTION, "2026-04-25T10:00:00.000Z"),
+      signal("person-2", SignalSeverity.INFO, "2026-04-26T10:00:00.000Z"),
+      signal("person-3", SignalSeverity.URGENT, "2026-04-24T10:00:00.000Z"),
+    ]);
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchObject({ personId: "person-3", severity: SignalSeverity.URGENT });
   });
 });

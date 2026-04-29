@@ -13,10 +13,14 @@ export default async function PastorPage() {
   const dashboard = await getPastorDashboard(user.churchId);
   const pendingEvents = Math.max(dashboard.plannedEvents - dashboard.completedEvents, 0);
   const hasWeekPresence = dashboard.completedEvents > 0;
+  const pastoralCasesCount = dashboard.attentionPeople.length;
+  const groupsNeedingPastoralLook = dashboard.groups.filter((group) => (
+    group.attentionCount > 0 || (group.recordedEventsCount > 0 && group.presenceRate < 70)
+  ));
 
-  const phrase = dashboard.attentionPeople.length > 0
-    ? `${dashboard.attentionPeople.length} ${dashboard.attentionPeople.length === 1 ? "pessoa merece" : "pessoas merecem"} atenção nesta semana.`
-    : "Nenhuma pessoa pede atenção urgente agora.";
+  const phrase = pastoralCasesCount > 0
+    ? `${pastoralCasesCount} ${pastoralCasesCount === 1 ? "caso pastoral pede" : "casos pastorais pedem"} olhar mais próximo.`
+    : "Nenhum caso pastoral urgente agora.";
 
   return (
     <AppShell
@@ -24,15 +28,15 @@ export default async function PastorPage() {
       role={user.role}
       nav={[
         { href: "/pastor", label: "Visão", icon: "home", active: true },
-        { href: "/pessoas", label: "Pessoas", icon: "people", attention: dashboard.attentionPeople.length > 0 },
+        { href: "/pessoas", label: "Pessoas", icon: "people", attention: pastoralCasesCount > 0 },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
       ]}
     >
-      <SearchBox />
+      <SearchBox placeholder="Buscar qualquer pessoa..." />
       <PulseCard
         title={phrase}
-        subtitle={pendingEvents > 0 ? `${pendingEvents} ${pendingEvents === 1 ? "célula ainda não registrou" : "células ainda não registraram"} presença nesta semana.` : "As presenças da semana estão registradas até aqui."}
-        tone={dashboard.attentionPeople.length > 0 ? "attention" : "ok"}
+        subtitle={pendingEvents > 0 ? `${pendingEvents} ${pendingEvents === 1 ? "célula ainda não registrou" : "células ainda não registraram"} presença nesta semana.` : "A atenção local segue com líderes e supervisores."}
+        tone={pastoralCasesCount > 0 ? "attention" : "ok"}
       />
 
       <ContextSummary
@@ -46,19 +50,19 @@ export default async function PastorPage() {
           {
             label: "Células pendentes",
             value: String(pendingEvents),
-            detail: pendingEvents > 0 ? "Não entram na presença da semana." : "Tudo registrado até aqui.",
+            detail: pendingEvents > 0 ? "Ainda não entram na leitura da semana." : "Tudo registrado até aqui.",
             tone: pendingEvents > 0 ? "warn" : "ok",
           },
           {
-            label: "Visitantes",
-            value: String(dashboard.visitors),
-            detail: "Nos encontros registrados nesta semana.",
-            tone: "neutral",
+            label: "Casos pastorais",
+            value: String(pastoralCasesCount),
+            detail: "Somente graves no padrão atual; a atenção comum fica no cuidado local.",
+            tone: pastoralCasesCount > 0 ? "risk" : "ok",
           },
         ]}
       />
 
-      <SectionTitle>Quem merece atenção agora</SectionTitle>
+      <SectionTitle>Casos pastorais em destaque</SectionTitle>
       <div className="space-y-3">
         {dashboard.attentionPeople.slice(0, 3).map((signal) => (
           <PersonSignalCard
@@ -68,17 +72,20 @@ export default async function PastorPage() {
             detailHref={`/pessoas/${signal.person.id}`}
             context={`${signal.group?.name ?? "Sem célula"} · ${signal.group?.leader?.name ?? "Sem líder"}`}
             reason={signal.reason}
-            severity={signal.severity === "URGENT" ? "risk" : "warn"}
+            severity="risk"
+            ctaLabel="Abrir pessoa"
           />
         ))}
-        {dashboard.attentionPeople.length === 0 ? (
-          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Tudo calmo por enquanto.</p>
+        {pastoralCasesCount === 0 ? (
+          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm leading-relaxed text-[var(--color-text-secondary)]">
+            Nada grave chegou para o pastor agora. Para consultar alguém específico, use a busca pelo nome.
+          </p>
         ) : null}
       </div>
 
-      <SectionTitle>Células em atenção</SectionTitle>
+      <SectionTitle>Saúde das células</SectionTitle>
       <div className="space-y-3">
-        {dashboard.groups.filter((group) => group.attentionCount > 0 || (group.recordedEventsCount > 0 && group.presenceRate < 70)).slice(0, 4).map((group) => (
+        {groupsNeedingPastoralLook.slice(0, 4).map((group) => (
           <GroupCard
             key={group.id}
             name={group.name}
@@ -89,8 +96,8 @@ export default async function PastorPage() {
             hasPresenceData={group.recordedEventsCount > 0}
           />
         ))}
-        {dashboard.groups.filter((group) => group.attentionCount > 0 || (group.recordedEventsCount > 0 && group.presenceRate < 70)).length === 0 ? (
-          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhuma célula pedindo atenção especial agora.</p>
+        {groupsNeedingPastoralLook.length === 0 ? (
+          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhuma célula pedindo atenção pastoral especial agora.</p>
         ) : null}
       </div>
     </AppShell>

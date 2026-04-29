@@ -42,7 +42,17 @@ Pastor interpreta.
 ```
 
 ```txt
+Líder resolve a atenção local.
+Supervisor apoia exceções e padrões.
+Pastor vê saúde geral, casos graves/escalados e busca qualquer pessoa quando precisar.
+```
+
+```txt
 Sinal não é tarefa.
+```
+
+```txt
+Pastor não é operador de sinais.
 ```
 
 Pergunta de corte:
@@ -86,7 +96,7 @@ O MVP atual pode trabalhar com:
 - check-in simples;
 - visitantes no check-in;
 - taxa de presença;
-- atenções pastorais geradas por presença/ausência;
+- atenções pastorais geradas por presença/ausência, filtradas por responsabilidade do perfil;
 - busca simples de pessoa;
 - detalhe simples da pessoa;
 - lista de atenção com abertura de cuidado;
@@ -101,11 +111,15 @@ Funcionalidades fora desse recorte exigem pedido explícito do usuário.
 
 - Check-in é operação do líder da célula.
 - Pastor e supervisor veem eventos/presença em modo resumo; não registram presença pelo líder.
+- Líder resolve a maioria das atenções locais; supervisor apoia exceções e padrões; pastor vê saúde geral e casos graves/escalados.
+- Pastor não deve receber toda ausência, visitante, retorno ou sinal cotidiano por padrão.
+- Pastor pode buscar qualquer pessoa da igreja/campus quando precisar, mas isso não autoriza listar todos por padrão.
 - Pessoa sem marcação explícita aparece como `Pendente`, nunca como falta presumida.
 - Atenção por ausência só nasce de encontros reais, passados e com presença registrada.
 - Métrica de presença sem encontro registrado deve aparecer como ausência de dado, não como `0%` de risco.
 - A lista principal deve continuar sendo por pessoa, não por sinal bruto.
 - Para líder, `/pessoas` pode aparecer como `Membros` e listar membros ativos da própria célula; para pastor/supervisor, não transforme `/pessoas` em diretório completo por padrão.
+- Em listas padrão, pastor deve ver apenas casos graves, sensíveis, recorrentes ou escalados; não uma fila bruta de atenção operacional.
 - Cards de atenção devem manter uma ação primária simples: `Abrir cuidado`; ações diretas ficam no detalhe da pessoa.
 - `Já houve contato?` deve ser uma pergunta com confirmação; não pode resolver atenção por clique acidental.
 - Quando um cuidado/contato resolve todos os motivos de atenção da pessoa, a pessoa deve voltar ao status `Ativo`; o histórico recente deve mostrar `Cuidado realizado`.
@@ -153,19 +167,22 @@ Antes de implementar qualquer mudança, verifique:
 1. A mudança respeita o ciclo `Evento -> Presença -> Atenção -> Contato -> Cuidado`?
 2. Ela ajuda cuidado real ou cria burocracia?
 3. Ela respeita `Líder registra. Supervisor acompanha. Pastor interpreta.`?
-4. Ela evita transformar sinal em tarefa?
-5. Ela usa termos do `GLOSSARY.md`?
-6. Ela reutiliza permissões e helpers existentes?
-7. Ela mantém a experiência mobile-first?
-8. Ela promete apenas o que a API/tela realmente entrega?
+4. Ela evita empurrar atenção operacional comum para o pastor?
+5. Ela evita transformar sinal em tarefa?
+6. Ela usa termos do `GLOSSARY.md`?
+7. Ela reutiliza permissões e helpers existentes?
+8. Ela mantém a experiência mobile-first?
+9. Ela promete apenas o que a API/tela realmente entrega?
 
 ## Próxima direção provável
 
 Com check-in, eventos, atenção por pessoa, detalhe de célula e leitura de membros do líder estabilizados, os próximos passos naturais são:
 
 1. revalidar visualmente os fluxos principais em mobile;
-2. autenticação real;
-3. remoção do seletor demo da interface pública;
-4. só depois considerar novas capacidades.
+2. ajustar a visibilidade por perfil para que o pastor veja saúde geral e somente casos graves/escalados por padrão;
+3. introduzir escalonamento simples sem virar task manager;
+4. autenticação real;
+5. remoção do seletor demo da interface pública;
+6. só depois considerar novas capacidades.
 
 Não avançar para analytics, playbooks, SLA, dashboard pesado ou acompanhamento formal antes do ciclo principal estar excelente.

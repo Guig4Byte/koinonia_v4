@@ -145,6 +145,9 @@ export function GroupCard({
   hasPresenceData?: boolean;
 }) {
   const tone = !hasPresenceData ? "neutral" : presenceRate < 65 ? "risk" : presenceRate < 75 ? "warn" : "ok";
+  const hasLowPresence = hasPresenceData && presenceRate < 70;
+  const badgeTone = attentionCount > 0 ? "warn" : tone === "risk" ? "risk" : hasLowPresence ? "warn" : "ok";
+  const badgeLabel = attentionCount > 0 ? `Em atenção (${attentionCount})` : hasLowPresence ? "Presença baixa" : "Estável";
 
   const content = (
     <article className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
@@ -153,7 +156,7 @@ export function GroupCard({
           <p className="font-semibold text-[var(--color-text-primary)]">{name}</p>
           <p className="mt-0.5 text-sm text-[var(--color-text-secondary)]">{subtitle}</p>
         </div>
-        <Badge tone={attentionCount > 0 ? "warn" : "ok"}>{attentionCount > 0 ? `Em atenção (${attentionCount})` : "Estável"}</Badge>
+        <Badge tone={badgeTone}>{badgeLabel}</Badge>
       </div>
       <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--surface-alt)]">
         <div

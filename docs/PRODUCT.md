@@ -56,14 +56,14 @@ Inclui:
 - check-in simples;
 - taxa de presença;
 - visitantes no check-in;
-- atenções pastorais;
+- atenções pastorais por nível de responsabilidade;
 - busca simples de pessoa;
 - detalhe simples da pessoa;
 - tela de pessoas/membros respeitando o escopo do perfil;
 - detalhe simples da célula;
 - abertura de cuidado a partir das listas de atenção;
 - ação direta no detalhe da pessoa: ligar, WhatsApp, contato feito e anotação opcional;
-- visão macro do pastor;
+- visão macro do pastor, centrada em saúde geral e casos graves/escalados;
 - visão de apoio do supervisor;
 - visão operacional do líder.
 
@@ -95,6 +95,40 @@ Líder registra.
 Supervisor acompanha.
 Pastor interpreta.
 ```
+
+Regra complementar de visibilidade:
+
+```txt
+Líder resolve a atenção local.
+Supervisor apoia exceções e padrões.
+Pastor vê saúde geral, casos graves/escalados e busca qualquer pessoa quando precisar.
+```
+
+Nem toda atenção deve subir para o pastor. A maior parte dos sinais cotidianos deve ser resolvida pelo líder ou pelo supervisor, sem transformar o pastor em central operacional de ausências, visitantes, retornos simples ou contatos comuns.
+
+### Camadas de atenção
+
+Use três camadas conceituais para decidir quem precisa ver o quê:
+
+| Camada | Quem vê por padrão | Quando aparece |
+| --- | --- | --- |
+| Atenção local | Líder | ausência comum, visitante novo, retorno simples, contato cotidiano ou pessoa da própria célula que precisa ser lembrada. |
+| Apoio de supervisão | Supervisor e líder | líder pediu ajuda, célula acumula sinais, presença caiu, sinais ficam sem cuidado ou há padrão recorrente sob a supervisão. |
+| Cuidado pastoral | Pastor, supervisor e, quando fizer sentido, líder | caso grave, sensível, recorrente, escalado ou que exige leitura pastoral mais próxima. |
+
+Escalonamento desejado:
+
+```txt
+Líder -> Supervisor -> Pastor
+```
+
+Em casos graves ou sensíveis, o produto pode permitir:
+
+```txt
+Líder -> Pastor
+```
+
+Escalonar não deve criar task manager, SLA ou processo pesado. É uma decisão de visibilidade e apoio: quem estava cuidando localmente continua sendo referência, mas outra liderança passa a enxergar o caso.
 
 ### Líder
 
@@ -129,8 +163,10 @@ Pode:
 - abrir resumo simples das células sob sua supervisão;
 - ver eventos dessas células em modo resumo;
 - ver check-ins pendentes/realizados;
-- ver presença média, visitantes e pessoas em atenção;
-- perceber líderes ou células que precisam de apoio.
+- ver presença média, visitantes e atenções sob sua supervisão;
+- perceber líderes ou células que precisam de apoio;
+- receber pedidos de apoio do líder;
+- escalar ao pastor quando houver gravidade, recorrência ou necessidade pastoral.
 
 Não deve:
 
@@ -140,22 +176,26 @@ Não deve:
 
 ### Pastor
 
-O pastor interpreta a visão macro.
+O pastor interpreta a visão macro e entra nos casos que realmente pedem cuidado pastoral mais próximo.
 
 Pode:
 
 - ver eventos da igreja/campus em modo resumo;
-- ver presença geral;
-- ver células em atenção;
+- ver presença geral da semana e presença recente por célula/região;
+- ver células com queda, pendência de check-in ou acúmulo de atenção;
 - abrir resumo simples de uma célula;
-- ver pessoas que podem estar se afastando;
+- ver casos graves, sensíveis, recorrentes ou escalados;
+- receber casos escalados pelo supervisor ou, quando for grave, pelo líder;
+- buscar qualquer pessoa da igreja/campus quando precisar consultar alguém específico;
 - perceber regiões, células ou líderes que precisam de cuidado.
 
 Não deve:
 
 - registrar check-in;
 - operar presença no lugar do líder;
-- transformar visão macro em relatório burocrático.
+- receber toda ausência, visitante, retorno ou sinal cotidiano por padrão;
+- transformar visão macro em relatório burocrático;
+- virar a central de tickets pastorais da igreja.
 
 ## Fluxo de check-in
 
@@ -229,13 +269,14 @@ A rota `/pessoas` é uma leitura por escopo, não um diretório amplo para todos
 
 Regras oficiais:
 
-- todos os perfis veem, primeiro, pessoas em atenção dentro do próprio escopo;
+- o líder vê pessoas em atenção da própria célula e pode listar membros ativos não visitantes da própria célula;
 - para o líder, a navegação pode chamar essa tela de `Membros`, porque o escopo é pequeno e operacional;
-- para o líder, a tela pode listar os membros ativos não visitantes da própria célula;
+- o supervisor vê exceções, pedidos de apoio e pessoas em atenção dentro das células sob sua supervisão;
+- o pastor não deve receber uma lista bruta de todas as pessoas em atenção da igreja por padrão; deve ver somente casos graves, sensíveis, recorrentes ou escalados;
 - para supervisor e pastor, a tela não deve virar lista completa de todos os membros por padrão; essas pessoas devem ser consultadas pela busca quando necessário;
 - ações diretas de contato continuam no detalhe da pessoa, não na lista.
 
-Isso preserva a diferença de responsabilidade: líder opera a própria célula, supervisor acompanha exceções e pastor interpreta a visão macro.
+Isso preserva a diferença de responsabilidade: líder opera a própria célula, supervisor acompanha exceções e pastor interpreta a visão macro sem virar operador de sinais.
 
 ## Sinais e atenções
 
@@ -248,6 +289,14 @@ Sinal é evidência e lembrete de cuidado, não cobrança burocrática. Ele pode
 Atenção por ausência só pode nascer de encontros reais, passados e com presença registrada. Evento futuro, evento pendente ou membro sem marcação explícita não deve ser tratado como falta presumida.
 
 Listas chamadas de `Pessoas em atenção` devem agregar sinais ativos por pessoa. Na UI, esses sinais devem aparecer como motivos de atenção. A experiência principal é a pessoa que precisa ser lembrada, não uma pilha de sinais.
+
+A visibilidade da atenção deve respeitar a responsabilidade do perfil:
+
+- líder vê atenção local da própria célula;
+- supervisor vê exceções e padrões dentro das células supervisionadas;
+- pastor vê saúde geral e somente atenções graves, sensíveis, recorrentes ou escaladas.
+
+Um sinal comum não deve aparecer para o pastor apenas porque existe. Ele precisa ter gravidade, recorrência, sensibilidade pastoral ou escalonamento explícito.
 
 Depois de salvar check-in, a UI pode informar quantas pessoas ficaram em atenção naquela célula, para fechar o ciclo:
 
@@ -329,6 +378,9 @@ Regras:
 
 - não prometer busca de evento ou célula enquanto a API não suportar esses tipos;
 - resultados devem mostrar apenas contexto/célula dentro do escopo visível do usuário;
+- pastor pode buscar qualquer pessoa da igreja/campus quando precisar, mas isso não transforma a tela em diretório completo por padrão;
+- supervisor busca apenas dentro do próprio escopo;
+- líder busca apenas dentro do próprio escopo;
 - resultado de pessoa deve levar direto para `/pessoas/[personId]`.
 
 ## Linguagem e experiência

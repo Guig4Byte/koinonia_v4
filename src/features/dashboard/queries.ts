@@ -1,7 +1,7 @@
 import { endOfWeek, startOfWeek } from "date-fns";
 import { AttendanceStatus, MembershipRole, SignalSeverity, SignalStatus, UserRole } from "../../generated/prisma/client";
 import { getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
-import { getPrimarySignalsByPerson } from "@/features/signals/attention";
+import { getPastoralSignalsByPerson, getPrimarySignalsByPerson } from "@/features/signals/attention";
 import { prisma } from "@/lib/prisma";
 import { percent } from "@/lib/format";
 
@@ -29,7 +29,7 @@ export async function getPastorDashboard(churchId: string) {
       orderBy: { startsAt: "asc" },
     }),
     prisma.careSignal.findMany({
-      where: { churchId, status: SignalStatus.OPEN },
+      where: { churchId, status: SignalStatus.OPEN, severity: SignalSeverity.URGENT },
       include: { person: true, group: { include: { leader: true, supervisor: true } } },
       orderBy: [{ detectedAt: "desc" }],
       take: 50,
@@ -43,8 +43,8 @@ export async function getPastorDashboard(churchId: string) {
 
   const completedEvents = events.filter((event) => event.status === "COMPLETED" || event.attendances.length > 0);
   const presence = summarizePresence(completedEvents);
-  const attentionPeople = getPrimarySignalsByPerson(openSignals);
-  const urgentSignals = attentionPeople.filter((signal) => signal.severity === SignalSeverity.URGENT).length;
+  const attentionPeople = getPastoralSignalsByPerson(openSignals);
+  const urgentSignals = attentionPeople.length;
 
   const groupsWithPresence = groups.map((group) => {
     const recordedEvents = group.events.filter((event) => event.status === "COMPLETED" || event.attendances.length > 0);
@@ -56,7 +56,7 @@ export async function getPastorDashboard(churchId: string) {
       supervisorName: group.supervisor?.name ?? "Sem supervisor",
       presenceRate: summarizePresence(recordedEvents).presenceRate,
       recordedEventsCount: recordedEvents.length,
-      attentionCount: getPrimarySignalsByPerson(group.signals).length,
+      attentionCount: getPastoralSignalsByPerson(group.signals).length,
     };
   });
 

@@ -22,7 +22,11 @@ Pastor interpreta.
 Sinal não é tarefa.
 ```
 
-A presença não é o fim. Ela é uma fonte de leitura pastoral. A pessoa é o centro da experiência.
+```txt
+Pastor não é operador de sinais.
+```
+
+A presença não é o fim. Ela é uma fonte de leitura pastoral. A pessoa é o centro da experiência. A arquitetura deve impedir que toda atenção operacional suba automaticamente para o pastor.
 
 ## Estrutura do projeto
 
@@ -106,13 +110,15 @@ Rotas, páginas e queries devem reutilizar esses helpers em vez de repetir regra
 
 Regra operacional:
 
-- Pastor/Admin: igreja inteira.
+- Pastor/Admin: igreja inteira para busca e leitura autorizada, mas listas padrão devem filtrar relevância pastoral.
 - Supervisor: grupos supervisionados.
 - Líder: grupos liderados.
 - Check-in: somente o líder da célula do evento.
 - Contato/cuidado: apenas quem tem escopo pastoral sobre a pessoa.
 
 Quando validar objetos carregados diretamente, mantenha a mesma semântica dos filtros de query. Grupo inativo não deve liberar visibilidade, evento, check-in ou histórico.
+
+Atenção: escopo técnico não é igual a lista padrão. Pastor pode ter escopo de igreja inteira para busca e leitura, mas a visão inicial não deve consumir uma lista bruta de todos os sinais abertos. Para o pastor, queries de atenção devem aplicar relevância pastoral: gravidade, recorrência, sensibilidade ou escalonamento.
 
 ## Check-in
 
@@ -140,6 +146,14 @@ Atenção por ausência só pode nascer de encontros reais, passados e com prese
 
 Listas chamadas de `Pessoas em atenção` devem agregar sinais ativos por pessoa. Na UI, trate esses sinais como motivos de atenção. Use `src/features/signals/attention.ts` para escolher o sinal primário: primeiro o mais grave, depois o mais recente.
 
+A visibilidade deve separar escopo de relevância:
+
+- líder: atenção local dos grupos liderados;
+- supervisor: atenção dos grupos supervisionados, com prioridade para exceções, acúmulos, pedidos de apoio e recorrência;
+- pastor: saúde geral e apenas casos graves, sensíveis, recorrentes ou escalados.
+
+Não use `getVisibleOpenSignalWhere(user)` como única regra para alimentar a visão padrão do pastor, porque ela expressa escopo permitido, não necessariamente relevância pastoral. Quando o modelo tiver campo explícito de escalonamento, a filtragem do pastor deve preferir esse campo em vez de inferências frágeis.
+
 O backend do check-in deve retornar contagem de pessoas distintas em atenção, não quantidade bruta de sinais.
 
 Ao recalcular sinais de presença, o backend também deve manter o status pastoral da pessoa coerente:
@@ -156,6 +170,8 @@ A rota `/api/care/[personId]` deve:
 - aparar anotação vazia;
 - confirmar escopo pastoral com helpers de permissão;
 - associar o registro a uma célula visível quando o usuário não tiver escopo de igreja inteira;
+- quando o usuário tiver escopo de igreja inteira, associar o cuidado à célula principal da pessoa quando isso for necessário para evitar invisibilidade operacional;
+- preservar a possibilidade futura de uma anotação pastoral sensível não ficar completamente exposta ao líder local;
 - recusar escrita se nenhuma célula visível existir;
 - resolver apenas sinais ativos dentro do escopo do usuário;
 - quando não restar nenhum sinal ativo para a pessoa, voltar `Person.status` para `ACTIVE` se ela estava em `NEEDS_ATTENTION` ou `COOLING_AWAY`;
@@ -200,9 +216,11 @@ A lista `/pessoas` deve respeitar o escopo do usuário e não deve funcionar com
 
 Regras técnicas:
 
-- todos os perfis carregam pessoas em atenção com `getVisibleOpenSignalWhere(user)` e agregação por pessoa;
-- líderes podem carregar uma lista simples de membros ativos não visitantes da própria célula usando `getVisiblePersonWhere(user)` combinado com `getVisibleMembershipWhere(user)`;
+- líder carrega pessoas em atenção da própria célula e pode carregar membros ativos não visitantes usando `getVisiblePersonWhere(user)` combinado com `getVisibleMembershipWhere(user)`;
+- supervisor carrega pessoas em atenção dentro dos grupos supervisionados, priorizando exceções, acúmulos, pedidos de apoio e recorrência;
+- pastor não deve carregar uma lista bruta de todas as pessoas em atenção da igreja por padrão; carregue apenas casos graves, sensíveis, recorrentes ou escalados;
 - pastor e supervisor não devem receber uma lista completa de pessoas por padrão nessa rota; quando precisarem consultar alguém fora da lista de atenção, devem usar a busca;
+- pastor pode buscar qualquer pessoa da igreja/campus dentro do seu escopo amplo, mas busca é ação explícita, não diretório inicial;
 - a label da navegação pode ser `Membros` para líder e `Pessoas` para os demais perfis.
 
 A rota `/pessoas/[personId]` é o detalhe simples de cuidado e deve chamar `canViewPerson(user, person)` antes de renderizar qualquer dado.

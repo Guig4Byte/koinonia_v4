@@ -19,6 +19,10 @@ export function compareAttentionSignals(left: AttentionSignalLike, right: Attent
   return right.detectedAt.getTime() - left.detectedAt.getTime();
 }
 
+export function isPastoralSignal(signal: AttentionSignalLike) {
+  return signal.severity === SignalSeverity.URGENT;
+}
+
 export function getPrimarySignalsByPerson<T extends AttentionSignalLike>(signals: T[]) {
   const selectedByPerson = new Map<string, T>();
 
@@ -31,4 +35,8 @@ export function getPrimarySignalsByPerson<T extends AttentionSignalLike>(signals
   }
 
   return Array.from(selectedByPerson.values()).sort(compareAttentionSignals);
+}
+
+export function getPastoralSignalsByPerson<T extends AttentionSignalLike>(signals: T[]) {
+  return getPrimarySignalsByPerson(signals.filter(isPastoralSignal));
 }

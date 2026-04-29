@@ -44,6 +44,16 @@ Supervisor acompanha.
 Pastor interpreta.
 ```
 
+Regra de visibilidade pastoral:
+
+```txt
+Líder resolve a atenção local.
+Supervisor apoia exceções e padrões.
+Pastor vê saúde geral, casos graves/escalados e busca qualquer pessoa quando precisar.
+```
+
+O pastor não deve virar central de sinais operacionais. Ausências comuns, visitantes e retornos simples devem nascer perto do líder e subir apenas quando houver gravidade, recorrência ou escalonamento.
+
 ## Escopo desta base
 
 Esta versão nasce pequena e preparada para crescer:
@@ -54,9 +64,9 @@ Esta versão nasce pequena e preparada para crescer:
 - Check-in simples
 - Taxa de presença
 - Visitantes no check-in
-- Atenções automáticas
+- Atenções automáticas por nível de responsabilidade
 - Ação direta: ligar, WhatsApp, contato feito e anotação opcional
-- Visão macro simples para pastor
+- Visão macro simples para pastor, centrada na saúde geral das células/eventos e em casos realmente pastorais
 - Visão de células para supervisor
 - Visão operacional para líder
 
@@ -121,6 +131,7 @@ npm run db:studio
 4. Registro só existe quando evita esquecimento.
 5. O mobile deve aliviar, não cobrar.
 6. Líder registra check-in; pastor e supervisor acompanham.
+7. O pastor não recebe toda atenção operacional por padrão; ele interpreta saúde geral e casos realmente pastorais.
 
 ## Estrutura
 
@@ -135,11 +146,11 @@ docs                 Briefing, produto e arquitetura
 
 ## Próximos passos recomendados
 
-1. Validar check-in líder-only.
-2. Criar detalhe simples da pessoa.
-3. Criar detalhe simples da célula.
-4. Centralizar helpers de autorização.
-5. Implementar autenticação real substituindo o seletor demo.
+1. Revalidar os fluxos principais em mobile.
+2. Ajustar a visibilidade por perfil para o pastor ver saúde geral e somente casos graves/escalados por padrão.
+3. Introduzir escalonamento simples sem virar task manager.
+4. Implementar autenticação real substituindo o seletor demo.
+5. Só depois considerar novas capacidades.
 
 ## Tema
 

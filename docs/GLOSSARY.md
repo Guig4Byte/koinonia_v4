@@ -130,12 +130,49 @@ Use na UI:
 - `Células em atenção`
 - `Pede atenção`
 
+Camadas oficiais:
+
+- `Atenção local`: atenção cotidiana da célula, normalmente resolvida pelo líder.
+- `Apoio de supervisão`: atenção que pede ajuda do supervisor, por pedido do líder, padrão recorrente ou acúmulo na célula.
+- `Cuidado pastoral`: caso grave, sensível, recorrente ou escalado para o pastor.
+
 Evite:
 
 - `Alerta`
-- `Risco crítico`
+- `Risco crítico`, salvo quando houver severidade real e intencional.
 - `Incidente`
 - `Pendência`, quando soar burocrático.
+
+### Escalonamento
+
+Ato de tornar uma atenção visível para outro nível de liderança porque o cuidado local precisa de apoio.
+
+Fluxo preferencial:
+
+```txt
+Líder -> Supervisor -> Pastor
+```
+
+Fluxo direto permitido quando houver gravidade ou sensibilidade:
+
+```txt
+Líder -> Pastor
+```
+
+Escalonamento não é task, SLA, cobrança ou transferência total de responsabilidade. É pedido de apoio e decisão de visibilidade.
+
+Use na UI:
+
+- `Pedir apoio ao supervisor`
+- `Encaminhar ao pastor`
+- `Caso escalado`
+- `Pede cuidado pastoral`
+
+Evite:
+
+- `Abrir chamado`
+- `Criar ticket`
+- `Atribuir responsável`, quando soar como task manager.
 
 ### Contato
 
@@ -166,6 +203,8 @@ Use na UI:
 Registro mínimo de que alguém foi percebido e alguém agiu.
 
 No MVP atual, cuidado não é prontuário pastoral completo. Deve apenas impedir que a pessoa desapareça em silêncio.
+
+Quando o cuidado for feito pelo pastor, líder e supervisor não precisam necessariamente ver a anotação completa. A regra preferencial é mostrar que houve cuidado pastoral quando isso evita duplicidade, preservando detalhes sensíveis para quem tem escopo pastoral adequado.
 
 Use na UI:
 
