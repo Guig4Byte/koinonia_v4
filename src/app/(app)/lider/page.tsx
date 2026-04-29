@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/app-shell";
-import { ContextSummary, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
+import { ContextSummary, ListMoreHint, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
 import { CheckInList } from "@/components/check-in-list";
 import { SearchBox } from "@/components/search-box";
 import { Badge } from "@/components/ui/badge";
@@ -55,6 +55,8 @@ export default async function LeaderPage() {
   const currentVisitors = currentEvent?.attendances
     .filter((attendance) => attendance.status === "VISITOR")
     .map((attendance) => ({ id: attendance.id, fullName: attendance.person.fullName })) ?? [];
+  const highlightedAttentionPeople = dashboard.attentionPeople.slice(0, 4);
+  const hiddenAttentionPeopleCount = Math.max(0, dashboard.attentionPeople.length - highlightedAttentionPeople.length);
 
   return (
     <AppShell
@@ -91,6 +93,30 @@ export default async function LeaderPage() {
         ]}
       />
 
+      <SectionTitle detail="Antes de rolar o check-in, veja se alguém precisa de um gesto simples de cuidado.">Quem merece atenção</SectionTitle>
+      <div className="space-y-3">
+        {highlightedAttentionPeople.map((signal) => {
+          const badge = signalBadgeForViewer(signal, user);
+
+          return (
+            <PersonSignalCard
+              key={signal.id}
+              initials={initials(signal.person.fullName)}
+              name={signal.person.fullName}
+              detailHref={`/pessoas/${signal.person.id}`}
+              context={signalReasonForViewer(signal.reason, user)}
+              severity={signal.severity === "URGENT" ? "risk" : "warn"}
+              badgeLabel={badge.label}
+              badgeTone={badge.tone}
+            />
+          );
+        })}
+        <ListMoreHint hiddenCount={hiddenAttentionPeopleCount} label="Abra Membros ou busque pelo nome para ver os demais." />
+        {dashboard.attentionPeople.length === 0 ? (
+          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhuma pessoa em atenção agora.</p>
+        ) : null}
+      </div>
+
       <SectionTitle>Presença do encontro</SectionTitle>
       {currentEvent ? (
         <>
@@ -124,28 +150,6 @@ export default async function LeaderPage() {
         <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhum evento de célula encontrado. Rode o seed ou crie um evento.</p>
       )}
 
-      <SectionTitle>Quem merece atenção</SectionTitle>
-      <div className="space-y-3">
-        {dashboard.attentionPeople.slice(0, 3).map((signal) => {
-          const badge = signalBadgeForViewer(signal, user);
-
-          return (
-            <PersonSignalCard
-              key={signal.id}
-              initials={initials(signal.person.fullName)}
-              name={signal.person.fullName}
-              detailHref={`/pessoas/${signal.person.id}`}
-              context={signalReasonForViewer(signal.reason, user)}
-              severity={signal.severity === "URGENT" ? "risk" : "warn"}
-              badgeLabel={badge.label}
-              badgeTone={badge.tone}
-            />
-          );
-        })}
-        {dashboard.attentionPeople.length === 0 ? (
-          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhuma pessoa em atenção agora.</p>
-        ) : null}
-      </div>
     </AppShell>
   );
 }

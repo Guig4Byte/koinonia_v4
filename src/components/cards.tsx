@@ -77,8 +77,23 @@ export function MetricRow({ metrics }: { metrics: Array<{ label: string; value: 
   );
 }
 
-export function SectionTitle({ children }: { children: ReactNode }) {
-  return <h2 className="mb-2 mt-6 text-xs font-bold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">{children}</h2>;
+export function SectionTitle({ children, detail }: { children: ReactNode; detail?: string }) {
+  return (
+    <div className="mb-2 mt-6">
+      <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">{children}</h2>
+      {detail ? <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">{detail}</p> : null}
+    </div>
+  );
+}
+
+export function ListMoreHint({ hiddenCount, label }: { hiddenCount: number; label: string }) {
+  if (hiddenCount <= 0) return null;
+
+  return (
+    <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 text-sm leading-relaxed text-[var(--color-text-secondary)] shadow-card">
+      Mais {hiddenCount} {hiddenCount === 1 ? "item" : "itens"}. {label}
+    </p>
+  );
 }
 
 export function PersonSignalCard({

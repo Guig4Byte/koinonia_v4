@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { MembershipRole, SignalSeverity, UserRole } from "../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
-import { PersonSignalCard, SectionTitle } from "@/components/cards";
+import { ListMoreHint, PersonSignalCard, SectionTitle } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
 import { Badge } from "@/components/ui/badge";
 import { getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "@/features/permissions/permissions";
@@ -11,6 +11,10 @@ import { signalBadgeForViewer, signalReasonForViewer } from "@/features/signals/
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 import { initials } from "@/lib/text";
+
+const PRIORITY_PEOPLE_LIMIT = 5;
+const SECONDARY_PEOPLE_LIMIT = 6;
+const MEMBER_LIST_LIMIT = 24;
 
 export default async function PeoplePage() {
   const user = await getCurrentUser();
@@ -71,8 +75,23 @@ export default async function PeoplePage() {
   const attentionPeople = isPastoralOverview
     ? getPastoralSignalsByPerson(openSignals)
     : getPrimarySignalsByPerson(openSignals);
+  const naturallyPrioritySignals = attentionPeople.filter((signal) => (
+    signal.severity === SignalSeverity.URGENT ||
+    signal.assignedToId === user.id ||
+    signal.assignedTo?.role === UserRole.PASTOR ||
+    signal.assignedTo?.role === UserRole.ADMIN
+  ));
+  const prioritySignals = naturallyPrioritySignals.length > 0
+    ? naturallyPrioritySignals
+    : attentionPeople.slice(0, PRIORITY_PEOPLE_LIMIT);
+  const prioritySignalIds = new Set(prioritySignals.map((signal) => signal.id));
+  const secondarySignals = attentionPeople.filter((signal) => !prioritySignalIds.has(signal.id));
+  const visiblePrioritySignals = prioritySignals.slice(0, PRIORITY_PEOPLE_LIMIT);
+  const visibleSecondarySignals = secondarySignals.slice(0, SECONDARY_PEOPLE_LIMIT);
+  const visibleMemberList = visibleMembers.slice(0, MEMBER_LIST_LIMIT);
   const attentionSignalByPersonId = new Map(attentionPeople.map((signal) => [signal.personId, signal]));
-  const attentionTitle = isLeader ? "Membros em atenção" : isPastoralOverview ? "Casos pastorais" : "Pessoas em atenção";
+  const attentionTitle = isLeader ? "Precisa de atenção agora" : isPastoralOverview ? "Casos pastorais" : "Pedidos e atenções";
+  const secondaryTitle = isPastoralOverview ? "Outros casos pastorais" : isLeader ? "Acompanhar" : "Outras pessoas em atenção";
   const emptyAttentionMessage = isLeader
     ? "Nenhum membro da sua célula está em atenção agora."
     : isPastoralOverview
@@ -91,9 +110,9 @@ export default async function PeoplePage() {
     >
       <SearchBox placeholder={searchPlaceholder} />
 
-      <SectionTitle>{attentionTitle}</SectionTitle>
+      <SectionTitle detail="A lista começa pelo que merece decisão. Use a busca quando estiver procurando alguém específico.">{attentionTitle}</SectionTitle>
       <div className="space-y-3">
-        {attentionPeople.map((signal) => {
+        {visiblePrioritySignals.map((signal) => {
           const badge = signalBadgeForViewer(signal, user);
 
           return (
@@ -111,6 +130,7 @@ export default async function PeoplePage() {
             />
           );
         })}
+        <ListMoreHint hiddenCount={Math.max(0, prioritySignals.length - visiblePrioritySignals.length)} label="Use a busca para ir direto ao nome sem percorrer uma lista longa." />
         {attentionPeople.length === 0 ? (
           <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">
             {emptyAttentionMessage}
@@ -118,11 +138,38 @@ export default async function PeoplePage() {
         ) : null}
       </div>
 
+      {secondarySignals.length > 0 ? (
+        <>
+          <SectionTitle>{secondaryTitle}</SectionTitle>
+          <div className="space-y-3">
+            {visibleSecondarySignals.map((signal) => {
+              const badge = signalBadgeForViewer(signal, user);
+
+              return (
+                <PersonSignalCard
+                  key={signal.id}
+                  initials={initials(signal.person.fullName)}
+                  name={signal.person.fullName}
+                  detailHref={`/pessoas/${signal.person.id}`}
+                  context={`${signal.group?.name ?? "Sem célula"} · ${signal.group?.leader?.name ?? "Sem líder"}`}
+                  reason={signalReasonForViewer(signal.reason, user)}
+                  severity={signal.severity === "URGENT" ? "risk" : "warn"}
+                  badgeLabel={badge.label}
+                  badgeTone={badge.tone}
+                  ctaLabel={!isPastoralOverview && signal.assignedToId === user.id ? "Abrir apoio" : "Abrir pessoa"}
+                />
+              );
+            })}
+            <ListMoreHint hiddenCount={Math.max(0, secondarySignals.length - visibleSecondarySignals.length)} label="Use a busca para consultar o restante com menos rolagem." />
+          </div>
+        </>
+      ) : null}
+
       {isLeader ? (
         <>
-          <SectionTitle>Membros da célula</SectionTitle>
+          <SectionTitle detail="Lista curta para consulta rápida. Para encontrar alguém fora dos primeiros nomes, use a busca.">Membros da célula</SectionTitle>
           <div className="space-y-2">
-            {visibleMembers.map((person) => {
+            {visibleMemberList.map((person) => {
               const attentionSignal = attentionSignalByPersonId.get(person.id);
               const badge = personEffectiveBadgeForViewer(person, attentionSignal, user);
 
@@ -140,6 +187,7 @@ export default async function PeoplePage() {
                 </Link>
               );
             })}
+            <ListMoreHint hiddenCount={Math.max(0, visibleMembers.length - visibleMemberList.length)} label="Busque pelo nome para abrir um membro sem rolar a lista inteira." />
           </div>
         </>
       ) : (

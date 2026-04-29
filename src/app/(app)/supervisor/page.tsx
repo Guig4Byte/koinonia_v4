@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/app-shell";
-import { ContextSummary, GroupCard, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
+import { ContextSummary, GroupCard, ListMoreHint, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { canUseSupervisorDashboard } from "@/features/permissions/permissions";
@@ -7,6 +7,9 @@ import { groupAttentionLabel, signalBadgeForViewer, type SignalBadge } from "@/f
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { redirect } from "next/navigation";
 import { initials } from "@/lib/text";
+
+const SUPPORT_REQUESTS_LIMIT = 4;
+const OTHER_ATTENTION_LIMIT = 4;
 
 function supportRequestsText(count: number) {
   if (count === 0) return "";
@@ -26,6 +29,10 @@ export default async function SupervisorPage() {
   const hasRecentPresence = dashboard.recordedEventsCount > 0;
   const supportRequestIds = new Set(dashboard.supportRequests.map((signal) => signal.id));
   const otherAttentionPeople = dashboard.attentionPeople.filter((signal) => !supportRequestIds.has(signal.id));
+  const visibleSupportRequests = dashboard.supportRequests.slice(0, SUPPORT_REQUESTS_LIMIT);
+  const hiddenSupportRequestsCount = Math.max(0, dashboard.supportRequests.length - visibleSupportRequests.length);
+  const visibleOtherAttentionPeople = otherAttentionPeople.slice(0, OTHER_ATTENTION_LIMIT);
+  const hiddenOtherAttentionCount = Math.max(0, otherAttentionPeople.length - visibleOtherAttentionPeople.length);
 
   return (
     <AppShell
@@ -62,9 +69,9 @@ export default async function SupervisorPage() {
         ]}
       />
 
-      <SectionTitle>Pedidos de apoio</SectionTitle>
+      <SectionTitle detail="Pedidos trazidos pelos líderes aparecem primeiro, para você apoiar sem virar operador da célula.">Pedidos de apoio</SectionTitle>
       <div className="space-y-3">
-        {dashboard.supportRequests.slice(0, 4).map((signal) => {
+        {visibleSupportRequests.map((signal) => {
           const badge = signalBadgeForViewer(signal, user);
 
           return (
@@ -82,6 +89,7 @@ export default async function SupervisorPage() {
             />
           );
         })}
+        <ListMoreHint hiddenCount={hiddenSupportRequestsCount} label="Use Pessoas ou a busca para abrir outro pedido sem percorrer uma lista longa." />
         {dashboard.supportRequests.length === 0 ? (
           <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhum líder pediu apoio agora.</p>
         ) : null}
@@ -89,7 +97,7 @@ export default async function SupervisorPage() {
 
       <SectionTitle>Outros casos para acompanhar</SectionTitle>
       <div className="space-y-3">
-        {otherAttentionPeople.slice(0, 4).map((signal) => {
+        {visibleOtherAttentionPeople.map((signal) => {
           const badge = signalBadgeForViewer(signal, user);
 
           return (
@@ -107,6 +115,7 @@ export default async function SupervisorPage() {
             />
           );
         })}
+        <ListMoreHint hiddenCount={hiddenOtherAttentionCount} label="Use a busca quando precisar consultar os demais casos." />
         {otherAttentionPeople.length === 0 ? (
           <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhum outro caso em atenção agora.</p>
         ) : null}

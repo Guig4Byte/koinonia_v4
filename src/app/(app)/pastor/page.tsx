@@ -1,12 +1,15 @@
 import { AppShell } from "@/components/app-shell";
-import { ContextSummary, GroupCard, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
+import { ContextSummary, GroupCard, ListMoreHint, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
 import { getPastorDashboard } from "@/features/dashboard/queries";
 import { canUsePastorDashboard } from "@/features/permissions/permissions";
 import { signalBadgeForViewer } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
-import { redirect } from "next/navigation";
 import { initials } from "@/lib/text";
+import { redirect } from "next/navigation";
+
+const PASTORAL_CASES_LIMIT = 5;
+const GROUPS_TO_REVIEW_LIMIT = 4;
 
 export default async function PastorPage() {
   const user = await getCurrentUser();
@@ -19,6 +22,8 @@ export default async function PastorPage() {
   const pendingGroups = dashboard.pendingGroupsCount;
   const hasWeekPresence = dashboard.completedEvents > 0;
   const pastoralCasesCount = dashboard.attentionPeople.length;
+  const highlightedPastoralCases = dashboard.attentionPeople.slice(0, PASTORAL_CASES_LIMIT);
+  const hiddenPastoralCasesCount = Math.max(0, pastoralCasesCount - highlightedPastoralCases.length);
   const groupsNeedingPastoralLook = dashboard.groups.filter((group) => (
     group.pastoralCasesCount > 0 || (group.recordedEventsCount > 0 && group.presenceRate < 70)
   ));
@@ -44,6 +49,35 @@ export default async function PastorPage() {
         tone={pastoralCasesCount > 0 ? "attention" : "ok"}
       />
 
+      <SectionTitle detail="Primeiro o que pede gesto pastoral; depois, a saúde geral.">Precisa de cuidado agora</SectionTitle>
+      <div className="space-y-3">
+        {highlightedPastoralCases.map((signal) => {
+          const badge = signalBadgeForViewer(signal, user);
+
+          return (
+            <PersonSignalCard
+              key={signal.id}
+              initials={initials(signal.person.fullName)}
+              name={signal.person.fullName}
+              detailHref={`/pessoas/${signal.person.id}`}
+              context={`${signal.group?.name ?? "Sem célula"} · ${signal.group?.leader?.name ?? "Sem líder"}`}
+              reason={signal.reason}
+              severity={signal.severity === "URGENT" ? "risk" : "warn"}
+              badgeLabel={badge.label}
+              badgeTone={badge.tone}
+              ctaLabel="Abrir pessoa"
+            />
+          );
+        })}
+        <ListMoreHint hiddenCount={hiddenPastoralCasesCount} label="Use Pessoas ou a busca para consultar o restante sem transformar a visão em fila." />
+        {pastoralCasesCount === 0 ? (
+          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm leading-relaxed text-[var(--color-text-secondary)]">
+            Nada grave ou encaminhado chegou para o pastor agora. Para consultar alguém específico, use a busca pelo nome.
+          </p>
+        ) : null}
+      </div>
+
+      <SectionTitle>Saúde geral</SectionTitle>
       <ContextSummary
         items={[
           {
@@ -67,36 +101,9 @@ export default async function PastorPage() {
         ]}
       />
 
-      <SectionTitle>Casos pastorais em destaque</SectionTitle>
-      <div className="space-y-3">
-        {dashboard.attentionPeople.slice(0, 3).map((signal) => {
-          const badge = signalBadgeForViewer(signal, user);
-
-          return (
-            <PersonSignalCard
-              key={signal.id}
-              initials={initials(signal.person.fullName)}
-              name={signal.person.fullName}
-              detailHref={`/pessoas/${signal.person.id}`}
-              context={`${signal.group?.name ?? "Sem célula"} · ${signal.group?.leader?.name ?? "Sem líder"}`}
-              reason={signal.reason}
-              severity={signal.severity === "URGENT" ? "risk" : "warn"}
-              badgeLabel={badge.label}
-              badgeTone={badge.tone}
-              ctaLabel="Abrir pessoa"
-            />
-          );
-        })}
-        {pastoralCasesCount === 0 ? (
-          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm leading-relaxed text-[var(--color-text-secondary)]">
-            Nada grave ou encaminhado chegou para o pastor agora. Para consultar alguém específico, use a busca pelo nome.
-          </p>
-        ) : null}
-      </div>
-
       <SectionTitle>Saúde das células</SectionTitle>
       <div className="space-y-3">
-        {groupsNeedingPastoralLook.slice(0, 4).map((group) => (
+        {groupsNeedingPastoralLook.slice(0, GROUPS_TO_REVIEW_LIMIT).map((group) => (
           <GroupCard
             key={group.id}
             name={group.name}
@@ -108,6 +115,7 @@ export default async function PastorPage() {
             hasPresenceData={group.recordedEventsCount > 0}
           />
         ))}
+        <ListMoreHint hiddenCount={Math.max(0, groupsNeedingPastoralLook.length - GROUPS_TO_REVIEW_LIMIT)} label="Abra Eventos ou busque uma célula quando precisar de contexto adicional." />
         {groupsNeedingPastoralLook.length === 0 ? (
           <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card text-sm text-[var(--color-text-secondary)]">Nenhuma célula pedindo olhar especial agora.</p>
         ) : null}
