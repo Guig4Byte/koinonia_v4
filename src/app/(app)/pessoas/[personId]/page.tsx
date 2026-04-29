@@ -40,7 +40,6 @@ function attendanceTone(status?: AttendanceStatus | null): "ok" | "warn" | "risk
   return "info";
 }
 
-
 export default async function PersonDetailPage({ params }: { params: Promise<{ personId: string }> }) {
   const user = await getCurrentUser();
   const { personId } = await params;

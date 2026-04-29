@@ -159,13 +159,19 @@ export function GroupCard({
 }) {
   const tone = !hasPresenceData ? "neutral" : presenceRate < 65 ? "risk" : presenceRate < 75 ? "warn" : "ok";
   const hasLowPresence = hasPresenceData && presenceRate < 70;
-  const resolvedBadgeTone: SignalBadgeTone = badgeTone ?? (attentionCount > 0 ? (attentionLabelKind === "pastoral" ? "risk" : "warn") : tone === "risk" ? "risk" : hasLowPresence ? "warn" : "ok");
   const attentionLabel = attentionLabelKind === "pastoral"
     ? `${attentionCount} ${attentionCount === 1 ? "caso pastoral" : "casos pastorais"}`
     : attentionLabelKind === "local"
       ? `${attentionCount} ${attentionCount === 1 ? "atenção local" : "atenções locais"}`
       : `${attentionCount} ${attentionCount === 1 ? "pessoa em atenção" : "pessoas em atenção"}`;
-  const resolvedBadgeLabel = badgeLabel ?? (attentionCount > 0 ? attentionLabel : hasLowPresence ? "Presença baixa" : "Estável");
+  const fallbackBadgeTone: SignalBadgeTone = attentionCount > 0
+    ? attentionLabelKind === "pastoral" ? "risk" : "warn"
+    : !hasPresenceData ? "neutral" : tone === "risk" ? "risk" : hasLowPresence ? "warn" : "ok";
+  const fallbackBadgeLabel = attentionCount > 0
+    ? attentionLabel
+    : !hasPresenceData ? "Sem registro" : hasLowPresence ? "Presença baixa" : "Estável";
+  const resolvedBadgeTone: SignalBadgeTone = badgeTone ?? fallbackBadgeTone;
+  const resolvedBadgeLabel = badgeLabel ?? fallbackBadgeLabel;
   const content = (
     <article className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
       <div className="flex items-start justify-between gap-3">

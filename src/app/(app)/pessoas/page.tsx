@@ -136,9 +136,7 @@ export default async function PeoplePage() {
                     <span className="block text-sm font-semibold text-[var(--color-text-primary)]">{person.fullName}</span>
                     <span className="mt-0.5 block text-xs text-[var(--color-text-secondary)]">{person.memberships[0]?.group.name ?? "Sua célula"}</span>
                   </span>
-                  <Badge tone={badge.tone}>
-                    {badge.label}
-                  </Badge>
+                  <Badge tone={badge.tone}>{badge.label}</Badge>
                 </Link>
               );
             })}
