@@ -1,6 +1,6 @@
 # Koinonia — visão futura/legada
 
-Este arquivo é apenas inspiração histórica e futura. Ele **não governa o MVP atual**.
+Este arquivo é inspiração histórica e futura. Ele **não governa o MVP atual**.
 
 Para qualquer decisão sobre a base atual, use primeiro:
 
@@ -13,13 +13,28 @@ Para qualquer decisão sobre a base atual, use primeiro:
 
 As ideias abaixo podem orientar evolução futura, mas não autorizam implementação automática. Se algo aqui conflitar com o MVP Lite, ignore este arquivo e siga os documentos oficiais acima.
 
+## Estado atual que não é futuro
+
+O MVP atual já possui:
+
+- autenticação real simples por e-mail e senha;
+- sessão em cookie `HttpOnly`;
+- tema local no login e no app;
+- visão por papel;
+- busca de pessoa;
+- presença, atenção, contato e cuidado.
+
+Não trate esses itens como pendências futuras.
+
 ## Visão ampla
 
-O Koinonia pode se tornar um sistema de cuidado pastoral para igrejas com células, combinando presença, vínculo, leitura de saúde dos grupos e ações de cuidado.
+O Koinonia pode se tornar um sistema mais completo de cuidado pastoral para igrejas com células, combinando presença, vínculo, leitura de saúde dos grupos e ações de cuidado.
 
 Possibilidades futuras:
 
-- autenticação real e gestão de usuários;
+- gestão simples de usuários e troca de senha;
+- recuperação de acesso;
+- convites controlados;
 - relatórios mais profundos;
 - acompanhamento formal para casos contínuos;
 - área de membro;
@@ -35,6 +50,7 @@ Possibilidades futuras:
 
 No MVP Lite atual, essas possibilidades **não entram por padrão**:
 
+- cadastro público;
 - CRM pastoral completo;
 - task manager;
 - SLA;
@@ -45,7 +61,8 @@ No MVP Lite atual, essas possibilidades **não entram por padrão**:
 - geolocalização;
 - notificações;
 - formulários longos;
-- acompanhamento formal.
+- acompanhamento formal;
+- permissões granulares customizadas.
 
 O MVP atual continua governado por:
 

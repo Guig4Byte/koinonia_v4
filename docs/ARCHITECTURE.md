@@ -1,6 +1,6 @@
 # Arquitetura — Koinonia Lite
 
-Este documento é a fonte técnica do MVP: organização do código, entidades, permissões, rotas e limites de implementação. Para produto, use `PRODUCT.md`. Para linguagem de UI, use `GLOSSARY.md`.
+Este documento é a fonte técnica do MVP: organização do código, entidades, autenticação, permissões, rotas e limites de implementação. Para produto, use `PRODUCT.md`. Para linguagem de UI, use `GLOSSARY.md`.
 
 ## Âncoras que a arquitetura deve proteger
 
@@ -25,7 +25,7 @@ A pessoa é o centro. Presença é fonte de leitura pastoral. A arquitetura deve
 
 ```txt
 src/app
-  Rotas, páginas e API handlers.
+  Rotas, páginas, login/logout e API handlers.
 
 src/components
   Componentes reutilizáveis de UI. Devem ser majoritariamente burros.
@@ -34,7 +34,7 @@ src/features
   Regras de domínio por feature.
 
 src/lib
-  Infraestrutura: Prisma, sessão demo, formatação e utilitários.
+  Infraestrutura: Prisma, autenticação, sessão, formatação e utilitários.
 
 prisma
   Schema, client gerado e seed.
@@ -48,7 +48,7 @@ docs
 | Entidade | Papel |
 | --- | --- |
 | `Church` | escopo institucional |
-| `User` | pessoa usuária do sistema e seu papel |
+| `User` | usuário autenticado, papel e vínculo opcional com `Person` |
 | `Person` | centro do cuidado |
 | `SmallGroup` | célula/grupo |
 | `GroupMembership` | vínculo da pessoa com célula |
@@ -56,6 +56,56 @@ docs
 | `Attendance` | presença no evento |
 | `CareSignal` | sinal que sustenta atenção |
 | `CareTouch` | contato/cuidado registrado |
+
+## Autenticação e sessão
+
+Fontes principais:
+
+```txt
+middleware.ts
+src/app/login/page.tsx
+src/app/login/actions.ts
+src/app/logout/route.ts
+src/lib/auth/current-user.ts
+src/lib/auth/password.ts
+src/lib/auth/redirects.ts
+src/lib/auth/session.ts
+src/lib/auth/token.ts
+```
+
+Regras atuais:
+
+- login por e-mail e senha;
+- senha em `User.passwordHash`;
+- validação com `bcryptjs`;
+- sessão em cookie `HttpOnly` chamado `koinonia-session`;
+- token assinado com `jose`;
+- duração padrão de 7 dias;
+- segredo via `KOINONIA_SESSION_SECRET`, `AUTH_SECRET` ou `NEXTAUTH_SECRET`;
+- em produção, segredo de sessão é obrigatório;
+- `/login` redireciona usuário autenticado para a visão do papel;
+- `/logout` limpa a sessão;
+- middleware redireciona páginas privadas sem sessão para `/login`;
+- middleware responde `401` para API privada sem sessão;
+- `getAuthenticatedUser()` retorna usuário ou `null`;
+- `getCurrentUser()` redireciona para `/login` quando não há usuário autenticado.
+
+Não existe fallback demo nem troca manual de perfil. Não recrie esse fluxo.
+
+## Redirecionamento por papel
+
+Fonte:
+
+```txt
+src/lib/auth/redirects.ts
+```
+
+| Papel | Home |
+| --- | --- |
+| `ADMIN` | `/pastor` |
+| `PASTOR` | `/pastor` |
+| `SUPERVISOR` | `/supervisor` |
+| `LEADER` | `/lider` |
 
 ## Regras de arquitetura
 
@@ -67,6 +117,8 @@ docs
 6. Lista padrão não é igual a escopo técnico.
 7. Componentes compartilhados devem ser reaproveitados antes de criar variações locais.
 8. Funcionalidade que cria burocracia antes de cuidado não entra no MVP.
+9. Autenticação define identidade; autorização continua em `permissions.ts`.
+10. Tema é preferência local e não deve afetar regra de domínio.
 
 ## Permissões e escopo
 
@@ -129,6 +181,10 @@ isPastoralSignal()
 signalBadgeForViewer()
 escalationStatusLabelForViewer()
 escalationStatusDetailForViewer()
+splitPastoralSections()
+isUrgentOrPastoralCase()
+isSupportRequest()
+isInCarePerson()
 ```
 
 Regras:
@@ -167,9 +223,11 @@ As seções pastorais são derivação de sinais/status, não entidade nova.
 
 | Função | Uso |
 | --- | --- |
+| `splitPastoralSections()` | divide sinais e pessoas em cuidado por seção |
+| `splitPastoralSignals()` | classifica sinais em urgentes, apoio e atenção local |
 | `isUrgentOrPastoralCase()` | classifica urgentes e encaminhados ao cuidado pastoral |
-| `isSupportRequest()` | classifica pedidos de apoio da supervisão |
-| `isInCarePerson()` | classifica pessoas em cuidado |
+| `isSupportRequest()` | classifica pedidos de apoio da supervisão conforme viewer |
+| `filterInCarePeople()` | evita mostrar `Em cuidado` quando há sinal ativo mais prioritário |
 
 Regras:
 
@@ -224,6 +282,31 @@ Regras de consistência:
 - pastor vendo caso comum atribuído ao supervisor deve ver `Atenção local`, não mensagem de apoio.
 - sinal encaminhado a pastor/admin aparece como `Caso pastoral` para pastor e `Encaminhado` para outros perfis.
 
+## Presença
+
+Fonte principal:
+
+```txt
+src/features/events/presence-summary.ts
+```
+
+Helpers:
+
+```ts
+isPresenceRecordedEvent()
+summarizePresenceFromAttendances()
+summarizeEventPresence()
+summarizeEventsPresence()
+```
+
+Regras:
+
+- `AttendanceStatus.VISITOR` não entra no denominador;
+- `hasPresenceData` indica se existe dado pastoral válido;
+- UI deve mostrar `—` ou `Sem registro` quando `hasPresenceData` for falso;
+- percentual não deve ser usado como indicador de risco sem dado real;
+- eventos concluídos sem marcação válida continuam sendo leitura de ausência de dado, não `0%`.
+
 ## Check-in
 
 Somente o líder da célula do evento salva check-in.
@@ -277,6 +360,7 @@ Regras:
 - Visão do supervisor: grupos supervisionados + pedidos de apoio + exceções.
 - Visão do líder: célula liderada + check-in/evento relevante + atenção local.
 - Evitar duplicar pessoa em seções da mesma tela quando uma seção mais específica já mostra o caso.
+- `supportRequests` deve representar pessoas/casos relevantes, não uma fila bruta de sinais.
 
 Métricas de presença:
 
@@ -287,9 +371,25 @@ Métricas de presença:
 
 ## Rotas principais
 
+### `/login`
+
+Tela pública de entrada. Usa `loginAction`, `getAuthenticatedUser()` e `homeForRole()`. Se houver sessão válida, redireciona para a visão do papel. Também permite alternar tema.
+
+### `/logout`
+
+Rota para encerrar sessão. O shell usa formulário `POST`. A rota limpa o cookie de sessão e volta para `/login`.
+
+### `/`
+
+Redireciona o usuário autenticado para a visão do papel.
+
+### `/pastor`, `/supervisor`, `/lider`
+
+Telas principais por papel. Todas dependem de `getCurrentUser()` e das permissões centralizadas.
+
 ### `/celulas/[groupId]`
 
-Valida `canViewGroup(user, group)`, mostra membros ativos não visitantes, agrega sinais por pessoa, calcula presença com encontros registrados e separa casos pastorais de atenções locais quando o viewer é pastor.
+Valida `canViewGroup(user, group)`, mostra membros ativos não visitantes, agrega sinais por pessoa, calcula presença com helpers e separa casos pastorais de atenções locais quando o viewer é pastor.
 
 ### `/pessoas`
 
@@ -299,9 +399,35 @@ Respeita escopo do usuário. Para líder mostra membros da própria célula; par
 
 Valida `canViewPerson(user, person)`, usa status efetivo, respeita escopo para sinais/presenças/cuidados/vínculos e mantém leitura curta para ação.
 
+### `/eventos`
+
+Lista eventos dentro do escopo visível. Líder vê ação de registro/ajuste quando pode fazer check-in; outros perfis veem resumo.
+
+### `/eventos/[eventId]`
+
+Valida `canViewEvent(user, event)`. Exibe check-in editável somente para o líder autorizado; outros perfis veem resumo.
+
 ### `/api/search`
 
 Respeita `getVisiblePersonWhere(user)`, retorna pessoas e contexto visível, retorna status efetivo quando houver sinal primário visível e não promete busca de evento/célula.
+
+## Tema
+
+Fontes:
+
+```txt
+src/features/theme/theme.ts
+src/components/theme-init.tsx
+src/components/theme-toggle.tsx
+```
+
+Regras:
+
+- tema é armazenado no `localStorage` como `koinonia-theme`;
+- valores válidos: `light`, `parchment`, `dark`;
+- `ThemeInit` aplica o tema antes da renderização principal;
+- `ThemeToggle` tem variante para header autenticado e card de login;
+- tema não deve ser persistido no banco nesta fase.
 
 ## Design system
 
@@ -322,8 +448,20 @@ Tons semânticos:
 - `support`: apoio solicitado/pedido de apoio;
 - `info`: informativo.
 
-## Seed demo
+## Seed de desenvolvimento
 
-A seed deve validar escopo e fluxo: pastor/supervisores/líderes, células ativas e inativas, eventos concluídos/pendentes/futuros, ausência de dado, visitantes, casos locais, pedidos de apoio, urgentes, resolvidos e encaminhados.
+A seed cria igreja, usuários com senha, células ativas/inativas, eventos concluídos/pendentes/futuros, ausência de dado, visitantes, casos locais, pedidos de apoio, urgentes, resolvidos e encaminhados.
 
-Ela deve permitir testar pastor fora da fila comum, supervisor recebendo apoio, líder operando check-in, sem dado como `Sem registro` e recalcular presença sem reabrir motivo já cuidado sem nova evidência.
+Usuários principais de desenvolvimento:
+
+- `pastor@koinonia.local`
+- `ana@koinonia.local`
+- `bruno@koinonia.local`
+
+Senha padrão local:
+
+```txt
+koinonia123
+```
+
+Esses acessos são para desenvolvimento. A tela de login não deve exibir o bloco de credenciais.

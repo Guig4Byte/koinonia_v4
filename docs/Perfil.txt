@@ -16,7 +16,30 @@ Abrir, entender, respirar e agir.
 
 A tela deve aliviar o peso pastoral, não gerar mais uma obrigação administrativa.
 
-## Primeira leitura
+## Primeiro contato: login
+
+A tela de login também faz parte da experiência pastoral.
+
+Ela deve comunicar:
+
+- simplicidade;
+- segurança;
+- cuidado;
+- identidade do Koinonia.
+
+A tela atual deve permanecer curta:
+
+- ícone pastoral;
+- nome Koinonia;
+- frase `Cuidado pastoral em suas mãos.`;
+- alternância de tema;
+- e-mail;
+- senha;
+- botão `Entrar`.
+
+Não mostrar credenciais de desenvolvimento, seletor de perfil, onboarding, cadastro público ou configurações extensas.
+
+## Primeira leitura após login
 
 A primeira tela deve responder em poucos segundos:
 
@@ -51,6 +74,34 @@ A estrutura atual trabalha com:
 
 Não adicionar novas abas sem necessidade clara. Uma nova aba só entra se reduzir esforço real de cuidado.
 
+## Identidade no app
+
+Após login, o app mostra o papel do usuário e uma saudação simples. Não mostrar seletor de perfil.
+
+O usuário deve sentir:
+
+```txt
+Estou vendo o que é minha responsabilidade.
+```
+
+E não:
+
+```txt
+Estou operando um modo do sistema.
+```
+
+## Tema
+
+Tema é uma escolha visual leve. Deve funcionar no login e continuar no app.
+
+Use os rótulos:
+
+- `Claro`;
+- `Pergaminho`;
+- `Escuro`.
+
+Não transforme tema em uma página de configuração no MVP.
+
 ## Busca
 
 A busca é central, especialmente para pastor e supervisor.
@@ -76,6 +127,18 @@ Cada card deve mostrar:
 - CTA simples, normalmente `Abrir pessoa`.
 
 Ações mais sensíveis pertencem ao detalhe da pessoa.
+
+## Estados vazios
+
+Estado vazio deve aliviar, não parecer falha.
+
+Bons exemplos de intenção:
+
+- não há pessoas pedindo atenção agora;
+- ainda não há presença registrada;
+- nenhum cuidado recente anotado.
+
+Evite estados vazios técnicos, como “nenhum registro encontrado no banco”.
 
 ## Mensagens humanas
 
@@ -105,7 +168,8 @@ Evite:
 - blocos repetidos de botões;
 - linguagem de cobrança;
 - listas longas e homogêneas;
-- “fila de tarefas” pastoral.
+- “fila de tarefas” pastoral;
+- controles administrativos no login.
 
 ## Tom
 

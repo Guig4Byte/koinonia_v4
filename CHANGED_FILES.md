@@ -1,19 +1,49 @@
 # CHANGED_FILES
 
-## Mini-etapa 7 — refinamento visual da tela de login
+## Documentação atualizada com o código
 
 ### Arquivos alterados
 
-- `src/app/login/page.tsx`
+- `README.md`
+- `docs/AGENT_BRIEFING.md`
+- `docs/PRODUCT.md`
+- `docs/GLOSSARY.md`
+- `docs/ARCHITECTURE.md`
+- `docs/Perfil.txt`
+- `docs/Koinonia.txt`
 
-### O que mudou
+### O que foi atualizado
 
-- adicionado um ícone visual no topo do card de login (`HeartHandshake`);
-- removido o bloco `Acesso de desenvolvimento` da tela de login;
-- ajustado o cabeçalho para uma apresentação mais pastoral e mais próxima da referência visual;
-- mantido o seletor de tema no card de login;
-- preservado o fluxo atual de autenticação, erro e redirect.
+- Documentação alinhada à autenticação real atual:
+  - `/login`;
+  - `/logout`;
+  - cookie `HttpOnly` `koinonia-session`;
+  - `getCurrentUser()`;
+  - `middleware.ts`;
+  - `User.passwordHash`;
+  - redirecionamento por papel.
+- Remoção de ambiguidades sobre sessão demo e seletor manual de perfil.
+- Inclusão do tema local no login e no app:
+  - `Claro`;
+  - `Pergaminho`;
+  - `Escuro`;
+  - `koinonia-theme`.
+- Atualização das regras de presença sem dado:
+  - usar `hasPresenceData`;
+  - não exibir `0%` quando o correto for `—` / `Sem registro`.
+- Reforço dos helpers atuais:
+  - `src/features/signals/sections.ts`;
+  - `src/features/events/presence-summary.ts`;
+  - `src/lib/auth/*`.
+- Revisão de propósito de cada documento:
+  - briefing operacional;
+  - produto;
+  - glossário;
+  - arquitetura;
+  - experiência;
+  - visão futura/legada;
+  - README prático.
 
 ### Observação
 
-Nenhuma regra de autenticação, sessão, middleware ou permissões foi alterada.
+Nenhum arquivo de código foi alterado nesta entrega.

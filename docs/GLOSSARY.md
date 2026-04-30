@@ -1,6 +1,6 @@
 # Glossário — Koinonia Lite
 
-Este documento define o vocabulário oficial do MVP. Para escopo e fluxos, consulte `PRODUCT.md`. Para implementação técnica, consulte `ARCHITECTURE.md`.
+Este documento define vocabulário e rótulos oficiais do MVP. Para escopo e fluxos, consulte `PRODUCT.md`. Para implementação, consulte `ARCHITECTURE.md`.
 
 ## Regra de linguagem
 
@@ -22,21 +22,29 @@ Use `Pessoa`, `Pessoas`, `Membros` quando o líder olha a própria célula, e `Q
 
 Evite `lead`, `cliente` e `contato comercial`.
 
-### Célula / grupo
+### Célula
 
 Comunidade local onde presença, vínculo e cuidado acontecem. Use `Célula` na UI. Use `grupo` apenas quando a abstração técnica pedir.
 
 ### Evento / encontro
 
-Encontro real que pode gerar presença. Use `Evento`, `Encontro` ou `Reunião da célula`. Não transformar em calendário amplo antes da hora.
+Encontro real que pode gerar presença. Use `Evento`, `Encontro` ou `Reunião da célula`.
+
+Evite transformar evento em calendário amplo antes da hora.
 
 ### Presença
 
 Registro de quem esteve, faltou ou justificou.
 
-Use `Presença`, `Registrar presença`, `Presença da semana`, `Presença recente` e `Ver resumo`.
+Use `Presença`, `Registrar presença`, `Presença da semana`, `Presença recente`, `Salvar presença`, `Salvar ajuste` e `Ver resumo`.
 
 Evite `controle de presença` e `fiscalização`.
+
+### Sem registro
+
+Ausência real de dado de presença.
+
+Use quando não há presença registrada suficiente para calcular percentual. Não mostre `0%` nesse caso.
 
 ### Sinal
 
@@ -52,7 +60,7 @@ Sinal não é ticket, SLA, cobrança ou fila burocrática.
 
 Forma visível de apresentar um sinal para alguém agir.
 
-Use `Em atenção`, `Pessoas em atenção`, `Atenção local`, `Quem merece atenção` e `Acompanhar de perto` como título de seção.
+Use `Em atenção`, `Pessoas em atenção`, `Atenção local`, `Quem merece atenção` e `Acompanhar de perto`.
 
 Evite `alerta`, `incidente` e `pendência crítica`, salvo quando houver severidade real.
 
@@ -112,7 +120,9 @@ Escalonamento não transfere toda responsabilidade, não cria SLA e não vira ta
 
 ### Contato
 
-Ação concreta de aproximação. Use `Ligar`, `WhatsApp`, `Já houve contato?`, `Sim, houve contato` e `Ainda não consegui contato`.
+Ação concreta de aproximação.
+
+Use `Ligar`, `WhatsApp`, `Já houve contato?`, `Sim, houve contato` e `Ainda não consegui contato`.
 
 ### Cuidado
 
@@ -120,11 +130,31 @@ Registro mínimo de que alguém percebeu e agiu.
 
 Use `Em cuidado`, `Acolhidos em cuidado`, `Cuidado realizado`, `Registrar cuidado`, `Anotar cuidado` e `Salvar sem anotação`.
 
-Evite `task`, `workflow`, `chamado` e `SLA`.
+Evite `task`, `workflow`, `chamado`, `ticket` e `SLA`.
 
 ### Visão
 
 Leitura curta e orientada à ação. Use `Visão` em vez de `Dashboard` na UI.
+
+### Login
+
+Entrada do usuário autenticado.
+
+Use `Entrar`, `E-mail`, `Senha`, `Sair` e mensagens curtas como `E-mail ou senha não conferem.`
+
+Evite `modo demo`, `trocar perfil`, `impersonar usuário` e mensagens técnicas de sessão.
+
+### Tema
+
+Preferência visual local do aparelho.
+
+Rótulos oficiais:
+
+- `Claro`;
+- `Pergaminho`;
+- `Escuro`.
+
+Tema não é configuração pastoral, não muda escopo e não precisa de tela administrativa.
 
 ## Rótulos e tons oficiais
 
@@ -160,12 +190,16 @@ Não rebaixar `Urgente` para `Em atenção`. O contexto pode mudar a mensagem, m
 
 | Contexto | CTA preferencial |
 | --- | --- |
+| Login | `Entrar` |
+| Sair da sessão | `Sair` |
 | Lista de pessoas/casos | `Abrir pessoa` |
 | Pedido recebido pelo supervisor | `Abrir apoio` |
 | Lista com muitos itens | `Ver mais`, `Mostrar menos` |
 | Detalhe da pessoa | `Ligar`, `WhatsApp`, `Já houve contato?` |
 | Célula | `Abrir célula` |
-| Evento | `Registrar presença` ou `Ver resumo` |
+| Evento pendente | `Registrar presença` |
+| Evento registrado | `Ver resumo`, `Ajustar presença` |
+| Cuidado | `Registrar cuidado`, `Salvar sem anotação` |
 
 Evite `Abrir cuidado` em lista, porque sugere módulo formal de acompanhamento.
 
@@ -173,9 +207,13 @@ Evite `Abrir cuidado` em lista, porque sugere módulo formal de acompanhamento.
 
 | Técnico | UI preferida | Observação |
 | --- | --- | --- |
+| `User` | usuário autenticado | fonte real do papel e escopo |
+| `passwordHash` | senha | nunca exibir ou manipular em UI comum |
+| `koinonia-session` | sessão | cookie técnico; não aparece na UI |
 | `CareSignal` | atenção / pessoa em atenção | sinal sustenta a atenção |
 | `CareTouch` | contato feito / cuidado realizado | registro mínimo após ação |
 | `Event` | evento / encontro | não virar calendário amplo |
 | `Attendance` | presença | fonte pastoral, não fiscalização |
 | `assignedToId` | apoio/encaminhamento | escalonamento mínimo |
 | `dashboard` | visão | evitar linguagem executiva pesada |
+| `koinonia-theme` | tema | preferência local do aparelho |
