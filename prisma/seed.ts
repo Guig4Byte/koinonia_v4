@@ -19,14 +19,14 @@ function daysFromNow(days: number, hour = 20): Date {
   return date;
 }
 
-let demoPhoneCounter = 0;
+let seedPhoneCounter = 0;
 
-function nextDemoPhone(): string {
-  demoPhoneCounter += 1;
-  return `+558199${String(demoPhoneCounter).padStart(6, "0")}`;
+function nextSeedPhone(): string {
+  seedPhoneCounter += 1;
+  return `+558199${String(seedPhoneCounter).padStart(6, "0")}`;
 }
 
-type DemoUser = {
+type SeedUser = {
   id: string;
   personId: string | null;
   name: string;
@@ -34,19 +34,19 @@ type DemoUser = {
   role: UserRole;
 };
 
-type DemoMember = {
+type SeedMember = {
   id: string;
   fullName: string;
 };
 
-type DemoGroup = {
+type SeedGroup = {
   id: string;
   key: string;
   name: string;
-  leader: DemoUser;
-  supervisor: DemoUser;
-  members: DemoMember[];
-  visitor: DemoMember;
+  leader: SeedUser;
+  supervisor: SeedUser;
+  members: SeedMember[];
+  visitor: SeedMember;
 };
 
 const memberNamesByGroup: Record<string, string[]> = {
@@ -202,12 +202,12 @@ async function createUserWithPerson({
   email: string;
   role: UserRole;
   passwordHash: string;
-}): Promise<DemoUser> {
+}): Promise<SeedUser> {
   const person = await prisma.person.create({
     data: {
       churchId,
       fullName: name,
-      phone: nextDemoPhone(),
+      phone: nextSeedPhone(),
       status: PersonStatus.ACTIVE,
     },
   });
@@ -237,12 +237,12 @@ async function createGroupWithMembers({
   churchId: string;
   key: string;
   name: string;
-  leader: DemoUser;
-  supervisor: DemoUser;
+  leader: SeedUser;
+  supervisor: SeedUser;
   meetingDayOfWeek: number;
   meetingTime: string;
   locationName: string;
-}): Promise<DemoGroup> {
+}): Promise<SeedGroup> {
   const group = await prisma.smallGroup.create({
     data: {
       churchId,
@@ -326,7 +326,7 @@ async function createEvent({
   hour = 20,
 }: {
   churchId: string;
-  group: DemoGroup;
+  group: SeedGroup;
   createdById: string;
   days: number;
   status: EventStatus;
@@ -355,7 +355,7 @@ async function createSignal({
   evidence,
 }: {
   churchId: string;
-  group: DemoGroup;
+  group: SeedGroup;
   personIndex: number;
   assignedToId?: string | null;
   severity: SignalSeverity;
@@ -840,7 +840,7 @@ async function main() {
     data: {
       churchId,
       fullName: "Membro de Célula Arquivada",
-      phone: nextDemoPhone(),
+      phone: nextSeedPhone(),
       status: PersonStatus.NEEDS_ATTENTION,
       shortNote:
         "Cenário de regressão: não deve aparecer em listas padrão por estar em grupo inativo.",
@@ -898,7 +898,7 @@ async function main() {
 
 async function createCompletedEventWithChurch(
   churchId: string,
-  group: DemoGroup,
+  group: SeedGroup,
   createdById: string,
   days: number,
   eventIndex: number,

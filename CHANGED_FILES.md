@@ -1,52 +1,43 @@
-# Mini-etapa 4 — acabamento pós-auth
+# Koinonia — auth cleanup step 5
 
-Foco: remover sinais residuais de demo, deixar login/logout mais coerentes com sessão real e documentar o fluxo mínimo de autenticação.
+Mini-etapa 5: limpeza pós-auth após a entrada da autenticação real.
 
 ## Arquivos alterados
 
-- `.env.example`
-- `README.md`
-- `prisma/seed.ts`
-- `src/app/login/page.tsx`
-- `src/components/app-shell.tsx`
-- `src/components/role-switcher.tsx`
 - `src/lib/auth/session.ts`
-- `src/lib/auth/token.ts`
+  - Remove referências ao cookie legado `koinonia-demo-role`.
+  - A sessão real `koinonia-session` passa a ser a única sessão manipulada por `createAuthSession()` e `destroyAuthSession()`.
 
-## Mudanças
+- `src/app/logout/route.ts`
+  - Remove `GET /logout`.
+  - Logout fica restrito a `POST`, alinhado ao formulário do `AppShell` e evitando ação de saída por navegação simples.
 
-### Login
+- `prisma/seed.ts`
+  - Renomeia tipos/helpers internos de `Demo*` para `Seed*`.
+  - Não altera dados criados, usuários, senha, cenários pastorais ou regras de seed.
 
-- O bloco de credenciais locais agora aparece como `Acesso de desenvolvimento`, não como demo.
-- Esse bloco só renderiza fora de produção (`process.env.NODE_ENV !== "production"`).
-- A lista de usuários foi renomeada internamente para `seedUsers`.
+## Arquivos para excluir manualmente
 
-### Logout
+DELETE:
 
-- O botão `Sair` agora usa `POST /logout` via formulário HTML simples.
-- O endpoint `GET /logout` continua existindo como fallback, mas a UI não depende mais de logout por link GET.
+- `src/app/actions.ts`
+- `src/components/role-switcher.tsx`
 
-### Sessão
+Motivo: esses arquivos eram resíduos da troca manual de perfis. Não há imports ativos para eles na base atual.
 
-- `destroyAuthSession()` também limpa o cookie antigo `koinonia-demo-role`.
-- O segredo de sessão agora exige variável em produção:
-  - `KOINONIA_SESSION_SECRET`, ou
-  - `AUTH_SECRET`, ou
-  - `NEXTAUTH_SECRET`.
-- Em desenvolvimento, ainda existe fallback local para não travar a execução sem `.env` completo.
+## Validação feita nesta auditoria
 
-### Documentação e seed
+Busca por referências antigas não retornou usos ativos de:
 
-- README atualizado para autenticação real local.
-- `.env.example` documenta `KOINONIA_SESSION_SECRET`.
-- Logs da seed agora falam em acessos/usuários da seed, não seletor de perfis.
+- `RoleSwitcher`
+- `switchDemoRole`
+- `demo-session`
+- `koinonia-demo-role`
+- `getDemo*`
+- `Acesso demo`
+- `seletor` / `troca de perfil`
 
-### Legado
-
-- `RoleSwitcher` continua como no-op temporário para evitar quebra em branches antigas, mas a troca manual de perfis não faz mais parte da UI.
-- Quando não houver mais nenhum branch/import antigo dependendo dele, o arquivo pode ser removido.
-
-## Validação sugerida
+## Validação recomendada
 
 ```bash
 npm run typecheck
@@ -54,11 +45,9 @@ npm run test
 npm run build
 ```
 
-Depois validar manualmente:
+Depois conferir manualmente:
 
-- `/login` sem sessão;
-- login com `pastor@koinonia.local / koinonia123`;
-- login com `ana@koinonia.local / koinonia123`;
-- login com `bruno@koinonia.local / koinonia123`;
+- login com pastor/supervisor/líder;
 - botão `Sair`;
+- acesso direto sem sessão;
 - ausência da barra de troca manual de perfis.
