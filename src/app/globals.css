@@ -344,6 +344,17 @@ a {
   padding: 14px 14px calc(128px + env(safe-area-inset-bottom));
 }
 
+.login-page {
+  min-height: 100svh;
+  max-width: 500px;
+  padding: max(18px, env(safe-area-inset-top)) 18px calc(24px + env(safe-area-inset-bottom));
+}
+
+.login-card {
+  overflow: hidden;
+}
+
+
 .app-header {
   margin-bottom: 18px;
   border: 1px solid color-mix(in srgb, var(--color-brand-accent) 24%, transparent);
