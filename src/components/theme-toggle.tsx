@@ -21,9 +21,11 @@ function getInitialTheme(): Theme {
 export function ThemeToggle({
   variant = "header",
   showLabel = false,
+  className = "",
 }: {
   variant?: ThemeToggleVariant;
   showLabel?: boolean;
+  className?: string;
 }) {
   const [theme, setTheme] = useState<Theme>("light");
 
@@ -55,7 +57,7 @@ export function ThemeToggle({
       title={`Tema: ${label}`}
       className={`inline-flex h-10 items-center justify-center gap-2 rounded-2xl border transition active:scale-95 ${
         showLabel ? "px-3" : "w-10"
-      } ${variantClass}`}
+      } ${variantClass} ${className}`}
     >
       <Icon className="h-4 w-4" />
       {showLabel ? <span className="text-xs font-bold">{label}</span> : null}

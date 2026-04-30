@@ -1,49 +1,20 @@
 # CHANGED_FILES
 
-## Documentação atualizada com o código
+## Ajuste visual do header mobile
 
 ### Arquivos alterados
 
-- `README.md`
-- `docs/AGENT_BRIEFING.md`
-- `docs/PRODUCT.md`
-- `docs/GLOSSARY.md`
-- `docs/ARCHITECTURE.md`
-- `docs/Perfil.txt`
-- `docs/Koinonia.txt`
+- `src/components/app-shell.tsx`
+- `src/app/globals.css`
 
 ### O que foi atualizado
 
-- Documentação alinhada à autenticação real atual:
-  - `/login`;
-  - `/logout`;
-  - cookie `HttpOnly` `koinonia-session`;
-  - `getCurrentUser()`;
-  - `middleware.ts`;
-  - `User.passwordHash`;
-  - redirecionamento por papel.
-- Remoção de ambiguidades sobre sessão demo e seletor manual de perfil.
-- Inclusão do tema local no login e no app:
-  - `Claro`;
-  - `Pergaminho`;
-  - `Escuro`;
-  - `koinonia-theme`.
-- Atualização das regras de presença sem dado:
-  - usar `hasPresenceData`;
-  - não exibir `0%` quando o correto for `—` / `Sem registro`.
-- Reforço dos helpers atuais:
-  - `src/features/signals/sections.ts`;
-  - `src/features/events/presence-summary.ts`;
-  - `src/lib/auth/*`.
-- Revisão de propósito de cada documento:
-  - briefing operacional;
-  - produto;
-  - glossário;
-  - arquitetura;
-  - experiência;
-  - visão futura/legada;
-  - README prático.
+- Botão de tema e botão de logout agora ficam empilhados no canto superior direito do header.
+- Botão de logout passou a usar apenas ícone, removendo o texto `Sair`.
+- Botão de logout recebeu `aria-label` e `title` para manter acessibilidade.
+- Header recebeu `position: relative` para ancorar a coluna de ações sem aumentar a altura do bloco.
+- Bloco de marca/cargo recebeu respiro à direita para evitar colisão visual com os botões.
 
 ### Observação
 
-Nenhum arquivo de código foi alterado nesta entrega.
+Não rodei build/typecheck porque o pacote enviado não contém `node_modules`.
