@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { loginAction } from "@/app/login/actions";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { getAuthenticatedUser } from "@/lib/auth/current-user";
 import { homeForRole } from "@/lib/auth/redirects";
 
@@ -36,8 +37,15 @@ export default async function LoginPage({
     <main className="safe-page flex min-h-screen items-center">
       <section className="w-full space-y-5">
         <div className="rounded-[28px] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-5 shadow-card">
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--color-brand-accent)]">Koinonia</p>
-          <h1 className="font-serif-display mt-4 text-[2.45rem] font-semibold leading-none tracking-[-0.04em] text-[var(--color-text-primary)]">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--color-brand-accent)]">Koinonia</p>
+              <p className="mt-1 text-xs font-semibold text-[var(--color-text-secondary)]">Tema salvo neste aparelho</p>
+            </div>
+            <ThemeToggle variant="card" showLabel />
+          </div>
+
+          <h1 className="font-serif-display mt-5 text-[2.45rem] font-semibold leading-none tracking-[-0.04em] text-[var(--color-text-primary)]">
             Entrar.
           </h1>
           <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">

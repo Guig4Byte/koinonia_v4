@@ -4,6 +4,8 @@ import { Moon, ScrollText, Sun, type LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { applyTheme, getNextTheme, isTheme, THEME_STORAGE_KEY, type Theme } from "@/features/theme/theme";
 
+type ThemeToggleVariant = "header" | "card";
+
 const themeMeta: Record<Theme, { label: string; Icon: LucideIcon }> = {
   light: { label: "Claro", Icon: Sun },
   parchment: { label: "Pergaminho", Icon: ScrollText },
@@ -16,7 +18,13 @@ function getInitialTheme(): Theme {
   return isTheme(stored) ? stored : "light";
 }
 
-export function ThemeToggle() {
+export function ThemeToggle({
+  variant = "header",
+  showLabel = false,
+}: {
+  variant?: ThemeToggleVariant;
+  showLabel?: boolean;
+}) {
   const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
@@ -34,6 +42,10 @@ export function ThemeToggle() {
 
   const { Icon, label } = themeMeta[theme];
   const nextLabel = themeMeta[getNextTheme(theme)].label;
+  const variantClass =
+    variant === "card"
+      ? "border-[var(--color-border-card)] bg-[var(--metric-card-bg)] text-[var(--color-text-primary)]"
+      : "border-[var(--color-theme-icon-active-border)] bg-[var(--color-theme-icon-active-bg)] text-[var(--color-text-on-header)]";
 
   return (
     <button
@@ -41,9 +53,12 @@ export function ThemeToggle() {
       onClick={toggleTheme}
       aria-label={`Tema atual: ${label}. Alternar para ${nextLabel}.`}
       title={`Tema: ${label}`}
-      className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[var(--color-theme-icon-active-border)] bg-[var(--color-theme-icon-active-bg)] text-[var(--color-text-on-header)] transition active:scale-95"
+      className={`inline-flex h-10 items-center justify-center gap-2 rounded-2xl border transition active:scale-95 ${
+        showLabel ? "px-3" : "w-10"
+      } ${variantClass}`}
     >
       <Icon className="h-4 w-4" />
+      {showLabel ? <span className="text-xs font-bold">{label}</span> : null}
     </button>
   );
 }

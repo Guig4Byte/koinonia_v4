@@ -1,43 +1,48 @@
-# Koinonia — auth cleanup step 5
+# Mini-etapa 6 — Tema na tela de login
 
-Mini-etapa 5: limpeza pós-auth após a entrada da autenticação real.
+## Objetivo
+
+Permitir trocar e aplicar o tema antes da autenticação, mantendo a tela de login simples e sem virar uma tela de configurações.
 
 ## Arquivos alterados
 
-- `src/lib/auth/session.ts`
-  - Remove referências ao cookie legado `koinonia-demo-role`.
-  - A sessão real `koinonia-session` passa a ser a única sessão manipulada por `createAuthSession()` e `destroyAuthSession()`.
+- `src/app/login/page.tsx`
+- `src/components/theme-toggle.tsx`
+- `src/components/theme-init.tsx`
 
-- `src/app/logout/route.ts`
-  - Remove `GET /logout`.
-  - Logout fica restrito a `POST`, alinhado ao formulário do `AppShell` e evitando ação de saída por navegação simples.
+## Mudanças
 
-- `prisma/seed.ts`
-  - Renomeia tipos/helpers internos de `Demo*` para `Seed*`.
-  - Não altera dados criados, usuários, senha, cenários pastorais ou regras de seed.
+### `src/app/login/page.tsx`
 
-## Arquivos para excluir manualmente
+- Adiciona o controle de tema no topo do card de login.
+- Usa o mesmo mecanismo de tema do app autenticado.
+- Mantém o tema salvo no aparelho via `localStorage`.
+- Evita criar uma tela ou seção pesada de preferências antes do login.
 
-DELETE:
+### `src/components/theme-toggle.tsx`
 
-- `src/app/actions.ts`
-- `src/components/role-switcher.tsx`
+- O componente agora aceita variações:
+  - `variant="header"` para o header autenticado, mantendo o comportamento atual.
+  - `variant="card"` para superfícies claras/escuras como o login.
+- Adiciona `showLabel` para exibir o nome do tema quando fizer sentido.
+- Preserva o ciclo atual: `Claro -> Pergaminho -> Escuro`.
 
-Motivo: esses arquivos eram resíduos da troca manual de perfis. Não há imports ativos para eles na base atual.
+### `src/components/theme-init.tsx`
 
-## Validação feita nesta auditoria
+- Adiciona um script inicial para aplicar o tema salvo antes do conteúdo principal renderizar.
+- Reduz flash visual quando o usuário já tinha escolhido `Pergaminho` ou `Escuro`.
+- Mantém o `useEffect` como sincronização client-side após hidratação.
 
-Busca por referências antigas não retornou usos ativos de:
+## O que não mudou
 
-- `RoleSwitcher`
-- `switchDemoRole`
-- `demo-session`
-- `koinonia-demo-role`
-- `getDemo*`
-- `Acesso demo`
-- `seletor` / `troca de perfil`
+- Login/logout.
+- Sessão real.
+- Middleware.
+- Permissões.
+- Regras pastorais.
+- Rotas protegidas.
 
-## Validação recomendada
+## Validação sugerida
 
 ```bash
 npm run typecheck
@@ -45,9 +50,10 @@ npm run test
 npm run build
 ```
 
-Depois conferir manualmente:
+Teste manual:
 
-- login com pastor/supervisor/líder;
-- botão `Sair`;
-- acesso direto sem sessão;
-- ausência da barra de troca manual de perfis.
+1. Abra `/login` sem sessão.
+2. Alterne entre `Claro`, `Pergaminho` e `Escuro`.
+3. Recarregue a página e confirme que o tema escolhido permanece.
+4. Faça login e confirme que o mesmo tema segue dentro do app.
+5. Saia e confirme que o tema continua aplicado no login.
