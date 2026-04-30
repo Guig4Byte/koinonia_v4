@@ -1,27 +1,28 @@
-import { cookies } from "next/headers";
-import { UserRole } from "@/generated/prisma/client";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { isUserRole } from "@/lib/roles";
+import { readAuthSession } from "@/lib/auth/session";
 
-const DEFAULT_ROLE = UserRole.PASTOR;
+export async function getAuthenticatedUser() {
+  const session = await readAuthSession();
 
-function parseRole(value: string | undefined): UserRole {
-  return isUserRole(value) ? value : DEFAULT_ROLE;
+  if (!session) return null;
+
+  return prisma.user.findFirst({
+    where: {
+      id: session.id,
+      churchId: session.churchId,
+      role: session.role,
+    },
+    include: { church: true, person: true },
+  });
 }
 
 export async function getCurrentUser() {
-  const cookieStore = await cookies();
-  const role = parseRole(cookieStore.get("koinonia-demo-role")?.value);
+  const authenticatedUser = await getAuthenticatedUser();
 
-  const user = await prisma.user.findFirst({
-    where: { role },
-    include: { church: true, person: true },
-    orderBy: { createdAt: "asc" },
-  });
-
-  if (!user) {
-    throw new Error("Nenhum usuário demo encontrado. Rode npm run db:seed.");
+  if (!authenticatedUser) {
+    redirect("/login");
   }
 
-  return user;
+  return authenticatedUser;
 }

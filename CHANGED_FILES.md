@@ -1,63 +1,80 @@
-# Koinonia — mobile polish step 3
+# Koinonia — autenticação real — mini-etapa 3
 
-Foco desta mini-etapa: deixar listas de atenção e navegação de detalhe mais leves no celular, sem alterar regra de negócio, query, permissão ou endpoint.
+Foco desta entrega: remover a troca manual de perfis da experiência e fazer a sessão real virar a fonte de verdade do usuário atual.
 
 ## Arquivos alterados
 
-- `src/components/cards.tsx`
-- `src/app/(app)/pessoas/[personId]/page.tsx`
-- `src/app/(app)/eventos/[eventId]/page.tsx`
-- `src/app/(app)/pessoas/page.tsx`
-- `src/app/(app)/celulas/[groupId]/page.tsx`
+- `src/components/app-shell.tsx`
+- `src/lib/auth/current-user.ts`
+- `src/lib/auth/session.ts`
+- `src/lib/auth/token.ts`
+- `src/app/actions.ts`
+- `src/components/role-switcher.tsx`
 
 ## Mudanças
 
-### 1. Cards de atenção viraram links inteiros
+### 1. Remoção visual da troca de perfis
 
-`PersonSignalCard` não renderiza mais um botão grande dentro do card quando há destino. O card inteiro agora é clicável e mostra um CTA discreto no rodapé, como `Abrir pessoa →` ou `Abrir apoio →`.
+`AppShell` não renderiza mais `RoleSwitcher`.
 
-Motivo: reduzir sensação de fila operacional e deixar a lista parecer feed de cuidado.
+A pessoa logada continua vendo:
 
-### 2. Navegação de retorno padronizada
+- nome/saudação;
+- papel atual;
+- botão `Sair`;
+- alternância de tema.
 
-Adicionado `BackLink` em `cards.tsx` e aplicado em:
+Isso remove a sensação de simulador sem adicionar uma área administrativa.
 
-- detalhe de pessoa;
-- detalhe de evento;
-- detalhe de célula.
+### 2. Sessão real como fonte única
 
-Motivo: padronizar toque, espaçamento e linguagem dos retornos.
+`getCurrentUser()` agora tenta carregar apenas o usuário autenticado pela sessão real.
 
-### 3. Cartão informativo padronizado
+Antes:
 
-Adicionado `InfoCard` para mensagens simples e aplicado em:
+1. tentava sessão real;
+2. se não houvesse, caía no cookie `koinonia-demo-role`.
 
-- bloco de consulta em `/pessoas`;
-- mensagem de evento sem célula no detalhe do evento.
+Agora:
 
-Motivo: remover variações locais de card textual e manter consistência visual.
+1. tenta sessão real;
+2. sem sessão válida, redireciona para `/login`.
+
+### 3. Cookie demo tratado como legado
+
+`createAuthSession()` ainda remove `koinonia-demo-role` ao fazer login, mas esse cookie não é mais lido como fallback.
+
+### 4. Ação demo desativada
+
+`src/app/actions.ts` não expõe mais `switchDemoRole`.
+
+### 5. Componente legado neutralizado
+
+`src/components/role-switcher.tsx` foi mantido como no-op temporário para evitar quebra caso algum import antigo apareça durante transição. Como `AppShell` não importa mais esse componente, ele não aparece na UI.
 
 ## O que não mudou
 
-- regras pastorais;
 - permissões;
-- consultas Prisma;
-- endpoints;
-- labels/status centrais;
-- regras de presença/check-in.
+- queries;
+- regras pastorais;
+- check-in;
+- cuidado;
+- escalonamento;
+- login/logout criados na etapa anterior.
 
 ## Validação sugerida
 
 ```bash
-npm run test
 npm run typecheck
+npm run test
 npm run build
 ```
 
-Também vale conferir manualmente no celular:
+## Validação manual sugerida
 
-- `Visão` do líder/supervisor/pastor;
-- `/pessoas`;
-- `/pessoas/[personId]`;
-- `/celulas/[groupId]`;
-- `/eventos/[eventId]`.
+1. Acessar app sem sessão: deve ir para `/login`.
+2. Entrar como pastor: deve ir para `/pastor`.
+3. Entrar como supervisor: deve ir para `/supervisor`.
+4. Entrar como líder: deve ir para `/lider`.
+5. Confirmar que não existe mais barra de troca de perfis.
+6. Clicar em `Sair`: deve voltar para `/login`.
