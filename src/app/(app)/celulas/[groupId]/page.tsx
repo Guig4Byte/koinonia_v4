@@ -1,8 +1,7 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SignalSeverity, SignalStatus, UserRole } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
-import { ContextSummary, DetailLinkCard, EmptyState, PersonMiniCard, PersonSignalCard, SectionTitle } from "@/components/cards";
+import { BackLink, ContextSummary, DetailLinkCard, EmptyState, PersonMiniCard, PersonSignalCard, SectionTitle } from "@/components/cards";
 import { Badge } from "@/components/ui/badge";
 import { summarizeEventPresence, summarizeEventsPresence } from "@/features/events/presence-summary";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
@@ -116,9 +115,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
         { href: "/eventos", label: "Eventos", icon: "calendar" },
       ]}
     >
-      <Link href={homeHref} className="mb-4 inline-flex text-sm font-semibold text-[var(--color-brand)]">
-        ← Visão
-      </Link>
+      <BackLink href={homeHref}>Visão</BackLink>
 
       <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
         <div className="flex items-start justify-between gap-3">

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { AttendanceStatus } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { CheckInList } from "@/components/check-in-list";
-import { SectionTitle } from "@/components/cards";
+import { BackLink, InfoCard, SectionTitle } from "@/components/cards";
 import { Badge } from "@/components/ui/badge";
 import { summarizeEventPresence } from "@/features/events/presence-summary";
 import { canCheckInEvent, canViewEvent } from "@/features/permissions/permissions";
@@ -153,9 +153,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
         { href: "/eventos", label: "Eventos", icon: "calendar", active: true },
       ]}
     >
-      <Link href="/eventos" className="mb-4 inline-flex text-sm font-semibold text-[var(--color-brand)]">
-        ← Eventos
-      </Link>
+      <BackLink href="/eventos">Eventos</BackLink>
 
       <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
         <div className="flex items-start justify-between gap-3">
@@ -208,9 +206,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
           <EventReadOnlySummary completed={completed} members={members} visitors={visitorRows} />
         )
       ) : (
-        <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm text-[var(--color-text-secondary)] shadow-card">
-          Este evento não está vinculado a uma célula. A presença completa entra depois.
-        </p>
+        <InfoCard>Este evento não está vinculado a uma célula. A presença completa entra depois.</InfoCard>
       )}
     </AppShell>
   );

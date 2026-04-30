@@ -1,6 +1,6 @@
 import { MembershipRole, PersonStatus, SignalSeverity, UserRole } from "../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
-import { PastoralListSection, PersonMiniCard, PersonSignalCard, SectionTitle } from "@/components/cards";
+import { InfoCard, PastoralListSection, PersonMiniCard, PersonSignalCard, SectionTitle } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
 import { getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "@/features/permissions/permissions";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
@@ -232,11 +232,11 @@ export default async function PeoplePage() {
       ) : (
         <>
           <SectionTitle>Consulta</SectionTitle>
-          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm leading-relaxed text-[var(--color-text-secondary)] shadow-card">
+          <InfoCard>
             {isPastoralOverview
               ? "Esta tela organiza os casos por intenção pastoral. Use a busca para consultar qualquer pessoa quando precisar."
               : "As seções acima mostram quem merece atenção. Para consultar outra pessoa dentro da sua responsabilidade, use a busca pelo nome."}
-          </p>
+          </InfoCard>
         </>
       )}
     </AppShell>

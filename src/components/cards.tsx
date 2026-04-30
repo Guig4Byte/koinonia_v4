@@ -132,6 +132,33 @@ export function PastoralListSection({
   );
 }
 
+
+export function BackLink({
+  href,
+  children,
+}: {
+  href: string;
+  children: ReactNode;
+}) {
+  return (
+    <Link href={href} className="mb-4 inline-flex min-h-9 items-center text-sm font-semibold text-[var(--color-brand)] transition active:scale-[0.98]">
+      ← {children}
+    </Link>
+  );
+}
+
+export function InfoCard({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  return (
+    <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm leading-relaxed text-[var(--color-text-secondary)] shadow-card">
+      {children}
+    </p>
+  );
+}
+
 export function EmptyState({
   children,
   compact = false,
@@ -250,9 +277,10 @@ export function PersonSignalCard({
 }) {
   const resolvedBadgeTone = badgeTone ?? (severity === "risk" ? "risk" : severity === "ok" ? "ok" : severity === "info" ? "info" : "warn");
   const resolvedBadgeLabel = badgeLabel ?? (severity === "risk" ? "Urgente" : "Em atenção");
+  const cardHref = detailHref ?? href;
 
   const content = (
-    <article className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
+    <article className="group rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
       <div className="flex items-start gap-3">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--color-avatar-bg)] text-sm font-bold text-[var(--color-avatar-text)]">
           {initials}
@@ -266,18 +294,21 @@ export function PersonSignalCard({
             <Badge tone={resolvedBadgeTone}>{resolvedBadgeLabel}</Badge>
           </div>
           {reason ? <p className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-primary)]">{reason}</p> : null}
-          {detailHref ? (
-            <Link href={detailHref} className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)] transition active:scale-[0.98]">
-              {ctaLabel}
-            </Link>
+          {cardHref ? (
+            <p className="mt-3 text-sm font-semibold text-[var(--color-brand)]">
+              {ctaLabel} <span className="inline-block transition group-active:translate-x-0.5">→</span>
+            </p>
           ) : null}
         </div>
       </div>
     </article>
   );
 
-  if (!href || detailHref) return content;
-  return <Link href={href}>{content}</Link>;
+  return cardHref ? (
+    <Link href={cardHref} aria-label={`${ctaLabel}: ${name}`} className="block">
+      {content}
+    </Link>
+  ) : content;
 }
 
 export function GroupCard({

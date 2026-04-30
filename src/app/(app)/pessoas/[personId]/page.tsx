@@ -1,10 +1,9 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AttendanceStatus, CareKind, PersonStatus } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { CareActions } from "@/components/care-actions";
 import { PersonStatusActions } from "@/components/person-status-actions";
-import { DetailLinkCard, EmptyState, SectionTitle } from "@/components/cards";
+import { BackLink, DetailLinkCard, EmptyState, SectionTitle } from "@/components/cards";
 import { SignalSupportActions } from "@/components/signal-support-actions";
 import { Badge } from "@/components/ui/badge";
 import { canRegisterCare, canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
@@ -102,9 +101,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
         { href: "/eventos", label: "Eventos", icon: "calendar" },
       ]}
     >
-      <Link href="/pessoas" className="mb-4 inline-flex text-sm font-semibold text-[var(--color-brand)]">
-        ← {peopleLabel}
-      </Link>
+      <BackLink href="/pessoas">{peopleLabel}</BackLink>
 
       <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
         <div className="flex items-start gap-3">
