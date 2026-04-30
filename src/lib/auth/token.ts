@@ -24,13 +24,13 @@ function isSessionRole(value: unknown): value is UserRole {
 }
 
 function getSessionSecret() {
-  const secret =
-    process.env.KOINONIA_SESSION_SECRET ??
-    process.env.AUTH_SECRET ??
-    process.env.NEXTAUTH_SECRET ??
-    "koinonia-lite-dev-session-secret-change-before-production";
+  const secret = process.env.KOINONIA_SESSION_SECRET ?? process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
 
-  return new TextEncoder().encode(secret);
+  if (!secret && process.env.NODE_ENV === "production") {
+    throw new Error("Defina KOINONIA_SESSION_SECRET, AUTH_SECRET ou NEXTAUTH_SECRET para usar sessão em produção.");
+  }
+
+  return new TextEncoder().encode(secret ?? "koinonia-lite-dev-session-secret-change-before-production");
 }
 
 export async function createAuthToken(user: SessionUser) {

@@ -32,12 +32,14 @@ export function AppShell({
             <p className="mt-1 text-xs font-semibold text-[var(--color-text-on-header)]">{roleLabels[role]}</p>
           </div>
           <div className="flex items-center gap-2">
-            <a
-              href="/logout"
-              className="inline-flex h-10 items-center justify-center rounded-2xl border border-[var(--color-theme-icon-active-border)] bg-[var(--color-theme-icon-active-bg)] px-3 text-xs font-bold text-[var(--color-text-on-header)] transition active:scale-95"
-            >
-              Sair
-            </a>
+            <form action="/logout" method="post">
+              <button
+                type="submit"
+                className="inline-flex h-10 items-center justify-center rounded-2xl border border-[var(--color-theme-icon-active-border)] bg-[var(--color-theme-icon-active-bg)] px-3 text-xs font-bold text-[var(--color-text-on-header)] transition active:scale-95"
+              >
+                Sair
+              </button>
+            </form>
             <ThemeToggle />
           </div>
         </div>

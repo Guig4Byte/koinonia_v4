@@ -3,7 +3,7 @@ import { loginAction } from "@/app/login/actions";
 import { getAuthenticatedUser } from "@/lib/auth/current-user";
 import { homeForRole } from "@/lib/auth/redirects";
 
-const demoUsers = [
+const seedUsers = [
   { label: "Pastor", email: "pastor@koinonia.local" },
   { label: "Supervisor", email: "ana@koinonia.local" },
   { label: "Líder", email: "bruno@koinonia.local" },
@@ -30,6 +30,7 @@ export default async function LoginPage({
   const params = await searchParams;
   const hasError = params.erro === "credenciais";
   const nextPath = safeNextParam(params.next);
+  const showSeedAccess = process.env.NODE_ENV !== "production";
 
   return (
     <main className="safe-page flex min-h-screen items-center">
@@ -85,20 +86,23 @@ export default async function LoginPage({
           </form>
         </div>
 
-        <div className="rounded-[24px] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm shadow-card">
-          <p className="font-semibold text-[var(--color-text-primary)]">Acesso demo</p>
-          <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-            Senha: <span className="font-semibold text-[var(--color-text-primary)]">koinonia123</span>
-          </p>
-          <div className="mt-3 space-y-2">
-            {demoUsers.map((demoUser) => (
-              <p key={demoUser.email} className="flex items-center justify-between gap-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2">
-                <span className="text-xs font-semibold text-[var(--color-text-secondary)]">{demoUser.label}</span>
-                <span className="text-xs font-semibold text-[var(--color-text-primary)]">{demoUser.email}</span>
-              </p>
-            ))}
+        {showSeedAccess ? (
+          <div className="rounded-[24px] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm shadow-card">
+            <p className="font-semibold text-[var(--color-text-primary)]">Acesso de desenvolvimento</p>
+            <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+              Usuários criados pela seed local. Senha:{" "}
+              <span className="font-semibold text-[var(--color-text-primary)]">koinonia123</span>
+            </p>
+            <div className="mt-3 space-y-2">
+              {seedUsers.map((seedUser) => (
+                <p key={seedUser.email} className="flex items-center justify-between gap-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2">
+                  <span className="text-xs font-semibold text-[var(--color-text-secondary)]">{seedUser.label}</span>
+                  <span className="text-xs font-semibold text-[var(--color-text-primary)]">{seedUser.email}</span>
+                </p>
+              ))}
+            </div>
           </div>
-        </div>
+        ) : null}
       </section>
     </main>
   );

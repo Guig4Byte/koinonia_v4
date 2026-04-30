@@ -28,13 +28,14 @@ export async function createAuthSession(user: SessionUser) {
     maxAge: SESSION_MAX_AGE_SECONDS,
   });
 
-  // Remove cookies antigos da fase demo quando o usuário entra de verdade.
+  // Remove o cookie antigo da fase de troca manual de perfis.
   cookieStore.delete("koinonia-demo-role");
 }
 
 export async function destroyAuthSession() {
   const cookieStore = await cookies();
   cookieStore.delete(AUTH_SESSION_COOKIE);
+  cookieStore.delete("koinonia-demo-role");
 }
 
 export async function readAuthSession(): Promise<AuthSession | null> {

@@ -882,18 +882,18 @@ async function main() {
 
   console.log("Seed concluído.");
   console.log(
-    "Estrutura demo: 1 pastor, 3 supervisores, 8 células ativas, 1 célula inativa e 12 membros por célula ativa.",
+    "Estrutura da seed: 1 pastor, 3 supervisores, 8 células ativas, 1 célula inativa e 12 membros por célula ativa.",
   );
   console.log(
-    "Perfis principais pelo seletor atual: pastor@koinonia.local / ana@koinonia.local / bruno@koinonia.local",
+    "Acessos principais: pastor@koinonia.local / ana@koinonia.local / bruno@koinonia.local",
   );
   console.log(
-    "Outros usuários demo: marcos@koinonia.local / helena@koinonia.local / carla@koinonia.local / diego@koinonia.local / fernanda@koinonia.local / gabriel@koinonia.local / juliana@koinonia.local / lucas@koinonia.local",
+    "Outros usuários da seed: marcos@koinonia.local / helena@koinonia.local / carla@koinonia.local / diego@koinonia.local / fernanda@koinonia.local / gabriel@koinonia.local / juliana@koinonia.local / lucas@koinonia.local",
   );
   console.log(
     "Cenários de regressão: urgente sem atribuição, apoio à supervisão, múltiplos sinais, encaminhamento pastoral, sinal resolvido, célula sem registro, evento sem presença e célula inativa.",
   );
-  console.log("Senha: koinonia123");
+  console.log("Senha local da seed: koinonia123");
 }
 
 async function createCompletedEventWithChurch(

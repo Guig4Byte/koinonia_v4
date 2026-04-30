@@ -108,23 +108,29 @@ Acesse:
 http://localhost:3000
 ```
 
-## Modo demo
+## Autenticação local
 
-Ainda não há autenticação real. A interface usa seletor de perfil de demonstração:
+O app usa autenticação real por e-mail e senha. A sessão fica em cookie `HttpOnly` assinado.
 
-```txt
-Pastor | Supervisor | Líder
+Defina um segredo de sessão no `.env`:
+
+```env
+KOINONIA_SESSION_SECRET="troque-por-um-valor-longo-e-aleatorio"
 ```
 
-Esse seletor é temporário. A autenticação real deve substituir a origem do usuário mantendo o contrato de `getCurrentUser()`.
+Em desenvolvimento, a seed cria usuários locais com a senha:
 
-A seed demo simula:
+```txt
+koinonia123
+```
 
-- 1 pastor: Roberto.
-- 3 supervisores: Ana, Marcos e Helena.
-- 7 células.
-- 12 membros ativos por célula.
-- cenários de presença baixa, urgência, pedido de apoio e encaminhamento pastoral.
+Acessos principais:
+
+- Pastor: `pastor@koinonia.local`
+- Supervisor: `ana@koinonia.local`
+- Líder: `bruno@koinonia.local`
+
+A seed também cria outros supervisores/líderes para validar escopo, presença baixa, urgência, pedido de apoio, encaminhamento pastoral e célula inativa.
 
 ## Scripts úteis
 
@@ -142,7 +148,7 @@ npm run db:studio
 src/app              Rotas, telas e APIs.
 src/components       Componentes visuais reutilizáveis.
 src/features         Regras de domínio por feature.
-src/lib              Prisma, sessão demo e utilitários.
+src/lib              Prisma, autenticação, sessão e utilitários.
 prisma               Schema e seed.
 docs                 Produto, vocabulário, arquitetura e briefing.
 ```
