@@ -74,8 +74,8 @@ html[data-theme="light"] {
 
   /* Texto */
   --color-text-primary: #1c1008;
-  --color-text-secondary: #8b7a69;
-  --color-text-muted: #b0a090;
+  --color-text-secondary: #725f4d;
+  --color-text-muted: #93816e;
   --color-text-on-header: #f0e0c0;
   --color-text-on-banner: #f0d8a8;
 
@@ -109,7 +109,7 @@ html[data-theme="light"] {
   --color-tab-active: #2c1a0a;
   --color-tab-inactive: #e8e0d6;
   --color-tab-label-active: #2c1a0a;
-  --color-tab-label-inactive: #9a8878;
+  --color-tab-label-inactive: #7d6b5a;
 
   /* Métricas */
   --color-metric-presenca: #2e6b2e;
@@ -160,8 +160,8 @@ html[data-theme="parchment"] {
   --color-shadow-metric-card: 0 1px 2px rgba(92, 54, 13, 0.08);
 
   --color-text-primary: #3a2008;
-  --color-text-secondary: #67451f;
-  --color-text-muted: #7a5830;
+  --color-text-secondary: #563716;
+  --color-text-muted: #68451f;
   --color-text-on-header: #fdf0d0;
   --color-text-on-banner: #f5dfa0;
 
@@ -190,7 +190,7 @@ html[data-theme="parchment"] {
   --color-tab-active: #6b4010;
   --color-tab-inactive: rgba(0, 0, 0, 0.12);
   --color-tab-label-active: #3a2008;
-  --color-tab-label-inactive: #7a5020;
+  --color-tab-label-inactive: #5e3d18;
 
   --color-metric-presenca: #2a5c2a;
   --color-metric-atencoes: #8a2a10;
@@ -237,8 +237,8 @@ html[data-theme="dark"] {
   --color-shadow-metric-card: 0 1px 2px rgba(0, 0, 0, 0.16);
 
   --color-text-primary: #f5eee5;
-  --color-text-secondary: #b8aa9a;
-  --color-text-muted: #8a7a68;
+  --color-text-secondary: #c4b4a3;
+  --color-text-muted: #a08f7c;
   --color-text-on-header: #f5eee5;
   --color-text-on-banner: #f5eee5;
 
@@ -267,7 +267,7 @@ html[data-theme="dark"] {
   --color-tab-active: #d7b98f;
   --color-tab-inactive: #2b251f;
   --color-tab-label-active: #f5eee5;
-  --color-tab-label-inactive: #8a7a68;
+  --color-tab-label-inactive: #a08f7c;
 
   --color-metric-presenca: #a9d889;
   --color-metric-atencoes: #f08b78;
@@ -332,6 +332,11 @@ button,
 input,
 textarea {
   font: inherit;
+}
+
+::placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
 }
 
 a {
