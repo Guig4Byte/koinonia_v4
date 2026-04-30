@@ -4,6 +4,14 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/cn";
 import type { SignalBadgeTone } from "@/features/signals/display";
 
+export function priorityCardClass(tone?: SignalBadgeTone): string {
+  if (tone === "risk") return "priority-card priority-card-risk";
+  if (tone === "warn") return "priority-card priority-card-warn";
+  if (tone === "support") return "priority-card priority-card-support";
+  if (tone === "care") return "priority-card priority-card-care";
+  return "";
+}
+
 export function PulseCard({
   title,
   subtitle,
@@ -196,7 +204,7 @@ export function DetailLinkCard({
   children?: ReactNode;
 }) {
   return (
-    <Link href={href} className="block rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
+    <Link href={href} className={cn("block rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]", priorityCardClass(badgeTone))}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate font-semibold text-[var(--color-text-primary)]">{title}</p>
@@ -231,7 +239,7 @@ export function PersonMiniCard({
     <Link
       href={href}
       aria-label={`${ctaLabel}: ${name}`}
-      className="group flex min-h-[4.25rem] items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]"
+      className={cn("group flex min-h-[4.25rem] items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]", priorityCardClass(badgeTone))}
     >
       <span className="flex min-w-0 items-center gap-3">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-avatar-bg)] text-xs font-bold text-[var(--color-avatar-text)]">
@@ -278,9 +286,12 @@ export function PersonSignalCard({
   const resolvedBadgeTone = badgeTone ?? (severity === "risk" ? "risk" : severity === "ok" ? "ok" : severity === "info" ? "info" : "warn");
   const resolvedBadgeLabel = badgeLabel ?? (severity === "risk" ? "Urgente" : "Em atenção");
   const cardHref = detailHref ?? href;
+  const priorityTone = resolvedBadgeTone === "neutral" || resolvedBadgeTone === "ok" || resolvedBadgeTone === "info"
+    ? severity === "risk" ? "risk" : severity === "warn" ? "warn" : undefined
+    : resolvedBadgeTone;
 
   const content = (
-    <article className="group rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
+    <article className={cn("group rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]", priorityCardClass(priorityTone))}>
       <div className="flex items-start gap-3">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--color-avatar-bg)] text-sm font-bold text-[var(--color-avatar-text)]">
           {initials}
@@ -347,8 +358,9 @@ export function GroupCard({
     : !hasPresenceData ? "Sem registro" : hasLowPresence ? "Presença baixa" : "Estável";
   const resolvedBadgeTone: SignalBadgeTone = badgeTone ?? fallbackBadgeTone;
   const resolvedBadgeLabel = badgeLabel ?? fallbackBadgeLabel;
+  const priorityTone = resolvedBadgeTone === "neutral" || resolvedBadgeTone === "ok" || resolvedBadgeTone === "info" ? undefined : resolvedBadgeTone;
   const content = (
-    <article className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
+    <article className={cn("rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]", priorityCardClass(priorityTone))}>
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="font-semibold text-[var(--color-text-primary)]">{name}</p>

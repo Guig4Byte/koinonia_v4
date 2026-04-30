@@ -424,6 +424,56 @@ a {
   box-shadow: var(--color-shadow-card);
 }
 
+.priority-card {
+  --priority-accent: var(--color-brand-accent);
+  --priority-soft: transparent;
+  position: relative;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--priority-accent) 34%, var(--color-border-card));
+  background:
+    linear-gradient(90deg, var(--priority-soft), transparent 68%),
+    var(--color-bg-card);
+}
+
+.priority-card::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 4px;
+  background: var(--priority-accent);
+  opacity: 0.92;
+}
+
+.priority-card-risk {
+  --priority-accent: var(--color-metric-atencoes);
+  --priority-soft: color-mix(in srgb, var(--color-badge-risco-bg) 64%, transparent);
+  box-shadow:
+    0 14px 34px color-mix(in srgb, var(--color-metric-atencoes) 16%, transparent),
+    var(--color-shadow-card);
+}
+
+.priority-card-warn {
+  --priority-accent: var(--color-badge-atencao-text);
+  --priority-soft: color-mix(in srgb, var(--color-badge-atencao-bg) 58%, transparent);
+  box-shadow:
+    0 12px 28px color-mix(in srgb, var(--color-badge-atencao-text) 12%, transparent),
+    var(--color-shadow-card);
+}
+
+.priority-card-support {
+  --priority-accent: var(--color-badge-apoio-text);
+  --priority-soft: color-mix(in srgb, var(--color-badge-apoio-bg) 58%, transparent);
+  box-shadow:
+    0 12px 28px color-mix(in srgb, var(--color-badge-apoio-text) 12%, transparent),
+    var(--color-shadow-card);
+}
+
+.priority-card-care {
+  --priority-accent: var(--color-badge-cuidado-text);
+  --priority-soft: color-mix(in srgb, var(--color-badge-cuidado-bg) 45%, transparent);
+}
+
 ::selection {
   background: var(--accent-soft);
 }

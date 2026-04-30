@@ -3,7 +3,7 @@ import { AttendanceStatus, CareKind, PersonStatus } from "../../../../generated/
 import { AppShell } from "@/components/app-shell";
 import { CareActions } from "@/components/care-actions";
 import { PersonStatusActions } from "@/components/person-status-actions";
-import { BackLink, DetailLinkCard, EmptyState, SectionTitle } from "@/components/cards";
+import { BackLink, DetailLinkCard, EmptyState, SectionTitle, priorityCardClass } from "@/components/cards";
 import { SignalSupportActions } from "@/components/signal-support-actions";
 import { Badge } from "@/components/ui/badge";
 import { canRegisterCare, canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
@@ -103,7 +103,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
     >
       <BackLink href="/pessoas">{peopleLabel}</BackLink>
 
-      <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
+      <section className={`rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card ${priorityCardClass(personBadge.tone)}`}>
         <div className="flex items-start gap-3">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--color-avatar-bg)] text-sm font-bold text-[var(--color-avatar-text)]">
             {initials(person.fullName)}
@@ -141,7 +141,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           const canEscalatePastor = canEscalateSignalToPastor(user, signal);
 
           return (
-            <article key={signal.id} className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
+            <article key={signal.id} className={`rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card ${priorityCardClass(signalBadge.tone)}`}> 
               <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
                   <p className="font-semibold text-[var(--color-text-primary)]">{signalReasonForViewer(signal.reason, user)}</p>
