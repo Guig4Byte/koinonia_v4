@@ -1,59 +1,19 @@
-# Mini-etapa 6 — Tema na tela de login
+# CHANGED_FILES
 
-## Objetivo
+## Mini-etapa 7 — refinamento visual da tela de login
 
-Permitir trocar e aplicar o tema antes da autenticação, mantendo a tela de login simples e sem virar uma tela de configurações.
-
-## Arquivos alterados
+### Arquivos alterados
 
 - `src/app/login/page.tsx`
-- `src/components/theme-toggle.tsx`
-- `src/components/theme-init.tsx`
 
-## Mudanças
+### O que mudou
 
-### `src/app/login/page.tsx`
+- adicionado um ícone visual no topo do card de login (`HeartHandshake`);
+- removido o bloco `Acesso de desenvolvimento` da tela de login;
+- ajustado o cabeçalho para uma apresentação mais pastoral e mais próxima da referência visual;
+- mantido o seletor de tema no card de login;
+- preservado o fluxo atual de autenticação, erro e redirect.
 
-- Adiciona o controle de tema no topo do card de login.
-- Usa o mesmo mecanismo de tema do app autenticado.
-- Mantém o tema salvo no aparelho via `localStorage`.
-- Evita criar uma tela ou seção pesada de preferências antes do login.
+### Observação
 
-### `src/components/theme-toggle.tsx`
-
-- O componente agora aceita variações:
-  - `variant="header"` para o header autenticado, mantendo o comportamento atual.
-  - `variant="card"` para superfícies claras/escuras como o login.
-- Adiciona `showLabel` para exibir o nome do tema quando fizer sentido.
-- Preserva o ciclo atual: `Claro -> Pergaminho -> Escuro`.
-
-### `src/components/theme-init.tsx`
-
-- Adiciona um script inicial para aplicar o tema salvo antes do conteúdo principal renderizar.
-- Reduz flash visual quando o usuário já tinha escolhido `Pergaminho` ou `Escuro`.
-- Mantém o `useEffect` como sincronização client-side após hidratação.
-
-## O que não mudou
-
-- Login/logout.
-- Sessão real.
-- Middleware.
-- Permissões.
-- Regras pastorais.
-- Rotas protegidas.
-
-## Validação sugerida
-
-```bash
-npm run typecheck
-npm run test
-npm run build
-```
-
-Teste manual:
-
-1. Abra `/login` sem sessão.
-2. Alterne entre `Claro`, `Pergaminho` e `Escuro`.
-3. Recarregue a página e confirme que o tema escolhido permanece.
-4. Faça login e confirme que o mesmo tema segue dentro do app.
-5. Saia e confirme que o tema continua aplicado no login.
+Nenhuma regra de autenticação, sessão, middleware ou permissões foi alterada.
