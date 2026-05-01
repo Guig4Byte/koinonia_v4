@@ -1,33 +1,26 @@
-# Arquivos alterados — Visão sem redundância
+# Alterações — Equipe do pastor
 
-## Alterados nesta rodada
+## Objetivo
 
-- `src/app/(app)/pastor/page.tsx`
-- `CHANGED_FILES.md`
+Remover a mensagem repetida dentro do card de supervisor quando não há célula pedindo atenção.
 
-## Diagnóstico
+## Arquivos alterados
 
-A `Visão` do pastor repetia as mesmas informações em camadas diferentes:
+- `src/app/(app)/equipe/page.tsx`
 
-- o card principal já informava a quantidade de casos pastorais;
-- a seção `Saúde geral` repetia `Casos pastorais`;
-- `Sem presença recente` também aparecia na `Visão`, apesar de a tela `Equipe` já mostrar essa leitura com a lista das células e a explicação completa.
+## Mudanças
 
-Isso deixava a tela mais parecida com um painel de métricas do que com uma leitura pastoral curta.
+- O resumo do supervisor deixou de retornar `Sem célula pedindo atenção agora.`.
+- Quando não há célula em atenção, o card mostra apenas o resumo neutro, por exemplo `2 células acompanhadas`.
+- O estado vazio `Sem célula pedindo atenção agora.` deixou de ser renderizado dentro da área de listas do supervisor.
+- O estado vazio continua aparecendo apenas quando o supervisor não tem nenhuma célula ativa vinculada: `Nenhuma célula ativa vinculada a este supervisor.`
+- A lista expansível de células acompanhadas continua aparecendo normalmente.
 
-## Correção
+## Validação
 
-- O card principal da `Visão` agora foca apenas nos casos pastorais.
-- `Sem presença recente` saiu da `Visão` e fica concentrado em `Equipe`, onde há contexto e lista das células.
-- `Casos pastorais` saiu da seção `Saúde geral`, porque já aparece no resumo principal e na seção de pessoas.
-- `Saúde geral` agora fica focada em `Presença da semana`.
+Tentei rodar `npm run typecheck`, mas o comando não concluiu dentro do tempo disponível neste ambiente. Recomendo validar localmente com:
 
-## Intenção pastoral
-
-A `Visão` fica mais direta:
-
-```txt
-Prioridade pastoral agora -> presença geral -> pessoas para abrir e cuidar.
+```bash
+npm run typecheck
+npm test
 ```
-
-A `Equipe` continua sendo o lugar para entender estrutura, supervisores, células e ausência de presença recente.

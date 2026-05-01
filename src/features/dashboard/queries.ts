@@ -173,22 +173,16 @@ export async function getPastorTeamOverview(user: PermissionUser) {
     const pastoralPriorityScore =
       urgentCount * 1000
       + Math.max(pastoralCasesCount - urgentCount, 0) * 700
-      + supportRequestsCount * 350
-      + localAttentionCount * 180
       + (hasLowPresence ? 100 + (LOW_PRESENCE_THRESHOLD - presence.presenceRate) : 0);
     const statusLabel = urgentCount > 0
       ? `${urgentCount} ${urgentCount === 1 ? "urgente" : "urgentes"}`
       : pastoralCasesCount > 0
         ? `${pastoralCasesCount} ${pastoralCasesCount === 1 ? "caso pastoral" : "casos pastorais"}`
-        : supportRequestsCount > 0
-          ? `${supportRequestsCount} ${supportRequestsCount === 1 ? "pedido de apoio" : "pedidos de apoio"}`
-          : localAttentionCount > 0
-            ? `${localAttentionCount} ${localAttentionCount === 1 ? "atenção local" : "atenções locais"}`
-            : hasNoPresenceData
-              ? "Sem presença recente"
-              : hasLowPresence
-                ? "Presença baixa"
-                : "Estável";
+        : hasNoPresenceData
+          ? "Sem presença recente"
+          : hasLowPresence
+            ? "Presença baixa"
+            : "Estável";
 
     return {
       id: group.id,

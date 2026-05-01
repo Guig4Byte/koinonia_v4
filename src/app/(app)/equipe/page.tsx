@@ -32,11 +32,13 @@ function compactGroupSubtitle(group: TeamGroup) {
 
 function groupBadgeTone(group: TeamGroup): SignalBadgeTone {
   if (group.urgentCount > 0 || group.pastoralCasesCount > 0) return "risk";
-  if (group.supportRequestsCount > 0) return "support";
-  if (group.localAttentionCount > 0) return "warn";
   if (!group.hasPresenceData) return "neutral";
   if (group.presenceRate < 70) return "warn";
   return "ok";
+}
+
+function shouldShowGroupBadge(group: TeamGroup) {
+  return group.statusLabel !== "Estável";
 }
 
 function renderGroupCard(group: TeamGroup) {
@@ -51,30 +53,33 @@ function renderGroupCard(group: TeamGroup) {
       href={`/celulas/${group.id}`}
       hasPresenceData={group.hasPresenceData}
       noPresenceLabel="Sem presença recente"
-      badgeLabel={group.statusLabel}
+      badgeLabel={shouldShowGroupBadge(group) ? group.statusLabel : undefined}
       badgeTone={groupBadgeTone(group)}
+      showBadge={shouldShowGroupBadge(group)}
     />
   );
 }
 
 function supervisorSummary(supervisor: SupervisorTeam) {
+  const groupsLabel = `${supervisor.groups.length} ${supervisor.groups.length === 1 ? "célula acompanhada" : "células acompanhadas"}`;
+
   if (supervisor.urgentCount > 0) {
-    return `${supervisor.urgentCount} ${supervisor.urgentCount === 1 ? "urgente" : "urgentes"} sob esta supervisão.`;
+    return `${groupsLabel} · ${supervisor.urgentCount} ${supervisor.urgentCount === 1 ? "urgente" : "urgentes"}.`;
   }
 
   if (supervisor.pastoralCasesCount > 0) {
-    return `${supervisor.pastoralCasesCount} ${supervisor.pastoralCasesCount === 1 ? "caso pastoral" : "casos pastorais"} sob esta supervisão.`;
+    return `${groupsLabel} · ${supervisor.pastoralCasesCount} ${supervisor.pastoralCasesCount === 1 ? "caso pastoral" : "casos pastorais"}.`;
   }
 
   if (supervisor.groupsNeedingAttentionCount > 0) {
-    return `${supervisor.groupsNeedingAttentionCount} ${supervisor.groupsNeedingAttentionCount === 1 ? "célula pede" : "células pedem"} atenção por sinais ou presença baixa registrada.`;
+    return `${groupsLabel} · ${supervisor.groupsNeedingAttentionCount} ${supervisor.groupsNeedingAttentionCount === 1 ? "célula pede" : "células pedem"} atenção.`;
   }
 
   if (supervisor.groupsWithoutPresenceCount > 0) {
-    return `${supervisor.groupsWithoutPresenceCount} ${supervisor.groupsWithoutPresenceCount === 1 ? "célula está" : "células estão"} sem presença recente registrada.`;
+    return `${groupsLabel} · ${supervisor.groupsWithoutPresenceCount} sem presença recente.`;
   }
 
-  return "Sem célula pedindo atenção agora.";
+  return groupsLabel;
 }
 
 function supervisorBadgeTone(supervisor: SupervisorTeam): SignalBadgeTone {
@@ -99,7 +104,7 @@ function CompactGroupLink({ group, emphasized = false }: { group: TeamGroup; emp
         <span className="mt-0.5 block truncate text-xs text-[var(--color-text-secondary)]">{compactGroupSubtitle(group)}</span>
       </span>
       <span className="flex shrink-0 items-center gap-2">
-        <Badge tone={tone}>{group.statusLabel}</Badge>
+        {shouldShowGroupBadge(group) ? <Badge tone={tone}>{group.statusLabel}</Badge> : null}
         <span className="text-sm font-bold text-[var(--color-brand)] opacity-60" aria-hidden="true">
           →
         </span>
@@ -143,13 +148,9 @@ function SupervisorCard({ supervisor }: { supervisor: SupervisorTeam }) {
       <div className="mt-3 space-y-2">
         {highlightedGroups.length > 0 ? highlightedGroups.map((group) => (
           <CompactGroupLink key={group.id} group={group} emphasized />
-        )) : hasGroups ? (
-          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-3 py-2.5 text-sm leading-relaxed text-[var(--color-text-secondary)]">
-            Sem célula pedindo atenção agora.
-          </p>
-        ) : (
+        )) : !hasGroups ? (
           <EmptyState compact>Nenhuma célula ativa vinculada a este supervisor.</EmptyState>
-        )}
+        ) : null}
 
         {remainingPriorityCount > 0 ? (
           <p className="px-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">
@@ -213,7 +214,7 @@ export default async function TeamPage() {
 
       <h2 className="mb-2 text-2xl font-semibold text-[var(--color-text-primary)]">Equipe</h2>
       <p className="mb-4 text-sm leading-relaxed text-[var(--color-text-secondary)]">
-        Veja quem acompanha quais células. A ordem prioriza casos, sinais e presença baixa registrada; quando falta registro, a célula aparece como “Sem presença recente”.
+        Veja quem acompanha quais células. A ordem prioriza casos pastorais e presença baixa registrada; pedidos de apoio à supervisão permanecem no cuidado da supervisão.
       </p>
 
       <ContextSummary
@@ -234,8 +235,8 @@ export default async function TeamPage() {
             label: "Pedem atenção",
             value: String(needsAttentionCount),
             detail: needsAttentionCount > 0
-              ? "Por casos, sinais ou presença baixa registrada."
-              : "Sem sinal ou presença baixa para destacar agora.",
+              ? "Por casos pastorais ou presença baixa registrada."
+              : "Sem caso pastoral ou presença baixa para destacar agora.",
             tone: needsAttentionCount > 0 ? "warn" : "ok",
           },
           {
@@ -251,7 +252,7 @@ export default async function TeamPage() {
 
       <PastoralListSection
         title="Células que pedem atenção"
-        detail="Casos pastorais vêm primeiro; depois pedidos, atenções locais e presença baixa com dado registrado."
+        detail="Casos pastorais vêm primeiro; depois presença baixa com dado registrado."
         emptyMessage="Nenhuma célula pede atenção agora."
         hiddenChildren={hiddenPriorityGroups.map(renderGroupCard)}
       >

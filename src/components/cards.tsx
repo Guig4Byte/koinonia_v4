@@ -333,6 +333,7 @@ export function GroupCard({
   attentionLabelKind = "default",
   badgeLabel,
   badgeTone,
+  showBadge = true,
 }: {
   name: string;
   subtitle: string;
@@ -344,6 +345,7 @@ export function GroupCard({
   attentionLabelKind?: "default" | "local" | "pastoral";
   badgeLabel?: string;
   badgeTone?: SignalBadgeTone;
+  showBadge?: boolean;
 }) {
   const tone = !hasPresenceData ? "neutral" : presenceRate < 65 ? "risk" : presenceRate < 75 ? "warn" : "ok";
   const hasLowPresence = hasPresenceData && presenceRate < 70;
@@ -368,7 +370,7 @@ export function GroupCard({
           <p className="font-semibold text-[var(--color-text-primary)]">{name}</p>
           <p className="mt-0.5 text-sm text-[var(--color-text-secondary)]">{subtitle}</p>
         </div>
-        <Badge tone={resolvedBadgeTone}>{resolvedBadgeLabel}</Badge>
+        {showBadge ? <Badge tone={resolvedBadgeTone}>{resolvedBadgeLabel}</Badge> : null}
       </div>
       <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--surface-alt)]">
         <div
