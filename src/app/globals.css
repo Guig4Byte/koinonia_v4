@@ -146,6 +146,36 @@ html[data-theme="light"] {
   /* Toggle */
   --color-theme-icon-active-bg: rgba(201, 160, 96, 0.12);
   --color-theme-icon-active-border: rgba(201, 160, 96, 0.34);
+
+  /* Login */
+  --login-page-bg: var(--color-bg-page);
+  --login-card-bg: var(--color-bg-card);
+  --login-card-border: var(--color-border-card);
+  --login-title: var(--color-text-primary);
+  --login-text: var(--color-text-secondary);
+  --login-muted: var(--color-text-muted);
+  --login-brand-kicker: var(--color-brand-accent);
+  --login-logo-bg: var(--color-bg-metric-card);
+  --login-logo-border: var(--color-border-card);
+  --login-logo-icon: var(--color-brand-accent);
+  --login-divider: var(--color-border-divider);
+  --login-input-bg: var(--color-bg-page);
+  --login-input-border: var(--color-border-card);
+  --login-input-hover-border: color-mix(in srgb, var(--color-brand-accent) 54%, var(--color-border-card));
+  --login-input-text: var(--color-text-primary);
+  --login-input-placeholder: var(--color-text-muted);
+  --login-input-focus-border: var(--color-brand-accent);
+  --login-input-focus-shadow: color-mix(in srgb, var(--color-brand-accent) 22%, transparent);
+  --login-button-bg: var(--color-btn-primary-bg);
+  --login-button-border: var(--color-btn-primary-bg);
+  --login-button-text: var(--color-btn-primary-text);
+  --login-button-hover-bg: color-mix(in srgb, var(--color-btn-primary-bg) 88%, #000000);
+  --login-button-active-bg: color-mix(in srgb, var(--color-btn-primary-bg) 78%, #000000);
+  --theme-toggle-bg: var(--color-bg-metric-card);
+  --theme-toggle-border: var(--color-border-card);
+  --theme-toggle-icon: var(--color-text-primary);
+  --theme-toggle-hover-bg: var(--color-bg-subtle-card);
+  --theme-toggle-active-bg: color-mix(in srgb, var(--color-bg-subtle-card) 82%, var(--color-brand-accent));
 }
 
 html[data-theme="parchment"] {
@@ -222,6 +252,35 @@ html[data-theme="parchment"] {
 
   --color-theme-icon-active-bg: rgba(245, 223, 160, 0.14);
   --color-theme-icon-active-border: rgba(245, 223, 160, 0.34);
+
+  --login-page-bg: #d7b37a;
+  --login-card-bg: #eadabb;
+  --login-card-border: #c4a474;
+  --login-title: #3b1d0c;
+  --login-text: #6b4a2b;
+  --login-muted: #7f5b35;
+  --login-brand-kicker: #9a6a2a;
+  --login-logo-bg: #d8c09b;
+  --login-logo-border: #ba9660;
+  --login-logo-icon: #9b6422;
+  --login-divider: #c4a474;
+  --login-input-bg: #d6b075;
+  --login-input-border: #b88949;
+  --login-input-hover-border: #9b6422;
+  --login-input-text: #3b1d0c;
+  --login-input-placeholder: #7f5b35;
+  --login-input-focus-border: #8a541b;
+  --login-input-focus-shadow: rgba(138, 84, 27, 0.18);
+  --login-button-bg: #7a430c;
+  --login-button-border: #7a430c;
+  --login-button-text: #fff7ea;
+  --login-button-hover-bg: #673707;
+  --login-button-active-bg: #5c2f05;
+  --theme-toggle-bg: #d8c09b;
+  --theme-toggle-border: #ba9660;
+  --theme-toggle-icon: #5a3515;
+  --theme-toggle-hover-bg: #cfb284;
+  --theme-toggle-active-bg: #c7a777;
 }
 
 html[data-theme="dark"] {
@@ -303,6 +362,35 @@ html[data-theme="dark"] {
   --surface-alt: #302820;
   --accent-muted: #4f3d2c;
   --page-glow: rgba(215, 185, 143, 0.1);
+
+  --login-page-bg: var(--color-bg-page);
+  --login-card-bg: var(--color-bg-card);
+  --login-card-border: var(--color-border-card);
+  --login-title: var(--color-text-primary);
+  --login-text: var(--color-text-secondary);
+  --login-muted: var(--color-text-muted);
+  --login-brand-kicker: var(--color-brand-accent);
+  --login-logo-bg: var(--color-bg-subtle-card);
+  --login-logo-border: var(--color-border-card);
+  --login-logo-icon: var(--color-brand-accent);
+  --login-divider: var(--color-border-divider);
+  --login-input-bg: var(--color-bg-page);
+  --login-input-border: var(--color-border-card);
+  --login-input-hover-border: color-mix(in srgb, var(--color-brand-accent) 44%, var(--color-border-card));
+  --login-input-text: var(--color-text-primary);
+  --login-input-placeholder: var(--color-text-muted);
+  --login-input-focus-border: var(--color-brand-accent);
+  --login-input-focus-shadow: color-mix(in srgb, var(--color-brand-accent) 18%, transparent);
+  --login-button-bg: var(--color-btn-primary-bg);
+  --login-button-border: var(--color-btn-primary-bg);
+  --login-button-text: var(--color-btn-primary-text);
+  --login-button-hover-bg: color-mix(in srgb, var(--color-btn-primary-bg) 84%, #ffffff);
+  --login-button-active-bg: color-mix(in srgb, var(--color-btn-primary-bg) 74%, #ffffff);
+  --theme-toggle-bg: var(--color-bg-subtle-card);
+  --theme-toggle-border: var(--color-border-card);
+  --theme-toggle-icon: var(--color-text-primary);
+  --theme-toggle-hover-bg: var(--surface-alt);
+  --theme-toggle-active-bg: color-mix(in srgb, var(--surface-alt) 76%, var(--color-brand-accent));
 }
 
 * {
@@ -326,6 +414,12 @@ body {
     var(--color-bg-page);
   color: var(--color-text-primary);
   font-family: var(--font-body);
+}
+
+body:has(.login-page) {
+  background:
+    radial-gradient(circle at top left, var(--page-glow), transparent 28rem),
+    var(--login-page-bg);
 }
 
 button,
@@ -360,8 +454,87 @@ a {
 
 .login-card {
   overflow: hidden;
+  border-color: var(--login-card-border);
+  background: var(--login-card-bg);
 }
 
+.login-logo {
+  border-color: var(--login-logo-border);
+  background: var(--login-logo-bg);
+  color: var(--login-logo-icon);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 8px 18px color-mix(in srgb, var(--login-logo-border) 22%, transparent);
+}
+
+.login-logo svg {
+  stroke-width: 2.35;
+}
+
+.login-brand-kicker {
+  color: var(--login-brand-kicker);
+}
+
+.login-input {
+  border-color: var(--login-input-border);
+  background: var(--login-input-bg);
+  color: var(--login-input-text);
+}
+
+.login-input::placeholder {
+  color: var(--login-input-placeholder);
+  opacity: 1;
+}
+
+.login-input:hover {
+  border-color: var(--login-input-hover-border);
+}
+
+.login-input:focus {
+  border-color: var(--login-input-focus-border);
+  box-shadow: 0 0 0 4px var(--login-input-focus-shadow);
+  outline: none;
+}
+
+.login-submit {
+  border: 1px solid var(--login-button-border);
+  background: var(--login-button-bg);
+  color: var(--login-button-text);
+  box-shadow: var(--color-shadow-card);
+}
+
+.login-submit:hover {
+  background: var(--login-button-hover-bg);
+}
+
+.login-submit:active {
+  background: var(--login-button-active-bg);
+  transform: scale(0.985);
+}
+
+.login-card :where(button, input, a):focus-visible {
+  outline: 2px solid var(--login-input-focus-border);
+  outline-offset: 3px;
+}
+
+.theme-toggle-card {
+  border-color: var(--theme-toggle-border);
+  background: var(--theme-toggle-bg);
+  color: var(--theme-toggle-icon);
+}
+
+.theme-toggle-card:hover {
+  background: var(--theme-toggle-hover-bg);
+}
+
+.theme-toggle-card:active {
+  background: var(--theme-toggle-active-bg);
+}
+
+.theme-toggle-card:focus-visible {
+  outline: 2px solid var(--login-input-focus-border);
+  outline-offset: 3px;
+}
 
 .app-header {
   position: relative;

@@ -46,7 +46,7 @@ export function ThemeToggle({
   const nextLabel = themeMeta[getNextTheme(theme)].label;
   const variantClass =
     variant === "card"
-      ? "border-[var(--color-border-card)] bg-[var(--metric-card-bg)] text-[var(--color-text-primary)]"
+      ? "theme-toggle-card"
       : "border-[var(--color-theme-icon-active-border)] bg-[var(--color-theme-icon-active-bg)] text-[var(--color-text-on-header)]";
 
   return (
