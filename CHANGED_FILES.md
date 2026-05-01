@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Refinar a aba `Equipe` para deixar a busca coerente com a função da tela: estrutura pastoral, supervisores e células — não busca global de pessoas.
+Limpar a aba `Equipe` para evitar duplicidade entre listas de células e os cards dos supervisores.
 
 ## Arquivos alterados
 
@@ -10,17 +10,13 @@ Refinar a aba `Equipe` para deixar a busca coerente com a função da tela: estr
 
 ## Mudanças
 
-- Removida a busca global de pessoa da aba `Equipe`.
-- Adicionada busca local por `supervisor` ou `célula`.
-- Adicionados filtros simples:
-  - `Todos`;
-  - `Pedem atenção`;
-  - `Sem presença recente`.
-- Lista de supervisores limitada a 4 cards iniciais, com `Ver mais supervisores`.
-- Cards de supervisor ficaram mais fechados: mostram resumo primeiro e abrem as células em `Ver células acompanhadas`.
-- Dentro de cada supervisor, são mostradas até 3 células inicialmente, com `Ver mais células` quando houver excedente.
-- `Equipe` agora orienta o usuário a usar a busca da `Visão` para abrir perfil de pessoa.
+- Removidas as listas separadas de `Células que pedem atenção` e `Sem presença recente` do topo da tela.
+- Mantido o `Resumo da equipe` com contadores de supervisores, células ativas, células que pedem atenção e células sem presença recente.
+- Mantidos os filtros `Todos`, `Pedem atenção` e `Sem presença recente`, agora aplicados diretamente à lista de supervisores e suas células.
+- A seção `Supervisores` passou a ser a fonte principal da estrutura: cada card mostra quem acompanha quais células.
+- Preservada a seção `Sem supervisor` apenas para células ativas que não têm supervisor vinculado, já que elas não apareceriam dentro de um card de supervisor.
+- Mantida a orientação de que perfil de pessoa deve ser aberto pela busca da `Visão` ou pelo detalhe da célula.
 
-## Observação
+## Resultado esperado
 
-A busca local de `Equipe` não consulta membros/pessoas comuns. Ela filtra apenas a estrutura de cuidado: nomes de supervisores, e-mails de supervisores, nomes de células e liderança da célula.
+A aba `Equipe` deixa de repetir as mesmas células em listas diferentes e fica centrada em estrutura pastoral: supervisores, células acompanhadas e filtros simples para destacar os recortes relevantes.

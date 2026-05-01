@@ -332,22 +332,14 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
   const normalizedQuery = normalizeSearch(query);
   const activeFilter = readTeamFilter(firstParam(params.filtro));
   const team = await getPastorTeamOverview(user);
-  const filteredPriorityGroups = activeFilter === "sem-presenca" ? [] : filterGroups(team.priorityGroups, normalizedQuery, activeFilter);
-  const filteredReadingPendingGroups = activeFilter === "atencao" ? [] : filterGroups(team.readingPendingGroups, normalizedQuery, activeFilter);
   const filteredSupervisors = filterSupervisors(team.supervisors, normalizedQuery, activeFilter);
   const filteredUnassignedGroups = filterGroups(team.unassignedGroups, normalizedQuery, activeFilter);
-  const visiblePriorityGroups = filteredPriorityGroups.slice(0, SECTION_LIMIT);
-  const hiddenPriorityGroups = filteredPriorityGroups.slice(SECTION_LIMIT);
-  const visibleReadingPendingGroups = filteredReadingPendingGroups.slice(0, SECTION_LIMIT);
-  const hiddenReadingPendingGroups = filteredReadingPendingGroups.slice(SECTION_LIMIT);
   const visibleSupervisors = filteredSupervisors.slice(0, SUPERVISOR_SECTION_LIMIT);
   const hiddenSupervisors = filteredSupervisors.slice(SUPERVISOR_SECTION_LIMIT);
   const visibleUnassignedGroups = filteredUnassignedGroups.slice(0, SECTION_LIMIT);
   const hiddenUnassignedGroups = filteredUnassignedGroups.slice(SECTION_LIMIT);
   const needsAttentionCount = team.summary.groupsNeedingAttentionCount;
   const isFiltered = Boolean(query) || activeFilter !== "todos";
-  const showPrioritySection = activeFilter !== "sem-presenca";
-  const showReadingPendingSection = activeFilter === "sem-presenca" || filteredReadingPendingGroups.length > 0;
 
   return (
     <AppShell
@@ -366,6 +358,9 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
 
       <TeamStructureSearch query={query} filter={activeFilter} />
 
+      <SectionTitle detail="Use os filtros para focar em células que pedem atenção ou estão sem presença recente, sem duplicar listas fora da estrutura da equipe.">
+        Resumo da equipe
+      </SectionTitle>
       <ContextSummary
         items={[
           {
@@ -399,32 +394,9 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
         ]}
       />
 
-      {showPrioritySection ? (
-        <PastoralListSection
-          title="Células que pedem atenção"
-          detail="Casos pastorais vêm primeiro; depois presença baixa com dado registrado."
-          emptyMessage={isFiltered ? "Nenhuma célula encontrada com esse recorte." : "Nenhuma célula pede atenção agora."}
-          hiddenChildren={hiddenPriorityGroups.map(renderGroupCard)}
-        >
-          {visiblePriorityGroups.map(renderGroupCard)}
-        </PastoralListSection>
-      ) : null}
-
-      {showReadingPendingSection ? (
-        <PastoralListSection
-          title="Sem presença recente"
-          detail="Ainda não há presença recente registrada. Talvez o encontro tenha acontecido, mas a presença ainda não foi marcada."
-          emptyMessage="Nenhuma célula sem presença recente encontrada."
-          moreLabel="Ver mais células"
-          hiddenChildren={hiddenReadingPendingGroups.map(renderGroupCard)}
-        >
-          {visibleReadingPendingGroups.map(renderGroupCard)}
-        </PastoralListSection>
-      ) : null}
-
       <PastoralListSection
         title="Supervisores"
-        detail="Resumo por supervisor, com prioridade pastoral antes da estrutura completa."
+        detail="Quem acompanha cada célula. Use os filtros acima para ver apenas células que pedem atenção ou estão sem presença recente."
         emptyMessage={isFiltered ? "Nenhum supervisor ou célula encontrado nesse recorte." : "Nenhum supervisor cadastrado para esta igreja."}
         moreLabel="Ver mais supervisores"
         hiddenChildren={renderSupervisorCards(hiddenSupervisors)}
