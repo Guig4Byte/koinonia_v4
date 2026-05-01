@@ -125,7 +125,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
             <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">Célula</p>
             <h2 className="mt-1 text-2xl font-semibold text-[var(--color-text-primary)]">{group.name}</h2>
             <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">
-              Líder: {group.leader?.name ?? "não informado"}
+              Liderança: {group.leader?.name ?? "não informada"}
               {group.supervisor?.name ? ` · Supervisor: ${group.supervisor.name}` : ""}
             </p>
           </div>
