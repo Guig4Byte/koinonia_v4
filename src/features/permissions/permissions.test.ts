@@ -15,7 +15,7 @@ const group = {
   supervisorUserId: supervisor.id,
 };
 
-const event = { churchId: "church-1", startsAt: new Date(), group };
+const event = { churchId: "church-1", startsAt: new Date(Date.now() - 60 * 1000), group };
 const person = { churchId: "church-1", memberships: [{ groupId: group.id, leftAt: null, group }] };
 
 describe("permission helpers", () => {
@@ -61,6 +61,12 @@ describe("permission helpers", () => {
 
   it("blocks check-in for future events", () => {
     const futureEvent = { ...event, startsAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000) };
+
+    expect(canCheckInEvent(leader, futureEvent)).toBe(false);
+  });
+
+  it("blocks check-in for an event that starts later today", () => {
+    const futureEvent = { ...event, startsAt: new Date(Date.now() + 60 * 1000) };
 
     expect(canCheckInEvent(leader, futureEvent)).toBe(false);
   });

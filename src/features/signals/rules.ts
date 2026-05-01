@@ -121,7 +121,7 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string) {
           churchId: group.churchId,
           groupId: group.id,
           personId: membership.personId,
-          assignedToId: group.leaderUserId,
+          assignedToId: null,
           source: SignalSource.ATTENDANCE,
           severity: signal.severity,
           reason: signal.reason,

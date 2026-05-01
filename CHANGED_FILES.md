@@ -14,9 +14,9 @@ Este arquivo resume a última leva local de alterações. Ele não substitui as 
 
 ## Alteração atual
 
-Documentação alinhada ao estado atual do login:
+Correção aplicada nesta entrega:
 
-- erro de credenciais exibido como mensagem curta e consumido da URL após hidratação;
-- campo de senha com controle visual para mostrar/ocultar;
-- placeholder de e-mail `nome@igreja.com`;
-- tokens visuais do login documentados como responsabilidade de CSS/theme, não do JSX.
+1. `src/app/(app)/pessoas/page.tsx`
+   - A seção `Acolhidos em cuidado` agora exige que a pessoa em `Em cuidado` tenha vínculo ativo e não visitante dentro de uma célula visível.
+   - Para pastor/admin, isso impede que a superfície padrão de `/pessoas` mostre pessoas ligadas apenas a célula inativa, vínculo encerrado, visitante ou sem célula ativa.
+   - A busca ampla do pastor não foi alterada; a mudança vale apenas para a lista padrão de `Em cuidado`.

@@ -31,17 +31,13 @@ type ScopedEvent = {
   group?: ScopedGroup | null;
 };
 
-function isTodayOrPast(date: Date | string | null | undefined, referenceDate = new Date()) {
+function isPastOrCurrentInstant(date: Date | string | null | undefined, referenceDate = new Date()) {
   if (!date) return false;
 
   const eventDate = new Date(date);
   if (Number.isNaN(eventDate.getTime())) return false;
 
-  const tomorrow = new Date(referenceDate);
-  tomorrow.setHours(0, 0, 0, 0);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  return eventDate < tomorrow;
+  return eventDate.getTime() <= referenceDate.getTime();
 }
 
 export function hasWholeChurchScope(user: PermissionUser) {
@@ -76,7 +72,7 @@ export function canViewEvent(user: PermissionUser, event: ScopedEvent | null | u
 }
 
 export function canCheckInEvent(user: PermissionUser, event: ScopedEvent | null | undefined) {
-  if (!event || event.churchId !== user.churchId || !event.group || !isTodayOrPast(event.startsAt)) return false;
+  if (!event || event.churchId !== user.churchId || !event.group || !isPastOrCurrentInstant(event.startsAt)) return false;
   return user.role === UserRole.LEADER && canViewGroup(user, event.group) && event.group.leaderUserId === user.id;
 }
 

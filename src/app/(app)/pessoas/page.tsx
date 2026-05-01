@@ -113,6 +113,7 @@ export default async function PeoplePage() {
         AND: [
           getVisiblePersonWhere(user),
           { status: PersonStatus.COOLING_AWAY },
+          { memberships: { some: memberMembershipWhere } },
         ],
       },
       include: {
