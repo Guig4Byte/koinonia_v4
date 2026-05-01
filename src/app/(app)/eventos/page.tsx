@@ -77,6 +77,9 @@ function EventCard({ event, user }: { event: EventWithRelations; user: Permissio
 export default async function EventsPage() {
   const user = await getCurrentUser();
   const events = await getEventsForUser(user);
+  const isPastorLike = user.role === "PASTOR" || user.role === "ADMIN";
+  const secondaryNavHref = isPastorLike ? "/equipe" : "/pessoas";
+  const secondaryNavLabel = isPastorLike ? "Equipe" : user.role === "LEADER" ? "Membros" : "Pessoas";
 
   const today = startOfDay(new Date());
   const weekStart = startOfWeek(today, { weekStartsOn: 1 });
@@ -92,7 +95,7 @@ export default async function EventsPage() {
       role={user.role}
       nav={[
         { href: user.role === "LEADER" ? "/lider" : user.role === "SUPERVISOR" ? "/supervisor" : "/pastor", label: "Visão", icon: "home" },
-        { href: "/pessoas", label: user.role === "LEADER" ? "Membros" : "Pessoas", icon: "people" },
+        { href: secondaryNavHref, label: secondaryNavLabel, icon: "people" },
         { href: "/eventos", label: "Eventos", icon: "calendar", active: true },
       ]}
     >

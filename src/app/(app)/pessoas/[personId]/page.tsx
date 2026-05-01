@@ -86,7 +86,11 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const homeHref = user.role === "LEADER" ? "/lider" : user.role === "SUPERVISOR" ? "/supervisor" : "/pastor";
   const openSignalsCount = signals.length;
   const hasCareTouch = careTouches.length > 0;
-  const peopleLabel = user.role === "LEADER" ? "Membros" : "Pessoas";
+  const isPastorLike = user.role === "PASTOR" || user.role === "ADMIN";
+  const secondaryNavHref = isPastorLike ? "/equipe" : "/pessoas";
+  const secondaryNavLabel = isPastorLike ? "Equipe" : user.role === "LEADER" ? "Membros" : "Pessoas";
+  const backHref = isPastorLike ? homeHref : "/pessoas";
+  const backLabel = isPastorLike ? "Visão" : secondaryNavLabel;
   const canMarkActive = person.status === PersonStatus.COOLING_AWAY && canRegisterCare(user, person);
   const primarySignal = getPrimarySignalsByPerson(signals)[0];
   const personBadge = personEffectiveBadgeForViewer(person, primarySignal, user);
@@ -97,11 +101,11 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       role={user.role}
       nav={[
         { href: homeHref, label: "Visão", icon: "home" },
-        { href: "/pessoas", label: peopleLabel, icon: "people", active: true, attention: openSignalsCount > 0 },
+        { href: secondaryNavHref, label: secondaryNavLabel, icon: "people", active: !isPastorLike, attention: openSignalsCount > 0 },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
       ]}
     >
-      <BackLink href="/pessoas">{peopleLabel}</BackLink>
+      <BackLink href={backHref}>{backLabel}</BackLink>
 
       <section className={`rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card ${priorityCardClass(personBadge.tone)}`}>
         <div className="flex items-start gap-3">

@@ -14,20 +14,54 @@ Este arquivo resume a última leva local de alterações. Ele não substitui as 
 
 ## Alteração atual
 
-Ajuste aplicado nesta entrega: separar melhor a superfície padrão do pastor/admin em `Pessoas` e `Visão`, evitando que atenção local e pedidos de apoio apareçam como fila pastoral.
+Ajuste aplicado nesta entrega: trocar a aba pastoral `Pessoas` por `Equipe` para pastor/admin, reduzindo duplicidade com `Visão` e movendo a leitura da estrutura de supervisores/células para uma superfície própria.
 
-1. `src/app/(app)/pessoas/page.tsx`
-   - Para pastor/admin, a tela `/pessoas` deixou de renderizar as seções `Pedidos de apoio` e `Acompanhar de perto`.
-   - `Caso pastoral` permanece em `Irmãos que precisam de um olhar especial`, porque urgência ou encaminhamento ao pastor tem prioridade sobre a origem do pedido.
-   - Para pastor/admin, `Acolhidos em cuidado` foi renomeado para `Acolhidos em cuidado pastoral`.
-   - Para pastor/admin, a lista de `Acolhidos em cuidado pastoral` agora exige cuidado registrado por pastor/admin, além de vínculo ativo, não visitante e em célula ativa visível.
-   - Líderes e supervisores mantêm as seções operacionais de atenção e apoio.
-   - A busca ampla do pastor não foi alterada.
+1. `src/app/(app)/equipe/page.tsx`
+   - Nova tela `Equipe` para pastor/admin.
+   - Mostra busca de pessoa, resumo da estrutura, supervisores e as células ativas supervisionadas por cada um.
+   - Cada célula exibe líder, quantidade de membros, presença recente e casos pastorais.
+   - Células ativas sem supervisor aparecem em seção própria quando existirem.
 
 2. `src/features/dashboard/queries.ts`
-   - A `Visão` do pastor/admin agora também limita `Acolhidos em cuidado pastoral` a pessoas que receberam cuidado registrado por pastor/admin.
-   - A query reforça vínculo ativo, não visitante e em célula ativa.
+   - Adicionado `getPastorTeamOverview(user)`.
+   - A nova query agrupa células ativas por supervisor, calcula presença recente, membros ativos e casos pastorais por célula.
+   - Mantém o recorte pastoral: a estrutura aparece para leitura e contexto, não como ranking ou cobrança.
 
 3. `src/app/(app)/pastor/page.tsx`
-   - O rótulo da seção passou de `Acolhidos em cuidado` para `Acolhidos em cuidado pastoral`.
-   - A descrição da seção passou a comunicar cuidado pastoral, não cuidado local genérico.
+   - A navegação passou de `Pessoas` para `Equipe`.
+   - A lista de células saiu da `Visão` do pastor.
+   - A `Visão` fica concentrada em busca, casos pastorais, cuidado pastoral e saúde geral.
+
+4. `src/app/(app)/pessoas/page.tsx`
+   - Pastor/admin acessando `/pessoas` agora é redirecionado para `/equipe`.
+   - Líderes e supervisores continuam usando `Pessoas`/`Membros` como antes.
+
+5. `src/app/(app)/eventos/page.tsx`
+   - A navegação secundária agora aponta para `Equipe` quando o usuário é pastor/admin.
+   - Líder continua vendo `Membros`; supervisor continua vendo `Pessoas`.
+
+6. `src/app/(app)/eventos/[eventId]/page.tsx`
+   - Mesmo ajuste de navegação secundária por papel.
+
+7. `src/app/(app)/celulas/[groupId]/page.tsx`
+   - Para pastor/admin, a célula passa a estar ligada à aba `Equipe` na navegação.
+   - O link de voltar também retorna para `Equipe` no contexto pastoral.
+
+8. `src/app/(app)/pessoas/[personId]/page.tsx`
+   - Para pastor/admin, a navegação secundária mostra `Equipe` no lugar de `Pessoas`.
+   - O detalhe da pessoa continua acessível por busca e mantém a lógica de cuidado existente.
+
+## Correção posterior
+
+Correção aplicada nesta entrega:
+
+1. `src/app/(app)/celulas/[groupId]/page.tsx`
+   - Restaurado o conteúdo da página de detalhe da célula, que estava vazio e causava erro do Next.js: `The default export is not a React Component`.
+   - Mantida a navegação nova para pastor/admin, usando `Equipe` no lugar de `Pessoas` quando a célula é aberta a partir da estrutura pastoral.
+
+Validação recomendada após aplicar:
+
+```bash
+npm run typecheck
+npm test
+```

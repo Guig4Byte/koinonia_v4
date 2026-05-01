@@ -142,6 +142,9 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
   const checkInSectionTitle = canEditCheckIn ? (completed ? "Ajustar presença" : "Registrar presença") : "Resumo da presença";
   const checkInSubmitLabel = completed ? "Salvar ajuste" : "Salvar presença";
   const eventStatusLabel = completed ? "Presença registrada" : canEditCheckIn ? "Presença pendente" : "Aguardando líder";
+  const isPastorLike = user.role === "PASTOR" || user.role === "ADMIN";
+  const secondaryNavHref = isPastorLike ? "/equipe" : "/pessoas";
+  const secondaryNavLabel = isPastorLike ? "Equipe" : user.role === "LEADER" ? "Membros" : "Pessoas";
 
   return (
     <AppShell
@@ -149,7 +152,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
       role={user.role}
       nav={[
         { href: user.role === "LEADER" ? "/lider" : user.role === "SUPERVISOR" ? "/supervisor" : "/pastor", label: "Visão", icon: "home" },
-        { href: "/pessoas", label: user.role === "LEADER" ? "Membros" : "Pessoas", icon: "people" },
+        { href: secondaryNavHref, label: secondaryNavLabel, icon: "people" },
         { href: "/eventos", label: "Eventos", icon: "calendar", active: true },
       ]}
     >

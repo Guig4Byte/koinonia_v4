@@ -62,6 +62,8 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
 
   const homeHref = user.role === UserRole.LEADER ? "/lider" : user.role === UserRole.SUPERVISOR ? "/supervisor" : "/pastor";
   const isPastorView = user.role === UserRole.PASTOR || user.role === UserRole.ADMIN;
+  const secondaryNavHref = isPastorView ? "/equipe" : "/pessoas";
+  const secondaryNavLabel = isPastorView ? "Equipe" : user.role === UserRole.LEADER ? "Membros" : "Pessoas";
   const attentionPeople = getPrimarySignalsByPerson(group.signals);
   const pastoralAttentionPeople = getPastoralSignalsByPerson(group.signals);
   const localAttentionPeople = attentionPeople.filter((signal) => !isPastoralSignal(signal));
@@ -111,7 +113,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
       role={user.role}
       nav={[
         { href: homeHref, label: "Visão", icon: "home" },
-        { href: "/pessoas", label: user.role === UserRole.LEADER ? "Membros" : "Pessoas", icon: "people", attention: attentionPeople.length > 0 },
+        { href: secondaryNavHref, label: secondaryNavLabel, icon: "people", active: isPastorView, attention: attentionPeople.length > 0 },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
       ]}
     >

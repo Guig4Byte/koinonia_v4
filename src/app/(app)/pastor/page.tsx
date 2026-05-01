@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/app-shell";
-import { ContextSummary, EmptyState, GroupCard, ListMoreHint, PastoralListSection, PersonMiniCard, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
+import { ContextSummary, PastoralListSection, PersonMiniCard, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
 import { getPastorDashboard } from "@/features/dashboard/queries";
 import { canUsePastorDashboard } from "@/features/permissions/permissions";
@@ -10,7 +10,6 @@ import { initials } from "@/lib/text";
 import { redirect } from "next/navigation";
 
 const SECTION_LIMIT = 4;
-const GROUPS_TO_REVIEW_LIMIT = 4;
 
 export default async function PastorPage() {
   const user = await getCurrentUser();
@@ -30,9 +29,6 @@ export default async function PastorPage() {
   const urgentOrPastoralCases = pastoralSections.urgentOrPastoralCases;
   const inCarePeople = pastoralSections.inCarePeople;
   const pastoralCasesCount = urgentOrPastoralCases.length;
-  const groupsNeedingPastoralLook = dashboard.groups.filter((group) => (
-    group.pastoralCasesCount > 0 || (group.hasPresenceData && group.presenceRate < 70)
-  ));
 
   const phrase = pastoralCasesCount > 0
     ? `${pastoralCasesCount} ${pastoralCasesCount === 1 ? "caso pastoral pede" : "casos pastorais pedem"} olhar mais próximo.`
@@ -75,7 +71,7 @@ export default async function PastorPage() {
       role={user.role}
       nav={[
         { href: "/pastor", label: "Visão", icon: "home", active: true },
-        { href: "/pessoas", label: "Pessoas", icon: "people", attention: pastoralCasesCount > 0 },
+        { href: "/equipe", label: "Equipe", icon: "people", attention: pastoralCasesCount > 0 },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
       ]}
     >
@@ -127,26 +123,6 @@ export default async function PastorPage() {
           },
         ]}
       />
-
-      <SectionTitle>Saúde das células</SectionTitle>
-      <div className="space-y-3">
-        {groupsNeedingPastoralLook.slice(0, GROUPS_TO_REVIEW_LIMIT).map((group) => (
-          <GroupCard
-            key={group.id}
-            name={group.name}
-            subtitle={`${group.leaderName} · ${group.supervisorName}`}
-            presenceRate={group.presenceRate}
-            attentionCount={group.pastoralCasesCount}
-            attentionLabelKind="pastoral"
-            href={`/celulas/${group.id}`}
-            hasPresenceData={group.hasPresenceData}
-          />
-        ))}
-        <ListMoreHint hiddenCount={Math.max(0, groupsNeedingPastoralLook.length - GROUPS_TO_REVIEW_LIMIT)} label="Abra Eventos ou busque uma célula quando precisar de contexto adicional." />
-        {groupsNeedingPastoralLook.length === 0 ? (
-          <EmptyState>Nenhuma célula pedindo olhar especial agora.</EmptyState>
-        ) : null}
-      </div>
     </AppShell>
   );
 }

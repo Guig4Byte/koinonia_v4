@@ -121,6 +121,78 @@ export async function getPastorDashboard(user: PermissionUser) {
   };
 }
 
+export async function getPastorTeamOverview(user: PermissionUser) {
+  if (!canUsePastorDashboard(user)) {
+    throw new Error("getPastorTeamOverview requires pastor or admin scope");
+  }
+
+  const churchId = user.churchId;
+
+  const groupInclude = {
+    leader: true,
+    memberships: { where: { leftAt: null, role: { not: MembershipRole.VISITOR } }, select: { id: true } },
+    signals: { where: { status: SignalStatus.OPEN }, include: { assignedTo: true } },
+    events: { orderBy: { startsAt: "desc" as const }, take: 4, include: { attendances: true } },
+  };
+
+  const [supervisors, groupsWithoutSupervisor] = await Promise.all([
+    prisma.user.findMany({
+      where: { churchId, role: UserRole.SUPERVISOR },
+      include: {
+        groupsSupervised: {
+          where: { churchId, isActive: true },
+          include: groupInclude,
+          orderBy: { name: "asc" },
+        },
+      },
+      orderBy: { name: "asc" },
+    }),
+    prisma.smallGroup.findMany({
+      where: { churchId, isActive: true, supervisorUserId: null },
+      include: groupInclude,
+      orderBy: { name: "asc" },
+    }),
+  ]);
+
+  const toTeamGroup = (group: typeof groupsWithoutSupervisor[number]) => {
+    const presence = summarizeEventsPresence(group.events);
+    const pastoralCasesCount = getPastoralSignalsByPerson(group.signals).length;
+    const attentionCount = getPrimarySignalsByPerson(group.signals).length;
+
+    return {
+      id: group.id,
+      name: group.name,
+      leaderName: group.leader?.name ?? "Sem líder",
+      membersCount: group.memberships.length,
+      presenceRate: presence.presenceRate,
+      hasPresenceData: presence.hasPresenceData,
+      attentionCount,
+      pastoralCasesCount,
+    };
+  };
+
+  const supervisorTeams = supervisors.map((supervisor) => ({
+    id: supervisor.id,
+    name: supervisor.name,
+    email: supervisor.email,
+    groups: supervisor.groupsSupervised.map(toTeamGroup),
+  }));
+  const unassignedGroups = groupsWithoutSupervisor.map(toTeamGroup);
+  const allGroups = [...supervisorTeams.flatMap((supervisor) => supervisor.groups), ...unassignedGroups];
+
+  return {
+    supervisors: supervisorTeams,
+    unassignedGroups,
+    summary: {
+      supervisorsCount: supervisors.length,
+      groupsCount: allGroups.length,
+      pastoralCasesCount: allGroups.reduce((total, group) => total + group.pastoralCasesCount, 0),
+      groupsWithPastoralCasesCount: allGroups.filter((group) => group.pastoralCasesCount > 0).length,
+      groupsWithoutSupervisorCount: unassignedGroups.length,
+    },
+  };
+}
+
 async function getGroupScopedDashboard(user: PermissionUser) {
   const groups = await prisma.smallGroup.findMany({
     where: getVisibleGroupWhere(user),

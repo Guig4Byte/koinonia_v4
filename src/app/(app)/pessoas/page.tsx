@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { MembershipRole, PersonStatus, SignalSeverity, UserRole } from "../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { InfoCard, PastoralListSection, PersonMiniCard, PersonSignalCard, SectionTitle } from "@/components/cards";
@@ -54,6 +55,10 @@ export default async function PeoplePage() {
   const user = await getCurrentUser();
   const isLeader = user.role === UserRole.LEADER;
   const isPastoralOverview = user.role === UserRole.PASTOR || user.role === UserRole.ADMIN;
+
+  if (isPastoralOverview) {
+    redirect("/equipe");
+  }
   const homeHref = isLeader ? "/lider" : user.role === UserRole.SUPERVISOR ? "/supervisor" : "/pastor";
   const peopleLabel = isLeader ? "Membros" : "Pessoas";
   const searchPlaceholder = isLeader
