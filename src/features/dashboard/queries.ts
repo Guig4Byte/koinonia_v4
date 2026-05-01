@@ -175,9 +175,7 @@ export async function getPastorTeamOverview(user: PermissionUser) {
       + Math.max(pastoralCasesCount - urgentCount, 0) * 700
       + supportRequestsCount * 350
       + localAttentionCount * 180
-      + (hasNoPresenceData ? 120 : 0)
-      + (hasLowPresence ? 100 + (LOW_PRESENCE_THRESHOLD - presence.presenceRate) : 0)
-      + inCareCount * 10;
+      + (hasLowPresence ? 100 + (LOW_PRESENCE_THRESHOLD - presence.presenceRate) : 0);
     const statusLabel = urgentCount > 0
       ? `${urgentCount} ${urgentCount === 1 ? "urgente" : "urgentes"}`
       : pastoralCasesCount > 0
@@ -199,6 +197,8 @@ export async function getPastorTeamOverview(user: PermissionUser) {
       membersCount: group.memberships.length,
       presenceRate: presence.presenceRate,
       hasPresenceData: presence.hasPresenceData,
+      hasLowPresence,
+      hasNoPresenceData,
       attentionCount,
       pastoralCasesCount,
       supportRequestsCount,
@@ -252,11 +252,15 @@ export async function getPastorTeamOverview(user: PermissionUser) {
   const unassignedGroups = groupsWithoutSupervisor.map(toTeamGroup).sort(compareTeamGroups);
   const allGroups = [...supervisorTeams.flatMap((supervisor) => supervisor.groups), ...unassignedGroups];
   const priorityGroups = allGroups.filter((group) => group.pastoralPriorityScore > 0).sort(compareTeamGroups);
+  const readingPendingGroups = allGroups
+    .filter((group) => group.pastoralPriorityScore <= 0 && group.hasNoPresenceData)
+    .sort((left, right) => left.name.localeCompare(right.name, "pt-BR"));
 
   return {
     supervisors: supervisorTeams,
     unassignedGroups,
     priorityGroups,
+    readingPendingGroups,
     summary: {
       supervisorsCount: supervisors.length,
       groupsCount: allGroups.length,

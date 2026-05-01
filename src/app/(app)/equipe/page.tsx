@@ -66,7 +66,11 @@ function supervisorSummary(supervisor: SupervisorTeam) {
   }
 
   if (supervisor.groupsNeedingAttentionCount > 0) {
-    return `${supervisor.groupsNeedingAttentionCount} ${supervisor.groupsNeedingAttentionCount === 1 ? "célula pede" : "células pedem"} atenção por sinais ou presença.`;
+    return `${supervisor.groupsNeedingAttentionCount} ${supervisor.groupsNeedingAttentionCount === 1 ? "célula pede" : "células pedem"} atenção por sinais ou presença baixa registrada.`;
+  }
+
+  if (supervisor.groupsWithoutPresenceCount > 0) {
+    return `${supervisor.groupsWithoutPresenceCount} ${supervisor.groupsWithoutPresenceCount === 1 ? "célula está" : "células estão"} com leitura de presença pendente.`;
   }
 
   return "Sem célula pedindo atenção agora.";
@@ -140,7 +144,7 @@ function SupervisorCard({ supervisor }: { supervisor: SupervisorTeam }) {
           <CompactGroupLink key={group.id} group={group} emphasized />
         )) : hasGroups ? (
           <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-3 py-2.5 text-sm leading-relaxed text-[var(--color-text-secondary)]">
-            Células estáveis agora.
+            Sem célula pedindo atenção agora.
           </p>
         ) : (
           <EmptyState compact>Nenhuma célula ativa vinculada a este supervisor.</EmptyState>
@@ -186,6 +190,8 @@ export default async function TeamPage() {
   const team = await getPastorTeamOverview(user);
   const visiblePriorityGroups = team.priorityGroups.slice(0, SECTION_LIMIT);
   const hiddenPriorityGroups = team.priorityGroups.slice(SECTION_LIMIT);
+  const visibleReadingPendingGroups = team.readingPendingGroups.slice(0, SECTION_LIMIT);
+  const hiddenReadingPendingGroups = team.readingPendingGroups.slice(SECTION_LIMIT);
   const visibleSupervisors = team.supervisors.slice(0, SUPERVISOR_SECTION_LIMIT);
   const hiddenSupervisors = team.supervisors.slice(SUPERVISOR_SECTION_LIMIT);
   const visibleUnassignedGroups = team.unassignedGroups.slice(0, SECTION_LIMIT);
@@ -206,7 +212,7 @@ export default async function TeamPage() {
 
       <h2 className="mb-2 text-2xl font-semibold text-[var(--color-text-primary)]">Equipe</h2>
       <p className="mb-4 text-sm leading-relaxed text-[var(--color-text-secondary)]">
-        Veja quem acompanha quais células. A ordem prioriza onde há sinais, casos pastorais ou leitura de presença que pede atenção.
+        Veja quem acompanha quais células. A ordem prioriza casos, sinais e presença baixa registrada; ausência de registro aparece como leitura pendente.
       </p>
 
       <ContextSummary
@@ -227,21 +233,40 @@ export default async function TeamPage() {
             label: "Pedem atenção",
             value: String(needsAttentionCount),
             detail: needsAttentionCount > 0
-              ? "Por casos, sinais, ausência de registro ou presença baixa."
+              ? "Por casos, sinais ou presença baixa registrada."
               : "Sem sinal ou presença baixa para destacar agora.",
             tone: needsAttentionCount > 0 ? "warn" : "ok",
+          },
+          {
+            label: "Leitura pendente",
+            value: String(team.summary.groupsWithoutPresenceCount),
+            detail: team.summary.groupsWithoutPresenceCount > 0
+              ? "Sem presença registrada suficiente para leitura recente."
+              : "Todas têm presença recente registrada.",
+            tone: team.summary.groupsWithoutPresenceCount > 0 ? "neutral" : "ok",
           },
         ]}
       />
 
       <PastoralListSection
         title="Células que pedem atenção"
-        detail="Casos pastorais vêm primeiro; depois pedidos, atenções locais e leitura de presença."
+        detail="Casos pastorais vêm primeiro; depois pedidos, atenções locais e presença baixa com dado registrado."
         emptyMessage="Nenhuma célula pede atenção agora."
         hiddenChildren={hiddenPriorityGroups.map(renderGroupCard)}
       >
         {visiblePriorityGroups.map(renderGroupCard)}
       </PastoralListSection>
+
+      {team.readingPendingGroups.length > 0 ? (
+        <PastoralListSection
+          title="Leitura pendente"
+          detail="Células sem presença registrada suficiente para leitura recente. Isso não conta como risco pastoral."
+          moreLabel="Ver mais células"
+          hiddenChildren={hiddenReadingPendingGroups.map(renderGroupCard)}
+        >
+          {visibleReadingPendingGroups.map(renderGroupCard)}
+        </PastoralListSection>
+      ) : null}
 
       <PastoralListSection
         title="Supervisores"

@@ -1,30 +1,28 @@
-# Arquivos alterados — Equipe pastoral
+# Arquivos alterados — Leitura pendente na Equipe
 
 ## Alterados
 
 - `src/features/dashboard/queries.ts`
 - `src/app/(app)/equipe/page.tsx`
-- `src/app/(app)/celulas/[groupId]/page.tsx`
+- `CHANGED_FILES.md`
 
 ## Resumo
 
-- Troca de rótulo visual de `Líder` para `Liderança` nos cards/contexto de célula, sem alterar o modelo de dados.
-- A tela `Equipe` agora mostra uma seção de prioridade: `Células que pedem atenção`.
-- Supervisores e células passaram a ter ordenação determinística por prioridade pastoral.
-- Quando não há sinal, caso pastoral, ausência de registro ou presença baixa, a ordenação cai para ordem alfabética.
-- Listas longas agora são contidas com `Ver mais` / `Mostrar menos`.
+- `Sem registro` deixou de contar como prioridade pastoral em `Células que pedem atenção`.
+- Células sem presença registrada suficiente agora aparecem como `Leitura pendente`, separadas de casos, sinais e presença baixa real.
+- A métrica `Pedem atenção` agora considera somente casos pastorais, pedidos de apoio, atenções locais e presença baixa com dado registrado.
+- A métrica `Leitura pendente` mostra células sem presença registrada suficiente para leitura recente.
+- Supervisores com células sem registro exibem a situação como leitura pendente, sem receber tom de risco/atenção.
 
-## Regra de ordenação aplicada
+## Regra atual
 
-Células são priorizadas por:
+`Células que pedem atenção` prioriza:
 
 1. casos urgentes;
 2. casos pastorais encaminhados;
 3. pedidos de apoio à supervisão;
 4. atenções locais;
-5. ausência de presença registrada;
-6. presença recente baixa;
-7. pessoas em cuidado;
-8. nome da célula.
+5. presença recente baixa com dado registrado;
+6. nome da célula como desempate.
 
-Supervisores são ordenados pela pior situação pastoral entre suas células. Em empate, pela quantidade de células que pedem atenção e depois pelo nome.
+`Leitura pendente` mostra células sem presença registrada suficiente e não pesa como saúde baixa.
