@@ -96,9 +96,9 @@ export default async function PastorPage() {
       </PastoralListSection>
 
       <PastoralListSection
-        title="Acolhidos em cuidado"
-        detail="Pessoas que já receberam cuidado e seguem no radar."
-        emptyMessage="Nenhuma pessoa em cuidado para destacar agora."
+        title="Acolhidos em cuidado pastoral"
+        detail="Pessoas que receberam cuidado pastoral e seguem no radar."
+        emptyMessage="Nenhuma pessoa em cuidado pastoral para destacar agora."
         hiddenChildren={renderInCareLinks(inCarePeople.slice(SECTION_LIMIT))}
       >
         {renderInCareLinks(inCarePeople.slice(0, SECTION_LIMIT))}

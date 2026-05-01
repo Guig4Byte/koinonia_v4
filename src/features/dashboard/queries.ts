@@ -65,11 +65,12 @@ export async function getPastorDashboard(user: PermissionUser) {
       where: {
         churchId,
         status: PersonStatus.COOLING_AWAY,
-        memberships: { some: { leftAt: null, group: { is: { churchId, isActive: true } } } },
+        memberships: { some: { leftAt: null, role: { not: MembershipRole.VISITOR }, group: { is: { churchId, isActive: true } } } },
+        careTouches: { some: { actor: { is: { role: { in: [UserRole.PASTOR, UserRole.ADMIN] } } } } },
       },
       include: {
         memberships: {
-          where: { leftAt: null, group: { is: { churchId, isActive: true } } },
+          where: { leftAt: null, role: { not: MembershipRole.VISITOR }, group: { is: { churchId, isActive: true } } },
           include: { group: true },
           take: 1,
         },

@@ -82,6 +82,27 @@ export default async function PeoplePage() {
       }
     : visibleOpenSignalWhere;
 
+  const inCareWhere = isPastoralOverview
+    ? {
+        AND: [
+          getVisiblePersonWhere(user),
+          { status: PersonStatus.COOLING_AWAY },
+          { memberships: { some: memberMembershipWhere } },
+          {
+            careTouches: {
+              some: { actor: { is: { role: { in: [UserRole.PASTOR, UserRole.ADMIN] } } } },
+            },
+          },
+        ],
+      }
+    : {
+        AND: [
+          getVisiblePersonWhere(user),
+          { status: PersonStatus.COOLING_AWAY },
+          { memberships: { some: memberMembershipWhere } },
+        ],
+      };
+
   const [openSignals, visibleMembers, inCarePeople] = await Promise.all([
     prisma.careSignal.findMany({
       where: pastorSignalWhere,
@@ -109,13 +130,7 @@ export default async function PeoplePage() {
         })
       : Promise.resolve([]),
     prisma.person.findMany({
-      where: {
-        AND: [
-          getVisiblePersonWhere(user),
-          { status: PersonStatus.COOLING_AWAY },
-          { memberships: { some: memberMembershipWhere } },
-        ],
-      },
+      where: inCareWhere,
       include: {
         memberships: {
           where: memberMembershipWhere,
@@ -181,28 +196,32 @@ export default async function PeoplePage() {
         {renderSignalCards(urgentSignals.slice(0, SECTION_LIMIT), user)}
       </PastoralListSection>
 
-      <PastoralListSection
-        title="Pedidos de apoio"
-        detail="Casos trazidos para apoio de supervisão, sem virar obrigação administrativa."
-        emptyMessage="Nenhum pedido de apoio agora."
-        hiddenChildren={renderSignalCards(supportSignals.slice(SECTION_LIMIT), user)}
-      >
-        {renderSignalCards(supportSignals.slice(0, SECTION_LIMIT), user)}
-      </PastoralListSection>
+      {!isPastoralOverview ? (
+        <>
+          <PastoralListSection
+            title="Pedidos de apoio"
+            detail="Casos trazidos para apoio de supervisão, sem virar obrigação administrativa."
+            emptyMessage="Nenhum pedido de apoio agora."
+            hiddenChildren={renderSignalCards(supportSignals.slice(SECTION_LIMIT), user)}
+          >
+            {renderSignalCards(supportSignals.slice(0, SECTION_LIMIT), user)}
+          </PastoralListSection>
+
+          <PastoralListSection
+            title="Acompanhar de perto"
+            detail="Atenções locais que merecem contato simples."
+            emptyMessage="Nenhuma outra pessoa em atenção agora."
+            hiddenChildren={renderSignalCards(attentionSignals.slice(SECTION_LIMIT), user)}
+          >
+            {renderSignalCards(attentionSignals.slice(0, SECTION_LIMIT), user)}
+          </PastoralListSection>
+        </>
+      ) : null}
 
       <PastoralListSection
-        title="Acompanhar de perto"
-        detail="Atenções locais que merecem contato simples."
-        emptyMessage="Nenhuma outra pessoa em atenção agora."
-        hiddenChildren={renderSignalCards(attentionSignals.slice(SECTION_LIMIT), user)}
-      >
-        {renderSignalCards(attentionSignals.slice(0, SECTION_LIMIT), user)}
-      </PastoralListSection>
-
-      <PastoralListSection
-        title="Acolhidos em cuidado"
-        detail="Pessoas que já receberam cuidado e seguem no radar."
-        emptyMessage="Nenhuma pessoa em cuidado agora."
+        title={isPastoralOverview ? "Acolhidos em cuidado pastoral" : "Acolhidos em cuidado"}
+        detail={isPastoralOverview ? "Pessoas que receberam cuidado pastoral e seguem no radar." : "Pessoas que já receberam cuidado e seguem no radar."}
+        emptyMessage={isPastoralOverview ? "Nenhuma pessoa em cuidado pastoral agora." : "Nenhuma pessoa em cuidado agora."}
         hiddenChildren={renderInCareLinks(scopedInCarePeople.slice(SECTION_LIMIT))}
       >
         {renderInCareLinks(scopedInCarePeople.slice(0, SECTION_LIMIT))}
@@ -235,7 +254,7 @@ export default async function PeoplePage() {
           <SectionTitle>Consulta</SectionTitle>
           <InfoCard>
             {isPastoralOverview
-              ? "Esta tela organiza os casos por intenção pastoral. Use a busca para consultar qualquer pessoa quando precisar."
+              ? "Esta tela destaca casos pastorais e cuidados pastorais recentes. A atenção local continua com líderes e supervisores; use a busca para consultar uma pessoa específica."
               : "As seções acima mostram quem merece atenção. Para consultar outra pessoa dentro da sua responsabilidade, use a busca pelo nome."}
           </InfoCard>
         </>
