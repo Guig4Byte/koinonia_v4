@@ -1,16 +1,19 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
-import { ContextSummary, EmptyState, GroupCard, InfoCard, PastoralListSection, SectionTitle } from "@/components/cards";
+import { ContextSummary, EmptyState, GroupCard, InfoCard, PastoralListSection, SectionTitle, priorityCardClass } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
 import { Badge } from "@/components/ui/badge";
 import { getPastorTeamOverview } from "@/features/dashboard/queries";
 import { canUsePastorDashboard } from "@/features/permissions/permissions";
 import type { SignalBadgeTone } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { cn } from "@/lib/cn";
 import { initials } from "@/lib/text";
 
 const SECTION_LIMIT = 4;
-const GROUPS_PER_SUPERVISOR = 4;
+const SUPERVISOR_SECTION_LIMIT = 6;
+const HIGHLIGHTED_GROUPS_PER_SUPERVISOR = 2;
 
 type TeamOverview = Awaited<ReturnType<typeof getPastorTeamOverview>>;
 type SupervisorTeam = TeamOverview["supervisors"][number];
@@ -19,6 +22,12 @@ type TeamGroup = SupervisorTeam["groups"][number];
 function groupSubtitle(group: TeamGroup) {
   const membersLabel = `${group.membersCount} ${group.membersCount === 1 ? "membro" : "membros"}`;
   return `Liderança: ${group.leadershipName} · ${membersLabel}`;
+}
+
+function compactGroupSubtitle(group: TeamGroup) {
+  const membersLabel = `${group.membersCount} ${group.membersCount === 1 ? "membro" : "membros"}`;
+  const presenceLabel = group.hasPresenceData ? `${group.presenceRate}% presença` : "Sem registro";
+  return `${group.leadershipName} · ${membersLabel} · ${presenceLabel}`;
 }
 
 function groupBadgeTone(group: TeamGroup): SignalBadgeTone {
@@ -69,15 +78,47 @@ function supervisorBadgeTone(supervisor: SupervisorTeam): SignalBadgeTone {
   return "neutral";
 }
 
-function SupervisorCard({ supervisor }: { supervisor: SupervisorTeam }) {
-  const visibleGroups = supervisor.groups.slice(0, GROUPS_PER_SUPERVISOR);
-  const hiddenGroups = supervisor.groups.slice(GROUPS_PER_SUPERVISOR);
+function CompactGroupLink({ group, emphasized = false }: { group: TeamGroup; emphasized?: boolean }) {
+  const tone = groupBadgeTone(group);
 
   return (
-    <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
+    <Link
+      href={`/celulas/${group.id}`}
+      className={cn(
+        "flex min-h-[3.6rem] items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-3 py-2.5 transition active:scale-[0.99]",
+        emphasized && priorityCardClass(tone),
+      )}
+    >
+      <span className="min-w-0">
+        <span className="block truncate text-sm font-semibold text-[var(--color-text-primary)]">{group.name}</span>
+        <span className="mt-0.5 block truncate text-xs text-[var(--color-text-secondary)]">{compactGroupSubtitle(group)}</span>
+      </span>
+      <span className="flex shrink-0 items-center gap-2">
+        <Badge tone={tone}>{group.statusLabel}</Badge>
+        <span className="text-sm font-bold text-[var(--color-brand)] opacity-60" aria-hidden="true">
+          →
+        </span>
+      </span>
+    </Link>
+  );
+}
+
+function SupervisorCard({ supervisor }: { supervisor: SupervisorTeam }) {
+  const priorityGroups = supervisor.groups.filter((group) => group.pastoralPriorityScore > 0);
+  const stableGroups = supervisor.groups.filter((group) => group.pastoralPriorityScore <= 0);
+  const highlightedGroups = priorityGroups.slice(0, HIGHLIGHTED_GROUPS_PER_SUPERVISOR);
+  const expandedPriorityGroups = priorityGroups.slice(HIGHLIGHTED_GROUPS_PER_SUPERVISOR);
+  const remainingPriorityCount = Math.max(priorityGroups.length - highlightedGroups.length, 0);
+  const expandedGroups = [...expandedPriorityGroups, ...stableGroups];
+  const hasGroups = supervisor.groups.length > 0;
+  const hasExpandedGroups = expandedGroups.length > 0;
+  const badgeTone = supervisorBadgeTone(supervisor);
+
+  return (
+    <section className={cn("rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card", priorityCardClass(badgeTone))}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--color-avatar-bg)] text-sm font-bold text-[var(--color-avatar-text)]">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-avatar-bg)] text-sm font-bold text-[var(--color-avatar-text)]">
             {initials(supervisor.name)}
           </div>
           <div className="min-w-0">
@@ -85,7 +126,7 @@ function SupervisorCard({ supervisor }: { supervisor: SupervisorTeam }) {
             <p className="mt-0.5 truncate text-sm text-[var(--color-text-secondary)]">{supervisor.email}</p>
           </div>
         </div>
-        <Badge tone={supervisorBadgeTone(supervisor)}>
+        <Badge tone={badgeTone}>
           {supervisor.groups.length} {supervisor.groups.length === 1 ? "célula" : "células"}
         </Badge>
       </div>
@@ -94,18 +135,34 @@ function SupervisorCard({ supervisor }: { supervisor: SupervisorTeam }) {
         {supervisorSummary(supervisor)}
       </p>
 
-      <div className="mt-3 space-y-3">
-        {visibleGroups.length > 0 ? visibleGroups.map(renderGroupCard) : (
+      <div className="mt-3 space-y-2">
+        {highlightedGroups.length > 0 ? highlightedGroups.map((group) => (
+          <CompactGroupLink key={group.id} group={group} emphasized />
+        )) : hasGroups ? (
+          <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-3 py-2.5 text-sm leading-relaxed text-[var(--color-text-secondary)]">
+            Células estáveis agora.
+          </p>
+        ) : (
           <EmptyState compact>Nenhuma célula ativa vinculada a este supervisor.</EmptyState>
         )}
 
-        {hiddenGroups.length > 0 ? (
-          <details className="group rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card">
+        {remainingPriorityCount > 0 ? (
+          <p className="px-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+            Mais {remainingPriorityCount} {remainingPriorityCount === 1 ? "célula pede" : "células pedem"} atenção.
+          </p>
+        ) : null}
+
+        {hasExpandedGroups ? (
+          <details className="group rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3">
             <summary className="flex min-h-10 cursor-pointer list-none items-center justify-center rounded-xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)] transition active:scale-[0.98] [&::-webkit-details-marker]:hidden">
-              <span className="group-open:hidden">Ver mais células</span>
+              <span className="group-open:hidden">Ver células acompanhadas</span>
               <span className="hidden group-open:inline">Mostrar menos</span>
             </summary>
-            <div className="mt-3 space-y-3">{hiddenGroups.map(renderGroupCard)}</div>
+            <div className="mt-3 space-y-2">
+              {expandedGroups.map((group) => (
+                <CompactGroupLink key={group.id} group={group} />
+              ))}
+            </div>
           </details>
         ) : null}
       </div>
@@ -129,8 +186,8 @@ export default async function TeamPage() {
   const team = await getPastorTeamOverview(user);
   const visiblePriorityGroups = team.priorityGroups.slice(0, SECTION_LIMIT);
   const hiddenPriorityGroups = team.priorityGroups.slice(SECTION_LIMIT);
-  const visibleSupervisors = team.supervisors.slice(0, SECTION_LIMIT);
-  const hiddenSupervisors = team.supervisors.slice(SECTION_LIMIT);
+  const visibleSupervisors = team.supervisors.slice(0, SUPERVISOR_SECTION_LIMIT);
+  const hiddenSupervisors = team.supervisors.slice(SUPERVISOR_SECTION_LIMIT);
   const visibleUnassignedGroups = team.unassignedGroups.slice(0, SECTION_LIMIT);
   const hiddenUnassignedGroups = team.unassignedGroups.slice(SECTION_LIMIT);
   const needsAttentionCount = team.summary.groupsNeedingAttentionCount;
@@ -188,7 +245,7 @@ export default async function TeamPage() {
 
       <PastoralListSection
         title="Supervisores"
-        detail="A lista é ordenada pela pior situação pastoral das células acompanhadas; quando tudo está estável, segue por nome."
+        detail="Resumo por supervisor, com prioridade pastoral antes da estrutura completa."
         emptyMessage="Nenhum supervisor cadastrado para esta igreja."
         moreLabel="Ver mais supervisores"
         hiddenChildren={renderSupervisorCards(hiddenSupervisors)}
