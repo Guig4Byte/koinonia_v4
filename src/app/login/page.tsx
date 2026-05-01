@@ -1,6 +1,7 @@
 import { HeartHandshake } from "lucide-react";
 import { redirect } from "next/navigation";
 import { loginAction } from "@/app/login/actions";
+import { LoginErrorMessage, PasswordField } from "@/app/login/login-form-controls";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getAuthenticatedUser } from "@/lib/auth/current-user";
 import { homeForRole } from "@/lib/auth/redirects";
@@ -61,27 +62,13 @@ export default async function LoginPage({
                 autoComplete="email"
                 required
                 className="login-input min-h-[48px] w-full rounded-[16px] border px-4 text-[15px] font-medium outline-none transition"
-                placeholder="voce@igreja.com"
+                placeholder="nome@igreja.com"
               />
             </label>
 
-            <label className="block">
-              <span className="mb-2 block text-[11px] font-extrabold uppercase tracking-[0.16em] text-[var(--login-muted)]">Senha</span>
-              <input
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                className="login-input min-h-[48px] w-full rounded-[16px] border px-4 text-[15px] font-medium outline-none transition"
-                placeholder="Sua senha"
-              />
-            </label>
+            <PasswordField />
 
-            {hasError ? (
-              <p className="rounded-[16px] border border-[var(--color-badge-risco-border)] bg-[var(--color-badge-risco-bg)] px-4 py-3 text-sm font-medium text-[var(--color-badge-risco-text)]">
-                E-mail ou senha não conferem.
-              </p>
-            ) : null}
+            <LoginErrorMessage show={hasError} />
 
             <button
               type="submit"

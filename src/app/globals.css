@@ -496,6 +496,35 @@ a {
   outline: none;
 }
 
+.login-password-toggle {
+  position: absolute;
+  inset-block: 6px;
+  inset-inline-end: 6px;
+  display: inline-flex;
+  width: 36px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--login-muted);
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.login-password-toggle:hover {
+  border-color: color-mix(in srgb, var(--theme-toggle-border) 70%, transparent);
+  background: color-mix(in srgb, var(--theme-toggle-bg) 72%, transparent);
+  color: var(--theme-toggle-icon);
+}
+
+.login-password-toggle:active {
+  transform: scale(0.96);
+}
+
 .login-submit {
   border: 1px solid var(--login-button-border);
   background: var(--login-button-bg);
