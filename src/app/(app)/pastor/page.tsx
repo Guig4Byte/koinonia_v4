@@ -19,7 +19,6 @@ export default async function PastorPage() {
   }
 
   const dashboard = await getPastorDashboard(user);
-  const pendingGroups = dashboard.pendingGroupsCount;
   const hasWeekPresence = dashboard.hasPresenceData;
   const pastoralSections = splitPastoralSections({
     signals: dashboard.attentionPeople,
@@ -78,7 +77,7 @@ export default async function PastorPage() {
       <SearchBox placeholder="Buscar qualquer pessoa..." />
       <PulseCard
         title={phrase}
-        subtitle={pendingGroups > 0 ? `${pendingGroups} ${pendingGroups === 1 ? "célula ainda não registrou" : "células ainda não registraram"} presença nesta semana.` : "A atenção local segue com líderes e supervisores."}
+        subtitle="A atenção local segue com líderes e supervisores."
         tone={pastoralCasesCount > 0 ? "attention" : "ok"}
       />
 
@@ -100,7 +99,7 @@ export default async function PastorPage() {
         {renderInCareLinks(inCarePeople.slice(0, SECTION_LIMIT))}
       </PastoralListSection>
 
-      <SectionTitle>Saúde geral</SectionTitle>
+      <SectionTitle>Presença geral</SectionTitle>
       <ContextSummary
         items={[
           {
@@ -108,18 +107,6 @@ export default async function PastorPage() {
             value: hasWeekPresence ? `${dashboard.presenceRate}%` : "—",
             detail: hasWeekPresence ? "Nos encontros já registrados." : "Nenhum encontro registrado nesta semana.",
             tone: !hasWeekPresence ? "neutral" : dashboard.presenceRate < 65 ? "risk" : dashboard.presenceRate < 75 ? "warn" : "ok",
-          },
-          {
-            label: "Células pendentes",
-            value: String(pendingGroups),
-            detail: pendingGroups > 0 ? "Ainda não entram na leitura da semana." : "Tudo registrado até aqui.",
-            tone: pendingGroups > 0 ? "warn" : "ok",
-          },
-          {
-            label: "Casos pastorais",
-            value: String(pastoralCasesCount),
-            detail: "Graves ou encaminhados; a atenção comum fica no cuidado local.",
-            tone: pastoralCasesCount > 0 ? "risk" : "ok",
           },
         ]}
       />

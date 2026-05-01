@@ -112,7 +112,7 @@ Não deve registrar check-in pelo líder, ver dados fora do escopo ou virar oper
 
 ### Pastor/Admin
 
-Pode ver saúde geral, presença por célula, células pendentes ou com presença baixa, casos graves/urgentes/encaminhados, buscar pessoas dentro da igreja e abrir células para contexto local.
+Pode ver saúde geral, presença por célula, células sem presença recente ou com presença baixa registrada, casos graves/urgentes/encaminhados, buscar pessoas dentro da igreja e abrir células para contexto local.
 
 Não deve registrar check-in, receber toda atenção comum como fila inicial, virar central de tickets ou transformar a visão macro em relatório burocrático.
 
@@ -192,7 +192,7 @@ Regras:
 A métrica deve dar contexto pastoral, não ranking.
 
 - `Presença da semana` considera encontros da semana atual com presença registrada.
-- Células sem check-in entram como pendentes, não como `0%`.
+- Células sem check-in entram como `Sem presença recente` ou `Sem registro`, não como `0%`.
 - Visitantes não entram no denominador.
 - Sem dado deve aparecer como `—`, `Sem registro` ou equivalente.
 - `Presença recente` resume últimos encontros registrados no escopo visível.

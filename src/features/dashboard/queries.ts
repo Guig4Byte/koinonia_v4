@@ -82,9 +82,6 @@ export async function getPastorDashboard(user: PermissionUser) {
 
   const dueEvents = events.filter((event) => event.startsAt < tomorrow);
   const completedEvents = dueEvents.filter(isPresenceRecordedEvent);
-  const pendingGroupIds = new Set(dueEvents
-    .filter((event) => event.status !== "COMPLETED" && event.attendances.length === 0 && event.groupId)
-    .map((event) => event.groupId));
   const presence = summarizeEventsPresence(completedEvents);
   const attentionPeople = getPastoralSignalsByPerson(openSignals);
   const urgentSignals = attentionPeople.length;
@@ -106,10 +103,13 @@ export async function getPastorDashboard(user: PermissionUser) {
     };
   });
 
+  const groupsWithoutRecentPresence = groupsWithPresence.filter((group) => !group.hasPresenceData);
+
   return {
     plannedEvents: dueEvents.length,
     completedEvents: completedEvents.length,
-    pendingGroupsCount: pendingGroupIds.size,
+    pendingGroupsCount: groupsWithoutRecentPresence.length,
+    groupsWithoutRecentPresence,
     presenceRate: presence.presenceRate,
     visitors: presence.visitorCount,
     hasPresenceData: presence.hasPresenceData,
@@ -185,7 +185,7 @@ export async function getPastorTeamOverview(user: PermissionUser) {
           : localAttentionCount > 0
             ? `${localAttentionCount} ${localAttentionCount === 1 ? "atenção local" : "atenções locais"}`
             : hasNoPresenceData
-              ? "Sem registro"
+              ? "Sem presença recente"
               : hasLowPresence
                 ? "Presença baixa"
                 : "Estável";
@@ -253,8 +253,8 @@ export async function getPastorTeamOverview(user: PermissionUser) {
   const allGroups = [...supervisorTeams.flatMap((supervisor) => supervisor.groups), ...unassignedGroups];
   const priorityGroups = allGroups.filter((group) => group.pastoralPriorityScore > 0).sort(compareTeamGroups);
   const readingPendingGroups = allGroups
-    .filter((group) => group.pastoralPriorityScore <= 0 && group.hasNoPresenceData)
-    .sort((left, right) => left.name.localeCompare(right.name, "pt-BR"));
+    .filter((group) => group.hasNoPresenceData)
+    .sort(compareTeamGroups);
 
   return {
     supervisors: supervisorTeams,

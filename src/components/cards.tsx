@@ -329,6 +329,7 @@ export function GroupCard({
   attentionCount,
   href,
   hasPresenceData = true,
+  noPresenceLabel = "Sem registro",
   attentionLabelKind = "default",
   badgeLabel,
   badgeTone,
@@ -339,6 +340,7 @@ export function GroupCard({
   attentionCount: number;
   href?: string;
   hasPresenceData?: boolean;
+  noPresenceLabel?: string;
   attentionLabelKind?: "default" | "local" | "pastoral";
   badgeLabel?: string;
   badgeTone?: SignalBadgeTone;
@@ -355,7 +357,7 @@ export function GroupCard({
     : !hasPresenceData ? "neutral" : tone === "risk" ? "risk" : hasLowPresence ? "warn" : "ok";
   const fallbackBadgeLabel = attentionCount > 0
     ? attentionLabel
-    : !hasPresenceData ? "Sem registro" : hasLowPresence ? "Presença baixa" : "Estável";
+    : !hasPresenceData ? noPresenceLabel : hasLowPresence ? "Presença baixa" : "Estável";
   const resolvedBadgeTone: SignalBadgeTone = badgeTone ?? fallbackBadgeTone;
   const resolvedBadgeLabel = badgeLabel ?? fallbackBadgeLabel;
   const priorityTone = resolvedBadgeTone === "neutral" || resolvedBadgeTone === "ok" || resolvedBadgeTone === "info" ? undefined : resolvedBadgeTone;
@@ -377,7 +379,7 @@ export function GroupCard({
       <div className="mt-2 flex items-center justify-between gap-3 text-xs text-[var(--color-text-secondary)]">
         <span>
           Presença recente:{" "}
-          <strong className="text-[var(--color-text-primary)]">{hasPresenceData ? `${presenceRate}%` : "Sem registro"}</strong>
+          <strong className="text-[var(--color-text-primary)]">{hasPresenceData ? `${presenceRate}%` : noPresenceLabel}</strong>
         </span>
         {href ? <span className="font-semibold text-[var(--color-brand)]">Abrir célula →</span> : null}
       </div>

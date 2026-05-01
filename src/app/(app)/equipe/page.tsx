@@ -26,7 +26,7 @@ function groupSubtitle(group: TeamGroup) {
 
 function compactGroupSubtitle(group: TeamGroup) {
   const membersLabel = `${group.membersCount} ${group.membersCount === 1 ? "membro" : "membros"}`;
-  const presenceLabel = group.hasPresenceData ? `${group.presenceRate}% presença` : "Sem registro";
+  const presenceLabel = group.hasPresenceData ? `${group.presenceRate}% presença` : "Sem presença recente registrada";
   return `${group.leadershipName} · ${membersLabel} · ${presenceLabel}`;
 }
 
@@ -50,6 +50,7 @@ function renderGroupCard(group: TeamGroup) {
       attentionLabelKind="pastoral"
       href={`/celulas/${group.id}`}
       hasPresenceData={group.hasPresenceData}
+      noPresenceLabel="Sem presença recente"
       badgeLabel={group.statusLabel}
       badgeTone={groupBadgeTone(group)}
     />
@@ -70,7 +71,7 @@ function supervisorSummary(supervisor: SupervisorTeam) {
   }
 
   if (supervisor.groupsWithoutPresenceCount > 0) {
-    return `${supervisor.groupsWithoutPresenceCount} ${supervisor.groupsWithoutPresenceCount === 1 ? "célula está" : "células estão"} com leitura de presença pendente.`;
+    return `${supervisor.groupsWithoutPresenceCount} ${supervisor.groupsWithoutPresenceCount === 1 ? "célula está" : "células estão"} sem presença recente registrada.`;
   }
 
   return "Sem célula pedindo atenção agora.";
@@ -212,7 +213,7 @@ export default async function TeamPage() {
 
       <h2 className="mb-2 text-2xl font-semibold text-[var(--color-text-primary)]">Equipe</h2>
       <p className="mb-4 text-sm leading-relaxed text-[var(--color-text-secondary)]">
-        Veja quem acompanha quais células. A ordem prioriza casos, sinais e presença baixa registrada; ausência de registro aparece como leitura pendente.
+        Veja quem acompanha quais células. A ordem prioriza casos, sinais e presença baixa registrada; quando falta registro, a célula aparece como “Sem presença recente”.
       </p>
 
       <ContextSummary
@@ -238,10 +239,10 @@ export default async function TeamPage() {
             tone: needsAttentionCount > 0 ? "warn" : "ok",
           },
           {
-            label: "Leitura pendente",
+            label: "Sem presença recente",
             value: String(team.summary.groupsWithoutPresenceCount),
             detail: team.summary.groupsWithoutPresenceCount > 0
-              ? "Sem presença registrada suficiente para leitura recente."
+              ? "Ainda não há presença recente registrada. Talvez o encontro tenha acontecido, mas a presença ainda não foi marcada."
               : "Todas têm presença recente registrada.",
             tone: team.summary.groupsWithoutPresenceCount > 0 ? "neutral" : "ok",
           },
@@ -259,8 +260,8 @@ export default async function TeamPage() {
 
       {team.readingPendingGroups.length > 0 ? (
         <PastoralListSection
-          title="Leitura pendente"
-          detail="Células sem presença registrada suficiente para leitura recente. Isso não conta como risco pastoral."
+          title="Sem presença recente"
+          detail="Ainda não há presença recente registrada. Talvez o encontro tenha acontecido, mas a presença ainda não foi marcada."
           moreLabel="Ver mais células"
           hiddenChildren={hiddenReadingPendingGroups.map(renderGroupCard)}
         >

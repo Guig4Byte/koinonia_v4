@@ -26,6 +26,12 @@ Evite `lead`, `cliente` e `contato comercial`.
 
 Comunidade local onde presença, vínculo e cuidado acontecem. Use `Célula` na UI. Use `grupo` apenas quando a abstração técnica pedir.
 
+### Liderança
+
+Forma pastoral de se referir a quem conduz uma célula. Use `Liderança` em cards e contexto de célula, porque a célula pode ser conduzida por uma pessoa, casal ou composição compartilhada.
+
+Evite fixar a UI em `Líder` quando o contexto for a responsabilidade da célula como um todo.
+
 ### Evento / encontro
 
 Encontro real que pode gerar presença. Use `Evento`, `Encontro` ou `Reunião da célula`.
@@ -45,6 +51,18 @@ Evite `controle de presença` e `fiscalização`.
 Ausência real de dado de presença.
 
 Use quando não há presença registrada suficiente para calcular percentual. Não mostre `0%` nesse caso.
+
+### Sem presença recente
+
+Estado de célula quando ainda não há presença recente registrada para leitura pastoral. Isso não é risco pastoral automático e não deve entrar como presença baixa.
+
+Use a frase explicativa:
+
+```txt
+Ainda não há presença recente registrada. Talvez o encontro tenha acontecido, mas a presença ainda não foi marcada.
+```
+
+Evite `células pendentes` ou linguagem de cobrança.
 
 ### Sinal
 
@@ -136,6 +154,12 @@ Evite `task`, `workflow`, `chamado`, `ticket` e `SLA`.
 
 Leitura curta e orientada à ação. Use `Visão` em vez de `Dashboard` na UI.
 
+### Equipe
+
+Estrutura pastoral de supervisores, liderança e células. Use para mostrar quem acompanha quais células e onde a estrutura de cuidado precisa de atenção.
+
+Evite transformar `Equipe` em gestão pesada de usuários, ranking de supervisores ou painel de desempenho.
+
 ### Login
 
 Entrada do usuário autenticado.
@@ -176,6 +200,7 @@ Tema não é configuração pastoral, não muda escopo e não precisa de tela ad
 | `Cuidado realizado` | contato/cuidado registrado | azul/care |
 | `Informativo` | sinal `INFO`, quando exibido | informativo/neutro |
 | `Sem registro` | ausência de dado de presença | neutro |
+| `Sem presença recente` | célula sem presença recente registrada para leitura pastoral | neutro |
 
 Não rebaixar `Urgente` para `Em atenção`. O contexto pode mudar a mensagem, mas a severidade continua sendo severidade.
 
@@ -187,6 +212,8 @@ Não rebaixar `Urgente` para `Em atenção`. O contexto pode mudar a mensagem, m
 | `Pedidos de apoio` | pedidos de apoio da supervisão |
 | `Acompanhar de perto` | atenções locais comuns |
 | `Acolhidos em cuidado` | pessoas em `Em cuidado` |
+| `Células que pedem atenção` | células com caso pastoral, pedido de apoio, atenção local acumulada ou presença baixa registrada |
+| `Sem presença recente` | células sem presença recente registrada; não conta como risco pastoral |
 
 ## CTAs oficiais
 

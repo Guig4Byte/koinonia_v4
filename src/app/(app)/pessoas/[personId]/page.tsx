@@ -219,7 +219,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
             title={primaryGroup.name}
             meta={
               <>
-                Líder: {primaryGroup.leader?.name ?? "não informado"}
+                Liderança: {primaryGroup.leader?.name ?? "não informada"}
                 {primaryGroup.supervisor?.name ? ` · Supervisor: ${primaryGroup.supervisor.name}` : ""}
               </>
             }
