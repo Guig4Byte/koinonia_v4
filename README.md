@@ -45,7 +45,7 @@ O pastor não é operador de sinais e não deve receber toda ausência ou atenç
 
 ## O que existe agora
 
-- Autenticação real por e-mail e senha.
+- Autenticação real por e-mail e senha, com erro curto no login e opção de mostrar/ocultar senha.
 - Sessão em cookie `HttpOnly` assinado.
 - Tema local no login e no app.
 - Pessoas.

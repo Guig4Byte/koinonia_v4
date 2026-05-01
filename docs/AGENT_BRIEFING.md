@@ -59,6 +59,8 @@ O projeto usa autenticação real simples:
 - a sessão fica em cookie `HttpOnly` assinado (`koinonia-session`);
 - `middleware.ts` protege rotas privadas e APIs;
 - `getCurrentUser()` é a fonte padrão do usuário autenticado;
+- erro de credenciais aparece como mensagem curta e não deve persistir após refresh;
+- o campo de senha pode ser mostrado/ocultado apenas como controle visual local;
 - não existe mais troca manual de perfil na UI.
 
 Não reintroduza seletor de perfis, sessão demo ou bypass visual de papel. Para desenvolvimento, use os usuários criados pela seed.

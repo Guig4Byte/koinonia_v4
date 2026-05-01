@@ -208,7 +208,8 @@ Entrada pública com:
 - chamada curta de cuidado;
 - alternância de tema;
 - e-mail;
-- senha;
+- senha com opção de mostrar/ocultar;
+- mensagem curta de erro de credenciais quando necessário;
 - botão `Entrar`.
 
 Não exibir bloco de credenciais de desenvolvimento.

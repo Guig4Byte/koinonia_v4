@@ -65,6 +65,7 @@ Fontes principais:
 middleware.ts
 src/app/login/page.tsx
 src/app/login/actions.ts
+src/app/login/login-form-controls.tsx
 src/app/logout/route.ts
 src/lib/auth/current-user.ts
 src/lib/auth/password.ts
@@ -375,6 +376,11 @@ Métricas de presença:
 
 Tela pública de entrada. Usa `loginAction`, `getAuthenticatedUser()` e `homeForRole()`. Se houver sessão válida, redireciona para a visão do papel. Também permite alternar tema.
 
+Comportamentos client-side ficam em `login-form-controls.tsx`:
+
+- `LoginErrorMessage` exibe `erro=credenciais` e remove o parâmetro da URL com `history.replaceState`, preservando `next`, para que refresh não repita a mensagem;
+- `PasswordField` alterna visualmente o campo entre oculto e visível, sem alterar nome do campo, `autoComplete` ou payload do formulário.
+
 ### `/logout`
 
 Rota para encerrar sessão. O shell usa formulário `POST`. A rota limpa o cookie de sessão e volta para `/login`.
@@ -419,6 +425,7 @@ Fontes:
 src/features/theme/theme.ts
 src/components/theme-init.tsx
 src/components/theme-toggle.tsx
+src/app/globals.css
 ```
 
 Regras:
@@ -427,6 +434,7 @@ Regras:
 - valores válidos: `light`, `parchment`, `dark`;
 - `ThemeInit` aplica o tema antes da renderização principal;
 - `ThemeToggle` tem variante para header autenticado e card de login;
+- tokens visuais do login usam variáveis `--login-*`; contraste do tema `parchment` deve ser ajustado nesses tokens, não com cores soltas no JSX;
 - tema não deve ser persistido no banco nesta fase.
 
 ## Design system

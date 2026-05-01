@@ -34,7 +34,8 @@ A tela atual deve permanecer curta:
 - frase `Cuidado pastoral em suas mãos.`;
 - alternância de tema;
 - e-mail;
-- senha;
+- senha com opção discreta de mostrar/ocultar;
+- erro curto de credenciais que não reaparece depois de atualizar;
 - botão `Entrar`.
 
 Não mostrar credenciais de desenvolvimento, seletor de perfil, onboarding, cadastro público ou configurações extensas.

@@ -140,7 +140,9 @@ Leitura curta e orientada à ação. Use `Visão` em vez de `Dashboard` na UI.
 
 Entrada do usuário autenticado.
 
-Use `Entrar`, `E-mail`, `Senha`, `Sair` e mensagens curtas como `E-mail ou senha não conferem.`
+Use `Entrar`, `E-mail`, `Senha`, `Mostrar senha`, `Ocultar senha`, `Sair` e mensagens curtas como `E-mail ou senha não conferem.`
+
+Quando precisar de exemplo de e-mail no login, use `nome@igreja.com`.
 
 Evite `modo demo`, `trocar perfil`, `impersonar usuário` e mensagens técnicas de sessão.
 
@@ -191,6 +193,7 @@ Não rebaixar `Urgente` para `Em atenção`. O contexto pode mudar a mensagem, m
 | Contexto | CTA preferencial |
 | --- | --- |
 | Login | `Entrar` |
+| Senha no login | `Mostrar senha`, `Ocultar senha` |
 | Sair da sessão | `Sair` |
 | Lista de pessoas/casos | `Abrir pessoa` |
 | Pedido recebido pelo supervisor | `Abrir apoio` |
