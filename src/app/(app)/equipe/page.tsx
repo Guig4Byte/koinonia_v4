@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Search } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { ContextSummary, EmptyState, GroupCard, InfoCard, PastoralListSection, SectionTitle, priorityCardClass } from "@/components/cards";
-import { SearchBox } from "@/components/search-box";
 import { Badge } from "@/components/ui/badge";
 import { getPastorTeamOverview } from "@/features/dashboard/queries";
 import { canUsePastorDashboard } from "@/features/permissions/permissions";
@@ -12,12 +12,152 @@ import { cn } from "@/lib/cn";
 import { initials } from "@/lib/text";
 
 const SECTION_LIMIT = 4;
-const SUPERVISOR_SECTION_LIMIT = 6;
-const HIGHLIGHTED_GROUPS_PER_SUPERVISOR = 2;
+const SUPERVISOR_SECTION_LIMIT = 4;
+const GROUPS_PER_SUPERVISOR_LIMIT = 3;
+
+type TeamFilter = "todos" | "atencao" | "sem-presenca";
+
+const TEAM_FILTERS: Array<{ value: TeamFilter; label: string }> = [
+  { value: "todos", label: "Todos" },
+  { value: "atencao", label: "Pedem atenção" },
+  { value: "sem-presenca", label: "Sem presença recente" },
+];
 
 type TeamOverview = Awaited<ReturnType<typeof getPastorTeamOverview>>;
 type SupervisorTeam = TeamOverview["supervisors"][number];
 type TeamGroup = SupervisorTeam["groups"][number];
+type TeamPageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+function firstParam(value: string | string[] | undefined) {
+  if (Array.isArray(value)) return value[0] ?? "";
+  return value ?? "";
+}
+
+function normalizeSearch(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
+}
+
+function readTeamFilter(value: string): TeamFilter {
+  return TEAM_FILTERS.some((filter) => filter.value === value) ? value as TeamFilter : "todos";
+}
+
+function groupMatchesQuery(group: TeamGroup, normalizedQuery: string) {
+  if (!normalizedQuery) return true;
+
+  const haystack = normalizeSearch(`${group.name} ${group.leadershipName}`);
+  return haystack.includes(normalizedQuery);
+}
+
+function supervisorMatchesQuery(supervisor: SupervisorTeam, normalizedQuery: string) {
+  if (!normalizedQuery) return true;
+
+  const haystack = normalizeSearch(`${supervisor.name} ${supervisor.email}`);
+  return haystack.includes(normalizedQuery);
+}
+
+function groupMatchesFilter(group: TeamGroup, filter: TeamFilter) {
+  if (filter === "atencao") return group.pastoralPriorityScore > 0;
+  if (filter === "sem-presenca") return group.hasNoPresenceData;
+  return true;
+}
+
+function filterGroups(groups: TeamGroup[], normalizedQuery: string, filter: TeamFilter) {
+  return groups.filter((group) => groupMatchesFilter(group, filter) && groupMatchesQuery(group, normalizedQuery));
+}
+
+function filterSupervisorGroups(supervisor: SupervisorTeam, normalizedQuery: string, filter: TeamFilter) {
+  const supervisorMatches = supervisorMatchesQuery(supervisor, normalizedQuery);
+
+  return supervisor.groups.filter((group) => {
+    if (!groupMatchesFilter(group, filter)) return false;
+    if (!normalizedQuery) return true;
+    return supervisorMatches || groupMatchesQuery(group, normalizedQuery);
+  });
+}
+
+function withFilteredGroups(supervisor: SupervisorTeam, groups: TeamGroup[]): SupervisorTeam {
+  return {
+    ...supervisor,
+    groups,
+    highestPriorityScore: groups[0]?.pastoralPriorityScore ?? 0,
+    groupsNeedingAttentionCount: groups.filter((group) => group.pastoralPriorityScore > 0).length,
+    pastoralCasesCount: groups.reduce((total, group) => total + group.pastoralCasesCount, 0),
+    urgentCount: groups.reduce((total, group) => total + group.urgentCount, 0),
+    attentionCount: groups.reduce((total, group) => total + group.attentionCount, 0),
+    groupsWithoutPresenceCount: groups.filter((group) => !group.hasPresenceData).length,
+    lowPresenceGroupsCount: groups.filter((group) => group.hasPresenceData && group.hasLowPresence).length,
+  };
+}
+
+function filterSupervisors(supervisors: SupervisorTeam[], normalizedQuery: string, filter: TeamFilter) {
+  return supervisors.flatMap((supervisor) => {
+    const groups = filterSupervisorGroups(supervisor, normalizedQuery, filter);
+
+    if (groups.length === 0) return [];
+    return [withFilteredGroups(supervisor, groups)];
+  });
+}
+
+function teamFilterHref(filter: TeamFilter, query: string) {
+  const params = new URLSearchParams();
+  if (query) params.set("q", query);
+  if (filter !== "todos") params.set("filtro", filter);
+
+  const queryString = params.toString();
+  return queryString ? `/equipe?${queryString}` : "/equipe";
+}
+
+function TeamStructureSearch({ query, filter }: { query: string; filter: TeamFilter }) {
+  return (
+    <section className="mb-4 space-y-3">
+      <form action="/equipe" className="flex min-h-12 items-center gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-4 shadow-card">
+        <Search className="h-4 w-4 text-[var(--color-text-secondary)]" />
+        <input
+          name="q"
+          defaultValue={query}
+          placeholder="Buscar supervisor ou célula..."
+          className="w-full bg-transparent text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)]"
+        />
+        {filter !== "todos" ? <input type="hidden" name="filtro" value={filter} /> : null}
+        <button type="submit" className="rounded-xl bg-[var(--color-btn-secondary-bg)] px-3 py-1.5 text-xs font-semibold text-[var(--color-btn-secondary-text)]">
+          Buscar
+        </button>
+      </form>
+
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        {TEAM_FILTERS.map((option) => {
+          const active = option.value === filter;
+
+          return (
+            <Link
+              key={option.value}
+              href={teamFilterHref(option.value, query)}
+              className={cn(
+                "shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold transition active:scale-[0.98]",
+                active
+                  ? "border-[var(--color-brand)] bg-[var(--metric-card-bg)] text-[var(--color-brand)]"
+                  : "border-[var(--color-border-card)] bg-[var(--surface-alt)] text-[var(--color-text-secondary)]",
+              )}
+            >
+              {option.label}
+            </Link>
+          );
+        })}
+        {query || filter !== "todos" ? (
+          <Link href="/equipe" className="shrink-0 rounded-full border border-[var(--color-border-card)] bg-transparent px-3 py-1.5 text-xs font-semibold text-[var(--color-text-secondary)] transition active:scale-[0.98]">
+            Limpar
+          </Link>
+        ) : null}
+      </div>
+    </section>
+  );
+}
 
 function groupSubtitle(group: TeamGroup) {
   const membersLabel = `${group.membersCount} ${group.membersCount === 1 ? "membro" : "membros"}`;
@@ -114,14 +254,9 @@ function CompactGroupLink({ group, emphasized = false }: { group: TeamGroup; emp
 }
 
 function SupervisorCard({ supervisor }: { supervisor: SupervisorTeam }) {
-  const priorityGroups = supervisor.groups.filter((group) => group.pastoralPriorityScore > 0);
-  const stableGroups = supervisor.groups.filter((group) => group.pastoralPriorityScore <= 0);
-  const highlightedGroups = priorityGroups.slice(0, HIGHLIGHTED_GROUPS_PER_SUPERVISOR);
-  const expandedPriorityGroups = priorityGroups.slice(HIGHLIGHTED_GROUPS_PER_SUPERVISOR);
-  const remainingPriorityCount = Math.max(priorityGroups.length - highlightedGroups.length, 0);
-  const expandedGroups = [...expandedPriorityGroups, ...stableGroups];
+  const visibleGroups = supervisor.groups.slice(0, GROUPS_PER_SUPERVISOR_LIMIT);
+  const hiddenGroups = supervisor.groups.slice(GROUPS_PER_SUPERVISOR_LIMIT);
   const hasGroups = supervisor.groups.length > 0;
-  const hasExpandedGroups = expandedGroups.length > 0;
   const badgeTone = supervisorBadgeTone(supervisor);
 
   return (
@@ -146,31 +281,34 @@ function SupervisorCard({ supervisor }: { supervisor: SupervisorTeam }) {
       </p>
 
       <div className="mt-3 space-y-2">
-        {highlightedGroups.length > 0 ? highlightedGroups.map((group) => (
-          <CompactGroupLink key={group.id} group={group} emphasized />
-        )) : !hasGroups ? (
+        {!hasGroups ? (
           <EmptyState compact>Nenhuma célula ativa vinculada a este supervisor.</EmptyState>
-        ) : null}
-
-        {remainingPriorityCount > 0 ? (
-          <p className="px-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-            Mais {remainingPriorityCount} {remainingPriorityCount === 1 ? "célula pede" : "células pedem"} atenção.
-          </p>
-        ) : null}
-
-        {hasExpandedGroups ? (
+        ) : (
           <details className="group rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3">
             <summary className="flex min-h-10 cursor-pointer list-none items-center justify-center rounded-xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)] transition active:scale-[0.98] [&::-webkit-details-marker]:hidden">
               <span className="group-open:hidden">Ver células acompanhadas</span>
               <span className="hidden group-open:inline">Mostrar menos</span>
             </summary>
             <div className="mt-3 space-y-2">
-              {expandedGroups.map((group) => (
-                <CompactGroupLink key={group.id} group={group} />
+              {visibleGroups.map((group) => (
+                <CompactGroupLink key={group.id} group={group} emphasized={group.pastoralPriorityScore > 0} />
               ))}
+              {hiddenGroups.length > 0 ? (
+                <details className="group/more rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3">
+                  <summary className="flex min-h-10 cursor-pointer list-none items-center justify-center rounded-xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)] transition active:scale-[0.98] [&::-webkit-details-marker]:hidden">
+                    <span className="group-open/more:hidden">Ver mais células</span>
+                    <span className="hidden group-open/more:inline">Mostrar menos células</span>
+                  </summary>
+                  <div className="mt-3 space-y-2">
+                    {hiddenGroups.map((group) => (
+                      <CompactGroupLink key={group.id} group={group} />
+                    ))}
+                  </div>
+                </details>
+              ) : null}
             </div>
           </details>
-        ) : null}
+        )}
       </div>
     </section>
   );
@@ -182,23 +320,34 @@ function renderSupervisorCards(supervisors: SupervisorTeam[]) {
   ));
 }
 
-export default async function TeamPage() {
+export default async function TeamPage({ searchParams }: TeamPageProps) {
   const user = await getCurrentUser();
 
   if (!canUsePastorDashboard(user)) {
     redirect("/");
   }
 
+  const params = searchParams ? await searchParams : {};
+  const query = firstParam(params.q).trim();
+  const normalizedQuery = normalizeSearch(query);
+  const activeFilter = readTeamFilter(firstParam(params.filtro));
   const team = await getPastorTeamOverview(user);
-  const visiblePriorityGroups = team.priorityGroups.slice(0, SECTION_LIMIT);
-  const hiddenPriorityGroups = team.priorityGroups.slice(SECTION_LIMIT);
-  const visibleReadingPendingGroups = team.readingPendingGroups.slice(0, SECTION_LIMIT);
-  const hiddenReadingPendingGroups = team.readingPendingGroups.slice(SECTION_LIMIT);
-  const visibleSupervisors = team.supervisors.slice(0, SUPERVISOR_SECTION_LIMIT);
-  const hiddenSupervisors = team.supervisors.slice(SUPERVISOR_SECTION_LIMIT);
-  const visibleUnassignedGroups = team.unassignedGroups.slice(0, SECTION_LIMIT);
-  const hiddenUnassignedGroups = team.unassignedGroups.slice(SECTION_LIMIT);
+  const filteredPriorityGroups = activeFilter === "sem-presenca" ? [] : filterGroups(team.priorityGroups, normalizedQuery, activeFilter);
+  const filteredReadingPendingGroups = activeFilter === "atencao" ? [] : filterGroups(team.readingPendingGroups, normalizedQuery, activeFilter);
+  const filteredSupervisors = filterSupervisors(team.supervisors, normalizedQuery, activeFilter);
+  const filteredUnassignedGroups = filterGroups(team.unassignedGroups, normalizedQuery, activeFilter);
+  const visiblePriorityGroups = filteredPriorityGroups.slice(0, SECTION_LIMIT);
+  const hiddenPriorityGroups = filteredPriorityGroups.slice(SECTION_LIMIT);
+  const visibleReadingPendingGroups = filteredReadingPendingGroups.slice(0, SECTION_LIMIT);
+  const hiddenReadingPendingGroups = filteredReadingPendingGroups.slice(SECTION_LIMIT);
+  const visibleSupervisors = filteredSupervisors.slice(0, SUPERVISOR_SECTION_LIMIT);
+  const hiddenSupervisors = filteredSupervisors.slice(SUPERVISOR_SECTION_LIMIT);
+  const visibleUnassignedGroups = filteredUnassignedGroups.slice(0, SECTION_LIMIT);
+  const hiddenUnassignedGroups = filteredUnassignedGroups.slice(SECTION_LIMIT);
   const needsAttentionCount = team.summary.groupsNeedingAttentionCount;
+  const isFiltered = Boolean(query) || activeFilter !== "todos";
+  const showPrioritySection = activeFilter !== "sem-presenca";
+  const showReadingPendingSection = activeFilter === "sem-presenca" || filteredReadingPendingGroups.length > 0;
 
   return (
     <AppShell
@@ -210,12 +359,12 @@ export default async function TeamPage() {
         { href: "/eventos", label: "Eventos", icon: "calendar" },
       ]}
     >
-      <SearchBox placeholder="Buscar qualquer pessoa..." />
-
       <h2 className="mb-2 text-2xl font-semibold text-[var(--color-text-primary)]">Equipe</h2>
       <p className="mb-4 text-sm leading-relaxed text-[var(--color-text-secondary)]">
         Veja quem acompanha quais células. A ordem prioriza casos pastorais e presença baixa registrada; pedidos de apoio à supervisão permanecem no cuidado da supervisão.
       </p>
+
+      <TeamStructureSearch query={query} filter={activeFilter} />
 
       <ContextSummary
         items={[
@@ -250,19 +399,22 @@ export default async function TeamPage() {
         ]}
       />
 
-      <PastoralListSection
-        title="Células que pedem atenção"
-        detail="Casos pastorais vêm primeiro; depois presença baixa com dado registrado."
-        emptyMessage="Nenhuma célula pede atenção agora."
-        hiddenChildren={hiddenPriorityGroups.map(renderGroupCard)}
-      >
-        {visiblePriorityGroups.map(renderGroupCard)}
-      </PastoralListSection>
+      {showPrioritySection ? (
+        <PastoralListSection
+          title="Células que pedem atenção"
+          detail="Casos pastorais vêm primeiro; depois presença baixa com dado registrado."
+          emptyMessage={isFiltered ? "Nenhuma célula encontrada com esse recorte." : "Nenhuma célula pede atenção agora."}
+          hiddenChildren={hiddenPriorityGroups.map(renderGroupCard)}
+        >
+          {visiblePriorityGroups.map(renderGroupCard)}
+        </PastoralListSection>
+      ) : null}
 
-      {team.readingPendingGroups.length > 0 ? (
+      {showReadingPendingSection ? (
         <PastoralListSection
           title="Sem presença recente"
           detail="Ainda não há presença recente registrada. Talvez o encontro tenha acontecido, mas a presença ainda não foi marcada."
+          emptyMessage="Nenhuma célula sem presença recente encontrada."
           moreLabel="Ver mais células"
           hiddenChildren={hiddenReadingPendingGroups.map(renderGroupCard)}
         >
@@ -273,14 +425,14 @@ export default async function TeamPage() {
       <PastoralListSection
         title="Supervisores"
         detail="Resumo por supervisor, com prioridade pastoral antes da estrutura completa."
-        emptyMessage="Nenhum supervisor cadastrado para esta igreja."
+        emptyMessage={isFiltered ? "Nenhum supervisor ou célula encontrado nesse recorte." : "Nenhum supervisor cadastrado para esta igreja."}
         moreLabel="Ver mais supervisores"
         hiddenChildren={renderSupervisorCards(hiddenSupervisors)}
       >
         {renderSupervisorCards(visibleSupervisors)}
       </PastoralListSection>
 
-      {team.unassignedGroups.length > 0 ? (
+      {filteredUnassignedGroups.length > 0 ? (
         <PastoralListSection
           title="Sem supervisor"
           detail="Células ativas que ainda não têm supervisor vinculado."
@@ -293,7 +445,7 @@ export default async function TeamPage() {
 
       <SectionTitle>Consulta</SectionTitle>
       <InfoCard>
-        Esta tela mostra a estrutura de cuidado. Para abrir o perfil de alguém, use a busca ou entre na célula correspondente.
+        Esta tela mostra a estrutura de cuidado. Para abrir o perfil de alguém, use a busca da Visão ou entre na célula correspondente.
       </InfoCard>
     </AppShell>
   );

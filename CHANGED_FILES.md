@@ -1,8 +1,8 @@
-# Alterações — Equipe do pastor
+# Alterações desta entrega
 
 ## Objetivo
 
-Remover a mensagem repetida dentro do card de supervisor quando não há célula pedindo atenção.
+Refinar a aba `Equipe` para deixar a busca coerente com a função da tela: estrutura pastoral, supervisores e células — não busca global de pessoas.
 
 ## Arquivos alterados
 
@@ -10,17 +10,17 @@ Remover a mensagem repetida dentro do card de supervisor quando não há célula
 
 ## Mudanças
 
-- O resumo do supervisor deixou de retornar `Sem célula pedindo atenção agora.`.
-- Quando não há célula em atenção, o card mostra apenas o resumo neutro, por exemplo `2 células acompanhadas`.
-- O estado vazio `Sem célula pedindo atenção agora.` deixou de ser renderizado dentro da área de listas do supervisor.
-- O estado vazio continua aparecendo apenas quando o supervisor não tem nenhuma célula ativa vinculada: `Nenhuma célula ativa vinculada a este supervisor.`
-- A lista expansível de células acompanhadas continua aparecendo normalmente.
+- Removida a busca global de pessoa da aba `Equipe`.
+- Adicionada busca local por `supervisor` ou `célula`.
+- Adicionados filtros simples:
+  - `Todos`;
+  - `Pedem atenção`;
+  - `Sem presença recente`.
+- Lista de supervisores limitada a 4 cards iniciais, com `Ver mais supervisores`.
+- Cards de supervisor ficaram mais fechados: mostram resumo primeiro e abrem as células em `Ver células acompanhadas`.
+- Dentro de cada supervisor, são mostradas até 3 células inicialmente, com `Ver mais células` quando houver excedente.
+- `Equipe` agora orienta o usuário a usar a busca da `Visão` para abrir perfil de pessoa.
 
-## Validação
+## Observação
 
-Tentei rodar `npm run typecheck`, mas o comando não concluiu dentro do tempo disponível neste ambiente. Recomendo validar localmente com:
-
-```bash
-npm run typecheck
-npm test
-```
+A busca local de `Equipe` não consulta membros/pessoas comuns. Ela filtra apenas a estrutura de cuidado: nomes de supervisores, e-mails de supervisores, nomes de células e liderança da célula.
