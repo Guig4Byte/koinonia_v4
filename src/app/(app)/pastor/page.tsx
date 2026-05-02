@@ -69,7 +69,7 @@ export default async function PastorPage() {
       userName={user.name}
       role={user.role}
       nav={[
-        { href: "/pastor", label: "Visão", icon: "home", active: true },
+        { href: "/pastor", label: "Visão", icon: "home", active: true, attention: pastoralCasesCount > 0 },
         { href: "/equipe", label: "Equipe", icon: "people", attention: pastoralCasesCount > 0 },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
       ]}

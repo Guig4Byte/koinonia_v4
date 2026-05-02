@@ -160,8 +160,7 @@ function TeamStructureSearch({ query, filter }: { query: string; filter: TeamFil
 
 function compactGroupSubtitle(group: TeamGroup) {
   const membersLabel = `${group.membersCount} ${group.membersCount === 1 ? "membro" : "membros"}`;
-  const presenceLabel = group.hasPresenceData ? `${group.presenceRate}% presença` : "Sem presença recente registrada";
-  return `${group.leadershipName} · ${membersLabel} · ${presenceLabel}`;
+  return `${group.leadershipName} · ${membersLabel}`;
 }
 
 function groupBadgeTone(group: TeamGroup): SignalBadgeTone {
@@ -233,56 +232,57 @@ function SupervisorCard({ supervisor }: { supervisor: SupervisorTeam }) {
 
   return (
     <section className={cn("team-supervisor-card", priorityCardClass(badgeTone !== "neutral" ? badgeTone : undefined))}>
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-2.5">
-          <div className="team-avatar">
-            {initials(supervisor.name)}
-          </div>
+      <div className="flex items-start gap-2.5">
+        <div className="team-avatar">
+          {initials(supervisor.name)}
+        </div>
+        <div className="min-w-0 flex-1">
           <div className="min-w-0">
             <p className="font-semibold text-[var(--color-text-primary)]">{supervisor.name}</p>
             <p className="mt-0.5 truncate text-[13px] leading-snug text-[var(--color-text-secondary)]">{supervisor.email}</p>
           </div>
+
+          {!hasGroups ? (
+            <>
+              <p className="team-supervisor-summary-text">{supervisorSummary(supervisor)}</p>
+              <div className="mt-2">
+                <EmptyState compact>Nenhuma célula ativa vinculada a este supervisor.</EmptyState>
+              </div>
+            </>
+          ) : (
+            <details className="team-supervisor-details group">
+              <summary className="team-supervisor-summary">
+                <span className="team-supervisor-summary-text">
+                  {supervisorSummary(supervisor)}
+                </span>
+                <span className="team-supervisor-summary-action">
+                  <span className="group-open:hidden">Ver células</span>
+                  <span className="hidden group-open:inline">Mostrar menos</span>
+                  <span className="inline-block transition group-active:translate-x-0.5" aria-hidden="true">→</span>
+                </span>
+              </summary>
+              <div className="team-cell-list">
+                {visibleGroups.map((group) => (
+                  <CompactGroupLink key={group.id} group={group} />
+                ))}
+                {hiddenGroups.length > 0 ? (
+                  <details className="group/more">
+                    <summary className="team-inline-action team-inline-action-secondary">
+                      <span className="group-open/more:hidden">Ver mais células</span>
+                      <span className="hidden group-open/more:inline">Mostrar menos células</span>
+                    </summary>
+                    <div className="team-cell-list mt-2">
+                      {hiddenGroups.map((group) => (
+                        <CompactGroupLink key={group.id} group={group} />
+                      ))}
+                    </div>
+                  </details>
+                ) : null}
+              </div>
+            </details>
+          )}
         </div>
       </div>
-
-      {!hasGroups ? (
-        <>
-          <p className="team-supervisor-summary-text">{supervisorSummary(supervisor)}</p>
-          <div className="mt-2">
-            <EmptyState compact>Nenhuma célula ativa vinculada a este supervisor.</EmptyState>
-          </div>
-        </>
-      ) : (
-        <details className="team-supervisor-details group">
-          <summary className="team-supervisor-summary">
-            <span className="text-[13px] leading-relaxed text-[var(--color-text-secondary)]">
-              {supervisorSummary(supervisor)}
-            </span>
-            <span className="team-supervisor-summary-action">
-              <span className="group-open:hidden">Ver células</span>
-              <span className="hidden group-open:inline">Mostrar menos</span>
-            </span>
-          </summary>
-          <div className="team-cell-list">
-            {visibleGroups.map((group) => (
-              <CompactGroupLink key={group.id} group={group} />
-            ))}
-            {hiddenGroups.length > 0 ? (
-              <details className="group/more">
-                <summary className="team-inline-action team-inline-action-secondary">
-                  <span className="group-open/more:hidden">Ver mais células</span>
-                  <span className="hidden group-open/more:inline">Mostrar menos células</span>
-                </summary>
-                <div className="team-cell-list mt-2">
-                  {hiddenGroups.map((group) => (
-                    <CompactGroupLink key={group.id} group={group} />
-                  ))}
-                </div>
-              </details>
-            ) : null}
-          </div>
-        </details>
-      )}
     </section>
   );
 }

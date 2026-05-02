@@ -40,8 +40,10 @@ export function BottomNav({ items }: { items: NavItem[] }) {
                   : "text-[var(--color-tab-label-inactive)]",
               )}
             >
-              {item.attention ? <span className="absolute right-5 top-1.5 h-1.5 w-1.5 rounded-full bg-[var(--color-metric-atencoes)]" /> : null}
-              <Icon className={cn("h-[18px] w-[18px]", item.active ? "text-[var(--color-tab-active)]" : "text-[var(--color-tab-label-inactive)]")} strokeWidth={2.25} />
+              <span className="relative">
+                {item.attention ? <span className="absolute -right-1.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-[var(--color-metric-atencoes)]" /> : null}
+                <Icon className={cn("h-[18px] w-[18px]", item.active ? "text-[var(--color-tab-active)]" : "text-[var(--color-tab-label-inactive)]")} strokeWidth={2.25} />
+              </span>
               <span className="mt-0.5">{item.label}</span>
             </Link>
           );
