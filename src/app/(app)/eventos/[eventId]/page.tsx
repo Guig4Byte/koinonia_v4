@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { isAfter } from "date-fns";
 import { notFound } from "next/navigation";
 import { AttendanceStatus } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
@@ -39,17 +40,21 @@ type ReadOnlyVisitor = {
 
 function EventReadOnlySummary({
   completed,
+  isFutureEvent,
   members,
   visitors,
 }: {
   completed: boolean;
+  isFutureEvent: boolean;
   members: ReadOnlyMember[];
   visitors: ReadOnlyVisitor[];
 }) {
   if (!completed) {
     return (
       <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm leading-relaxed text-[var(--color-text-secondary)] shadow-card">
-        A presença ainda não foi registrada. O líder da célula registra o encontro; pastor e supervisor acompanham o resumo quando ele estiver pronto.
+        {isFutureEvent
+          ? "Este encontro ainda não começou. A presença poderá ser registrada depois que começar."
+          : "A presença ainda não foi registrada. O líder da célula registra o encontro; pastor e supervisor acompanham o resumo quando ele estiver pronto."}
       </section>
     );
   }
@@ -138,10 +143,12 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
     fullName: attendance.person.fullName,
   }));
 
-  const checkInLabel = canEditCheckIn ? (completed ? "Ajuste de presença" : "Registrar presença") : "Resumo de presença";
-  const checkInSectionTitle = canEditCheckIn ? (completed ? "Ajustar presença" : "Registrar presença") : "Resumo da presença";
+  const isFutureEvent = isAfter(event.startsAt, new Date());
+  const checkInLabel = canEditCheckIn ? (completed ? "Ajuste de presença" : "Registrar presença") : isFutureEvent ? "Encontro agendado" : "Resumo de presença";
+  const checkInSectionTitle = canEditCheckIn ? (completed ? "Ajustar presença" : "Registrar presença") : isFutureEvent ? "Sobre o encontro" : "Resumo da presença";
   const checkInSubmitLabel = completed ? "Salvar ajuste" : "Salvar presença";
-  const eventStatusLabel = completed ? "Presença registrada" : canEditCheckIn ? "Presença pendente" : "Aguardando líder";
+  const eventStatusLabel = completed ? "Presença registrada" : isFutureEvent ? "Agendado" : canEditCheckIn ? "Presença pendente" : "Aguardando registro";
+  const eventStatusTone = completed ? "ok" : isFutureEvent ? "info" : "warn";
   const isPastorLike = user.role === "PASTOR" || user.role === "ADMIN";
   const secondaryNavHref = isPastorLike ? "/equipe" : "/pessoas";
   const secondaryNavLabel = isPastorLike ? "Equipe" : user.role === "LEADER" ? "Membros" : "Pessoas";
@@ -174,7 +181,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
               </Link>
             ) : null}
           </div>
-          <Badge tone={completed ? "ok" : "warn"}>{eventStatusLabel}</Badge>
+          <Badge tone={eventStatusTone}>{eventStatusLabel}</Badge>
         </div>
 
         <div className="mt-4 grid grid-cols-3 gap-2 text-center">
@@ -206,7 +213,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
             attentionLabel="Ver atenção da célula"
           />
         ) : (
-          <EventReadOnlySummary completed={completed} members={members} visitors={visitorRows} />
+          <EventReadOnlySummary completed={completed} isFutureEvent={isFutureEvent} members={members} visitors={visitorRows} />
         )
       ) : (
         <InfoCard>Este evento não está vinculado a uma célula. A presença completa entra depois.</InfoCard>

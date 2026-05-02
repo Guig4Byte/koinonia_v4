@@ -894,6 +894,125 @@ a {
   outline-offset: 3px;
 }
 
+.events-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.events-title {
+  margin: 0 0 6px;
+  color: var(--color-text-primary);
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+
+.events-description {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.events-page h2 {
+  letter-spacing: 0;
+}
+
+.events-page > div:first-of-type {
+  margin-top: 12px;
+}
+
+.event-card {
+  border: 1px solid color-mix(in srgb, var(--color-border-card) 70%, transparent);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--color-bg-card) 94%, transparent);
+  padding: 12px 14px;
+  box-shadow: var(--color-shadow-metric-card);
+}
+
+.event-card-registered {
+  padding-block: 10px;
+}
+
+.event-card-badge {
+  padding: 4px 8px;
+  font-size: 11px;
+}
+
+.event-card-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+  border-top: 1px solid var(--color-border-divider);
+  padding-top: 8px;
+}
+
+.event-card-stats p {
+  margin: 0;
+  min-width: 0;
+}
+
+.event-card-stats strong,
+.event-card-stats span {
+  display: block;
+}
+
+.event-card-stats strong {
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.event-card-stats span {
+  margin-top: 3px;
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.event-card-action {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 800;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.event-card-registered .event-card-action {
+  min-height: 28px;
+  margin-top: 6px;
+}
+
+.event-card-action-primary {
+  background: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+  padding: 0 14px;
+}
+
+.event-card-action-secondary {
+  color: var(--color-brand);
+  padding: 0 2px;
+}
+
+.event-card-action:active {
+  transform: scale(0.98);
+}
+
+.event-card-action:focus-visible {
+  outline: 2px solid var(--color-brand-accent);
+  outline-offset: 3px;
+}
+
 .font-serif-display {
   font-family: var(--font-display);
 }

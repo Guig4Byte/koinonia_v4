@@ -1,22 +1,30 @@
-# Alterações desta entrega
-
-## Objetivo
-
-Limpar a aba `Equipe` para evitar duplicidade entre listas de células e os cards dos supervisores.
+# Alterações — Eventos / Encontros
 
 ## Arquivos alterados
 
-- `src/app/(app)/equipe/page.tsx`
+- `src/app/(app)/eventos/page.tsx`
+- `src/app/(app)/eventos/[eventId]/page.tsx`
+- `src/app/globals.css`
+- `docs/PRODUCT.md`
+- `docs/ARCHITECTURE.md`
+- `docs/GLOSSARY.md`
 
-## Mudanças
+## Ajustes realizados
 
-- Removidas as listas separadas de `Células que pedem atenção` e `Sem presença recente` do topo da tela.
-- Mantido o `Resumo da equipe` com contadores de supervisores, células ativas, células que pedem atenção e células sem presença recente.
-- Mantidos os filtros `Todos`, `Pedem atenção` e `Sem presença recente`, agora aplicados diretamente à lista de supervisores e suas células.
-- A seção `Supervisores` passou a ser a fonte principal da estrutura: cada card mostra quem acompanha quais células.
-- Preservada a seção `Sem supervisor` apenas para células ativas que não têm supervisor vinculado, já que elas não apareceriam dentro de um card de supervisor.
-- Mantida a orientação de que perfil de pessoa deve ser aberto pela busca da `Visão` ou pelo detalhe da célula.
+- Removida a busca global de pessoa da aba `Eventos`.
+- Título interno da página alterado para `Encontros`.
+- Texto de apoio ajustado para focar em encontros das células e registros de presença.
+- Eventos futuros agora aparecem como `Agendado`, não como pendência.
+- Evento futuro usa CTA `Ver encontro`.
+- Eventos sem presença registrada e já iniciados aparecem como `Aguardando registro` para quem acompanha.
+- O líder continua vendo `Presença pendente` e `Registrar presença` somente quando o encontro já pode ser registrado.
+- A lista de encontros agora prioriza a seção `Presença pendente` antes de `Hoje`.
+- A seção `Já realizados` foi renomeada para `Presença já registrada`.
+- Presenças registradas recentes são exibidas das mais recentes para as mais antigas.
+- Os cards da lista de encontros ficaram mais leves: ação primária só para registro pendente e métricas registradas em linha compacta.
+- O detalhe do evento também diferencia `Agendado`, `Presença pendente`, `Aguardando registro` e `Presença registrada`.
+- Docs de produto, arquitetura e glossário foram alinhados às regras de organização e rótulos de eventos.
 
-## Resultado esperado
+## Observação
 
-A aba `Equipe` deixa de repetir as mesmas células em listas diferentes e fica centrada em estrutura pastoral: supervisores, células acompanhadas e filtros simples para destacar os recortes relevantes.
+Não foi alterada a regra de permissão: líder registra, supervisor acompanha e pastor interpreta.

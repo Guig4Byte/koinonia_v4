@@ -187,6 +187,8 @@ Regras:
 - visitante não vira membro automaticamente;
 - visitante duplicado no mesmo evento deve ser bloqueado por nome normalizado.
 
+A lista de encontros deve priorizar presença pendente quando o encontro já começou e ainda não há registro. Eventos futuros são informativos, não pendência operacional.
+
 ## Métricas de presença
 
 A métrica deve dar contexto pastoral, não ranking.
@@ -229,6 +231,12 @@ Prioriza quem merece atenção na célula, check-in/evento relevante, membros da
 ### Pessoas/Membros
 
 Para líder, funciona como lista de membros da célula. Para pastor/supervisor, é superfície pastoral com busca, não diretório completo por padrão.
+
+### Encontros
+
+Lista eventos dentro do escopo visível. A organização padrão é: presença pendente, hoje, próximos encontros da semana e presença já registrada mais recente.
+
+O líder vê `Registrar presença` somente quando pode salvar o check-in. Pastor e supervisor acompanham o estado do encontro sem assumir o registro do líder.
 
 ### Detalhe da pessoa
 

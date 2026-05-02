@@ -42,7 +42,9 @@ Evite transformar evento em calendário amplo antes da hora.
 
 Registro de quem esteve, faltou ou justificou.
 
-Use `Presença`, `Registrar presença`, `Presença da semana`, `Presença recente`, `Salvar presença`, `Salvar ajuste` e `Ver resumo`.
+Use `Presença`, `Presença pendente`, `Presença registrada`, `Registrar presença`, `Presença da semana`, `Presença recente`, `Salvar presença`, `Salvar ajuste` e `Ver resumo`.
+
+Para eventos, use `Agendado` quando o encontro ainda não começou e `Aguardando registro` quando a presença depende do líder, mas o usuário atual apenas acompanha.
 
 Evite `controle de presença` e `fiscalização`.
 
@@ -201,6 +203,10 @@ Tema não é configuração pastoral, não muda escopo e não precisa de tela ad
 | `Informativo` | sinal `INFO`, quando exibido | informativo/neutro |
 | `Sem registro` | ausência de dado de presença | neutro |
 | `Sem presença recente` | célula sem presença recente registrada para leitura pastoral | neutro |
+| `Agendado` | evento futuro | informativo/neutro |
+| `Presença pendente` | evento já iniciado em que o líder pode registrar presença | âmbar |
+| `Aguardando registro` | evento já iniciado sem presença registrada para quem apenas acompanha | âmbar |
+| `Presença registrada` | evento com presença salva | verde |
 
 Não rebaixar `Urgente` para `Em atenção`. O contexto pode mudar a mensagem, mas a severidade continua sendo severidade.
 
