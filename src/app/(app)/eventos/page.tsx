@@ -123,7 +123,11 @@ function EventCard({ event, user, now }: { event: EventWithRelations; user: Perm
         : "Ver encontro";
 
   return (
-    <article className={cn("event-card", recordedPresence && "event-card-registered", priorityCardClass(recordedPresence ? "care" : isPendingEvent ? "warn" : undefined))}>
+    <article className={cn(
+      "event-card",
+      recordedPresence && "event-card-registered priority-card event-card-registered-ok",
+      priorityCardClass(isFutureEvent ? "care" : isPendingEvent ? "warn" : undefined),
+    )}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="font-semibold text-[var(--color-text-primary)]">{event.title}</p>
@@ -280,10 +284,7 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
     .filter((event) => {
       if (isToday(event.startsAt) || !isWithinPeriod(event.startsAt, weekStart, weekEnd)) return false;
 
-      const recordedPresence = hasRecordedPresence(event);
-      const isFutureEvent = isAfter(event.startsAt, now);
-
-      return recordedPresence || isFutureEvent;
+      return isAfter(event.startsAt, now);
     })
     .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
 
@@ -311,8 +312,8 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
             <SectionTitle>Hoje</SectionTitle>
             {todayEvents.length > 0 ? <EventList events={todayEvents} user={user} now={now} /> : <EmptyState>Nenhum encontro previsto para hoje.</EmptyState>}
 
-            <SectionTitle>Esta semana</SectionTitle>
-            {weekEvents.length > 0 ? <EventList events={weekEvents} user={user} now={now} /> : <EmptyState>Nenhum outro encontro previsto para esta semana.</EmptyState>}
+            <SectionTitle>Próximos encontros</SectionTitle>
+            {weekEvents.length > 0 ? <EventList events={weekEvents} user={user} now={now} /> : <EmptyState>Nenhum outro encontro agendado para esta semana.</EmptyState>}
 
             <SectionTitle detail="Veja encontros sem presença registrada ou registros anteriores quando precisar.">Consultar outros encontros</SectionTitle>
             <div className="space-y-3">

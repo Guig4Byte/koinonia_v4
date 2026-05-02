@@ -291,22 +291,22 @@ export function PersonSignalCard({
     : resolvedBadgeTone;
 
   const content = (
-    <article className={cn("group rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]", priorityCardClass(priorityTone))}>
-      <div className="flex items-start gap-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--color-avatar-bg)] text-sm font-bold text-[var(--color-avatar-text)]">
+    <article className={cn("group rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card transition active:scale-[0.99]", priorityCardClass(priorityTone))}>
+      <div className="flex items-start gap-2.5">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-avatar-bg)] text-xs font-bold text-[var(--color-avatar-text)]">
           {initials}
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
               <p className="font-semibold text-[var(--color-text-primary)]">{name}</p>
-              <p className="mt-0.5 text-sm leading-relaxed text-[var(--color-text-secondary)]">{context}</p>
+              <p className="mt-0.5 text-[13px] leading-snug text-[var(--color-text-secondary)]">{context}</p>
             </div>
-            <Badge tone={resolvedBadgeTone}>{resolvedBadgeLabel}</Badge>
+            <Badge tone={resolvedBadgeTone} className="px-2 py-0.5 text-[11px]">{resolvedBadgeLabel}</Badge>
           </div>
-          {reason ? <p className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-primary)]">{reason}</p> : null}
+          {reason ? <p className="mt-2 border-t border-[var(--color-border-divider)] pt-2 text-[13px] leading-relaxed text-[var(--color-text-primary)]">{reason}</p> : null}
           {cardHref ? (
-            <p className="mt-3 text-sm font-semibold text-[var(--color-brand)]">
+            <p className="mt-2 text-[13px] font-semibold text-[var(--color-brand)]">
               {ctaLabel} <span className="inline-block transition group-active:translate-x-0.5">→</span>
             </p>
           ) : null}

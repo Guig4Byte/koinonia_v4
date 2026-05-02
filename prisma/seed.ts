@@ -44,7 +44,7 @@ type SeedGroup = {
   key: string;
   name: string;
   leader: SeedUser;
-  supervisor: SeedUser;
+  supervisor: SeedUser | null;
   members: SeedMember[];
   visitor: SeedMember;
 };
@@ -162,6 +162,20 @@ const memberNamesByGroup: Record<string, string[]> = {
     "Karina Barros",
     "Leonardo Cunha",
   ],
+  alianca: [
+    "Adriana Castro",
+    "Bárbara Nogueira",
+    "Caetano Moura",
+    "Dulce Farias",
+    "Emílio Correia",
+    "Flávia Diniz",
+    "Gilberto Matos",
+    "Heloísa Peixoto",
+    "Inácio Freire",
+    "Jéssica Prado",
+    "Kleber Torres",
+    "Lais Cardoso",
+  ],
 };
 
 function memberStatus(
@@ -196,17 +210,19 @@ async function createUserWithPerson({
   email,
   role,
   passwordHash,
+  personName,
 }: {
   churchId: string;
   name: string;
   email: string;
   role: UserRole;
   passwordHash: string;
+  personName?: string;
 }): Promise<SeedUser> {
   const person = await prisma.person.create({
     data: {
       churchId,
-      fullName: name,
+      fullName: personName ?? name,
       phone: nextSeedPhone(),
       status: PersonStatus.ACTIVE,
     },
@@ -238,7 +254,7 @@ async function createGroupWithMembers({
   key: string;
   name: string;
   leader: SeedUser;
-  supervisor: SeedUser;
+  supervisor: SeedUser | null;
   meetingDayOfWeek: number;
   meetingTime: string;
   locationName: string;
@@ -249,7 +265,7 @@ async function createGroupWithMembers({
       name,
       kind: "CELL",
       leaderUserId: leader.id,
-      supervisorUserId: supervisor.id,
+      supervisorUserId: supervisor?.id ?? null,
       meetingDayOfWeek,
       meetingTime,
       locationName,
@@ -363,10 +379,12 @@ async function createSignal({
   reason: string;
   evidence: string;
 }) {
-  return prisma.careSignal.create({
+  const personId = group.members[personIndex].id;
+
+  const signal = await prisma.careSignal.create({
     data: {
       churchId,
-      personId: group.members[personIndex].id,
+      personId,
       groupId: group.id,
       assignedToId,
       source,
@@ -375,6 +393,13 @@ async function createSignal({
       evidence,
     },
   });
+
+  await prisma.person.update({
+    where: { id: personId },
+    data: { status: PersonStatus.NEEDS_ATTENTION },
+  });
+
+  return signal;
 }
 
 async function main() {
@@ -406,6 +431,14 @@ async function main() {
     passwordHash,
   });
 
+  const admin = await createUserWithPerson({
+    churchId: church.id,
+    name: "Admin Koinonia",
+    email: "admin@koinonia.local",
+    role: UserRole.ADMIN,
+    passwordHash,
+  });
+
   const ana = await createUserWithPerson({
     churchId: church.id,
     name: "Ana Martins",
@@ -430,51 +463,66 @@ async function main() {
     passwordHash,
   });
 
+  const paulo = await createUserWithPerson({
+    churchId: church.id,
+    name: "Paulo Henrique",
+    email: "paulo@koinonia.local",
+    role: UserRole.SUPERVISOR,
+    passwordHash,
+  });
+
   const bruno = await createUserWithPerson({
     churchId: church.id,
-    name: "Bruno Lima",
+    name: "Bruno e Laura Lima",
+    personName: "Bruno Lima",
     email: "bruno@koinonia.local",
     role: UserRole.LEADER,
     passwordHash,
   });
   const carla = await createUserWithPerson({
     churchId: church.id,
-    name: "Carla Nascimento",
+    name: "Carla e André Nascimento",
+    personName: "Carla Nascimento",
     email: "carla@koinonia.local",
     role: UserRole.LEADER,
     passwordHash,
   });
   const diego = await createUserWithPerson({
     churchId: church.id,
-    name: "Diego Ramos",
+    name: "Diego e Paula Ramos",
+    personName: "Diego Ramos",
     email: "diego@koinonia.local",
     role: UserRole.LEADER,
     passwordHash,
   });
   const fernanda = await createUserWithPerson({
     churchId: church.id,
-    name: "Fernanda Alves",
+    name: "Fernanda e Rafael Alves",
+    personName: "Fernanda Alves",
     email: "fernanda@koinonia.local",
     role: UserRole.LEADER,
     passwordHash,
   });
   const gabriel = await createUserWithPerson({
     churchId: church.id,
-    name: "Gabriel Torres",
+    name: "Gabriel e Renata Torres",
+    personName: "Gabriel Torres",
     email: "gabriel@koinonia.local",
     role: UserRole.LEADER,
     passwordHash,
   });
   const juliana = await createUserWithPerson({
     churchId: church.id,
-    name: "Juliana Costa",
+    name: "Juliana e Samuel Costa",
+    personName: "Juliana Costa",
     email: "juliana@koinonia.local",
     role: UserRole.LEADER,
     passwordHash,
   });
   const lucas = await createUserWithPerson({
     churchId: church.id,
-    name: "Lucas Pereira",
+    name: "Lucas e Mariana Pereira",
+    personName: "Lucas Pereira",
     email: "lucas@koinonia.local",
     role: UserRole.LEADER,
     passwordHash,
@@ -489,7 +537,7 @@ async function main() {
       supervisor: ana,
       meetingDayOfWeek: 5,
       meetingTime: "20:00",
-      locationName: "Casa do Bruno",
+      locationName: "Casa de Bruno e Laura",
     }),
     createGroupWithMembers({
       churchId: church.id,
@@ -499,7 +547,7 @@ async function main() {
       supervisor: ana,
       meetingDayOfWeek: 4,
       meetingTime: "19:30",
-      locationName: "Casa da Carla",
+      locationName: "Casa de Carla e André",
     }),
     createGroupWithMembers({
       churchId: church.id,
@@ -509,7 +557,7 @@ async function main() {
       supervisor: ana,
       meetingDayOfWeek: 3,
       meetingTime: "20:00",
-      locationName: "Casa do Diego",
+      locationName: "Casa de Diego e Paula",
     }),
     createGroupWithMembers({
       churchId: church.id,
@@ -519,7 +567,7 @@ async function main() {
       supervisor: marcos,
       meetingDayOfWeek: 5,
       meetingTime: "20:00",
-      locationName: "Casa da Fernanda",
+      locationName: "Casa de Fernanda e Rafael",
     }),
     createGroupWithMembers({
       churchId: church.id,
@@ -529,7 +577,7 @@ async function main() {
       supervisor: marcos,
       meetingDayOfWeek: 2,
       meetingTime: "19:30",
-      locationName: "Casa do Gabriel",
+      locationName: "Casa de Gabriel e Renata",
     }),
     createGroupWithMembers({
       churchId: church.id,
@@ -539,7 +587,7 @@ async function main() {
       supervisor: helena,
       meetingDayOfWeek: 6,
       meetingTime: "18:30",
-      locationName: "Casa da Juliana",
+      locationName: "Casa de Juliana e Samuel",
     }),
     createGroupWithMembers({
       churchId: church.id,
@@ -549,7 +597,7 @@ async function main() {
       supervisor: helena,
       meetingDayOfWeek: 4,
       meetingTime: "20:00",
-      locationName: "Casa do Lucas",
+      locationName: "Casa de Lucas e Mariana",
     }),
   ]);
 
@@ -564,6 +612,19 @@ async function main() {
     meetingDayOfWeek: 2,
     meetingTime: "20:00",
     locationName: "Casa da Amanda",
+  });
+
+  // Cenário de regressão: célula ativa sem supervisor deve aparecer na seção própria
+  // de Equipe e não desaparecer por falta de vínculo de supervisão.
+  await createGroupWithMembers({
+    churchId: church.id,
+    key: "alianca",
+    name: "Célula Aliança",
+    leader: carla,
+    supervisor: null,
+    meetingDayOfWeek: 3,
+    meetingTime: "20:00",
+    locationName: "Casa de Carla e André",
   });
 
   const churchId = church.id;
@@ -822,6 +883,42 @@ async function main() {
       "Não é urgente automático, mas aparece ao pastor por encaminhamento explícito.",
   });
 
+  // Cenário de regressão: cuidado pastoral realizado pelo pastor deve aparecer
+  // em Acolhidos em cuidado pastoral, sem misturar cuidado local do líder.
+  await prisma.careSignal.create({
+    data: {
+      churchId,
+      personId: caminho.members[1].id,
+      groupId: caminho.id,
+      assignedToId: pastor.id,
+      source: SignalSource.MANUAL,
+      severity: SignalSeverity.ATTENTION,
+      status: SignalStatus.RESOLVED,
+      reason: "Caso encaminhado e acolhido em cuidado pastoral.",
+      evidence: "Pastor conversou com a família e combinou acompanhamento simples.",
+      detectedAt: daysFromNow(-5, 18),
+      lastEvidenceAt: daysFromNow(-5, 18),
+      resolvedAt: daysFromNow(-1, 18),
+    },
+  });
+
+  await prisma.careTouch.create({
+    data: {
+      churchId,
+      personId: caminho.members[1].id,
+      groupId: caminho.id,
+      actorId: pastor.id,
+      kind: CareKind.MARKED_CARED,
+      note: "Conversa pastoral realizada. Família acolhida e sem novo sinal aberto.",
+      happenedAt: daysFromNow(-1, 18),
+    },
+  });
+
+  await prisma.person.update({
+    where: { id: caminho.members[1].id },
+    data: { status: PersonStatus.COOLING_AWAY },
+  });
+
   const inactiveGroup = await prisma.smallGroup.create({
     data: {
       churchId,
@@ -882,16 +979,16 @@ async function main() {
 
   console.log("Seed concluído.");
   console.log(
-    "Estrutura da seed: 1 pastor, 3 supervisores, 8 células ativas, 1 célula inativa e 12 membros por célula ativa.",
+    "Estrutura da seed: 1 admin, 1 pastor, 4 supervisores, 9 células ativas, 1 célula inativa e 12 membros por célula ativa.",
   );
   console.log(
-    "Acessos principais: pastor@koinonia.local / ana@koinonia.local / bruno@koinonia.local",
+    `Acessos principais: ${pastor.email} / ${admin.email} / ${ana.email} / ${bruno.email}`,
   );
   console.log(
-    "Outros usuários da seed: marcos@koinonia.local / helena@koinonia.local / carla@koinonia.local / diego@koinonia.local / fernanda@koinonia.local / gabriel@koinonia.local / juliana@koinonia.local / lucas@koinonia.local",
+    `Outros usuários da seed: ${marcos.email} / ${helena.email} / ${paulo.email} / ${carla.email} / ${diego.email} / ${fernanda.email} / ${gabriel.email} / ${juliana.email} / ${lucas.email}`,
   );
   console.log(
-    "Cenários de regressão: urgente sem atribuição, apoio à supervisão, múltiplos sinais, encaminhamento pastoral, sinal resolvido, célula sem registro, evento sem presença e célula inativa.",
+    "Cenários de regressão: urgente sem atribuição, apoio à supervisão, múltiplos sinais, encaminhamento pastoral, cuidado pastoral realizado, sinal resolvido, célula sem registro, célula sem supervisor, evento sem presença e célula inativa.",
   );
   console.log("Senha local da seed: koinonia123");
 }

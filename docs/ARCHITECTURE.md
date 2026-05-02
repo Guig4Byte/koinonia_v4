@@ -407,13 +407,13 @@ Valida `canViewPerson(user, person)`, usa status efetivo, respeita escopo para s
 
 ### `/eventos`
 
-Lista eventos dentro do escopo visível. A tela separa presença pendente, hoje, próximos encontros da semana e presença já registrada.
+Lista eventos dentro do escopo visível. A tela principal mostra `Hoje` e `Próximos encontros`; consultas específicas mostram encontros sem presença registrada e histórico de presença.
 
 Regras de organização:
 
-- presença pendente é evento já iniciado, sem presença registrada;
+- presença não registrada é evento já iniciado, sem presença válida;
 - eventos futuros aparecem como `Agendado`, não como pendência;
-- presença registrada recente deve ser ordenada do encontro mais recente para o mais antigo;
+- histórico de presença deve ser ordenado do encontro mais recente para o mais antigo;
 - líder vê ação de registro/ajuste somente quando `canCheckInEvent()` permite;
 - outros perfis veem resumo ou acompanhamento, sem assumir check-in.
 

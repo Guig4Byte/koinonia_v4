@@ -234,7 +234,7 @@ Para líder, funciona como lista de membros da célula. Para pastor/supervisor, 
 
 ### Encontros
 
-Lista eventos dentro do escopo visível. A organização padrão é: presença pendente, hoje, próximos encontros da semana e presença já registrada mais recente.
+Lista eventos dentro do escopo visível. A organização padrão mostra `Hoje` e `Próximos encontros`; presença não registrada e histórico ficam em `Consultar outros encontros`.
 
 O líder vê `Registrar presença` somente quando pode salvar o check-in. Pastor e supervisor acompanham o estado do encontro sem assumir o registro do líder.
 
