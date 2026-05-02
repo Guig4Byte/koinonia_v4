@@ -16,30 +16,32 @@ export function AppShell({
   role,
   nav,
   children,
+  compactHeader = false,
 }: {
   userName: string;
   role: UserRole;
   nav: NavItem[];
   children: ReactNode;
+  compactHeader?: boolean;
 }) {
   const firstName = userName.split(" ")[0];
 
   return (
     <main className="safe-page">
-      <header className="app-header">
+      <header className={`app-header${compactHeader ? " app-header-compact" : ""}`}>
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--color-brand-accent)]">Koinonia</p>
+            <p className="text-[11px] font-bold uppercase text-[var(--color-brand-accent)]">Koinonia</p>
             <p className="mt-1 text-xs font-semibold text-[var(--color-text-on-header)]">{roleLabels[role]}</p>
           </div>
 
           <ThemeToggle className="header-action-button" />
         </div>
 
-        <div className="mt-5 flex items-end justify-between gap-4">
+        <div className="app-header-greeting mt-5 flex items-end justify-between gap-4">
           <div>
             <p className="text-sm text-[var(--color-text-on-header)] opacity-80">Boa noite,</p>
-            <h1 className="font-serif-display mt-1 text-[2.35rem] font-semibold leading-none tracking-[-0.03em] text-[var(--color-text-on-header)]">
+            <h1 className="app-header-name font-serif-display mt-1 text-[2.35rem] font-semibold leading-none text-[var(--color-text-on-header)]">
               {firstName}.
             </h1>
           </div>
