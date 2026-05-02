@@ -67,6 +67,7 @@ export default async function LeaderPage() {
   const supportSignals = pastoralSections.supportRequests;
   const attentionSignals = pastoralSections.localAttention;
   const inCarePeople = pastoralSections.inCarePeople;
+  const navIndicator = urgentSignals.length > 0 ? "risk" : dashboard.attentionPeople.length > 0 ? "attention" : inCarePeople.length > 0 ? "care" : undefined;
 
   const renderSignalCards = (signals: typeof dashboard.attentionPeople) => signals.map((signal) => {
     const badge = signalBadgeForViewer(signal, user);
@@ -103,8 +104,8 @@ export default async function LeaderPage() {
       userName={user.name}
       role={user.role}
       nav={[
-        { href: "/lider", label: "Visão", icon: "home", active: true },
-        { href: "/pessoas", label: "Membros", icon: "people", attention: dashboard.attentionPeople.length > 0 },
+        { href: "/lider", label: "Visão", icon: "home", active: true, indicator: navIndicator },
+        { href: "/pessoas", label: "Membros", icon: "people" },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
       ]}
     >

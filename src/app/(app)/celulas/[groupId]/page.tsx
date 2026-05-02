@@ -9,7 +9,7 @@ import { personEffectiveBadgeForViewer } from "@/features/people/status-display"
 import { canViewGroup } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson, isPastoralSignal } from "@/features/signals/attention";
 import { groupAttentionLabel, signalBadgeForViewer, signalReasonForViewer, type SignalBadge } from "@/features/signals/display";
-import { isSupportRequest } from "@/features/signals/sections";
+import { isSupportRequest, isUrgentOrPastoralCase } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -71,6 +71,8 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
   const supportRequests = attentionPeople.filter((signal) => isSupportRequest(signal, user));
   const urgentAttentionPeople = attentionPeople.filter((signal) => signal.severity === SignalSeverity.URGENT);
   const inCareCount = group.memberships.filter((membership) => membership.person.status === "COOLING_AWAY").length;
+  const hasRiskSignal = attentionPeople.some(isUrgentOrPastoralCase);
+  const navIndicator = hasRiskSignal ? "risk" : attentionPeople.length > 0 ? "attention" : inCareCount > 0 ? "care" : undefined;
   const completedEvents = group.events.filter((event) => summarizeEventPresence(event).completed);
   const presence = summarizeEventsPresence(group.events);
   const hasRecentPresence = presence.hasPresenceData;
@@ -113,7 +115,7 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
       role={user.role}
       nav={[
         { href: homeHref, label: "Visão", icon: "home" },
-        { href: secondaryNavHref, label: secondaryNavLabel, icon: "people", active: isPastorView, attention: attentionPeople.length > 0 },
+        { href: secondaryNavHref, label: secondaryNavLabel, icon: "people", active: isPastorView, indicator: navIndicator },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
       ]}
     >

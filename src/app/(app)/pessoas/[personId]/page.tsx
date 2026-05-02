@@ -11,6 +11,7 @@ import { personEffectiveBadgeForViewer } from "@/features/people/status-display"
 import { canEscalateSignalToPastor, canRequestSupervisorSupport, escalationStatusDetailForViewer } from "@/features/signals/escalation";
 import { signalBadgeForViewer, signalReasonForViewer } from "@/features/signals/display";
 import { getPrimarySignalsByPerson } from "@/features/signals/attention";
+import { isUrgentOrPastoralCase } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -92,6 +93,8 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const backHref = isPastorLike ? homeHref : "/pessoas";
   const backLabel = isPastorLike ? "Visão" : secondaryNavLabel;
   const canMarkActive = person.status === PersonStatus.COOLING_AWAY && canRegisterCare(user, person);
+  const hasRiskSignal = signals.some(isUrgentOrPastoralCase);
+  const navIndicator = hasRiskSignal ? "risk" : openSignalsCount > 0 ? "attention" : person.status === PersonStatus.COOLING_AWAY ? "care" : undefined;
   const primarySignal = getPrimarySignalsByPerson(signals)[0];
   const personBadge = personEffectiveBadgeForViewer(person, primarySignal, user);
 
@@ -101,7 +104,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       role={user.role}
       nav={[
         { href: homeHref, label: "Visão", icon: "home" },
-        { href: secondaryNavHref, label: secondaryNavLabel, icon: "people", active: !isPastorLike, attention: openSignalsCount > 0 },
+        { href: secondaryNavHref, label: secondaryNavLabel, icon: "people", active: !isPastorLike, indicator: navIndicator },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
       ]}
     >

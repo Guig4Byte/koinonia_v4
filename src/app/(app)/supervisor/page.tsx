@@ -38,6 +38,7 @@ export default async function SupervisorPage() {
   const supportSignals = pastoralSections.supportRequests;
   const attentionSignals = pastoralSections.localAttention;
   const inCarePeople = pastoralSections.inCarePeople;
+  const navIndicator = urgentSignals.length > 0 ? "risk" : dashboard.attentionPeople.length > 0 ? "attention" : inCarePeople.length > 0 ? "care" : undefined;
 
   const renderSignalCards = (signals: typeof dashboard.attentionPeople, ctaLabel = "Abrir pessoa") => signals.map((signal) => {
     const badge = signalBadgeForViewer(signal, user);
@@ -75,8 +76,8 @@ export default async function SupervisorPage() {
       userName={user.name}
       role={user.role}
       nav={[
-        { href: "/supervisor", label: "Visão", icon: "home", active: true },
-        { href: "/pessoas", label: "Pessoas", icon: "people", attention: dashboard.attentionPeople.length > 0 },
+        { href: "/supervisor", label: "Visão", icon: "home", active: true, indicator: navIndicator },
+        { href: "/pessoas", label: "Pessoas", icon: "people" },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
       ]}
     >

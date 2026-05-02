@@ -160,6 +160,7 @@ export default async function PeoplePage() {
   const supportSignals = pastoralSections.supportRequests;
   const attentionSignals = pastoralSections.localAttention;
   const scopedInCarePeople = pastoralSections.inCarePeople;
+  const navIndicator = urgentSignals.length > 0 ? "risk" : attentionPeople.length > 0 ? "attention" : scopedInCarePeople.length > 0 ? "care" : undefined;
   const visibleMemberList = visibleMembers.slice(0, MEMBER_LIST_LIMIT);
   const attentionSignalByPersonId = new Map(attentionPeople.map((signal) => [signal.personId, signal]));
   const emptyAttentionMessage = isLeader
@@ -186,7 +187,7 @@ export default async function PeoplePage() {
       role={user.role}
       nav={[
         { href: homeHref, label: "Visão", icon: "home" },
-        { href: "/pessoas", label: peopleLabel, icon: "people", active: true, attention: attentionPeople.length > 0 },
+        { href: "/pessoas", label: peopleLabel, icon: "people", active: true, indicator: navIndicator },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
       ]}
     >

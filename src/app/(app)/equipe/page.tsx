@@ -312,6 +312,8 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
   const visibleUnassignedGroups = filteredUnassignedGroups.slice(0, SECTION_LIMIT);
   const hiddenUnassignedGroups = filteredUnassignedGroups.slice(SECTION_LIMIT);
   const needsAttentionCount = team.summary.groupsNeedingAttentionCount;
+  const hasPastoralRisk = team.summary.urgentCount > 0 || team.summary.pastoralCasesCount > 0;
+  const navIndicator = hasPastoralRisk ? "risk" : needsAttentionCount > 0 ? "attention" : undefined;
   const isFiltered = Boolean(query) || activeFilter !== "todos";
 
   return (
@@ -321,7 +323,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
       compactHeader
       nav={[
         { href: "/pastor", label: "Visão", icon: "home" },
-        { href: "/equipe", label: "Equipe", icon: "people", active: true, attention: needsAttentionCount > 0 },
+        { href: "/equipe", label: "Equipe", icon: "people", active: true, indicator: navIndicator },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
       ]}
     >

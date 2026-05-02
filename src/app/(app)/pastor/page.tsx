@@ -28,6 +28,7 @@ export default async function PastorPage() {
   const urgentOrPastoralCases = pastoralSections.urgentOrPastoralCases;
   const inCarePeople = pastoralSections.inCarePeople;
   const pastoralCasesCount = urgentOrPastoralCases.length;
+  const navIndicator = pastoralCasesCount > 0 ? "risk" : inCarePeople.length > 0 ? "care" : undefined;
 
   const phrase = pastoralCasesCount > 0
     ? `${pastoralCasesCount} ${pastoralCasesCount === 1 ? "caso pastoral pede" : "casos pastorais pedem"} olhar mais próximo.`
@@ -69,8 +70,8 @@ export default async function PastorPage() {
       userName={user.name}
       role={user.role}
       nav={[
-        { href: "/pastor", label: "Visão", icon: "home", active: true, attention: pastoralCasesCount > 0 },
-        { href: "/equipe", label: "Equipe", icon: "people", attention: pastoralCasesCount > 0 },
+        { href: "/pastor", label: "Visão", icon: "home", active: true, indicator: navIndicator },
+        { href: "/equipe", label: "Equipe", icon: "people" },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
       ]}
     >
