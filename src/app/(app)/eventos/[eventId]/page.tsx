@@ -128,7 +128,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
   const canEditCheckIn = canCheckInEvent(user, event);
   const presence = summarizeEventPresence(event);
   const visitors = event.attendances.filter((attendance) => attendance.status === "VISITOR");
-  const completed = presence.completed;
+  const completed = presence.hasPresenceData;
   const hasPresenceData = presence.hasPresenceData;
 
   const members = event.group?.memberships.map((membership) => ({
@@ -147,7 +147,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
   const checkInLabel = canEditCheckIn ? (completed ? "Ajuste de presença" : "Registrar presença") : isFutureEvent ? "Encontro agendado" : "Resumo de presença";
   const checkInSectionTitle = canEditCheckIn ? (completed ? "Ajustar presença" : "Registrar presença") : isFutureEvent ? "Sobre o encontro" : "Resumo da presença";
   const checkInSubmitLabel = completed ? "Salvar ajuste" : "Salvar presença";
-  const eventStatusLabel = completed ? "Presença registrada" : isFutureEvent ? "Agendado" : canEditCheckIn ? "Presença pendente" : "Aguardando registro";
+  const eventStatusLabel = completed ? "Presença registrada" : isFutureEvent ? "Agendado" : canEditCheckIn ? "Presença pendente" : "Presença ainda não registrada";
   const eventStatusTone = completed ? "ok" : isFutureEvent ? "info" : "warn";
   const isPastorLike = user.role === "PASTOR" || user.role === "ADMIN";
   const secondaryNavHref = isPastorLike ? "/equipe" : "/pessoas";

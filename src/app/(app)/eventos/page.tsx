@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { endOfWeek, isAfter, isBefore, isToday, startOfDay, subDays } from "date-fns";
+import { endOfWeek, isAfter, isToday, startOfDay, startOfWeek, subDays } from "date-fns";
 import { AppShell } from "@/components/app-shell";
 import { EmptyState, SectionTitle, priorityCardClass } from "@/components/cards";
+import { ProgressiveList } from "@/components/progressive-list";
 import { Badge } from "@/components/ui/badge";
 import { summarizeEventPresence } from "@/features/events/presence-summary";
 import { canCheckInEvent, getVisibleEventWhere, type PermissionUser } from "@/features/permissions/permissions";
@@ -9,6 +10,16 @@ import { cn } from "@/lib/cn";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+
+const EVENT_LIST_LIMIT = 4;
+
+type EventsSearchParams = Promise<{
+  consulta?: string | string[];
+  periodo?: string | string[];
+}>;
+
+type EventConsultationMode = "sem-presenca" | "historico";
+type EventPeriod = "semana" | "semana-passada" | "30d";
 
 async function getEventsForUser(user: PermissionUser, referenceDate: Date) {
   const today = startOfDay(referenceDate);
@@ -24,10 +35,14 @@ async function getEventsForUser(user: PermissionUser, referenceDate: Date) {
     },
     include: { group: true, attendances: true },
     orderBy: { startsAt: "asc" },
-    take: 80,
+    take: 120,
   });
 }
 type EventWithRelations = Awaited<ReturnType<typeof getEventsForUser>>[number];
+
+function firstParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
 
 function normalizeEventText(value: string) {
   return value
@@ -50,31 +65,65 @@ function eventMeta(event: EventWithRelations) {
   return titleAlreadyIdentifiesGroup ? dateTime : `${groupName} · ${dateTime}`;
 }
 
+function hasRecordedPresence(event: EventWithRelations) {
+  return summarizeEventPresence(event).hasPresenceData;
+}
+
+function isWithinPeriod(date: Date, start: Date, end: Date) {
+  const time = date.getTime();
+  return time >= start.getTime() && time <= end.getTime();
+}
+
+function periodRange(period: EventPeriod, now: Date) {
+  const today = startOfDay(now);
+  const currentWeekStart = startOfWeek(today, { weekStartsOn: 1 });
+  const currentWeekEnd = endOfWeek(today, { weekStartsOn: 1 });
+
+  if (period === "semana-passada") {
+    const lastWeekStart = subDays(currentWeekStart, 7);
+    const lastWeekEnd = subDays(currentWeekEnd, 7);
+    return { start: lastWeekStart, end: lastWeekEnd };
+  }
+
+  if (period === "30d") {
+    return { start: subDays(today, 30), end: now };
+  }
+
+  return { start: currentWeekStart, end: currentWeekEnd };
+}
+
+function periodLabel(period: EventPeriod) {
+  if (period === "semana-passada") return "Semana passada";
+  if (period === "30d") return "Últimos 30 dias";
+  return "Esta semana";
+}
+
 function EventCard({ event, user, now }: { event: EventWithRelations; user: PermissionUser; now: Date }) {
   const metrics = summarizeEventPresence(event);
+  const recordedPresence = metrics.hasPresenceData;
   const isFutureEvent = isAfter(event.startsAt, now);
-  const isPendingEvent = !metrics.completed && !isFutureEvent;
+  const isPendingEvent = !recordedPresence && !isFutureEvent;
   const canEditPresence = canCheckInEvent(user, event);
-  const canRegisterPresence = canEditPresence && !metrics.completed;
-  const canAdjustPresence = canEditPresence && metrics.completed;
-  const label = metrics.completed
+  const canRegisterPresence = canEditPresence && !recordedPresence;
+  const canAdjustPresence = canEditPresence && recordedPresence;
+  const label = recordedPresence
     ? "Presença registrada"
     : isFutureEvent
       ? "Agendado"
       : canRegisterPresence
         ? "Presença pendente"
-        : "Aguardando registro";
-  const badgeTone = metrics.completed ? "ok" : isFutureEvent ? "info" : "warn";
+        : "Presença ainda não registrada";
+  const badgeTone = recordedPresence ? "ok" : isFutureEvent ? "info" : "warn";
   const actionLabel = canRegisterPresence
     ? "Registrar presença"
     : canAdjustPresence
       ? "Ajustar presença"
-      : metrics.completed
+      : recordedPresence
         ? "Ver resumo"
         : "Ver encontro";
 
   return (
-    <article className={cn("event-card", metrics.completed && "event-card-registered", priorityCardClass(metrics.completed ? "care" : isPendingEvent ? "warn" : undefined))}>
+    <article className={cn("event-card", recordedPresence && "event-card-registered", priorityCardClass(recordedPresence ? "care" : isPendingEvent ? "warn" : undefined))}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="font-semibold text-[var(--color-text-primary)]">{event.title}</p>
@@ -85,10 +134,10 @@ function EventCard({ event, user, now }: { event: EventWithRelations; user: Perm
         <Badge tone={badgeTone} className="event-card-badge">{label}</Badge>
       </div>
 
-      {metrics.completed ? (
+      {recordedPresence ? (
         <div className="event-card-stats">
           <p>
-            <strong className="text-[var(--color-metric-presenca)]">{metrics.hasPresenceData ? `${metrics.presenceRate}%` : "—"}</strong>
+            <strong className="text-[var(--color-metric-presenca)]">{metrics.presenceRate}%</strong>
             <span>presença</span>
           </p>
           <p>
@@ -115,26 +164,128 @@ function EventCard({ event, user, now }: { event: EventWithRelations; user: Perm
   );
 }
 
-export default async function EventsPage() {
+function EventList({ events, user, now, limit = EVENT_LIST_LIMIT }: { events: EventWithRelations[]; user: PermissionUser; now: Date; limit?: number }) {
+  return (
+    <ProgressiveList initialCount={limit} step={EVENT_LIST_LIMIT} moreLabel="Ver mais encontros">
+      {events.map((event) => <EventCard key={event.id} event={event} user={user} now={now} />)}
+    </ProgressiveList>
+  );
+}
+
+function ConsultationCard({ href, title, description }: { href: string; title: string; description: string }) {
+  return (
+    <Link href={href} className="block rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
+      <p className="font-semibold text-[var(--color-text-primary)]">{title}</p>
+      <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">{description}</p>
+      <p className="mt-3 text-sm font-semibold text-[var(--color-brand)]">Consultar →</p>
+    </Link>
+  );
+}
+
+function PeriodChips({ mode, activePeriod }: { mode: EventConsultationMode; activePeriod: EventPeriod }) {
+  const periods: EventPeriod[] = mode === "historico" ? ["semana", "semana-passada", "30d"] : ["semana", "30d"];
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {periods.map((period) => {
+        const active = period === activePeriod;
+        return (
+          <Link
+            key={period}
+            href={`/eventos?consulta=${mode}&periodo=${period}`}
+            className={cn(
+              "rounded-full border px-3 py-2 text-xs font-semibold transition active:scale-[0.98]",
+              active
+                ? "border-[var(--color-brand)] bg-[var(--color-brand-soft)] text-[var(--color-brand)]"
+                : "border-[var(--color-border-card)] bg-[var(--surface-alt)] text-[var(--color-text-secondary)]",
+            )}
+          >
+            {periodLabel(period)}
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
+function EventsConsultationView({
+  mode,
+  period,
+  events,
+  user,
+  now,
+}: {
+  mode: EventConsultationMode;
+  period: EventPeriod;
+  events: EventWithRelations[];
+  user: PermissionUser;
+  now: Date;
+}) {
+  const { start, end } = periodRange(period, now);
+  const filteredEvents = events
+    .filter((event) => isWithinPeriod(event.startsAt, start, end))
+    .filter((event) => {
+      const recordedPresence = hasRecordedPresence(event);
+      if (mode === "historico") return recordedPresence;
+      return !recordedPresence && !isAfter(event.startsAt, now);
+    })
+    .sort((a, b) => {
+      if (mode === "historico") return b.startsAt.getTime() - a.startsAt.getTime();
+      return b.startsAt.getTime() - a.startsAt.getTime();
+    });
+
+  const title = mode === "historico" ? "Histórico de presença" : "Sem presença registrada";
+  const description = mode === "historico"
+    ? "Consulte encontros já registrados por período."
+    : "Alguns encontros ainda não têm presença registrada. Talvez já tenham acontecido, mas a presença ainda não foi marcada.";
+  const emptyMessage = mode === "historico"
+    ? "Nenhuma presença registrada neste período."
+    : "Nenhum encontro sem presença registrada neste período.";
+
+  return (
+    <>
+      <Link href="/eventos" className="mb-4 inline-flex min-h-9 items-center text-sm font-semibold text-[var(--color-brand)] transition active:scale-[0.98]">
+        ← Encontros
+      </Link>
+      <h2 className="events-title">{title}</h2>
+      <p className="events-description">{description}</p>
+      <PeriodChips mode={mode} activePeriod={period} />
+      <SectionTitle>{periodLabel(period)}</SectionTitle>
+      {filteredEvents.length > 0 ? <EventList events={filteredEvents} user={user} now={now} /> : <EmptyState>{emptyMessage}</EmptyState>}
+    </>
+  );
+}
+
+export default async function EventsPage({ searchParams }: { searchParams?: EventsSearchParams }) {
   const user = await getCurrentUser();
   const now = new Date();
   const events = await getEventsForUser(user, now);
   const isPastorLike = user.role === "PASTOR" || user.role === "ADMIN";
   const secondaryNavHref = isPastorLike ? "/equipe" : "/pessoas";
   const secondaryNavLabel = isPastorLike ? "Equipe" : user.role === "LEADER" ? "Membros" : "Pessoas";
+  const resolvedSearchParams: Awaited<EventsSearchParams> = searchParams ? await searchParams : {};
+  const rawMode = firstParam(resolvedSearchParams.consulta);
+  const mode: EventConsultationMode | null = rawMode === "sem-presenca" || rawMode === "historico" ? rawMode : null;
+  const rawPeriod = firstParam(resolvedSearchParams.periodo);
+  const period: EventPeriod = rawPeriod === "semana-passada" || rawPeriod === "30d" ? rawPeriod : "semana";
 
   const today = startOfDay(now);
+  const weekStart = startOfWeek(today, { weekStartsOn: 1 });
   const weekEnd = endOfWeek(today, { weekStartsOn: 1 });
 
-  const pendingPresenceEvents = events
-    .filter((event) => !summarizeEventPresence(event).completed && !isAfter(event.startsAt, now))
-    .sort((a, b) => b.startsAt.getTime() - a.startsAt.getTime());
-  const pendingPresenceEventIds = new Set(pendingPresenceEvents.map((event) => event.id));
-  const todayEvents = events.filter((event) => isToday(event.startsAt) && !pendingPresenceEventIds.has(event.id));
-  const weekEvents = events.filter((event) => !isToday(event.startsAt) && isAfter(event.startsAt, now) && isBefore(event.startsAt, weekEnd));
-  const completedEvents = events
-    .filter((event) => summarizeEventPresence(event).completed && isBefore(event.startsAt, today))
-    .sort((a, b) => b.startsAt.getTime() - a.startsAt.getTime());
+  const todayEvents = events
+    .filter((event) => isToday(event.startsAt))
+    .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
+  const weekEvents = events
+    .filter((event) => {
+      if (isToday(event.startsAt) || !isWithinPeriod(event.startsAt, weekStart, weekEnd)) return false;
+
+      const recordedPresence = hasRecordedPresence(event);
+      const isFutureEvent = isAfter(event.startsAt, now);
+
+      return recordedPresence || isFutureEvent;
+    })
+    .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
 
   return (
     <AppShell
@@ -148,40 +299,36 @@ export default async function EventsPage() {
       compactHeader
     >
       <div className="events-page">
-        <h2 className="events-title">Encontros</h2>
-        <p className="events-description">
-          Presença pendente primeiro; encontros agendados e registros recentes ficam logo abaixo.
-        </p>
-
-        {pendingPresenceEvents.length > 0 ? (
+        {mode ? (
+          <EventsConsultationView mode={mode} period={period} events={events} user={user} now={now} />
+        ) : (
           <>
-            <SectionTitle>Presença pendente</SectionTitle>
+            <h2 className="events-title">Encontros</h2>
+            <p className="events-description">
+              Acompanhe os encontros das células nesta semana e os registros de presença.
+            </p>
+
+            <SectionTitle>Hoje</SectionTitle>
+            {todayEvents.length > 0 ? <EventList events={todayEvents} user={user} now={now} /> : <EmptyState>Nenhum encontro previsto para hoje.</EmptyState>}
+
+            <SectionTitle>Esta semana</SectionTitle>
+            {weekEvents.length > 0 ? <EventList events={weekEvents} user={user} now={now} /> : <EmptyState>Nenhum outro encontro previsto para esta semana.</EmptyState>}
+
+            <SectionTitle detail="Veja encontros sem presença registrada ou registros anteriores quando precisar.">Consultar outros encontros</SectionTitle>
             <div className="space-y-3">
-              {pendingPresenceEvents.map((event) => <EventCard key={event.id} event={event} user={user} now={now} />)}
+              <ConsultationCard
+                href="/eventos?consulta=sem-presenca&periodo=semana"
+                title="Sem presença registrada"
+                description="Alguns encontros podem já ter acontecido, mas ainda não têm presença marcada."
+              />
+              <ConsultationCard
+                href="/eventos?consulta=historico&periodo=semana"
+                title="Histórico de presença"
+                description="Consulte encontros já registrados por período."
+              />
             </div>
           </>
-        ) : null}
-
-        <SectionTitle>Hoje</SectionTitle>
-        <div className="space-y-3">
-          {todayEvents.length > 0 ? todayEvents.map((event) => <EventCard key={event.id} event={event} user={user} now={now} />) : (
-            <EmptyState>Nenhum evento previsto para hoje.</EmptyState>
-          )}
-        </div>
-
-        <SectionTitle>Esta semana</SectionTitle>
-        <div className="space-y-3">
-          {weekEvents.length > 0 ? weekEvents.map((event) => <EventCard key={event.id} event={event} user={user} now={now} />) : (
-            <EmptyState>Nenhum outro evento desta semana.</EmptyState>
-          )}
-        </div>
-
-        <SectionTitle>Presença já registrada</SectionTitle>
-        <div className="space-y-3">
-          {completedEvents.length > 0 ? completedEvents.slice(0, 5).map((event) => <EventCard key={event.id} event={event} user={user} now={now} />) : (
-            <EmptyState>Nenhuma presença registrada recentemente.</EmptyState>
-          )}
-        </div>
+        )}
       </div>
     </AppShell>
   );

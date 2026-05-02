@@ -1,30 +1,27 @@
-# Alterações — Eventos / Encontros
+# Alterações nesta entrega
 
-## Arquivos alterados
+## Eventos mais leves no mobile
+
+Arquivos alterados:
 
 - `src/app/(app)/eventos/page.tsx`
-- `src/app/(app)/eventos/[eventId]/page.tsx`
-- `src/app/globals.css`
-- `docs/PRODUCT.md`
-- `docs/ARCHITECTURE.md`
-- `docs/GLOSSARY.md`
+- `src/components/progressive-list.tsx`
 
-## Ajustes realizados
+## O que mudou
 
-- Removida a busca global de pessoa da aba `Eventos`.
-- Título interno da página alterado para `Encontros`.
-- Texto de apoio ajustado para focar em encontros das células e registros de presença.
-- Eventos futuros agora aparecem como `Agendado`, não como pendência.
-- Evento futuro usa CTA `Ver encontro`.
-- Eventos sem presença registrada e já iniciados aparecem como `Aguardando registro` para quem acompanha.
-- O líder continua vendo `Presença pendente` e `Registrar presença` somente quando o encontro já pode ser registrado.
-- A lista de encontros agora prioriza a seção `Presença pendente` antes de `Hoje`.
-- A seção `Já realizados` foi renomeada para `Presença já registrada`.
-- Presenças registradas recentes são exibidas das mais recentes para as mais antigas.
-- Os cards da lista de encontros ficaram mais leves: ação primária só para registro pendente e métricas registradas em linha compacta.
-- O detalhe do evento também diferencia `Agendado`, `Presença pendente`, `Aguardando registro` e `Presença registrada`.
-- Docs de produto, arquitetura e glossário foram alinhados às regras de organização e rótulos de eventos.
+- A seção `Esta semana` não mostra mais encontros passados sem presença registrada.
+- Encontros passados sem presença continuam acessíveis em `Consultar outros encontros -> Sem presença registrada`.
+- `Ver mais encontros` agora revela mais 4 itens por vez, em vez de abrir todo o restante da lista de uma vez.
+- O mesmo comportamento progressivo foi aplicado à tela principal e às consultas de `Sem presença registrada` e `Histórico de presença`.
+- A tela principal fica focada em `Hoje` e nos encontros relevantes da semana, sem voltar a parecer uma fila operacional longa.
 
-## Observação
+## Validação
 
-Não foi alterada a regra de permissão: líder registra, supervisor acompanha e pastor interpreta.
+- Tentei rodar `npm run typecheck`, mas o pacote no ambiente não tem as dependências instaladas (`next`, `react`, tipos do Node, etc.).
+- Recomendo validar localmente com:
+
+```bash
+npm install
+npm run typecheck
+npm test
+```
