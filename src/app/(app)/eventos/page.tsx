@@ -265,8 +265,9 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
   const now = new Date();
   const events = await getEventsForUser(user, now);
   const isPastorLike = user.role === "PASTOR" || user.role === "ADMIN";
-  const secondaryNavHref = isPastorLike ? "/equipe" : "/pessoas";
-  const secondaryNavLabel = isPastorLike ? "Equipe" : user.role === "LEADER" ? "Membros" : "Pessoas";
+  const isSupervisor = user.role === "SUPERVISOR";
+  const secondaryNavHref = isPastorLike ? "/equipe" : isSupervisor ? "/celulas" : "/pessoas";
+  const secondaryNavLabel = isPastorLike ? "Equipe" : isSupervisor ? "Células" : "Membros";
   const resolvedSearchParams: Awaited<EventsSearchParams> = searchParams ? await searchParams : {};
   const rawMode = firstParam(resolvedSearchParams.consulta);
   const mode: EventConsultationMode | null = rawMode === "sem-presenca" || rawMode === "historico" ? rawMode : null;

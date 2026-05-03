@@ -201,8 +201,9 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
   const eventStatusLabel = completed ? "Presença registrada" : isFutureEvent ? "Agendado" : canEditCheckIn ? "Presença pendente" : "Presença ainda não registrada";
   const eventStatusTone = completed ? "ok" : isFutureEvent ? "info" : "warn";
   const isPastorLike = user.role === "PASTOR" || user.role === "ADMIN";
-  const secondaryNavHref = isPastorLike ? "/equipe" : "/pessoas";
-  const secondaryNavLabel = isPastorLike ? "Equipe" : user.role === "LEADER" ? "Membros" : "Pessoas";
+  const isSupervisor = user.role === "SUPERVISOR";
+  const secondaryNavHref = isPastorLike ? "/equipe" : isSupervisor ? "/celulas" : "/pessoas";
+  const secondaryNavLabel = isPastorLike ? "Equipe" : isSupervisor ? "Células" : "Membros";
 
   return (
     <AppShell

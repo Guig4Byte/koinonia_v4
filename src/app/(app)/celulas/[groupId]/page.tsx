@@ -62,8 +62,11 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
 
   const homeHref = user.role === UserRole.LEADER ? "/lider" : user.role === UserRole.SUPERVISOR ? "/supervisor" : "/pastor";
   const isPastorView = user.role === UserRole.PASTOR || user.role === UserRole.ADMIN;
-  const secondaryNavHref = isPastorView ? "/equipe" : "/pessoas";
-  const secondaryNavLabel = isPastorView ? "Equipe" : user.role === UserRole.LEADER ? "Membros" : "Pessoas";
+  const isSupervisorView = user.role === UserRole.SUPERVISOR;
+  const secondaryNavHref = isPastorView ? "/equipe" : isSupervisorView ? "/celulas" : "/pessoas";
+  const secondaryNavLabel = isPastorView ? "Equipe" : isSupervisorView ? "Células" : "Membros";
+  const backHref = isPastorView || isSupervisorView ? secondaryNavHref : homeHref;
+  const backLabel = isPastorView ? "Equipe" : isSupervisorView ? "Células" : "Visão";
   const attentionPeople = getPrimarySignalsByPerson(group.signals);
   const pastoralAttentionPeople = getPastoralSignalsByPerson(group.signals);
   const localAttentionPeople = attentionPeople.filter((signal) => !isPastoralSignal(signal));
@@ -115,11 +118,11 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ gr
       role={user.role}
       nav={[
         { href: homeHref, label: "Visão", icon: "home" },
-        { href: secondaryNavHref, label: secondaryNavLabel, icon: "people", active: isPastorView, indicator: navIndicator },
+        { href: secondaryNavHref, label: secondaryNavLabel, icon: "people", active: isPastorView || isSupervisorView, indicator: navIndicator },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
       ]}
     >
-      <BackLink href={homeHref}>Visão</BackLink>
+      <BackLink href={backHref}>{backLabel}</BackLink>
 
       <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
         <div className="flex items-start justify-between gap-3">

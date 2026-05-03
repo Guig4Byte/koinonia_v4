@@ -88,10 +88,11 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const openSignalsCount = signals.length;
   const hasCareTouch = careTouches.length > 0;
   const isPastorLike = user.role === "PASTOR" || user.role === "ADMIN";
-  const secondaryNavHref = isPastorLike ? "/equipe" : "/pessoas";
-  const secondaryNavLabel = isPastorLike ? "Equipe" : user.role === "LEADER" ? "Membros" : "Pessoas";
-  const backHref = isPastorLike ? homeHref : "/pessoas";
-  const backLabel = isPastorLike ? "Visão" : secondaryNavLabel;
+  const isSupervisor = user.role === "SUPERVISOR";
+  const secondaryNavHref = isPastorLike ? "/equipe" : isSupervisor ? "/celulas" : "/pessoas";
+  const secondaryNavLabel = isPastorLike ? "Equipe" : isSupervisor ? "Células" : "Membros";
+  const backHref = isPastorLike || isSupervisor ? homeHref : "/pessoas";
+  const backLabel = isPastorLike || isSupervisor ? "Visão" : secondaryNavLabel;
   const canMarkActive = person.status === PersonStatus.COOLING_AWAY && canRegisterCare(user, person);
   const hasRiskSignal = signals.some(isUrgentOrPastoralCase);
   const navIndicator = hasRiskSignal ? "risk" : openSignalsCount > 0 ? "attention" : person.status === PersonStatus.COOLING_AWAY ? "care" : undefined;
@@ -104,7 +105,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       role={user.role}
       nav={[
         { href: homeHref, label: "Visão", icon: "home" },
-        { href: secondaryNavHref, label: secondaryNavLabel, icon: "people", active: !isPastorLike, indicator: navIndicator },
+        { href: secondaryNavHref, label: secondaryNavLabel, icon: "people", active: user.role === "LEADER", indicator: navIndicator },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
       ]}
     >

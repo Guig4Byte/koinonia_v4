@@ -54,10 +54,15 @@ function renderSignalCards(
 export default async function PeoplePage() {
   const user = await getCurrentUser();
   const isLeader = user.role === UserRole.LEADER;
+  const isSupervisor = user.role === UserRole.SUPERVISOR;
   const isPastoralOverview = user.role === UserRole.PASTOR || user.role === UserRole.ADMIN;
 
   if (isPastoralOverview) {
     redirect("/equipe");
+  }
+
+  if (isSupervisor) {
+    redirect("/celulas");
   }
   const homeHref = isLeader ? "/lider" : user.role === UserRole.SUPERVISOR ? "/supervisor" : "/pastor";
   const peopleLabel = isLeader ? "Membros" : "Pessoas";

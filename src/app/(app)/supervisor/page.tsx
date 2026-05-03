@@ -1,9 +1,9 @@
 import { AppShell } from "@/components/app-shell";
-import { ContextSummary, GroupCard, PastoralListSection, PersonMiniCard, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
+import { ContextSummary, PastoralListSection, PersonMiniCard, PersonSignalCard, PulseCard } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { canUseSupervisorDashboard } from "@/features/permissions/permissions";
-import { groupAttentionLabel, signalBadgeForViewer, type SignalBadge } from "@/features/signals/display";
+import { signalBadgeForViewer } from "@/features/signals/display";
 import { splitPastoralSections } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { redirect } from "next/navigation";
@@ -11,10 +11,6 @@ import { initials } from "@/lib/text";
 
 const SECTION_LIMIT = 4;
 
-function supportRequestsText(count: number) {
-  if (count === 0) return "";
-  return `${count} ${count === 1 ? "pedido de apoio" : "pedidos de apoio"}`;
-}
 
 export default async function SupervisorPage() {
   const user = await getCurrentUser();
@@ -77,7 +73,7 @@ export default async function SupervisorPage() {
       role={user.role}
       nav={[
         { href: "/supervisor", label: "Visão", icon: "home", active: true, indicator: navIndicator },
-        { href: "/pessoas", label: "Pessoas", icon: "people" },
+        { href: "/celulas", label: "Células", icon: "people" },
         { href: "/eventos", label: "Eventos", icon: "calendar" },
       ]}
     >
@@ -141,36 +137,6 @@ export default async function SupervisorPage() {
       >
         {renderInCareLinks(inCarePeople.slice(0, SECTION_LIMIT))}
       </PastoralListSection>
-      <SectionTitle>Suas células</SectionTitle>
-      <div className="space-y-3">
-        {dashboard.groups.map((group) => {
-          const supportText = supportRequestsText(group.supportRequestsCount);
-          const urgentCount = group.signals.filter((signal) => signal.severity === "URGENT").length;
-          const badge: SignalBadge | null = urgentCount > 0
-            ? { label: groupAttentionLabel(urgentCount, "urgente", "urgentes"), tone: "risk" }
-            : group.supportRequestsCount > 0
-              ? { label: groupAttentionLabel(group.supportRequestsCount, "pedido de apoio", "pedidos de apoio"), tone: "support" }
-              : group.attentionCount > 0
-                ? { label: groupAttentionLabel(group.attentionCount, "pessoa em atenção", "pessoas em atenção"), tone: "warn" }
-                : group.inCareCount > 0
-                  ? { label: groupAttentionLabel(group.inCareCount, "em cuidado", "em cuidado"), tone: "care" }
-                  : null;
-
-          return (
-            <GroupCard
-              key={group.id}
-              name={group.name}
-              subtitle={`${group.leader?.name ?? "Sem líder"} · ${group.memberships.length} pessoas${supportText ? ` · ${supportText}` : ""}${group.inCareCount > 0 ? ` · ${group.inCareCount} em cuidado` : ""}`}
-              presenceRate={group.presenceRate}
-              attentionCount={group.attentionCount}
-              badgeLabel={badge?.label}
-              badgeTone={badge?.tone}
-              href={`/celulas/${group.id}`}
-              hasPresenceData={group.hasPresenceData}
-            />
-          );
-        })}
-      </div>
     </AppShell>
   );
 }

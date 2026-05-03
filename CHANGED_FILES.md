@@ -1,25 +1,36 @@
 # Alterações nesta entrega
 
-- `src/components/bottom-nav.tsx`
-  - Usa tokens próprios de fundo, borda e sombra para o bottom nav.
-  - Mantém o item ativo mais sólido sobre o nav translúcido.
-- `src/app/globals.css`
-  - Ajusta os tokens do bottom nav nos temas claro, pergaminho e escuro para um efeito translúcido controlado.
+- `src/app/(app)/supervisor/page.tsx`
+  - Troca a aba `Pessoas` por `Células` na navegação do supervisor.
+  - Remove a lista de células da `Visão`, deixando os sinais de pessoas concentrados nessa tela.
+
+- `src/app/(app)/celulas/page.tsx`
+  - Cria a tela de células supervisionadas para o supervisor.
+  - Mostra busca local por célula ou liderança, sem busca global de pessoa.
+  - Adiciona filtros `Todas`, `Pedem atenção` e `Sem presença recente`.
+  - Lista células de 4 em 4 com `Ver mais células`.
+  - Mantém pedidos de apoio, atenção local, presença baixa e ausência de presença recente como leitura da célula.
+
+- `src/app/(app)/pessoas/page.tsx`
+  - Redireciona supervisor para `/celulas`, evitando duplicidade com a `Visão`.
+
+- `src/app/(app)/pessoas/[personId]/page.tsx`
+  - Ajusta a navegação secundária do supervisor para `Células`.
+  - Mantém o retorno do detalhe de pessoa para `Visão`, onde os sinais de pessoas são priorizados.
+
+- `src/app/(app)/celulas/[groupId]/page.tsx`
+  - Ajusta a navegação secundária do supervisor para `Células`.
+  - Ajusta o retorno do detalhe de célula para `Células` no caso do supervisor e `Equipe` no caso do pastor/admin.
+
+- `src/app/(app)/eventos/page.tsx`
+  - Ajusta a navegação secundária do supervisor para `Células`.
+
 - `src/app/(app)/eventos/[eventId]/page.tsx`
-  - Compacta o resumo somente leitura de presença registrada.
-  - Mostra contadores de membros, presentes, ausentes e justificativas no topo do card.
-  - Prioriza ausentes, justificativas e pendências; membros presentes ficam recolhidos em `Ver presentes`.
-- `docs/PRODUCT.md`
-  - Registra a regra de escaneabilidade mobile para resumo somente leitura de presença.
-- `src/app/(app)/equipe/page.tsx`
-  - Garante que o filtro `Todos` mostre todos os supervisores ativos, inclusive supervisores sem célula ativa vinculada.
-  - Mantém os filtros `Pedem atenção` e `Sem presença recente` restritos a supervisores que tenham células no recorte escolhido.
-  - Troca a abertura de listas por `ProgressiveList`, mostrando supervisores de 4 em 4.
-  - Dentro de cada supervisor, as células também passam a aparecer de 4 em 4 com `Ver mais células`.
-  - A seção `Sem supervisor` também usa paginação progressiva de 4 em 4.
+  - Ajusta a navegação secundária do supervisor para `Células`.
 
 ## Regra aplicada
 
-- `Equipe` é a leitura da estrutura pastoral: por padrão, mostra todos os supervisores.
-- Os filtros refinam a estrutura, mas não mudam o significado da tela para uma fila de sinais.
-- Listas longas crescem progressivamente, sempre de 4 em 4.
+- Supervisor: `Visão · Células · Eventos`.
+- A `Visão` do supervisor continua respondendo quem precisa de atenção agora.
+- A aba `Células` mostra a estrutura supervisionada sem duplicar os cards de pessoas.
+- Listas de células crescem progressivamente de 4 em 4.
