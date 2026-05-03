@@ -38,6 +38,28 @@ type ReadOnlyVisitor = {
   fullName: string;
 };
 
+function countLabel(count: number, singular: string, plural = `${singular}s`) {
+  return `${count} ${count === 1 ? singular : plural}`;
+}
+
+function justifiedCountLabel(count: number) {
+  return count === 1 ? "1 justificou" : `${count} justificaram`;
+}
+
+function AttendanceMemberRow({ member }: { member: ReadOnlyMember }) {
+  return (
+    <Link
+      href={`/pessoas/${member.personId}`}
+      className="flex items-center justify-between gap-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 transition active:scale-[0.99]"
+    >
+      <span className="min-w-0 text-sm font-medium text-[var(--color-text-primary)]">{member.fullName}</span>
+      <Badge tone={statusTone(member.currentStatus)}>
+        {member.currentStatus ? attendanceLabels[member.currentStatus] : "Pendente"}
+      </Badge>
+    </Link>
+  );
+}
+
 function EventReadOnlySummary({
   completed,
   isFutureEvent,
@@ -59,24 +81,53 @@ function EventReadOnlySummary({
     );
   }
 
+  const absentMembers = members.filter((member) => member.currentStatus === AttendanceStatus.ABSENT);
+  const justifiedMembers = members.filter((member) => member.currentStatus === AttendanceStatus.JUSTIFIED);
+  const pendingMembers = members.filter((member) => !member.currentStatus);
+  const presentMembers = members.filter((member) => member.currentStatus === AttendanceStatus.PRESENT);
+  const attentionMembers = [...absentMembers, ...justifiedMembers, ...pendingMembers];
+  const memberSummary = [
+    countLabel(members.length, "membro"),
+    countLabel(presentMembers.length, "presente"),
+    countLabel(absentMembers.length, "ausente"),
+    justifiedMembers.length > 0 ? justifiedCountLabel(justifiedMembers.length) : null,
+    pendingMembers.length > 0 ? countLabel(pendingMembers.length, "pendente") : null,
+  ].filter(Boolean).join(" · ");
+
   return (
     <section className="space-y-3">
       <div className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
         <p className="font-semibold text-[var(--color-text-primary)]">Membros</p>
-        <div className="mt-3 space-y-2">
-          {members.map((member) => (
-            <Link
-              key={member.personId}
-              href={`/pessoas/${member.personId}`}
-              className="flex items-center justify-between gap-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 transition active:scale-[0.99]"
-            >
-              <span className="min-w-0 text-sm font-medium text-[var(--color-text-primary)]">{member.fullName}</span>
-              <Badge tone={statusTone(member.currentStatus)}>
-                {member.currentStatus ? attendanceLabels[member.currentStatus] : "Pendente"}
-              </Badge>
-            </Link>
-          ))}
-        </div>
+        <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">{memberSummary}</p>
+
+        {attentionMembers.length > 0 ? (
+          <div className="mt-3 space-y-2">
+            {attentionMembers.map((member) => (
+              <AttendanceMemberRow key={member.personId} member={member} />
+            ))}
+          </div>
+        ) : (
+          <p className="mt-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 text-sm text-[var(--color-text-secondary)]">
+            Nenhuma ausência ou justificativa registrada.
+          </p>
+        )}
+
+        {presentMembers.length > 0 ? (
+          <details className="group mt-3">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-divider)] px-3 py-2 text-sm font-semibold text-[var(--color-brand)] transition active:scale-[0.99]">
+              <span>{countLabel(presentMembers.length, "presente")}</span>
+              <span>
+                <span className="group-open:hidden">Ver presentes</span>
+                <span className="hidden group-open:inline">Ocultar presentes</span>
+              </span>
+            </summary>
+            <div className="mt-2 space-y-2">
+              {presentMembers.map((member) => (
+                <AttendanceMemberRow key={member.personId} member={member} />
+              ))}
+            </div>
+          </details>
+        ) : null}
       </div>
 
       {visitors.length > 0 ? (

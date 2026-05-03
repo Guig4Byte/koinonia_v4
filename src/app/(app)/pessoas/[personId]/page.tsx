@@ -142,21 +142,18 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       <SectionTitle>{openSignalsCount > 0 ? "Por que merece atenção" : "Situação atual"}</SectionTitle>
       <div className="space-y-3">
         {signals.map((signal) => {
-          const signalBadge = signalBadgeForViewer(signal, user);
+          const signalTone = signalBadgeForViewer(signal, user).tone;
           const assignmentMessage = escalationStatusDetailForViewer(signal, user);
           const canRequestSupervisor = canRequestSupervisorSupport(user, signal);
           const canEscalatePastor = canEscalateSignalToPastor(user, signal);
 
           return (
-            <article key={signal.id} className={`rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card ${priorityCardClass(signalBadge.tone)}`}> 
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                <div className="min-w-0">
+            <article key={signal.id} className={`rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card ${priorityCardClass(signalTone)}`}> 
+              <div className="min-w-0">
                   <p className="font-semibold text-[var(--color-text-primary)]">{signalReasonForViewer(signal.reason, user)}</p>
                   <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
                     {signal.group?.name ?? primaryGroup?.name ?? "Sem célula"} · {formatShortDate(signal.detectedAt)}, {formatTime(signal.detectedAt)}
                   </p>
-                </div>
-                <Badge tone={signalBadge.tone} className="self-start">{signalBadge.label}</Badge>
               </div>
               {signal.evidence ? <p className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">{signal.evidence}</p> : null}
               <SignalSupportActions

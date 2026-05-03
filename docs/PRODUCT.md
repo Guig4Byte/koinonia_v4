@@ -186,6 +186,7 @@ Regras:
 - pessoa sem marcação explícita fica `Pendente`;
 - visitante não vira membro automaticamente;
 - visitante duplicado no mesmo evento deve ser bloqueado por nome normalizado.
+- no resumo somente leitura de presença registrada, ausentes, justificativas e pendências aparecem antes; presentes ficam recolhidos para reduzir rolagem no mobile.
 
 A lista de encontros deve priorizar presença pendente quando o encontro já começou e ainda não há registro. Eventos futuros são informativos, não pendência operacional.
 

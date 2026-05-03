@@ -2,7 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Search } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
-import { ContextSummary, EmptyState, InfoCard, PastoralListSection, SectionTitle, priorityCardClass } from "@/components/cards";
+import { ContextSummary, EmptyState, InfoCard, SectionTitle, priorityCardClass } from "@/components/cards";
+import { ProgressiveList } from "@/components/progressive-list";
 import { Badge } from "@/components/ui/badge";
 import { getPastorTeamOverview } from "@/features/dashboard/queries";
 import { canUsePastorDashboard } from "@/features/permissions/permissions";
@@ -13,7 +14,7 @@ import { initials } from "@/lib/text";
 
 const SECTION_LIMIT = 4;
 const SUPERVISOR_SECTION_LIMIT = 4;
-const GROUPS_PER_SUPERVISOR_LIMIT = 3;
+const GROUPS_PER_SUPERVISOR_LIMIT = 4;
 
 type TeamFilter = "todos" | "atencao" | "sem-presenca";
 
@@ -99,8 +100,16 @@ function filterSupervisors(supervisors: SupervisorTeam[], normalizedQuery: strin
   return supervisors.flatMap((supervisor) => {
     const groups = filterSupervisorGroups(supervisor, normalizedQuery, filter);
 
-    if (groups.length === 0) return [];
-    return [withFilteredGroups(supervisor, groups)];
+    if (groups.length > 0) return [withFilteredGroups(supervisor, groups)];
+
+    // Na visão padrão, Equipe é estrutura pastoral: todos os supervisores ativos aparecem,
+    // mesmo quando não têm célula ativa vinculada. Os filtros continuam mostrando só
+    // supervisores que possuem células no recorte escolhido.
+    if (filter === "todos" && supervisorMatchesQuery(supervisor, normalizedQuery)) {
+      return [withFilteredGroups(supervisor, [])];
+    }
+
+    return [];
   });
 }
 
@@ -225,8 +234,6 @@ function CompactGroupLink({ group }: { group: TeamGroup }) {
 }
 
 function SupervisorCard({ supervisor }: { supervisor: SupervisorTeam }) {
-  const visibleGroups = supervisor.groups.slice(0, GROUPS_PER_SUPERVISOR_LIMIT);
-  const hiddenGroups = supervisor.groups.slice(GROUPS_PER_SUPERVISOR_LIMIT);
   const hasGroups = supervisor.groups.length > 0;
   const badgeTone = supervisorBadgeTone(supervisor);
 
@@ -262,22 +269,16 @@ function SupervisorCard({ supervisor }: { supervisor: SupervisorTeam }) {
                 </span>
               </summary>
               <div className="team-cell-list">
-                {visibleGroups.map((group) => (
-                  <CompactGroupLink key={group.id} group={group} />
-                ))}
-                {hiddenGroups.length > 0 ? (
-                  <details className="group/more">
-                    <summary className="team-inline-action team-inline-action-secondary">
-                      <span className="group-open/more:hidden">Ver mais células</span>
-                      <span className="hidden group-open/more:inline">Mostrar menos células</span>
-                    </summary>
-                    <div className="team-cell-list mt-2">
-                      {hiddenGroups.map((group) => (
-                        <CompactGroupLink key={group.id} group={group} />
-                      ))}
-                    </div>
-                  </details>
-                ) : null}
+                <ProgressiveList
+                  initialCount={GROUPS_PER_SUPERVISOR_LIMIT}
+                  step={GROUPS_PER_SUPERVISOR_LIMIT}
+                  moreLabel="Ver mais células"
+                  lessLabel="Mostrar menos células"
+                >
+                  {supervisor.groups.map((group) => (
+                    <CompactGroupLink key={group.id} group={group} />
+                  ))}
+                </ProgressiveList>
               </div>
             </details>
           )}
@@ -307,10 +308,10 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
   const team = await getPastorTeamOverview(user);
   const filteredSupervisors = filterSupervisors(team.supervisors, normalizedQuery, activeFilter);
   const filteredUnassignedGroups = filterGroups(team.unassignedGroups, normalizedQuery, activeFilter);
-  const visibleSupervisors = filteredSupervisors.slice(0, SUPERVISOR_SECTION_LIMIT);
-  const hiddenSupervisors = filteredSupervisors.slice(SUPERVISOR_SECTION_LIMIT);
-  const visibleUnassignedGroups = filteredUnassignedGroups.slice(0, SECTION_LIMIT);
-  const hiddenUnassignedGroups = filteredUnassignedGroups.slice(SECTION_LIMIT);
+  const supervisorList = renderSupervisorCards(filteredSupervisors);
+  const unassignedGroupList = filteredUnassignedGroups.map((group) => (
+    <CompactGroupLink key={group.id} group={group} />
+  ));
   const needsAttentionCount = team.summary.groupsNeedingAttentionCount;
   const hasPastoralRisk = team.summary.urgentCount > 0 || team.summary.pastoralCasesCount > 0;
   const navIndicator = hasPastoralRisk ? "risk" : needsAttentionCount > 0 ? "attention" : undefined;
@@ -371,29 +372,36 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
           />
         </div>
 
-        <PastoralListSection
-          title="Supervisores"
-          detail="Resumo por supervisor, priorizando casos pastorais e presença baixa."
-          emptyMessage={isFiltered ? "Nenhum supervisor ou célula encontrado nesse recorte." : "Nenhum supervisor cadastrado para esta igreja."}
-          moreLabel="Ver mais supervisores"
-          hiddenChildren={renderSupervisorCards(hiddenSupervisors)}
-        >
-          {renderSupervisorCards(visibleSupervisors)}
-        </PastoralListSection>
+        <section>
+          <SectionTitle detail="Resumo por supervisor, priorizando casos pastorais e presença baixa.">Supervisores</SectionTitle>
+          {supervisorList.length > 0 ? (
+            <ProgressiveList
+              initialCount={SUPERVISOR_SECTION_LIMIT}
+              step={SUPERVISOR_SECTION_LIMIT}
+              moreLabel="Ver mais supervisores"
+              lessLabel="Mostrar menos supervisores"
+            >
+              {supervisorList}
+            </ProgressiveList>
+          ) : (
+            <EmptyState>
+              {isFiltered ? "Nenhum supervisor ou célula encontrado nesse recorte." : "Nenhum supervisor cadastrado para esta igreja."}
+            </EmptyState>
+          )}
+        </section>
 
-        {filteredUnassignedGroups.length > 0 ? (
-          <PastoralListSection
-            title="Sem supervisor"
-            detail="Células ativas que ainda não têm supervisor vinculado."
-            moreLabel="Ver mais células"
-            hiddenChildren={hiddenUnassignedGroups.map((group) => (
-              <CompactGroupLink key={group.id} group={group} />
-            ))}
-          >
-            {visibleUnassignedGroups.map((group) => (
-              <CompactGroupLink key={group.id} group={group} />
-            ))}
-          </PastoralListSection>
+        {unassignedGroupList.length > 0 ? (
+          <section>
+            <SectionTitle detail="Células ativas que ainda não têm supervisor vinculado.">Sem supervisor</SectionTitle>
+            <ProgressiveList
+              initialCount={SECTION_LIMIT}
+              step={SECTION_LIMIT}
+              moreLabel="Ver mais células"
+              lessLabel="Mostrar menos células"
+            >
+              {unassignedGroupList}
+            </ProgressiveList>
+          </section>
         ) : null}
 
         <SectionTitle>Consulta</SectionTitle>
