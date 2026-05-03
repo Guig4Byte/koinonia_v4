@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/app-shell";
-import { ContextSummary, PastoralListSection, PersonMiniCard, PersonSignalCard, PulseCard } from "@/components/cards";
+import { PastoralListSection, PersonMiniCard, PersonSignalCard, PulseCard } from "@/components/cards";
 import { SearchBox } from "@/components/search-box";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { canUseSupervisorDashboard } from "@/features/permissions/permissions";
@@ -29,9 +29,9 @@ export default async function SupervisorPage() {
   });
   const firstSupportRequest = pastoralSections.supportRequests[0];
   const firstSignal = dashboard.attentionPeople[0];
-  const hasRecentPresence = dashboard.hasPresenceData;
   const urgentSignals = pastoralSections.urgentOrPastoralCases;
   const supportSignals = pastoralSections.supportRequests;
+  const supportRequestsCount = supportSignals.length;
   const attentionSignals = pastoralSections.localAttention;
   const inCarePeople = pastoralSections.inCarePeople;
   const navIndicator = urgentSignals.length > 0 ? "risk" : dashboard.attentionPeople.length > 0 ? "attention" : inCarePeople.length > 0 ? "care" : undefined;
@@ -79,27 +79,9 @@ export default async function SupervisorPage() {
     >
       <SearchBox placeholder="Buscar pessoa..." />
       <PulseCard
-        title={firstSupportRequest ? "Essa célula pediu apoio da supervisão." : firstSignal ? `${firstSignal.person.fullName} merece atenção.` : "Suas células estão estáveis agora."}
-        subtitle={firstSupportRequest ? `${firstSupportRequest.person.fullName} · ${firstSupportRequest.group.name}: ${firstSupportRequest.reason}` : firstSignal ? `${firstSignal.group.name}: ${firstSignal.reason}` : "Continue acompanhando presença e apoiando os líderes quando algo aparecer."}
+        title={firstSupportRequest ? `${supportRequestsCount} ${supportRequestsCount === 1 ? "pedido de apoio precisa" : "pedidos de apoio precisam"} da sua presença.` : firstSignal ? `${firstSignal.person.fullName} precisa de um olhar mais próximo.` : "Suas células estão estáveis agora."}
+        subtitle={firstSupportRequest ? `${firstSupportRequest.person.fullName} · ${firstSupportRequest.group.name}: comece por este cuidado e acompanhe os líderes com calma.` : firstSignal ? `${firstSignal.group.name}: ${firstSignal.reason}` : "Continue perto dos líderes e das células, sem transformar acompanhamento em cobrança."}
         tone={firstSupportRequest || firstSignal ? "attention" : "ok"}
-      />
-
-      <ContextSummary
-        items={[
-          { label: "Células acompanhadas", value: String(dashboard.groups.length), detail: "Sob sua supervisão.", tone: "neutral" },
-          {
-            label: "Presença recente",
-            value: hasRecentPresence ? `${dashboard.presenceRate}%` : "—",
-            detail: hasRecentPresence ? "Últimos encontros registrados nas suas células." : "Ainda sem encontro registrado no recorte atual.",
-            tone: !hasRecentPresence ? "neutral" : dashboard.presenceRate < 65 ? "risk" : dashboard.presenceRate < 75 ? "warn" : "ok",
-          },
-          {
-            label: "Pedidos de apoio",
-            value: String(dashboard.supportRequests.length),
-            detail: "Casos que líderes trouxeram para você.",
-            tone: dashboard.supportRequests.length > 0 ? "warn" : "ok",
-          },
-        ]}
       />
 
       <PastoralListSection
