@@ -4,11 +4,15 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/cn";
 import type { SignalBadgeTone } from "@/features/signals/display";
 
-export function priorityCardClass(tone?: SignalBadgeTone): string {
+type CardPriorityTone = SignalBadgeTone | "stable" | "muted";
+
+export function priorityCardClass(tone?: CardPriorityTone): string {
   if (tone === "risk") return "priority-card priority-card-risk";
   if (tone === "warn") return "priority-card priority-card-warn";
   if (tone === "support") return "priority-card priority-card-support";
   if (tone === "care") return "priority-card priority-card-care";
+  if (tone === "stable") return "priority-card priority-card-stable";
+  if (tone === "muted") return "priority-card priority-card-muted";
   return "";
 }
 
@@ -334,6 +338,7 @@ export function GroupCard({
   badgeLabel,
   badgeTone,
   showBadge = true,
+  cardTone,
 }: {
   name: string;
   subtitle: string;
@@ -346,8 +351,9 @@ export function GroupCard({
   badgeLabel?: string;
   badgeTone?: SignalBadgeTone;
   showBadge?: boolean;
+  cardTone?: CardPriorityTone;
 }) {
-  const tone = !hasPresenceData ? "neutral" : presenceRate < 65 ? "risk" : presenceRate < 75 ? "warn" : "ok";
+  const tone = !hasPresenceData ? "neutral" : presenceRate < 50 ? "risk" : presenceRate < 70 ? "warn" : "ok";
   const hasLowPresence = hasPresenceData && presenceRate < 70;
   const attentionLabel = attentionLabelKind === "pastoral"
     ? `${attentionCount} ${attentionCount === 1 ? "caso pastoral" : "casos pastorais"}`
@@ -362,9 +368,18 @@ export function GroupCard({
     : !hasPresenceData ? noPresenceLabel : hasLowPresence ? "Presença baixa" : "Estável";
   const resolvedBadgeTone: SignalBadgeTone = badgeTone ?? fallbackBadgeTone;
   const resolvedBadgeLabel = badgeLabel ?? fallbackBadgeLabel;
-  const priorityTone = resolvedBadgeTone === "neutral" || resolvedBadgeTone === "ok" || resolvedBadgeTone === "info" ? undefined : resolvedBadgeTone;
+  const priorityTone = cardTone ?? (resolvedBadgeTone === "neutral" || resolvedBadgeTone === "ok" || resolvedBadgeTone === "info" ? undefined : resolvedBadgeTone);
+  const presenceText = hasPresenceData ? `${presenceRate}%` : "pendente";
+  const presenceLabel = !hasPresenceData ? "Registro de presença" : presenceRate < 50 ? "Presença baixa" : "Presença recente";
+  const presenceToneClass = !hasPresenceData
+    ? "text-[var(--color-text-secondary)]"
+    : tone === "risk"
+      ? "text-[var(--color-metric-atencoes)]"
+      : tone === "warn"
+        ? "text-[var(--color-badge-atencao-text)]"
+        : "text-[var(--color-metric-presenca)]";
   const content = (
-    <article className={cn("rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]", priorityCardClass(priorityTone))}>
+    <article className={cn("rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card transition active:scale-[0.99]", priorityCardClass(priorityTone))}>
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="font-semibold text-[var(--color-text-primary)]">{name}</p>
@@ -372,23 +387,17 @@ export function GroupCard({
         </div>
         {showBadge ? <Badge tone={resolvedBadgeTone}>{resolvedBadgeLabel}</Badge> : null}
       </div>
-      <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--surface-alt)]">
-        <div
-          className={cn("h-full rounded-full", tone === "risk" && "bg-[var(--color-metric-atencoes)]", tone === "warn" && "bg-[var(--color-badge-atencao-text)]", tone === "ok" && "bg-[var(--color-metric-presenca)]")}
-          style={{ width: hasPresenceData ? `${presenceRate}%` : "0%" }}
-        />
-      </div>
-      <div className="mt-2 flex items-center justify-between gap-3 text-xs text-[var(--color-text-secondary)]">
-        <span>
-          Presença recente:{" "}
-          <strong className="text-[var(--color-text-primary)]">{hasPresenceData ? `${presenceRate}%` : noPresenceLabel}</strong>
+      <div className="mt-3 flex items-center justify-between gap-3 border-t border-[var(--color-border-divider)] pt-2 text-xs text-[var(--color-text-secondary)]">
+        <span className="min-w-0">
+          {presenceLabel}:{" "}
+          <strong className={cn("font-bold", presenceToneClass)}>{presenceText}</strong>
         </span>
         {href ? <span className="font-semibold text-[var(--color-brand)]">Abrir célula →</span> : null}
       </div>
     </article>
   );
 
-  return href ? <Link href={href}>{content}</Link> : content;
+  return href ? <Link href={href} className="block">{content}</Link> : content;
 }
 
 export function EventMacroCard({

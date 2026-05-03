@@ -776,6 +776,39 @@ a {
   transform: scale(0.98);
 }
 
+.cell-priority-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.cell-priority-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cell-priority-heading {
+  padding: 0 2px;
+}
+
+.cell-priority-heading h3 {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.cell-priority-heading p {
+  margin: 4px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .team-supervisor-card {
   border: 1px solid color-mix(in srgb, var(--color-border-card) 70%, transparent);
   border-radius: 1.15rem;
@@ -1152,6 +1185,20 @@ a {
 .priority-card-care {
   --priority-accent: var(--color-badge-cuidado-text);
   --priority-soft: color-mix(in srgb, var(--color-badge-cuidado-bg) 45%, transparent);
+}
+
+.priority-card-stable {
+  --priority-accent: var(--color-metric-presenca);
+  --priority-soft: color-mix(in srgb, var(--color-metric-presenca) 13%, transparent);
+  box-shadow:
+    0 12px 28px color-mix(in srgb, var(--color-metric-presenca) 8%, transparent),
+    var(--color-shadow-card);
+}
+
+.priority-card-muted {
+  --priority-accent: #7b7a73;
+  --priority-soft: color-mix(in srgb, #7b7a73 11%, transparent);
+  box-shadow: var(--color-shadow-card);
 }
 
 ::selection {

@@ -21,10 +21,11 @@ type CellsPageProps = {
 
 type SupervisorDashboard = Awaited<ReturnType<typeof getSupervisorDashboard>>;
 type SupervisorGroup = SupervisorDashboard["groups"][number];
+type GroupSectionKey = "care" | "presence" | "stable";
 
 const CELLS_FILTERS: Array<{ value: CellsFilter; label: string }> = [
   { value: "todos", label: "Todas" },
-  { value: "atencao", label: "Pedem atenção" },
+  { value: "atencao", label: "Pedem cuidado próximo" },
   { value: "sem-presenca", label: "Sem presença recente" },
 ];
 
@@ -69,14 +70,43 @@ function groupNeedsAttention(group: SupervisorGroup) {
   return riskCount(group) > 0 || group.supportRequestsCount > 0 || group.attentionCount > 0 || hasLowPresence(group);
 }
 
+function groupSectionKey(group: SupervisorGroup): GroupSectionKey {
+  if (riskCount(group) > 0 || group.supportRequestsCount > 0 || group.attentionCount > 0 || group.inCareCount > 0) {
+    return "care";
+  }
+
+  if (!group.hasPresenceData || hasLowPresence(group)) {
+    return "presence";
+  }
+
+  return "stable";
+}
+
+const GROUP_SECTIONS: Array<{ key: GroupSectionKey; title: string }> = [
+  {
+    key: "care",
+    title: "Pedem cuidado próximo",
+  },
+  {
+    key: "presence",
+    title: "Presença em atenção",
+  },
+  {
+    key: "stable",
+    title: "Acompanhamento estável",
+  },
+];
+
 function groupPriorityScore(group: SupervisorGroup) {
-  const risk = riskCount(group);
+  const urgent = urgentCount(group);
+  const escalated = pastoralEscalatedCount(group);
   const support = group.supportRequestsCount;
-  const localAttention = Math.max(group.attentionCount - risk - support, 0);
+  const localAttention = Math.max(group.attentionCount - riskCount(group) - support, 0);
+  const inCare = group.inCareCount;
   const lowPresenceScore = hasLowPresence(group) ? LOW_PRESENCE_THRESHOLD - group.presenceRate : 0;
   const noPresenceScore = group.hasPresenceData ? 0 : 25;
 
-  return risk * 1000 + support * 700 + localAttention * 400 + lowPresenceScore + noPresenceScore;
+  return urgent * 1200 + escalated * 1000 + support * 700 + localAttention * 400 + inCare * 200 + lowPresenceScore + noPresenceScore;
 }
 
 function compareGroups(left: SupervisorGroup, right: SupervisorGroup) {
@@ -188,15 +218,17 @@ function groupBadge(group: SupervisorGroup): SignalBadge | null {
 function groupSubtitle(group: SupervisorGroup) {
   const leadership = group.leader?.name ?? "Liderança não informada";
   const membersLabel = `${group.memberships.length} ${group.memberships.length === 1 ? "membro" : "membros"}`;
-  const supportText = group.supportRequestsCount > 0
-    ? ` · ${group.supportRequestsCount} ${group.supportRequestsCount === 1 ? "pedido de apoio" : "pedidos de apoio"}`
-    : "";
-  const careText = group.inCareCount > 0 ? ` · ${group.inCareCount} em cuidado` : "";
 
-  return `${leadership} · ${membersLabel}${supportText}${careText}`;
+  return `${leadership} · ${membersLabel}`;
 }
 
-function renderGroups(groups: SupervisorGroup[]) {
+function sectionCardTone(sectionKey: GroupSectionKey) {
+  if (sectionKey === "presence") return "muted";
+  if (sectionKey === "stable") return "stable";
+  return undefined;
+}
+
+function renderGroups(groups: SupervisorGroup[], sectionKey: GroupSectionKey) {
   return groups.map((group) => {
     const badge = groupBadge(group);
 
@@ -210,10 +242,37 @@ function renderGroups(groups: SupervisorGroup[]) {
         badgeLabel={badge?.label}
         badgeTone={badge?.tone}
         showBadge={Boolean(badge)}
+        cardTone={sectionCardTone(sectionKey)}
         href={`/celulas/${group.id}`}
         hasPresenceData={group.hasPresenceData}
         noPresenceLabel="Sem presença recente"
       />
+    );
+  });
+}
+
+function renderGroupSections(groups: SupervisorGroup[]) {
+  return GROUP_SECTIONS.map((section) => {
+    const sectionGroups = groups.filter((group) => groupSectionKey(group) === section.key).sort(compareGroups);
+
+    if (sectionGroups.length === 0) return null;
+
+    return (
+      <div key={section.key} className="cell-priority-section">
+        <div className="cell-priority-heading">
+          <h3>
+            {section.title}
+          </h3>
+        </div>
+        <ProgressiveList
+          initialCount={SECTION_LIMIT}
+          step={SECTION_LIMIT}
+          moreLabel="Ver mais células"
+          lessLabel="Mostrar menos células"
+        >
+          {renderGroups(sectionGroups, section.key)}
+        </ProgressiveList>
+      </div>
     );
   });
 }
@@ -231,7 +290,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
   const activeFilter = readCellsFilter(firstParam(params.filtro));
   const dashboard = await getSupervisorDashboard(user);
   const groups = filterGroups(dashboard.groups, normalizedQuery, activeFilter);
-  const groupCards = renderGroups(groups);
+  const groupSections = renderGroupSections(groups);
   const groupsNeedingAttentionCount = dashboard.groups.filter(groupNeedsAttention).length;
   const groupsWithoutPresenceCount = dashboard.groups.filter((group) => !group.hasPresenceData).length;
   const hasRisk = dashboard.groups.some((group) => riskCount(group) > 0);
@@ -258,44 +317,47 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
 
         <CellsStructureSearch query={query} filter={activeFilter} />
 
-        <ContextSummary
-          items={[
-            {
-              label: "Células acompanhadas",
-              value: String(dashboard.groups.length),
-              detail: "Sob sua supervisão.",
-              tone: "neutral",
-            },
-            {
-              label: "Pedem atenção",
-              value: String(groupsNeedingAttentionCount),
-              detail: groupsNeedingAttentionCount > 0
-                ? "Por pedido de apoio, atenção local ou presença baixa registrada."
-                : "Nenhuma célula pedindo atenção agora.",
-              tone: groupsNeedingAttentionCount > 0 ? "warn" : "ok",
-            },
-            {
-              label: "Sem presença recente",
-              value: String(groupsWithoutPresenceCount),
-              detail: groupsWithoutPresenceCount > 0
-                ? "Talvez o encontro tenha acontecido, mas a presença ainda não foi marcada."
-                : "Todas têm presença recente registrada.",
-              tone: groupsWithoutPresenceCount > 0 ? "neutral" : "ok",
-            },
-          ]}
-        />
+        <div className="team-summary-block">
+          <ContextSummary
+            items={[
+              {
+                label: "Células acompanhadas",
+                value: String(dashboard.groups.length),
+                detail: "Comunidades que você acompanha de perto.",
+                tone: "neutral",
+              },
+              {
+                label: "Presença da semana",
+                value: dashboard.hasPresenceData ? `${dashboard.presenceRate}%` : "—",
+                detail: dashboard.hasPresenceData
+                  ? "Ritmo percebido nos encontros registrados."
+                  : "Ainda sem presença registrada nesta semana.",
+                tone: !dashboard.hasPresenceData ? "neutral" : dashboard.presenceRate < 65 ? "risk" : dashboard.presenceRate < 75 ? "warn" : "ok",
+              },
+              {
+                label: "Pedem cuidado mais próximo",
+                value: String(groupsNeedingAttentionCount),
+                detail: groupsNeedingAttentionCount > 0
+                  ? "Células que pedem proximidade, apoio ou discernimento."
+                  : "Nenhuma célula pedindo cuidado próximo agora.",
+                tone: groupsNeedingAttentionCount > 0 ? "warn" : "ok",
+              },
+              {
+                label: "Sem presença recente",
+                value: String(groupsWithoutPresenceCount),
+                detail: groupsWithoutPresenceCount > 0
+                  ? "Pode haver encontro realizado sem marcação ainda."
+                  : "Todas têm presença recente registrada.",
+                tone: groupsWithoutPresenceCount > 0 ? "neutral" : "ok",
+              },
+            ]}
+          />
+        </div>
 
         <section>
-          <SectionTitle detail="Use os filtros para ver células com atenção ou sem presença recente.">Células supervisionadas</SectionTitle>
-          {groupCards.length > 0 ? (
-            <ProgressiveList
-              initialCount={SECTION_LIMIT}
-              step={SECTION_LIMIT}
-              moreLabel="Ver mais células"
-              lessLabel="Mostrar menos células"
-            >
-              {groupCards}
-            </ProgressiveList>
+          <SectionTitle detail="As células aparecem por prioridade pastoral; as estáveis ficam ao final.">Células supervisionadas</SectionTitle>
+          {groups.length > 0 ? (
+            <div className="cell-priority-sections">{groupSections}</div>
           ) : (
             <EmptyState>
               {isFiltered ? "Nenhuma célula encontrada nesse recorte." : "Nenhuma célula ativa vinculada à sua supervisão."}

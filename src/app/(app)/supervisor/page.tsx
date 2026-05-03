@@ -27,14 +27,30 @@ export default async function SupervisorPage() {
     inCarePeople: rawInCarePeople,
     viewer: user,
   });
-  const firstSupportRequest = pastoralSections.supportRequests[0];
-  const firstSignal = dashboard.attentionPeople[0];
   const urgentSignals = pastoralSections.urgentOrPastoralCases;
   const supportSignals = pastoralSections.supportRequests;
+  const firstUrgentSignal = urgentSignals[0];
+  const firstSupportRequest = supportSignals[0];
+  const firstSignal = dashboard.attentionPeople[0];
+  const urgentSignalsCount = urgentSignals.length;
   const supportRequestsCount = supportSignals.length;
   const attentionSignals = pastoralSections.localAttention;
   const inCarePeople = pastoralSections.inCarePeople;
   const navIndicator = urgentSignals.length > 0 ? "risk" : dashboard.attentionPeople.length > 0 ? "attention" : inCarePeople.length > 0 ? "care" : undefined;
+  const pulseTitle = firstUrgentSignal
+    ? `${urgentSignalsCount} ${urgentSignalsCount === 1 ? "caso urgente precisa" : "casos urgentes precisam"} da sua presença.`
+    : firstSupportRequest
+      ? `${supportRequestsCount} ${supportRequestsCount === 1 ? "pedido de apoio precisa" : "pedidos de apoio precisam"} da sua presença.`
+      : firstSignal
+        ? `${firstSignal.person.fullName} precisa de um olhar mais próximo.`
+        : "Suas células estão estáveis agora.";
+  const pulseSubtitle = firstUrgentSignal
+    ? `${firstUrgentSignal.person.fullName} · ${firstUrgentSignal.group.name}: comece por este cuidado antes dos demais acompanhamentos.`
+    : firstSupportRequest
+      ? `${firstSupportRequest.person.fullName} · ${firstSupportRequest.group.name}: comece por este cuidado e acompanhe os líderes com calma.`
+      : firstSignal
+        ? `${firstSignal.group.name}: ${firstSignal.reason}`
+        : "Continue perto dos líderes e das células, sem transformar acompanhamento em cobrança.";
 
   const renderSignalCards = (signals: typeof dashboard.attentionPeople, ctaLabel = "Abrir pessoa") => signals.map((signal) => {
     const badge = signalBadgeForViewer(signal, user);
@@ -79,9 +95,9 @@ export default async function SupervisorPage() {
     >
       <SearchBox placeholder="Buscar pessoa..." />
       <PulseCard
-        title={firstSupportRequest ? `${supportRequestsCount} ${supportRequestsCount === 1 ? "pedido de apoio precisa" : "pedidos de apoio precisam"} da sua presença.` : firstSignal ? `${firstSignal.person.fullName} precisa de um olhar mais próximo.` : "Suas células estão estáveis agora."}
-        subtitle={firstSupportRequest ? `${firstSupportRequest.person.fullName} · ${firstSupportRequest.group.name}: comece por este cuidado e acompanhe os líderes com calma.` : firstSignal ? `${firstSignal.group.name}: ${firstSignal.reason}` : "Continue perto dos líderes e das células, sem transformar acompanhamento em cobrança."}
-        tone={firstSupportRequest || firstSignal ? "attention" : "ok"}
+        title={pulseTitle}
+        subtitle={pulseSubtitle}
+        tone={firstUrgentSignal || firstSupportRequest || firstSignal ? "attention" : "ok"}
       />
 
       <PastoralListSection
