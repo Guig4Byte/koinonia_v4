@@ -280,7 +280,6 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
     <AppShell
       userName={user.name}
       role={user.role}
-      compactHeader
       nav={[
         { href: homeHref, label: "Visão", icon: "home" },
         { href: secondaryNavHref, label: secondaryNavLabel, icon: "people", active: isPastorView || isSupervisorView || user.role === UserRole.LEADER, indicator: navIndicator },

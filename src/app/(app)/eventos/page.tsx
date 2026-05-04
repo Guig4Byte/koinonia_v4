@@ -298,7 +298,6 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
         { href: secondaryNavHref, label: secondaryNavLabel, icon: "people" },
         { href: "/eventos", label: "Eventos", icon: "calendar", active: true },
       ]}
-      compactHeader
     >
       <div className="events-page">
         {mode ? (

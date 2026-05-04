@@ -302,7 +302,6 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
     <AppShell
       userName={user.name}
       role={user.role}
-      compactHeader
       nav={[
         { href: "/supervisor", label: "Visão", icon: "home" },
         { href: "/celulas", label: "Células", icon: "people", active: true, indicator: navIndicator },

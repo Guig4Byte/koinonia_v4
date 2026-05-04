@@ -321,7 +321,6 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
     <AppShell
       userName={user.name}
       role={user.role}
-      compactHeader
       nav={[
         { href: "/pastor", label: "Visão", icon: "home" },
         { href: "/equipe", label: "Equipe", icon: "people", active: true, indicator: navIndicator },
