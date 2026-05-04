@@ -229,6 +229,7 @@ export function PersonMiniCard({
   context,
   badgeLabel,
   badgeTone = "neutral",
+  cardTone,
   ctaLabel = "Abrir pessoa",
 }: {
   href: string;
@@ -237,13 +238,14 @@ export function PersonMiniCard({
   context?: string;
   badgeLabel?: string;
   badgeTone?: SignalBadgeTone;
+  cardTone?: CardPriorityTone;
   ctaLabel?: string;
 }) {
   return (
     <Link
       href={href}
       aria-label={`${ctaLabel}: ${name}`}
-      className={cn("group flex min-h-[4.25rem] items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]", priorityCardClass(badgeTone))}
+      className={cn("group flex min-h-[4.25rem] items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]", priorityCardClass(cardTone ?? badgeTone))}
     >
       <span className="flex min-w-0 items-center gap-3">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-avatar-bg)] text-xs font-bold text-[var(--color-avatar-text)]">

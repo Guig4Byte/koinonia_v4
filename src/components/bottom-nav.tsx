@@ -33,9 +33,16 @@ const indicatorClass: Record<NavIndicatorTone, string> = {
 
 export function BottomNav({ items }: { items: NavItem[] }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-[480px] px-4 pb-[calc(0.55rem+env(safe-area-inset-bottom))]">
+    <nav
+      aria-label="Navegação principal"
+      className="fixed left-1/2 z-50 max-w-[448px] -translate-x-1/2"
+      style={{
+        bottom: "calc(env(safe-area-inset-bottom) + var(--bottom-nav-offset))",
+        width: "calc(100% - 32px)",
+      }}
+    >
       <div
-        className="grid gap-1 rounded-[1.35rem] border border-[var(--color-border-tab)] bg-[var(--color-bg-tab)] p-1 shadow-[var(--color-shadow-nav)] backdrop-blur-[2px]"
+        className="grid h-[var(--bottom-nav-height)] gap-1 rounded-[1.35rem] border border-[var(--color-border-tab)] bg-[var(--color-bg-tab)] p-1 shadow-[var(--color-shadow-nav)] backdrop-blur-[2px]"
         style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
       >
         {items.map((item) => {
@@ -47,16 +54,25 @@ export function BottomNav({ items }: { items: NavItem[] }) {
             <Link
               key={`${item.href}-${item.label}`}
               href={item.href}
+              aria-current={item.active ? "page" : undefined}
               className={cn(
-                "relative flex min-h-[44px] flex-col items-center justify-center rounded-[1rem] px-2 py-1 text-[10px] font-semibold transition active:scale-[0.98]",
+                "relative flex min-h-12 flex-col items-center justify-center rounded-[1rem] px-2 py-1 text-[10px] font-semibold transition active:scale-[0.98]",
                 item.active
                   ? "bg-[var(--color-bg-tab-active)] text-[var(--color-tab-label-active)] shadow-[var(--color-shadow-nav-active)]"
                   : "text-[var(--color-tab-label-inactive)]",
               )}
             >
               <span className="relative">
-                {indicatorClassName ? <span className={cn("absolute -right-1.5 -top-0.5 h-1.5 w-1.5 rounded-full", indicatorClassName)} /> : null}
-                <Icon className={cn("h-[18px] w-[18px]", item.active ? "text-[var(--color-tab-active)]" : "text-[var(--color-tab-label-inactive)]")} strokeWidth={2.25} />
+                {indicatorClassName ? (
+                  <span className={cn("absolute -right-1.5 -top-0.5 h-1.5 w-1.5 rounded-full", indicatorClassName)} />
+                ) : null}
+                <Icon
+                  className={cn(
+                    "h-[18px] w-[18px]",
+                    item.active ? "text-[var(--color-tab-active)]" : "text-[var(--color-tab-label-inactive)]",
+                  )}
+                  strokeWidth={2.25}
+                />
               </span>
               <span className="mt-0.5">{item.label}</span>
             </Link>

@@ -1,10 +1,12 @@
 "use client";
 
 import { Moon, ScrollText, Sun, type LucideIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { applyTheme, getNextTheme, isTheme, THEME_STORAGE_KEY, type Theme } from "@/features/theme/theme";
 
 type ThemeToggleVariant = "header" | "card";
+
+const THEME_CHANGE_EVENT = "koinonia-theme-change";
 
 const themeMeta: Record<Theme, { label: string; Icon: LucideIcon }> = {
   light: { label: "Claro", Icon: Sun },
@@ -12,10 +14,29 @@ const themeMeta: Record<Theme, { label: string; Icon: LucideIcon }> = {
   dark: { label: "Escuro", Icon: Moon },
 };
 
-function getInitialTheme(): Theme {
+function readStoredTheme(): Theme {
   if (typeof window === "undefined") return "light";
+
   const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
   return isTheme(stored) ? stored : "light";
+}
+
+function subscribeToThemeChange(onStoreChange: () => void) {
+  window.addEventListener("storage", onStoreChange);
+  window.addEventListener(THEME_CHANGE_EVENT, onStoreChange);
+
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener(THEME_CHANGE_EVENT, onStoreChange);
+  };
+}
+
+function getThemeSnapshot(): Theme {
+  return readStoredTheme();
+}
+
+function getServerThemeSnapshot(): Theme {
+  return "light";
 }
 
 export function ThemeToggle({
@@ -27,19 +48,14 @@ export function ThemeToggle({
   showLabel?: boolean;
   className?: string;
 }) {
-  const [theme, setTheme] = useState<Theme>("light");
-
-  useEffect(() => {
-    const initialTheme = getInitialTheme();
-    setTheme(initialTheme);
-    applyTheme(initialTheme);
-  }, []);
+  const theme = useSyncExternalStore(subscribeToThemeChange, getThemeSnapshot, getServerThemeSnapshot);
 
   function toggleTheme() {
     const nextTheme = getNextTheme(theme);
-    setTheme(nextTheme);
+
     window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
     applyTheme(nextTheme);
+    window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
   }
 
   const { Icon, label } = themeMeta[theme];
