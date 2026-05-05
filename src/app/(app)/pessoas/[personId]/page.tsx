@@ -10,8 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { canRegisterCare, canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { canEscalateSignalToPastor, canRequestSupervisorSupport, escalationStatusDetailForViewer } from "@/features/signals/escalation";
-import { signalBadgeForViewer, signalReasonForViewer } from "@/features/signals/display";
-import { getPastoralSectionSignalsByPerson, isUrgentOrPastoralCase } from "@/features/signals/sections";
+import { signalBadgeForViewer, signalDetailForViewer } from "@/features/signals/display";
+import { isUrgentOrPastoralCase, sortSignalsForPastoralViewer } from "@/features/signals/sections";
 import { summarizePresenceFromAttendances, summarizePresenceTrend } from "@/features/events/presence-summary";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
@@ -169,7 +169,8 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const canMarkActive = person.status === PersonStatus.COOLING_AWAY && canRegisterCare(user, person);
   const hasRiskSignal = signals.some(isUrgentOrPastoralCase);
   const navIndicator = hasRiskSignal ? "risk" : openSignalsCount > 0 ? "attention" : person.status === PersonStatus.COOLING_AWAY ? "care" : undefined;
-  const primarySignal = getPastoralSectionSignalsByPerson(signals, user)[0];
+  const pastoralOrderedSignals = sortSignalsForPastoralViewer(signals, user);
+  const primarySignal = pastoralOrderedSignals[0];
   const personBadge = personEffectiveBadgeForViewer(person, primarySignal, user);
   const monthPresence = summarizePresenceFromAttendances(monthAttendances);
   const previousMonthPresence = summarizePresenceFromAttendances(previousMonthAttendances);
@@ -294,7 +295,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
 
       <SectionTitle>{openSignalsCount > 0 ? "Por que merece atenção" : "Situação atual"}</SectionTitle>
       <div className="space-y-3">
-        {signals.map((signal) => {
+        {pastoralOrderedSignals.map((signal) => {
           const signalTone = signalBadgeForViewer(signal, user).tone;
           const assignmentMessage = escalationStatusDetailForViewer(signal, user);
           const canRequestSupervisor = canRequestSupervisorSupport(user, signal);
@@ -303,7 +304,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           return (
             <article key={signal.id} className={`rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card ${priorityCardClass(signalTone)}`}> 
               <div className="min-w-0">
-                  <p className="font-semibold text-[var(--color-text-primary)]">{signalReasonForViewer(signal.reason, user)}</p>
+                  <p className="font-semibold text-[var(--color-text-primary)]">{signalDetailForViewer(signal, user)}</p>
                   <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
                     {signal.group?.name ?? primaryGroup?.name ?? "Sem célula"} · {formatShortDate(signal.detectedAt)}, {formatTime(signal.detectedAt)}
                   </p>

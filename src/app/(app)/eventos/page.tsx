@@ -126,7 +126,7 @@ function EventCard({ event, user, now }: { event: EventWithRelations; user: Perm
     <article className={cn(
       "event-card",
       recordedPresence && "event-card-registered priority-card event-card-registered-ok",
-      priorityCardClass(isFutureEvent ? "care" : isPendingEvent ? "warn" : undefined),
+      priorityCardClass(isPendingEvent ? "warn" : undefined),
     )}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">

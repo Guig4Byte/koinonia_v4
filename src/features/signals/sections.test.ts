@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { PersonStatus, SignalSeverity, UserRole } from "../../generated/prisma/client";
-import { getPastoralSectionSignalsByPerson, splitPastoralSections } from "./sections";
+import { getPastoralSectionSignalsByPerson, sortSignalsForPastoralViewer, splitPastoralSections } from "./sections";
 
 const baseDate = new Date("2026-01-10T12:00:00.000Z");
 
@@ -79,6 +79,20 @@ describe("pastoral sections", () => {
     );
 
     expect(selected.map((item) => item.id)).toEqual(["urgent-older", "newer-attention"]);
+  });
+
+
+  it("sorts signals by pastoral priority before recency for a viewer", () => {
+    const ordered = sortSignalsForPastoralViewer(
+      [
+        signal({ id: "local-newest", personId: "person-1", detectedAt: daysAfter(3) }),
+        signal({ id: "support-older", personId: "person-1", assignedToId: "supervisor-1", assignedToRole: UserRole.SUPERVISOR, detectedAt: daysAfter(1) }),
+        signal({ id: "pastoral-older", personId: "person-1", assignedToRole: UserRole.PASTOR, detectedAt: daysAfter(2) }),
+      ],
+      { id: "supervisor-1", role: UserRole.SUPERVISOR },
+    );
+
+    expect(ordered.map((item) => item.id)).toEqual(["pastoral-older", "support-older", "local-newest"]);
   });
 
   it("shows people in care only when they have no active attention signal", () => {

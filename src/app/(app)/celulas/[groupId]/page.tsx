@@ -189,7 +189,9 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
   const hasRecentPresence = presence.hasPresenceData;
   const relevantEvent = selectRelevantCheckInEvent(group.events, referenceDate);
   const pendingEvent = relevantEvent && !hasRecordedPresence(relevantEvent) ? relevantEvent : null;
-  const pendingEventActionLabel = user.role === UserRole.LEADER && group.leaderUserId === user.id ? "Registrar presença" : "Abrir encontro";
+  const canRegisterPendingEvent = user.role === UserRole.LEADER && group.leaderUserId === user.id;
+  const pendingEventStatusLabel = canRegisterPendingEvent ? "Presença pendente" : "Aguardando registro";
+  const pendingEventActionLabel = canRegisterPendingEvent ? "Registrar presença" : "Abrir encontro";
   const headerBadge: SignalBadge = (() => {
     if (urgentAttentionPeople.length > 0) {
       return { tone: "risk", label: groupAttentionLabel(urgentAttentionPeople.length, "urgente", "urgentes") };
@@ -325,7 +327,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
           <section className="group-pending-event-section">
             <Link href={`/eventos/${pendingEvent.id}`} className={cn("group-pending-event-card", "priority-card priority-card-warn")}>
               <span className="group-pending-event-top">
-                <span>Encontro pendente</span>
+                <span>{pendingEventStatusLabel}</span>
               </span>
               <span className="group-pending-event-body">
                 <span className="min-w-0">

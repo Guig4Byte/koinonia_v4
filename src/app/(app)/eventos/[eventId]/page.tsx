@@ -259,8 +259,8 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
               valueClassName: "text-[var(--color-metric-visitantes)]",
             },
             {
-              label: "Membros marcados",
-              detail: "Presenças consideradas no cuidado.",
+              label: "Membros da célula",
+              detail: "Base do encontro, sem contar visitantes.",
               value: String(members.length),
               valueClassName: "text-[var(--color-text-primary)]",
             },

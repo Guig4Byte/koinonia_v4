@@ -104,6 +104,13 @@ function compareSignalsForPastoralSection(
   return left.id.localeCompare(right.id, "pt-BR");
 }
 
+export function sortSignalsForPastoralViewer<TSignal extends SectionSignalWithIdentity>(
+  signals: TSignal[],
+  viewer: SectionViewerLike,
+): TSignal[] {
+  return [...signals].sort((left, right) => compareSignalsForPastoralSection(left, right, viewer));
+}
+
 export function getPastoralSectionSignalsByPerson<TSignal extends SectionSignalWithIdentity>(
   signals: TSignal[],
   viewer: SectionViewerLike,
@@ -118,7 +125,7 @@ export function getPastoralSectionSignalsByPerson<TSignal extends SectionSignalW
     }
   }
 
-  return Array.from(selectedByPerson.values()).sort((left, right) => compareSignalsForPastoralSection(left, right, viewer));
+  return sortSignalsForPastoralViewer(Array.from(selectedByPerson.values()), viewer);
 }
 
 export function splitPastoralSignals<TSignal extends SectionSignalWithIdentity>(
