@@ -1,5 +1,11 @@
 import { SignalSeverity, UserRole } from "../../generated/prisma/client";
-import { escalationStatusLabelForViewer, isAssignedToPastoralRole, isAssignedToSupervisor, type SignalAssigneeLike } from "./escalation";
+import {
+  escalationStatusDetailForViewer,
+  escalationStatusLabelForViewer,
+  isAssignedToPastoralRole,
+  isAssignedToSupervisor,
+  type SignalAssigneeLike,
+} from "./escalation";
 
 export type SignalBadgeTone = "neutral" | "ok" | "warn" | "risk" | "info" | "care" | "support";
 
@@ -17,6 +23,10 @@ export type SignalDisplayLike = {
 export type SignalDisplayViewerLike = {
   id?: string | null;
   role: UserRole;
+};
+
+export type SignalDetailLike = SignalDisplayLike & {
+  reason: string;
 };
 
 function isPastoralViewer(viewer?: SignalDisplayViewerLike | null): boolean {
@@ -64,4 +74,8 @@ export function groupAttentionLabel(count: number, singular: string, plural: str
 export function signalReasonForViewer(reason: string, viewer: { role: UserRole }): string {
   if (viewer.role !== UserRole.LEADER) return reason;
   return reason.replace("Líder pediu apoio da supervisão", "Apoio solicitado à supervisão");
+}
+
+export function signalDetailForViewer(signal: SignalDetailLike, viewer: SignalDisplayViewerLike): string {
+  return escalationStatusDetailForViewer(signal, viewer) ?? signalReasonForViewer(signal.reason, viewer);
 }

@@ -1,19 +1,19 @@
 import { AppShell } from "@/components/app-shell";
-import { ContextSummary, EmptyState, PastoralListSection, PersonMiniCard, PersonSignalCard, PulseCard, SectionTitle } from "@/components/cards";
+import { ContextSummary, EmptyState, PulseCard, SectionTitle } from "@/components/cards";
+import { InCareSection, PastoralSignalSection } from "@/components/pastoral-list-cards";
 import { CheckInList } from "@/components/check-in-list";
 import { SearchBox } from "@/components/search-box";
 import { Badge } from "@/components/ui/badge";
 import { getLeaderDashboard } from "@/features/dashboard/queries";
 import { canUseLeaderDashboard } from "@/features/permissions/permissions";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
-import { signalBadgeForViewer, signalReasonForViewer } from "@/features/signals/display";
-import { isSupportRequest, splitPastoralSections } from "@/features/signals/sections";
+import { signalDetailForViewer } from "@/features/signals/display";
+import { splitPastoralSections } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { redirect } from "next/navigation";
 import { addDays, startOfDay, subDays } from "date-fns";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
-import { initials } from "@/lib/text";
 
 export default async function LeaderPage() {
   const user = await getCurrentUser();
@@ -78,35 +78,7 @@ export default async function LeaderPage() {
   const inCarePeople = pastoralSections.inCarePeople;
   const navIndicator = urgentSignals.length > 0 ? "risk" : dashboard.attentionPeople.length > 0 ? "attention" : inCarePeople.length > 0 ? "care" : undefined;
 
-  const renderSignalCards = (signals: typeof dashboard.attentionPeople) => signals.map((signal) => {
-    const badge = signalBadgeForViewer(signal, user);
 
-    return (
-      <PersonSignalCard
-        key={signal.id}
-        initials={initials(signal.person.fullName)}
-        name={signal.person.fullName}
-        detailHref={`/pessoas/${signal.person.id}`}
-        context={signalReasonForViewer(signal.reason, user)}
-        severity={signal.severity === "URGENT" ? "risk" : "warn"}
-        badgeLabel={badge.label}
-        badgeTone={badge.tone}
-        ctaLabel={isSupportRequest(signal, user) ? "Abrir apoio" : "Abrir pessoa"}
-      />
-    );
-  });
-
-  const renderInCareLinks = (people: typeof inCarePeople) => people.map((person) => (
-    <PersonMiniCard
-      key={person.id}
-      href={`/pessoas/${person.id}`}
-      initials={initials(person.fullName)}
-      name={person.fullName}
-      context={person.groupName}
-      badgeLabel="Em cuidado"
-      badgeTone="care"
-    />
-  ));
 
   return (
     <AppShell
@@ -121,7 +93,7 @@ export default async function LeaderPage() {
       <SearchBox placeholder="Buscar membro..." />
       <PulseCard
         title={dashboard.attentionPeople[0] ? `${dashboard.attentionPeople[0].person.fullName} precisa de você.` : `${currentGroup?.name ?? "Sua célula"} está tranquila agora.`}
-        subtitle={dashboard.attentionPeople[0] ? signalReasonForViewer(dashboard.attentionPeople[0].reason, user) : "Registre a presença quando a célula acontecer."}
+        subtitle={dashboard.attentionPeople[0] ? signalDetailForViewer(dashboard.attentionPeople[0], user) : "Registre a presença quando a célula acontecer."}
         tone={dashboard.attentionPeople.length > 0 ? "attention" : "ok"}
       />
 
@@ -143,41 +115,42 @@ export default async function LeaderPage() {
         ]}
       />
 
-      <PastoralListSection
+      <PastoralSignalSection
         title="Irmãos que precisam de um olhar especial"
         detail="Antes de rolar o check-in, veja se alguém precisa de um gesto simples de cuidado."
         emptyMessage="Nenhuma pessoa urgente ou encaminhada agora."
-        hiddenChildren={renderSignalCards(urgentSignals.slice(4))}
-      >
-        {renderSignalCards(urgentSignals.slice(0, 4))}
-      </PastoralListSection>
+        signals={urgentSignals}
+        viewer={user}
+        contextForSignal={(signal, viewer) => signalDetailForViewer(signal, viewer)}
+        reasonForSignal={() => undefined}
+      />
 
-      <PastoralListSection
+      <PastoralSignalSection
         title="Pedidos de apoio"
         detail="Pedidos enviados à supervisão continuam visíveis para acompanhamento local."
         emptyMessage="Nenhum pedido de apoio aberto agora."
-        hiddenChildren={renderSignalCards(supportSignals.slice(4))}
-      >
-        {renderSignalCards(supportSignals.slice(0, 4))}
-      </PastoralListSection>
+        signals={supportSignals}
+        viewer={user}
+        contextForSignal={(signal, viewer) => signalDetailForViewer(signal, viewer)}
+        reasonForSignal={() => undefined}
+      />
 
-      <PastoralListSection
+      <PastoralSignalSection
         title="Acompanhar de perto"
         detail="Atenções locais que merecem contato simples."
         emptyMessage="Nenhum membro da sua célula está em atenção agora."
-        hiddenChildren={renderSignalCards(attentionSignals.slice(4))}
-      >
-        {renderSignalCards(attentionSignals.slice(0, 4))}
-      </PastoralListSection>
+        signals={attentionSignals}
+        viewer={user}
+        contextForSignal={(signal, viewer) => signalDetailForViewer(signal, viewer)}
+        reasonForSignal={() => undefined}
+      />
 
-      <PastoralListSection
+      <InCareSection
         title="Acolhidos em cuidado"
         detail="Pessoas que já receberam cuidado e seguem no radar."
         emptyMessage="Nenhuma pessoa em cuidado agora."
-        hiddenChildren={renderInCareLinks(inCarePeople.slice(4))}
-      >
-        {renderInCareLinks(inCarePeople.slice(0, 4))}
-      </PastoralListSection>
+        people={inCarePeople}
+      />
 
       <SectionTitle>Presença do encontro</SectionTitle>
       {currentEvent ? (

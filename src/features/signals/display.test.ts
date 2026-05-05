@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { SignalSeverity, UserRole } from "../../generated/prisma/client";
-import { signalBadgeForViewer, signalReasonForViewer } from "./display";
+import { signalBadgeForViewer, signalDetailForViewer, signalReasonForViewer } from "./display";
 
 describe("signal display helpers", () => {
   it("keeps urgent as urgent for every viewer even when support was requested", () => {
@@ -33,5 +33,24 @@ describe("signal display helpers", () => {
   it("normalizes supervisor support reason for leader viewers", () => {
     expect(signalReasonForViewer("Líder pediu apoio da supervisão", { role: UserRole.LEADER })).toBe("Apoio solicitado à supervisão");
     expect(signalReasonForViewer("Líder pediu apoio da supervisão", { role: UserRole.SUPERVISOR })).toBe("Líder pediu apoio da supervisão");
+  });
+
+
+  it("uses contextual escalation detail before raw reason", () => {
+    const supportSignal = {
+      reason: "Líder pediu apoio da supervisão",
+      severity: SignalSeverity.ATTENTION,
+      assignedTo: { role: UserRole.SUPERVISOR },
+    };
+    const pastoralSignal = {
+      reason: "Faltas consecutivas",
+      severity: SignalSeverity.ATTENTION,
+      assignedTo: { role: UserRole.PASTOR },
+    };
+
+    expect(signalDetailForViewer(supportSignal, { role: UserRole.SUPERVISOR })).toBe("Essa célula pediu apoio da supervisão.");
+    expect(signalDetailForViewer(supportSignal, { role: UserRole.LEADER })).toBe("Apoio solicitado à supervisão.");
+    expect(signalDetailForViewer(pastoralSignal, { role: UserRole.PASTOR })).toBe("Encaminhado ao cuidado pastoral.");
+    expect(signalDetailForViewer(pastoralSignal, { role: UserRole.LEADER })).toBe("Encaminhado ao pastor.");
   });
 });

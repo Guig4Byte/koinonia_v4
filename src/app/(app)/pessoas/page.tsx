@@ -1,54 +1,17 @@
 import { redirect } from "next/navigation";
 import { MembershipRole, PersonStatus, SignalSeverity, UserRole } from "../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
-import { InfoCard, PastoralListSection, PersonMiniCard, PersonSignalCard, SectionTitle } from "@/components/cards";
+import { InfoCard, PersonMiniCard, SectionTitle } from "@/components/cards";
+import { InCareSection, PastoralSignalSection } from "@/components/pastoral-list-cards";
 import { SearchBox } from "@/components/search-box";
 import { getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "@/features/permissions/permissions";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
-import { signalBadgeForViewer, signalReasonForViewer } from "@/features/signals/display";
-import { isSupportRequest, splitPastoralSections } from "@/features/signals/sections";
+import { splitPastoralSections } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 import { initials } from "@/lib/text";
 
-const SECTION_LIMIT = 4;
 const MEMBER_LIST_LIMIT = 24;
-
-type PersonSignalListItem = {
-  id: string;
-  personId: string;
-  reason: string;
-  severity: SignalSeverity;
-  assignedToId?: string | null;
-  assignedTo?: { role: UserRole } | null;
-  person: { id: string; fullName: string };
-  group?: { name: string; leader?: { name: string | null } | null } | null;
-};
-
-function renderSignalCards(
-  signals: PersonSignalListItem[],
-  user: { id: string; role: UserRole },
-  ctaLabelForSupport = "Abrir apoio",
-) {
-  return signals.map((signal) => {
-    const badge = signalBadgeForViewer(signal, user);
-
-    return (
-      <PersonSignalCard
-        key={signal.id}
-        initials={initials(signal.person.fullName)}
-        name={signal.person.fullName}
-        detailHref={`/pessoas/${signal.person.id}`}
-        context={`${signal.group?.name ?? "Sem célula"} · ${signal.group?.leader?.name ?? "Sem líder"}`}
-        reason={signalReasonForViewer(signal.reason, user)}
-        severity={signal.severity === "URGENT" ? "risk" : "warn"}
-        badgeLabel={badge.label}
-        badgeTone={badge.tone}
-        ctaLabel={isSupportRequest(signal, user) ? ctaLabelForSupport : "Abrir pessoa"}
-      />
-    );
-  });
-}
 
 export default async function PeoplePage() {
   const user = await getCurrentUser();
@@ -175,17 +138,7 @@ export default async function PeoplePage() {
       ? "Nenhum caso pastoral urgente ou encaminhado agora. Use a busca para consultar uma pessoa específica."
       : "Nenhuma pessoa em atenção agora.";
 
-  const renderInCareLinks = (people: typeof scopedInCarePeople) => people.map((person) => (
-    <PersonMiniCard
-      key={person.id}
-      href={`/pessoas/${person.id}`}
-      initials={initials(person.fullName)}
-      name={person.fullName}
-      context={person.memberships[0]?.group.name ?? "Sem célula"}
-      badgeLabel="Em cuidado"
-      badgeTone="care"
-    />
-  ));
+
 
   return (
     <AppShell
@@ -199,45 +152,40 @@ export default async function PeoplePage() {
     >
       <SearchBox placeholder={searchPlaceholder} />
 
-      <PastoralListSection
+      <PastoralSignalSection
         title="Irmãos que precisam de um olhar especial"
         detail="Urgentes ou encaminhados ao pastor aparecem primeiro."
         emptyMessage={emptyAttentionMessage}
-        hiddenChildren={renderSignalCards(urgentSignals.slice(SECTION_LIMIT), user)}
-      >
-        {renderSignalCards(urgentSignals.slice(0, SECTION_LIMIT), user)}
-      </PastoralListSection>
+        signals={urgentSignals}
+        viewer={user}
+      />
 
       {!isPastoralOverview ? (
         <>
-          <PastoralListSection
+          <PastoralSignalSection
             title="Pedidos de apoio"
             detail="Casos trazidos para apoio de supervisão, sem virar obrigação administrativa."
             emptyMessage="Nenhum pedido de apoio agora."
-            hiddenChildren={renderSignalCards(supportSignals.slice(SECTION_LIMIT), user)}
-          >
-            {renderSignalCards(supportSignals.slice(0, SECTION_LIMIT), user)}
-          </PastoralListSection>
+            signals={supportSignals}
+            viewer={user}
+          />
 
-          <PastoralListSection
+          <PastoralSignalSection
             title="Acompanhar de perto"
             detail="Atenções locais que merecem contato simples."
             emptyMessage="Nenhuma outra pessoa em atenção agora."
-            hiddenChildren={renderSignalCards(attentionSignals.slice(SECTION_LIMIT), user)}
-          >
-            {renderSignalCards(attentionSignals.slice(0, SECTION_LIMIT), user)}
-          </PastoralListSection>
+            signals={attentionSignals}
+            viewer={user}
+          />
         </>
       ) : null}
 
-      <PastoralListSection
+      <InCareSection
         title={isPastoralOverview ? "Acolhidos em cuidado pastoral" : "Acolhidos em cuidado"}
         detail={isPastoralOverview ? "Pessoas que receberam cuidado pastoral e seguem no radar." : "Pessoas que já receberam cuidado e seguem no radar."}
         emptyMessage={isPastoralOverview ? "Nenhuma pessoa em cuidado pastoral agora." : "Nenhuma pessoa em cuidado agora."}
-        hiddenChildren={renderInCareLinks(scopedInCarePeople.slice(SECTION_LIMIT))}
-      >
-        {renderInCareLinks(scopedInCarePeople.slice(0, SECTION_LIMIT))}
-      </PastoralListSection>
+        people={scopedInCarePeople}
+      />
 
       {isLeader ? (
         <>

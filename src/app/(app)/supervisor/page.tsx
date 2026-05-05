@@ -1,16 +1,13 @@
 import { AppShell } from "@/components/app-shell";
-import { PastoralListSection, PersonMiniCard, PersonSignalCard, PulseCard } from "@/components/cards";
+import { PulseCard } from "@/components/cards";
+import { InCareSection, PastoralSignalSection } from "@/components/pastoral-list-cards";
 import { SearchBox } from "@/components/search-box";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { canUseSupervisorDashboard } from "@/features/permissions/permissions";
-import { signalBadgeForViewer } from "@/features/signals/display";
+import { signalDetailForViewer } from "@/features/signals/display";
 import { splitPastoralSections } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { redirect } from "next/navigation";
-import { initials } from "@/lib/text";
-
-const SECTION_LIMIT = 4;
-
 
 export default async function SupervisorPage() {
   const user = await getCurrentUser();
@@ -49,39 +46,8 @@ export default async function SupervisorPage() {
     : firstSupportRequest
       ? `${firstSupportRequest.person.fullName} · ${firstSupportRequest.group.name}: comece por este cuidado e acompanhe os líderes com calma.`
       : firstSignal
-        ? `${firstSignal.group.name}: ${firstSignal.reason}`
+        ? `${firstSignal.group.name}: ${signalDetailForViewer(firstSignal, user)}`
         : "Continue perto dos líderes e das células, sem transformar acompanhamento em cobrança.";
-
-  const renderSignalCards = (signals: typeof dashboard.attentionPeople, ctaLabel = "Abrir pessoa") => signals.map((signal) => {
-    const badge = signalBadgeForViewer(signal, user);
-
-    return (
-      <PersonSignalCard
-        key={signal.id}
-        initials={initials(signal.person.fullName)}
-        name={signal.person.fullName}
-        detailHref={`/pessoas/${signal.person.id}`}
-        context={signal.group.name}
-        reason={signal.reason}
-        severity={signal.severity === "URGENT" ? "risk" : "warn"}
-        badgeLabel={badge.label}
-        badgeTone={badge.tone}
-        ctaLabel={ctaLabel}
-      />
-    );
-  });
-
-  const renderInCareLinks = (people: typeof inCarePeople) => people.map((person) => (
-    <PersonMiniCard
-      key={person.id}
-      href={`/pessoas/${person.id}`}
-      initials={initials(person.fullName)}
-      name={person.fullName}
-      context={person.groupName}
-      badgeLabel="Em cuidado"
-      badgeTone="care"
-    />
-  ));
 
   return (
     <AppShell
@@ -100,41 +66,40 @@ export default async function SupervisorPage() {
         tone={firstUrgentSignal || firstSupportRequest || firstSignal ? "attention" : "ok"}
       />
 
-      <PastoralListSection
+      <PastoralSignalSection
         title="Irmãos que precisam de um olhar especial"
         detail="Urgentes ou encaminhados ao pastor aparecem antes dos demais."
         emptyMessage="Nenhum caso urgente ou encaminhado agora."
-        hiddenChildren={renderSignalCards(urgentSignals.slice(SECTION_LIMIT))}
-      >
-        {renderSignalCards(urgentSignals.slice(0, SECTION_LIMIT))}
-      </PastoralListSection>
+        signals={urgentSignals}
+        viewer={user}
+        contextForSignal={(signal) => signal.group?.name ?? "Sem célula"}
+      />
 
-      <PastoralListSection
+      <PastoralSignalSection
         title="Pedidos de apoio"
         detail="Pedidos trazidos pelos líderes aparecem primeiro, para você apoiar sem virar operador da célula."
         emptyMessage="Nenhum líder pediu apoio agora."
-        hiddenChildren={renderSignalCards(supportSignals.slice(SECTION_LIMIT), "Abrir apoio")}
-      >
-        {renderSignalCards(supportSignals.slice(0, SECTION_LIMIT), "Abrir apoio")}
-      </PastoralListSection>
+        signals={supportSignals}
+        viewer={user}
+        contextForSignal={(signal) => signal.group?.name ?? "Sem célula"}
+        ctaLabelForSignal={() => "Abrir apoio"}
+      />
 
-      <PastoralListSection
+      <PastoralSignalSection
         title="Acompanhar de perto"
         detail="Atenções locais das células supervisionadas."
         emptyMessage="Nenhum outro caso em atenção agora."
-        hiddenChildren={renderSignalCards(attentionSignals.slice(SECTION_LIMIT))}
-      >
-        {renderSignalCards(attentionSignals.slice(0, SECTION_LIMIT))}
-      </PastoralListSection>
+        signals={attentionSignals}
+        viewer={user}
+        contextForSignal={(signal) => signal.group?.name ?? "Sem célula"}
+      />
 
-      <PastoralListSection
+      <InCareSection
         title="Acolhidos em cuidado"
         detail="Pessoas que já receberam cuidado e seguem no radar."
         emptyMessage="Nenhuma pessoa em cuidado agora."
-        hiddenChildren={renderInCareLinks(inCarePeople.slice(SECTION_LIMIT))}
-      >
-        {renderInCareLinks(inCarePeople.slice(0, SECTION_LIMIT))}
-      </PastoralListSection>
+        people={inCarePeople}
+      />
     </AppShell>
   );
 }
