@@ -234,6 +234,7 @@ export function PersonMiniCard({
   badgeTone = "neutral",
   cardTone,
   ctaLabel = "Abrir pessoa",
+  compact = false,
 }: {
   href: string;
   initials: string;
@@ -243,15 +244,25 @@ export function PersonMiniCard({
   badgeTone?: SignalBadgeTone;
   cardTone?: CardPriorityTone;
   ctaLabel?: string;
+  compact?: boolean;
 }) {
   return (
     <Link
       href={href}
       aria-label={`${ctaLabel}: ${name}`}
-      className={cn("group flex min-h-[4.25rem] items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-3 shadow-card transition active:scale-[0.99]", priorityCardClass(cardTone ?? badgeTone))}
+      className={cn(
+        "group flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] shadow-card transition active:scale-[0.99]",
+        compact ? "min-h-[3.75rem] px-3 py-2.5" : "min-h-[4.25rem] px-3 py-3",
+        priorityCardClass(cardTone ?? badgeTone),
+      )}
     >
       <span className="flex min-w-0 items-center gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-avatar-bg)] text-xs font-bold text-[var(--color-avatar-text)]">
+        <span
+          className={cn(
+            "flex shrink-0 items-center justify-center rounded-full bg-[var(--color-avatar-bg)] font-bold text-[var(--color-avatar-text)]",
+            compact ? "h-8 w-8 text-[11px]" : "h-9 w-9 text-xs",
+          )}
+        >
           {initials}
         </span>
         <span className="min-w-0">
@@ -260,7 +271,7 @@ export function PersonMiniCard({
         </span>
       </span>
       <span className="flex shrink-0 items-center gap-2">
-        {badgeLabel ? <Badge tone={badgeTone}>{badgeLabel}</Badge> : null}
+        {badgeLabel ? <Badge tone={badgeTone} className={compact ? "px-2 py-0.5 text-[11px]" : undefined}>{badgeLabel}</Badge> : null}
         <span className="text-sm font-bold text-[var(--color-brand)] opacity-60 transition group-active:translate-x-0.5" aria-hidden="true">
           →
         </span>

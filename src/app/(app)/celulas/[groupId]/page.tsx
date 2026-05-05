@@ -259,6 +259,13 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
       return left.name.localeCompare(right.name, "pt-BR");
     });
   const visibleMembers = members.filter((member) => memberMatchesFilter(member, activeMembersFilter));
+  const priorityMembers = members.filter((member) => member.priorityRank <= 4);
+  const regularMembers = activeMembersFilter === "todos"
+    ? members.filter((member) => member.priorityRank >= 5)
+    : visibleMembers;
+  const membersSectionDetail = activeMembersFilter === "todos"
+    ? `${regularMembers.length} ${regularMembers.length === 1 ? "membro ativo" : "membros ativos"}`
+    : `${visibleMembers.length} ${visibleMembers.length === 1 ? "pessoa neste recorte" : "pessoas neste recorte"}`;
 
   return (
     <AppShell
@@ -340,8 +347,37 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
           </section>
         ) : null}
 
+        {activeMembersFilter === "todos" && priorityMembers.length > 0 ? (
+          <section>
+            <SectionTitle detail={`${priorityMembers.length} ${priorityMembers.length === 1 ? "pessoa no radar" : "pessoas no radar"}`}>
+              Quem merece proximidade
+            </SectionTitle>
+            <div className="group-detail-list">
+              <ProgressiveList
+                initialCount={4}
+                step={4}
+                moreLabel="Ver mais pessoas em atenção"
+                lessLabel="Mostrar menos pessoas em atenção"
+              >
+                {priorityMembers.map((member) => (
+                  <PersonMiniCard
+                    key={member.membershipId}
+                    href={`/pessoas/${member.personId}`}
+                    initials={member.initials}
+                    name={member.name}
+                    context={member.subtitle}
+                    badgeLabel={member.badgeLabel}
+                    badgeTone={member.badgeTone}
+                    cardTone={member.cardTone}
+                  />
+                ))}
+              </ProgressiveList>
+            </div>
+          </section>
+        ) : null}
+
         <section>
-          <SectionTitle detail={`${group.memberships.length} ${group.memberships.length === 1 ? "membro" : "membros"} · ${attentionPeople.length} em atenção`}>Membros</SectionTitle>
+          <SectionTitle detail={membersSectionDetail}>Membros</SectionTitle>
           <div className="group-member-filter-row mb-3">
             {MEMBERS_FILTERS.map((option) => {
               const active = option.value === activeMembersFilter;
@@ -360,25 +396,26 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
           </div>
           <div className="group-detail-list">
             <ProgressiveList
-              initialCount={6}
-              step={6}
+              initialCount={activeMembersFilter === "todos" ? 4 : 6}
+              step={activeMembersFilter === "todos" ? 4 : 6}
               moreLabel="Ver mais membros"
               lessLabel="Mostrar menos membros"
             >
-              {visibleMembers.map((member) => (
-              <PersonMiniCard
-                key={member.membershipId}
-                href={`/pessoas/${member.personId}`}
-                initials={member.initials}
-                name={member.name}
-                context={member.subtitle}
-                badgeLabel={member.badgeLabel}
-                badgeTone={member.badgeTone}
-                cardTone={member.cardTone}
-              />
+              {regularMembers.map((member) => (
+                <PersonMiniCard
+                  key={member.membershipId}
+                  href={`/pessoas/${member.personId}`}
+                  initials={member.initials}
+                  name={member.name}
+                  context={activeMembersFilter === "todos" ? undefined : member.subtitle}
+                  badgeLabel={member.badgeLabel}
+                  badgeTone={member.badgeTone}
+                  cardTone={activeMembersFilter === "todos" ? "muted" : member.cardTone}
+                  compact={activeMembersFilter === "todos" && member.priorityRank >= 5}
+                />
               ))}
             </ProgressiveList>
-            {visibleMembers.length === 0 ? (
+            {regularMembers.length === 0 ? (
               <EmptyState compact>Nenhum membro encontrado nesse recorte.</EmptyState>
             ) : null}
           </div>

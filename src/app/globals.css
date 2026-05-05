@@ -1002,6 +1002,7 @@ a {
 .group-detail-page {
   display: flex;
   flex-direction: column;
+  padding-bottom: 18px;
 }
 
 .group-detail-hero {
