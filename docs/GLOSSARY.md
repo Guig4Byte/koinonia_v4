@@ -1,6 +1,6 @@
 # Glossário — Koinonia Lite
 
-Este documento define vocabulário e rótulos oficiais do MVP. Para escopo e fluxos, consulte `PRODUCT.md`. Para implementação, consulte `ARCHITECTURE.md`.
+Este documento define **vocabulário, rótulos e CTAs oficiais do MVP**. Para escopo e comportamento, use `PRODUCT.md`. Para implementação, use `ARCHITECTURE.md`.
 
 ## Regra de linguagem
 
@@ -18,7 +18,7 @@ Se não ajudar, simplifique.
 
 Centro operacional do Koinonia.
 
-Use `Pessoa`, `Pessoas`, `Membros` quando o líder olha a própria célula, e `Quem precisa de cuidado`.
+Use `Pessoa`, `Pessoas`, `Membros` quando o líder olha a própria célula, e `Quem precisa de cuidado` quando a tela destaca atenção.
 
 Evite `lead`, `cliente` e `contato comercial`.
 
@@ -28,7 +28,7 @@ Comunidade local onde presença, vínculo e cuidado acontecem. Use `Célula` na 
 
 ### Liderança
 
-Forma pastoral de se referir a quem conduz uma célula. Use `Liderança` em cards e contexto de célula, porque a célula pode ser conduzida por uma pessoa, casal ou composição compartilhada.
+Forma pastoral de se referir a quem conduz uma célula. Use `Liderança` em cards e contexto de célula.
 
 Evite fixar a UI em `Líder` quando o contexto for a responsabilidade da célula como um todo.
 
@@ -44,21 +44,23 @@ Registro de quem esteve, faltou ou justificou.
 
 Use `Presença`, `Ritmo de presença`, `Presença pendente`, `Presença registrada`, `Registrar presença`, `Presença da semana`, `Presença recente`, `Salvar presença`, `Salvar ajuste` e `Ver resumo`.
 
-Para eventos, use `Agendado` quando o encontro ainda não começou e `Presença ainda não registrada` quando a presença depende do líder, mas o usuário atual apenas acompanha.
+Para eventos:
+
+- `Agendado`: encontro ainda não começou;
+- `Presença pendente`: encontro já começou e o líder pode registrar;
+- `Aguardando registro`: encontro já começou sem presença registrada para quem apenas acompanha.
 
 Evite `controle de presença` e `fiscalização`.
 
 ### Sem registro
 
-Ausência real de dado de presença.
-
-Use quando não há presença registrada suficiente para calcular percentual. Não mostre `0%` nesse caso.
+Ausência real de dado de presença. Use quando não há presença registrada suficiente para calcular percentual. Não mostre `0%` nesse caso.
 
 ### Sem presença recente
 
-Estado de célula quando ainda não há presença recente registrada para leitura pastoral. Isso não é risco pastoral automático e não deve entrar como presença baixa.
+Estado de célula quando ainda não há presença recente registrada para leitura pastoral. Isso não é risco automático e não deve entrar como presença baixa.
 
-Use a frase explicativa:
+Frase explicativa recomendada:
 
 ```txt
 Ainda não há presença recente registrada. Talvez o encontro tenha acontecido, mas a presença ainda não foi marcada.
@@ -156,13 +158,19 @@ Evite `task`, `workflow`, `chamado`, `ticket` e `SLA`.
 
 Leitura curta e orientada à ação. Use `Visão` em vez de `Dashboard` na UI.
 
+### Membros
+
+Rótulo da aba `/pessoas` para líder. Use quando a tela mostra pessoas da própria célula.
+
+### Células
+
+Rótulo da aba do supervisor. Use para a superfície de células supervisionadas.
+
 ### Equipe
 
-Estrutura pastoral de supervisores, liderança e células. Use para mostrar quem acompanha quais células e onde a estrutura de cuidado precisa de atenção.
+Rótulo da aba do pastor/admin. Use para supervisores, liderança e células.
 
 Evite transformar `Equipe` em gestão pesada de usuários, ranking de supervisores ou painel de desempenho.
-
-Na lista de supervisores, use `Ver células` / `Mostrar menos` para revelar células acompanhadas sem repetir todos os status no card principal.
 
 ### Login
 
@@ -204,16 +212,16 @@ Tema não é configuração pastoral, não muda escopo e não precisa de tela ad
 | `Cuidado realizado` | contato/cuidado registrado | azul/care |
 | `Informativo` | sinal `INFO`, quando exibido | informativo/neutro |
 | `Sem registro` | ausência de dado de presença | neutro |
-| `Sem presença recente` | célula sem presença recente registrada para leitura pastoral | neutro |
+| `Sem presença recente` | célula sem presença recente registrada | neutro |
 | `Presença baixa` | presença registrada abaixo do patamar esperado | âmbar/vermelho conforme percentual |
 | `Agendado` | evento futuro | informativo/neutro |
 | `Presença pendente` | evento já iniciado em que o líder pode registrar presença | âmbar |
-| `Presença ainda não registrada` | evento já iniciado sem presença registrada para quem apenas acompanha | âmbar |
+| `Aguardando registro` | evento já iniciado sem presença registrada para quem apenas acompanha | âmbar |
 | `Presença registrada` | evento com presença salva | verde |
 
 Não rebaixar `Urgente` para `Em atenção`. O contexto pode mudar a mensagem, mas a severidade continua sendo severidade.
 
-## Seções pastorais
+## Seções oficiais
 
 | Seção | Conteúdo |
 | --- | --- |

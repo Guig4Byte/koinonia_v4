@@ -1,6 +1,6 @@
 # Produto — Koinonia Lite
 
-Este documento é a fonte oficial do MVP atual: visão, escopo, papéis e fluxos. Para vocabulário, use `docs/GLOSSARY.md`. Para implementação, use `docs/ARCHITECTURE.md`.
+Este documento define **o comportamento esperado do MVP atual**: visão, escopo, papéis, superfícies e fluxos. Para vocabulário, use `GLOSSARY.md`. Para implementação, use `ARCHITECTURE.md`.
 
 ## Visão
 
@@ -18,7 +18,7 @@ Pergunta central:
 Quem precisa de cuidado agora?
 ```
 
-Pergunta de corte para novas funcionalidades:
+Pergunta de corte:
 
 ```txt
 Isso ajuda alguém a cuidar melhor de uma pessoa com menos esforço?
@@ -34,25 +34,22 @@ Evento -> Presença -> Atenção -> Contato -> Cuidado
 
 Presença não é fiscalização. Sinal não é tarefa. Cuidado não é prontuário.
 
-## Escopo atual do MVP
+## Escopo atual
 
 Inclui:
 
-- autenticação real simples por e-mail e senha;
+- autenticação simples por e-mail e senha;
 - tema local no login e no app;
-- pessoas;
-- células;
-- eventos de célula;
-- check-in simples;
-- visitantes no check-in;
+- pessoas, células e eventos de célula;
+- check-in do líder, com visitantes;
 - métricas de presença com distinção entre dado real e ausência de registro;
 - sinais por pessoa;
-- escalonamento mínimo;
+- escalonamento mínimo por atribuição do sinal;
 - busca de pessoa;
-- detalhe simples de pessoa, célula e evento;
 - visão por papel;
 - equipe do pastor/admin;
 - células supervisionadas;
+- detalhe simples de pessoa, célula e evento;
 - contato/cuidado com anotação opcional.
 
 Não inclui:
@@ -69,28 +66,6 @@ Não inclui:
 - área rica do membro;
 - formulários longos;
 - calendário amplo de igreja.
-
-## Autenticação como produto
-
-Autenticação existe para garantir contexto e escopo, não para criar um módulo administrativo.
-
-Fluxo atual:
-
-```txt
-/login -> e-mail e senha -> sessão -> visão do papel
-```
-
-Após login:
-
-| Papel | Entrada |
-| --- | --- |
-| Pastor/Admin | `/pastor` |
-| Supervisor | `/supervisor` |
-| Líder | `/lider` |
-
-Não existe troca manual de perfil. O papel vem do usuário autenticado no banco.
-
-A tela de login deve continuar simples: marca, ícone pastoral, tema, e-mail, senha e ação de entrada. Não mostrar credenciais de desenvolvimento na UI final.
 
 ## Papéis
 
@@ -114,7 +89,7 @@ Não deve registrar check-in pelo líder, ver dados fora do escopo ou virar oper
 
 ### Pastor/Admin
 
-Pode ver saúde geral, presença por célula, células sem presença recente ou com presença baixa registrada, casos graves/urgentes/encaminhados, buscar pessoas dentro da igreja e abrir células para contexto local.
+Pode ver saúde geral, equipe, presença por célula, células sem presença recente ou com presença baixa registrada, casos graves/urgentes/encaminhados, buscar pessoas dentro da igreja e abrir células para contexto local.
 
 Não deve registrar check-in, receber toda atenção comum como fila inicial, virar central de tickets ou transformar a visão macro em relatório burocrático.
 
@@ -122,9 +97,8 @@ Não deve registrar check-in, receber toda atenção comum como fila inicial, vi
 
 Há diferença entre **poder acessar** e **receber por padrão**.
 
-- Pastor/admin têm escopo amplo para busca e leitura autorizada.
-- A visão inicial do pastor prioriza saúde geral e casos pastorais.
-- Atenção local aparece quando pastor abre uma célula ou busca uma pessoa.
+- Pastor/admin têm escopo amplo para busca e leitura autorizada, mas a visão inicial prioriza saúde geral e casos pastorais.
+- Atenção local aparece para pastor/admin quando há contexto explícito, como célula ou pessoa aberta.
 - Supervisor vê o escopo supervisionado.
 - Líder vê a própria célula.
 - Grupos inativos não entram na superfície padrão, eventos, check-in ou histórico visível.
@@ -134,6 +108,42 @@ Visão inicial do pastor = saúde geral + casos pastorais.
 Detalhe de célula = casos pastorais + atenções locais contextualizadas.
 Busca = acesso explícito a pessoa dentro do escopo.
 ```
+
+## Navegação e superfícies
+
+| Papel | Visão | Superfície estrutural | Eventos |
+| --- | --- | --- | --- |
+| Líder | `/lider` | `/pessoas` como `Membros` | `/eventos` |
+| Supervisor | `/supervisor` | `/celulas` | `/eventos` |
+| Pastor/Admin | `/pastor` | `/equipe` | `/eventos` |
+
+### `/lider`
+
+Prioriza quem merece atenção na célula, check-in/evento relevante, membros da própria célula e ações simples para abrir pessoa e registrar cuidado.
+
+### `/supervisor`
+
+Prioriza pedidos de apoio recebidos, células acompanhadas, presença recente e casos relevantes sob supervisão. Evita duplicar a mesma pessoa em várias seções.
+
+### `/pastor`
+
+Prioriza irmãos que precisam de um olhar especial, saúde geral das células, baixa presença/ausência de dado e busca de pessoa. Não lista toda atenção comum como fila padrão.
+
+### `/pessoas`
+
+Na navegação atual, é a superfície de **membros do líder**. Pastor/admin são direcionados para `/equipe`; supervisores são direcionados para `/celulas`.
+
+### `/celulas`
+
+Superfície do supervisor para ver células por prioridade pastoral. Deve mostrar rapidamente quem pede cuidado próximo, onde há presença em atenção e quais células estão estáveis.
+
+### `/equipe`
+
+Superfície do pastor/admin para entender supervisores, células acompanhadas e células sem supervisor. Usa resumo compacto, busca, filtros e cards expansíveis para evitar gestão pesada de usuários.
+
+### `/eventos`
+
+Lista eventos dentro do escopo visível. O líder vê `Registrar presença` apenas quando pode salvar o check-in. Pastor e supervisor acompanham o estado do encontro sem assumir o registro.
 
 ## Seções pastorais
 
@@ -151,14 +161,18 @@ Regras:
 - mostrar até 4 registros por seção;
 - usar `Ver mais` quando houver excedente;
 - evitar duplicar a mesma pessoa na mesma superfície;
-- manter busca de pessoa para consulta explícita;
+- escolher a seção mais específica possível;
 - não criar fila, SLA ou tarefa a partir dessas seções.
+
+Prioridade entre sinais da mesma pessoa:
+
+```txt
+Urgente/Caso pastoral -> Pedido de apoio -> Atenção local -> severidade/recência
+```
 
 ## Estrutura de células e equipe
 
-`Equipe` mostra a estrutura pastoral para pastor/admin: supervisores, células acompanhadas e células sem supervisor. A lista de supervisores fica recolhida por padrão e as células aparecem sob demanda, para evitar rolagem longa no mobile.
-
-`Células` mostra a supervisão do usuário supervisor. As células são separadas por:
+`/celulas` separa células do supervisor por:
 
 | Seção | Conteúdo |
 | --- | --- |
@@ -166,22 +180,16 @@ Regras:
 | `Presença em atenção` | presença baixa registrada ou ausência de presença recente |
 | `Acompanhamento estável` | células sem sinal relevante no momento |
 
+`/equipe` mostra supervisores e células para pastor/admin. A lista de supervisores fica compacta e as células aparecem sob demanda.
+
 Regras:
 
 - ordenar primeiro por gravidade pastoral, depois por presença baixa ou ausência de dado, depois por nome;
 - limitar listas extensas com `Ver mais` / `Mostrar menos`;
-- mostrar status no card da célula, não duplicar o mesmo status no card do supervisor;
+- mostrar status no card da célula, não repetir todo status no card do supervisor;
 - manter busca e filtros como recorte, não como diretório administrativo.
 
-## Camadas de atenção
-
-| Camada | Quem vê por padrão | Quando usar | Exemplo de UI |
-| --- | --- | --- | --- |
-| Atenção local | Líder | cuidado cotidiano da célula | `Em atenção` |
-| Apoio de supervisão | Líder + supervisor | líder pediu ajuda ou há padrão/acúmulo | `Apoio solicitado`, `Pedido de apoio` |
-| Cuidado pastoral | Pastor/Admin | urgente, sensível, recorrente ou encaminhado | `Urgente`, `Caso pastoral` |
-
-## Escalonamento atual
+## Escalonamento
 
 O MVP usa `CareSignal.assignedToId` como mecanismo mínimo.
 
@@ -199,17 +207,17 @@ Check-in é exclusivo do líder da célula.
 
 Regras:
 
-- evento de hoje pendente tem prioridade;
+- evento de hoje pendente tem prioridade apenas depois de começar;
 - depois vem último evento realizado ou concluído editável;
 - evento futuro não deve ser acionável para check-in;
 - pastor/supervisor veem resumo somente leitura;
 - evento concluído pode ser corrigido pelo líder;
 - pessoa sem marcação explícita fica `Pendente`;
 - visitante não vira membro automaticamente;
-- visitante duplicado no mesmo evento deve ser bloqueado por nome normalizado.
-- no resumo somente leitura de presença registrada, ausentes, justificativas e pendências aparecem antes; presentes ficam recolhidos para reduzir rolagem no mobile.
+- visitante duplicado no mesmo evento deve ser bloqueado por nome normalizado;
+- no resumo somente leitura, ausentes, justificativas e pendências aparecem antes; presentes ficam recolhidos para reduzir rolagem no mobile.
 
-A lista de encontros deve priorizar presença pendente quando o encontro já começou e ainda não há registro. Eventos futuros são informativos, não pendência operacional.
+Eventos futuros são informativos, não pendência operacional.
 
 ## Métricas de presença
 
@@ -223,58 +231,7 @@ A métrica deve dar contexto pastoral, não ranking.
 - Percentuais de presença usam cor como leitura rápida: abaixo de 50% em risco, de 50% a 69% em atenção, 70% ou mais como presença positiva.
 - Tendência deve falar de participação ou ritmo, não de saúde espiritual da pessoa ou da célula.
 
-## Telas principais
-
-### Login
-
-Entrada pública com:
-
-- ícone pastoral;
-- nome Koinonia;
-- chamada curta de cuidado;
-- alternância de tema;
-- e-mail;
-- senha com opção de mostrar/ocultar;
-- mensagem curta de erro de credenciais quando necessário;
-- botão `Entrar`.
-
-Não exibir bloco de credenciais de desenvolvimento.
-
-### Visão do pastor/admin
-
-Prioriza irmãos que precisam de um olhar especial, saúde geral das células, pendências/baixa presença e busca de pessoa. Não lista toda atenção comum como fila padrão.
-
-### Visão do supervisor
-
-Prioriza pedidos de apoio recebidos, células acompanhadas, presença recente e casos relevantes sob supervisão. Evita duplicar a mesma pessoa em várias seções.
-
-### Equipe
-
-Superfície do pastor/admin para entender supervisores e células sem transformar a tela em gestão pesada de usuários. Usa resumo compacto, busca, filtros e cards de supervisores que expandem células apenas quando necessário.
-
-### Células supervisionadas
-
-Superfície do supervisor para ver células por prioridade pastoral. Deve mostrar rapidamente quem pede cuidado próximo, onde há presença em atenção e quais células estão estáveis.
-
-### Visão do líder
-
-Prioriza quem merece atenção na célula, check-in/evento relevante, membros da própria célula e ações simples para abrir pessoa e registrar cuidado.
-
-### Pessoas/Membros
-
-Para líder, funciona como lista de membros da célula. Para pastor/supervisor, é superfície pastoral com busca, não diretório completo por padrão.
-
-### Detalhe da célula
-
-Mostra contexto da célula, métricas compactas, encontro pendente quando existir, membros e últimos encontros registrados. A lista de membros começa com poucos itens e pode expandir; encontros do mês aparecem de 4 em 4.
-
-### Encontros
-
-Lista eventos dentro do escopo visível. A organização padrão mostra `Hoje` e `Próximos encontros`; presença não registrada e histórico ficam em `Consultar outros encontros`.
-
-O líder vê `Registrar presença` somente quando pode salvar o check-in. Pastor e supervisor acompanham o estado do encontro sem assumir o registro do líder.
-
-### Detalhe da pessoa
+## Detalhe da pessoa
 
 Responde:
 
@@ -292,12 +249,14 @@ Pessoa em atenção -> Abrir pessoa -> Já houve contato? -> confirmar -> anotar
 
 Regras:
 
-- `Já houve contato?` é pergunta, não ação destrutiva imediata.
-- `Salvar sem anotação` é válido.
-- Cuidado resolve sinais ativos dentro do escopo do usuário.
-- Se resolver todos os sinais ativos, a pessoa fica `Em cuidado`.
-- A pessoa só volta para `Ativo` por ação explícita.
-- O mesmo motivo não deve reabrir por recalcular presença; precisa haver nova evidência posterior.
+- `Já houve contato?` é pergunta, não ação destrutiva imediata;
+- `Salvar sem anotação` é válido;
+- cuidado resolve sinais ativos dentro do escopo do usuário;
+- pastor/admin resolvem apenas sinais sem grupo ou de grupo ativo;
+- líder/supervisor resolvem sinais dos grupos ativos visíveis;
+- se resolver todos os sinais ativos relevantes, a pessoa fica `Em cuidado`;
+- a pessoa só volta para `Ativo` por ação explícita;
+- o mesmo motivo não deve reabrir por recalcular presença; precisa haver nova evidência posterior.
 
 ## Busca
 
@@ -325,8 +284,4 @@ O tema aparece no login e no app autenticado. Ele não muda permissão, escopo o
 
 ## Linguagem e experiência
 
-Prefira `Visão`, `Pessoas`, `Membros`, `Em atenção`, `Em cuidado`, `Urgente`, `Cuidado realizado`, `Abrir pessoa` e `Já houve contato?`.
-
-Evite `task`, `ticket`, `SLA`, `workflow`, `lead`, `funil`, `incidente`, `painel executivo` e linguagem de cobrança.
-
-A experiência deve aliviar o usuário, não lembrá-lo de mais uma obrigação administrativa.
+A UI deve ser curta, humana e acionável. Use os rótulos e CTAs oficiais de `GLOSSARY.md`. Evite linguagem de cobrança ou operação corporativa.

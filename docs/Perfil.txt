@@ -67,11 +67,13 @@ Cada seção deve mostrar poucos itens, normalmente até 4, e oferecer `Ver mais
 
 A navegação deve caber no polegar e usar poucos destinos.
 
-A estrutura atual trabalha com:
+A estrutura atual tem três destinos por papel:
 
-- `Visão`;
-- `Pessoas` ou `Membros`, conforme o perfil;
-- `Eventos`.
+| Papel | Destinos |
+| --- | --- |
+| Líder | `Visão`, `Membros`, `Eventos` |
+| Supervisor | `Visão`, `Células`, `Eventos` |
+| Pastor/Admin | `Visão`, `Equipe`, `Eventos` |
 
 Não adicionar novas abas sem necessidade clara. Uma nova aba só entra se reduzir esforço real de cuidado.
 

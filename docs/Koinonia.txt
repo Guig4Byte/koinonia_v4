@@ -21,6 +21,7 @@ O MVP atual já possui:
 - sessão em cookie `HttpOnly`;
 - tema local no login e no app;
 - visão por papel;
+- `Membros` para líder, `Células` para supervisor e `Equipe` para pastor/admin;
 - busca de pessoa;
 - presença, atenção, contato e cuidado.
 
