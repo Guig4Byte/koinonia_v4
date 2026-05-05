@@ -93,13 +93,20 @@ export function canRegisterCare(user: PermissionUser, person: ScopedPerson | nul
   return canViewPerson(user, person);
 }
 
+export function getVisibleGroupIdsForPerson(user: PermissionUser, person: ScopedPerson | null | undefined) {
+  if (!person || person.churchId !== user.churchId) return [];
+
+  const visibleGroupIds = (person.memberships ?? [])
+    .filter(isActiveMembership)
+    .filter((membership) => canViewGroup(user, membership.group))
+    .map((membership) => membership.groupId ?? membership.group?.id)
+    .filter((groupId): groupId is string => Boolean(groupId));
+
+  return Array.from(new Set(visibleGroupIds));
+}
+
 export function getPrimaryVisibleGroupIdForPerson(user: PermissionUser, person: ScopedPerson | null | undefined) {
-  if (!person || person.churchId !== user.churchId) return undefined;
-
-  const memberships = (person.memberships ?? []).filter(isActiveMembership);
-  const visibleMembership = memberships.find((membership) => canViewGroup(user, membership.group));
-
-  return visibleMembership?.groupId ?? visibleMembership?.group?.id;
+  return getVisibleGroupIdsForPerson(user, person)[0];
 }
 
 export function getVisibleGroupWhere(user: PermissionUser): Prisma.SmallGroupWhereInput {

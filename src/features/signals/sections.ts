@@ -4,6 +4,7 @@ export type PastoralSectionKey = "urgent" | "support" | "attention" | "care";
 
 export type SectionSignalLike = {
   severity: SignalSeverity | string;
+  detectedAt?: Date;
   assignedToId?: string | null;
   assignedTo?: { role: UserRole | string } | null;
 };
@@ -40,6 +41,18 @@ export type PastoralSections<
   inCarePeople: TPerson[];
 };
 
+const sectionRank: Record<Exclude<PastoralSectionKey, "care">, number> = {
+  urgent: 1,
+  support: 2,
+  attention: 3,
+};
+
+const severityRank: Record<string, number> = {
+  [SignalSeverity.URGENT]: 3,
+  [SignalSeverity.ATTENTION]: 2,
+  [SignalSeverity.INFO]: 1,
+};
+
 export function isUrgentOrPastoralCase(signal: SectionSignalLike): boolean {
   return (
     signal.severity === SignalSeverity.URGENT ||
@@ -62,6 +75,52 @@ export function isInCarePerson(person: SectionPersonLike): boolean {
   return person.status === PersonStatus.COOLING_AWAY;
 }
 
+function signalSectionKey(signal: SectionSignalLike, viewer: SectionViewerLike): Exclude<PastoralSectionKey, "care"> {
+  if (isUrgentOrPastoralCase(signal)) return "urgent";
+  if (isSupportRequest(signal, viewer)) return "support";
+  return "attention";
+}
+
+function compareSignalsWithinSection(left: SectionSignalLike, right: SectionSignalLike): number {
+  const severityDifference = (severityRank[right.severity] ?? 0) - (severityRank[left.severity] ?? 0);
+  if (severityDifference !== 0) return severityDifference;
+
+  const leftTime = left.detectedAt?.getTime() ?? 0;
+  const rightTime = right.detectedAt?.getTime() ?? 0;
+  return rightTime - leftTime;
+}
+
+function compareSignalsForPastoralSection(
+  left: SectionSignalWithIdentity,
+  right: SectionSignalWithIdentity,
+  viewer: SectionViewerLike,
+): number {
+  const sectionDifference = sectionRank[signalSectionKey(left, viewer)] - sectionRank[signalSectionKey(right, viewer)];
+  if (sectionDifference !== 0) return sectionDifference;
+
+  const sectionOrderDifference = compareSignalsWithinSection(left, right);
+  if (sectionOrderDifference !== 0) return sectionOrderDifference;
+
+  return left.id.localeCompare(right.id, "pt-BR");
+}
+
+export function getPastoralSectionSignalsByPerson<TSignal extends SectionSignalWithIdentity>(
+  signals: TSignal[],
+  viewer: SectionViewerLike,
+): TSignal[] {
+  const selectedByPerson = new Map<string, TSignal>();
+
+  for (const signal of signals) {
+    const current = selectedByPerson.get(signal.personId);
+
+    if (!current || compareSignalsForPastoralSection(signal, current, viewer) < 0) {
+      selectedByPerson.set(signal.personId, signal);
+    }
+  }
+
+  return Array.from(selectedByPerson.values()).sort((left, right) => compareSignalsForPastoralSection(left, right, viewer));
+}
+
 export function splitPastoralSignals<TSignal extends SectionSignalWithIdentity>(
   signals: TSignal[],
   viewer: SectionViewerLike,
@@ -69,11 +128,10 @@ export function splitPastoralSignals<TSignal extends SectionSignalWithIdentity>(
   const urgentOrPastoralCases: TSignal[] = [];
   const supportRequests: TSignal[] = [];
   const localAttention: TSignal[] = [];
-  const activeAttentionPersonIds = new Set<string>();
+  const activeAttentionPersonIds = new Set(signals.map((signal) => signal.personId));
+  const selectedSignals = getPastoralSectionSignalsByPerson(signals, viewer);
 
-  for (const signal of signals) {
-    activeAttentionPersonIds.add(signal.personId);
-
+  for (const signal of selectedSignals) {
     if (isUrgentOrPastoralCase(signal)) {
       urgentOrPastoralCases.push(signal);
       continue;

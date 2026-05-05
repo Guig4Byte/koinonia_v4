@@ -1,6 +1,22 @@
 import { describe, expect, it } from "vitest";
 import { UserRole } from "../../generated/prisma/client";
-import { canCheckInEvent, canRegisterCare, canUseLeaderDashboard, canUsePastorDashboard, canUseSupervisorDashboard, canViewEvent, canViewGroup, getOpenSignalInActiveGroupWhere, getPrimaryVisibleGroupIdForPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "./permissions";
+import {
+  canCheckInEvent,
+  canRegisterCare,
+  canUseLeaderDashboard,
+  canUsePastorDashboard,
+  canUseSupervisorDashboard,
+  canViewEvent,
+  canViewGroup,
+  getOpenSignalInActiveGroupWhere,
+  getPrimaryVisibleGroupIdForPerson,
+  getVisibleCareTouchWhere,
+  getVisibleEventWhere,
+  getVisibleGroupIdsForPerson,
+  getVisibleMembershipWhere,
+  getVisibleOpenSignalWhere,
+  getVisiblePersonWhere,
+} from "./permissions";
 
 const pastor = { id: "pastor-1", churchId: "church-1", role: UserRole.PASTOR };
 const supervisor = { id: "supervisor-1", churchId: "church-1", role: UserRole.SUPERVISOR };
@@ -69,6 +85,31 @@ describe("permission helpers", () => {
     const futureEvent = { ...event, startsAt: new Date(Date.now() + 60 * 1000) };
 
     expect(canCheckInEvent(leader, futureEvent)).toBe(false);
+  });
+
+  it("returns visible active group ids when registering care", () => {
+    const secondGroup = {
+      id: "group-2",
+      churchId: "church-1",
+      isActive: true,
+      leaderUserId: "leader-2",
+      supervisorUserId: supervisor.id,
+    };
+    const inactiveGroup = { ...group, id: "group-inactive", isActive: false };
+    const multiGroupPerson = {
+      churchId: "church-1",
+      memberships: [
+        { groupId: group.id, leftAt: null, group },
+        { groupId: secondGroup.id, leftAt: null, group: secondGroup },
+        { groupId: inactiveGroup.id, leftAt: null, group: inactiveGroup },
+        { groupId: "group-left", leftAt: new Date(), group: { ...group, id: "group-left" } },
+      ],
+    };
+
+    expect(getVisibleGroupIdsForPerson(supervisor, multiGroupPerson)).toEqual([group.id, secondGroup.id]);
+    expect(getVisibleGroupIdsForPerson(leader, multiGroupPerson)).toEqual([group.id]);
+    expect(getVisibleGroupIdsForPerson(pastor, multiGroupPerson)).toEqual([group.id, secondGroup.id]);
+    expect(getVisibleGroupIdsForPerson(otherLeader, person)).toEqual([]);
   });
 
   it("returns the first visible active group when registering care", () => {

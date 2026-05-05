@@ -11,10 +11,10 @@ import { isPresenceRecordedEvent, summarizeEventPresence, summarizeEventsPresenc
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { canViewGroup } from "@/features/permissions/permissions";
-import { getPastoralSignalsByPerson, getPrimarySignalsByPerson } from "@/features/signals/attention";
+import { getPastoralSignalsByPerson } from "@/features/signals/attention";
 import { escalationStatusDetailForViewer } from "@/features/signals/escalation";
 import { groupAttentionLabel, signalReasonForViewer, type SignalBadge, type SignalBadgeTone } from "@/features/signals/display";
-import { isSupportRequest, isUrgentOrPastoralCase } from "@/features/signals/sections";
+import { getPastoralSectionSignalsByPerson, isSupportRequest, isUrgentOrPastoralCase } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { cn } from "@/lib/cn";
 import { formatShortDate, formatTime } from "@/lib/format";
@@ -171,7 +171,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
   const secondaryNavLabel = isPastorView ? "Equipe" : isSupervisorView ? "Células" : "Membros";
   const backHref = isPastorView || isSupervisorView ? secondaryNavHref : homeHref;
   const backLabel = isPastorView ? "Voltar para equipe" : isSupervisorView ? "Voltar para células" : "Voltar para visão";
-  const attentionPeople = getPrimarySignalsByPerson(group.signals);
+  const attentionPeople = getPastoralSectionSignalsByPerson(group.signals, user);
   const pastoralAttentionPeople = getPastoralSignalsByPerson(group.signals);
   const attentionSignalByPersonId = new Map(attentionPeople.map((signal) => [signal.personId, signal]));
   const supportRequests = attentionPeople.filter((signal) => isSupportRequest(signal, user));

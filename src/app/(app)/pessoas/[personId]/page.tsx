@@ -11,8 +11,7 @@ import { canRegisterCare, canViewGroup, canViewPerson, getVisibleCareTouchWhere,
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { canEscalateSignalToPastor, canRequestSupervisorSupport, escalationStatusDetailForViewer } from "@/features/signals/escalation";
 import { signalBadgeForViewer, signalReasonForViewer } from "@/features/signals/display";
-import { getPrimarySignalsByPerson } from "@/features/signals/attention";
-import { isUrgentOrPastoralCase } from "@/features/signals/sections";
+import { getPastoralSectionSignalsByPerson, isUrgentOrPastoralCase } from "@/features/signals/sections";
 import { summarizePresenceFromAttendances, summarizePresenceTrend } from "@/features/events/presence-summary";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
@@ -170,7 +169,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const canMarkActive = person.status === PersonStatus.COOLING_AWAY && canRegisterCare(user, person);
   const hasRiskSignal = signals.some(isUrgentOrPastoralCase);
   const navIndicator = hasRiskSignal ? "risk" : openSignalsCount > 0 ? "attention" : person.status === PersonStatus.COOLING_AWAY ? "care" : undefined;
-  const primarySignal = getPrimarySignalsByPerson(signals)[0];
+  const primarySignal = getPastoralSectionSignalsByPerson(signals, user)[0];
   const personBadge = personEffectiveBadgeForViewer(person, primarySignal, user);
   const monthPresence = summarizePresenceFromAttendances(monthAttendances);
   const previousMonthPresence = summarizePresenceFromAttendances(previousMonthAttendances);

@@ -5,7 +5,6 @@ import { InfoCard, PastoralListSection, PersonMiniCard, PersonSignalCard, Sectio
 import { SearchBox } from "@/components/search-box";
 import { getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "@/features/permissions/permissions";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
-import { getPastoralSignalsByPerson, getPrimarySignalsByPerson } from "@/features/signals/attention";
 import { signalBadgeForViewer, signalReasonForViewer } from "@/features/signals/display";
 import { isSupportRequest, splitPastoralSections } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -153,14 +152,16 @@ export default async function PeoplePage() {
     }),
   ]);
 
-  const attentionPeople = isPastoralOverview
-    ? getPastoralSignalsByPerson(openSignals)
-    : getPrimarySignalsByPerson(openSignals);
   const pastoralSections = splitPastoralSections({
-    signals: attentionPeople,
+    signals: openSignals,
     inCarePeople,
     viewer: user,
   });
+  const attentionPeople = [
+    ...pastoralSections.urgentOrPastoralCases,
+    ...pastoralSections.supportRequests,
+    ...pastoralSections.localAttention,
+  ];
   const urgentSignals = pastoralSections.urgentOrPastoralCases;
   const supportSignals = pastoralSections.supportRequests;
   const attentionSignals = pastoralSections.localAttention;

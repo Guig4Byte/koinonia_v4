@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PersonStatus, SignalStatus } from "@/generated/prisma/client";
 import { parseCarePayload, resolvedAttentionMessage } from "@/features/care/care-validation";
-import { canRegisterCare, getPrimaryVisibleGroupIdForPerson, hasWholeChurchScope } from "@/features/permissions/permissions";
+import {
+  canRegisterCare,
+  getOpenSignalInActiveGroupWhere,
+  getVisibleGroupIdsForPerson,
+  hasWholeChurchScope,
+} from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { readJsonBody } from "@/lib/json";
 import { prisma } from "@/lib/prisma";
@@ -30,9 +35,10 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pe
     return NextResponse.json({ error: "Sem permissão para registrar cuidado" }, { status: 403 });
   }
 
-  const visibleGroupId = getPrimaryVisibleGroupIdForPerson(user, person);
+  const visibleGroupIds = getVisibleGroupIdsForPerson(user, person);
+  const visibleGroupId = visibleGroupIds[0];
 
-  if (!hasWholeChurchScope(user) && !visibleGroupId) {
+  if (!hasWholeChurchScope(user) && visibleGroupIds.length === 0) {
     return NextResponse.json({ error: "Sem célula visível para registrar este cuidado" }, { status: 403 });
   }
 
@@ -52,20 +58,19 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pe
     let personStatusChangedToCare = false;
 
     if (body.resolveOpenSignals) {
+      const resolvableOpenSignalWhere = hasWholeChurchScope(user)
+        ? { ...getOpenSignalInActiveGroupWhere(user.churchId), personId }
+        : { churchId: user.churchId, personId, status: SignalStatus.OPEN, groupId: { in: visibleGroupIds } };
+
       const updateResult = await tx.careSignal.updateMany({
-        where: {
-          churchId: user.churchId,
-          personId,
-          status: SignalStatus.OPEN,
-          ...(hasWholeChurchScope(user) ? {} : { groupId: visibleGroupId }),
-        },
+        where: resolvableOpenSignalWhere,
         data: { status: SignalStatus.RESOLVED, resolvedAt: new Date() },
       });
 
       resolvedSignalsCount = updateResult.count;
 
       const remainingOpenSignals = await tx.careSignal.count({
-        where: { churchId: user.churchId, personId, status: SignalStatus.OPEN },
+        where: { ...getOpenSignalInActiveGroupWhere(user.churchId), personId },
       });
 
       if (remainingOpenSignals === 0) {

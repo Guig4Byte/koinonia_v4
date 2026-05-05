@@ -406,7 +406,7 @@ export function GroupCard({
   const resolvedBadgeTone: SignalBadgeTone = badgeTone ?? fallbackBadgeTone;
   const resolvedBadgeLabel = badgeLabel ?? fallbackBadgeLabel;
   const priorityTone = cardTone ?? (resolvedBadgeTone === "neutral" || resolvedBadgeTone === "ok" || resolvedBadgeTone === "info" ? undefined : resolvedBadgeTone);
-  const presenceText = hasPresenceData ? `${presenceRate}%` : "pendente";
+  const presenceText = hasPresenceData ? `${presenceRate}%` : "—";
   const presenceLabel = !hasPresenceData ? "Registro de presença" : presenceRate < 50 ? "Presença baixa" : "Presença recente";
   const presenceToneClass = !hasPresenceData
     ? "text-[var(--color-text-secondary)]"

@@ -3,7 +3,7 @@ import { MembershipRole, PersonStatus, SignalSeverity, SignalStatus, UserRole } 
 import { summarizeEventsPresence, summarizePresenceTrend, isPresenceRecordedEvent } from "@/features/events/presence-summary";
 import { canUsePastorDashboard, getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson } from "@/features/signals/attention";
-import { isSupportRequest } from "@/features/signals/sections";
+import { getPastoralSectionSignalsByPerson, isSupportRequest } from "@/features/signals/sections";
 import { prisma } from "@/lib/prisma";
 
 const pastoralSignalWhere = {
@@ -287,7 +287,7 @@ async function getGroupScopedDashboard(user: PermissionUser) {
   const events = groups.flatMap((group) => group.events);
   const recordedEvents = events.filter(isPresenceRecordedEvent);
   const signals = groups.flatMap((group) => group.signals.map((signal) => ({ ...signal, group })));
-  const attentionPeople = getPrimarySignalsByPerson(signals);
+  const attentionPeople = getPastoralSectionSignalsByPerson(signals, user);
   const supportRequests = attentionPeople.filter((signal) => isSupportRequest(signal, user));
   const delegatedToPastor = signals.filter((signal) => signal.assignedTo?.role === UserRole.PASTOR || signal.assignedTo?.role === UserRole.ADMIN);
   const presence = summarizeEventsPresence(recordedEvents);
@@ -304,8 +304,8 @@ async function getGroupScopedDashboard(user: PermissionUser) {
       hasPresenceData: groupPresence.hasPresenceData,
       presenceTrend: summarizePresenceTrend(groupPresence, previousGroupPresence),
       recordedEventsCount: recordedGroupEvents.length,
-      attentionCount: getPrimarySignalsByPerson(group.signals).length,
-      supportRequestsCount: getPrimarySignalsByPerson(group.signals).filter((signal) => isSupportRequest(signal, user)).length,
+      attentionCount: getPastoralSectionSignalsByPerson(group.signals, user).length,
+      supportRequestsCount: getPastoralSectionSignalsByPerson(group.signals, user).filter((signal) => isSupportRequest(signal, user)).length,
       inCareCount: group.memberships.filter((membership) => membership.person.status === PersonStatus.COOLING_AWAY).length,
     };
   });

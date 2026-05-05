@@ -46,12 +46,12 @@ export function signalBadgeForViewer(signal: SignalDisplayLike, viewer?: SignalD
     return { label: isPastoralViewer(viewer) ? "Caso pastoral" : "Encaminhado", tone: "risk" };
   }
 
-  if (isPastoralViewer(viewer)) {
-    return { label: "Atenção local", tone: "warn" };
-  }
-
   if (signal.severity === SignalSeverity.INFO) {
     return { label: "Informativo", tone: "info" };
+  }
+
+  if (isPastoralViewer(viewer)) {
+    return { label: "Atenção local", tone: "warn" };
   }
 
   return { label: "Em atenção", tone: "warn" };

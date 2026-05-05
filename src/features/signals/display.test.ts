@@ -24,6 +24,12 @@ describe("signal display helpers", () => {
     expect(signalBadgeForViewer({ severity: SignalSeverity.URGENT }, { role: UserRole.PASTOR })).toEqual({ label: "Urgente", tone: "risk" });
   });
 
+
+  it("shows informational signals as informative for pastoral viewers", () => {
+    expect(signalBadgeForViewer({ severity: SignalSeverity.INFO }, { role: UserRole.PASTOR })).toEqual({ label: "Informativo", tone: "info" });
+    expect(signalBadgeForViewer({ severity: SignalSeverity.INFO }, { role: UserRole.ADMIN })).toEqual({ label: "Informativo", tone: "info" });
+  });
+
   it("normalizes supervisor support reason for leader viewers", () => {
     expect(signalReasonForViewer("Líder pediu apoio da supervisão", { role: UserRole.LEADER })).toBe("Apoio solicitado à supervisão");
     expect(signalReasonForViewer("Líder pediu apoio da supervisão", { role: UserRole.SUPERVISOR })).toBe("Líder pediu apoio da supervisão");
