@@ -450,7 +450,8 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
                     context={member.subtitle}
                     badgeLabel={member.badgeLabel}
                     badgeTone={member.badgeTone}
-                    cardTone={member.cardTone}
+                    cardTone={member.priorityRank >= 5 ? "muted" : member.cardTone}
+                    compact={member.priorityRank >= 5}
                   />
                 ))}
               </ProgressiveList>
