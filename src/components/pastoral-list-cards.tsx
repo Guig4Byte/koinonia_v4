@@ -73,16 +73,6 @@ function pastoralSignalCards<TSignal extends PastoralSignalCardItem>({
   });
 }
 
-export function PastoralSignalCards<TSignal extends PastoralSignalCardItem>(props: {
-  signals: TSignal[];
-  viewer: PastoralViewer;
-  contextForSignal?: (signal: TSignal, viewer: PastoralViewer) => string;
-  reasonForSignal?: (signal: TSignal, viewer: PastoralViewer) => string | undefined;
-  ctaLabelForSignal?: (signal: TSignal, viewer: PastoralViewer) => string;
-}) {
-  return pastoralSignalCards(props);
-}
-
 export function PastoralSignalSection<TSignal extends PastoralSignalCardItem>({
   title,
   detail,
@@ -147,13 +137,6 @@ function inCarePersonCards<TPerson extends InCarePersonCardItem>({
       badgeTone="care"
     />
   ));
-}
-
-export function InCarePersonCards<TPerson extends InCarePersonCardItem>(props: {
-  people: TPerson[];
-  contextForPerson?: (person: TPerson) => string;
-}) {
-  return inCarePersonCards(props);
 }
 
 export function InCareSection<TPerson extends InCarePersonCardItem>({

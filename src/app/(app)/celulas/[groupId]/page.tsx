@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { CalendarCheck2, UsersRound } from "lucide-react";
 import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";

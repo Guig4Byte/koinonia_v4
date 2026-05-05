@@ -10,6 +10,7 @@ import { canUseSupervisorDashboard } from "@/features/permissions/permissions";
 import { groupAttentionLabel, type SignalBadge } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { cn } from "@/lib/cn";
+import { SignalSeverity, UserRole } from "@/generated/prisma/client";
 
 const SECTION_LIMIT = 4;
 const LOW_PRESENCE_THRESHOLD = 70;
@@ -52,15 +53,15 @@ function groupSearchText(group: SupervisorGroup) {
 }
 
 function urgentCount(group: SupervisorGroup) {
-  return group.signals.filter((signal) => signal.severity === "URGENT").length;
+  return group.signals.filter((signal) => signal.severity === SignalSeverity.URGENT).length;
 }
 
 function pastoralEscalatedCount(group: SupervisorGroup) {
-  return group.signals.filter((signal) => signal.assignedTo?.role === "PASTOR" || signal.assignedTo?.role === "ADMIN").length;
+  return group.signals.filter((signal) => signal.assignedTo?.role === UserRole.PASTOR || signal.assignedTo?.role === UserRole.ADMIN).length;
 }
 
 function riskCount(group: SupervisorGroup) {
-  return group.signals.filter((signal) => signal.severity === "URGENT" || signal.assignedTo?.role === "PASTOR" || signal.assignedTo?.role === "ADMIN").length;
+  return group.signals.filter((signal) => signal.severity === SignalSeverity.URGENT || signal.assignedTo?.role === UserRole.PASTOR || signal.assignedTo?.role === UserRole.ADMIN).length;
 }
 
 function hasLowPresence(group: SupervisorGroup) {
@@ -283,7 +284,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
   const user = await getCurrentUser();
 
   if (!canUseSupervisorDashboard(user)) {
-    redirect(user.role === "PASTOR" || user.role === "ADMIN" ? "/equipe" : user.role === "LEADER" ? "/pessoas" : "/");
+    redirect(user.role === UserRole.PASTOR || user.role === UserRole.ADMIN ? "/equipe" : user.role === UserRole.LEADER ? "/pessoas" : "/");
   }
 
   const params = searchParams ? await searchParams : {};

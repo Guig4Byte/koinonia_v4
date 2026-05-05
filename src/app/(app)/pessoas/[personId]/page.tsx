@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AttendanceStatus, CareKind, PersonStatus } from "../../../../generated/prisma/client";
+import { AttendanceStatus, CareKind, PersonStatus, UserRole } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole, homeHrefForRole, secondaryNavHrefForRole, secondaryNavLabelForRole } from "@/features/navigation/app-nav";
 import { CareActions } from "@/components/care-actions";
@@ -163,7 +163,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const hasCareTouch = careTouches.length > 0;
   const secondaryNavHref = secondaryNavHrefForRole(user.role);
   const secondaryNavLabel = secondaryNavLabelForRole(user.role);
-  const isLeader = user.role === "LEADER";
+  const isLeader = user.role === UserRole.LEADER;
   const backHref = isLeader ? secondaryNavHref : homeHref;
   const backLabel = isLeader ? secondaryNavLabel : "Visão";
   const canMarkActive = person.status === PersonStatus.COOLING_AWAY && canRegisterCare(user, person);

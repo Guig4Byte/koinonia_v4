@@ -102,42 +102,12 @@ export function ContextSummary({
   );
 }
 
-export function MetricRow({ metrics }: { metrics: Array<{ label: string; value: string; tone?: "ok" | "warn" | "risk" | "neutral" }> }) {
-  const toneClass = {
-    ok: "text-[var(--color-metric-presenca)]",
-    warn: "text-[var(--color-badge-atencao-text)]",
-    risk: "text-[var(--color-metric-atencoes)]",
-    neutral: "text-[var(--color-metric-visitantes)]",
-  };
-
-  return (
-    <section className="mb-5 grid grid-cols-3 gap-2">
-      {metrics.map((metric) => (
-        <div key={metric.label} className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 text-center shadow-card">
-          <p className={cn("text-2xl font-semibold", toneClass[metric.tone ?? "neutral"])}>{metric.value}</p>
-          <p className="mt-1 text-[11px] font-medium text-[var(--color-text-secondary)]">{metric.label}</p>
-        </div>
-      ))}
-    </section>
-  );
-}
-
 export function SectionTitle({ children, detail }: { children: ReactNode; detail?: string }) {
   return (
     <div className="mb-2 mt-6">
       <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">{children}</h2>
       {detail ? <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">{detail}</p> : null}
     </div>
-  );
-}
-
-export function ListMoreHint({ hiddenCount, label }: { hiddenCount: number; label: string }) {
-  if (hiddenCount <= 0) return null;
-
-  return (
-    <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 text-sm leading-relaxed text-[var(--color-text-secondary)] shadow-card">
-      Mais {hiddenCount} {hiddenCount === 1 ? "item" : "itens"}. {label}
-    </p>
   );
 }
 
@@ -444,42 +414,4 @@ export function GroupCard({
   );
 
   return href ? <Link href={href} className="block">{content}</Link> : content;
-}
-
-export function EventMacroCard({
-  title,
-  realized,
-  planned,
-  presenceRate,
-  visitors,
-  hasPresenceData = true,
-}: {
-  title: string;
-  realized: number;
-  planned: number;
-  presenceRate: number;
-  visitors: number;
-  hasPresenceData?: boolean;
-}) {
-  return (
-    <article className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
-      <p className="font-semibold text-[var(--color-text-primary)]">{title}</p>
-      <div className="mt-3 grid grid-cols-3 gap-2 text-center">
-        <div className="rounded-2xl border border-[var(--metric-card-border)] bg-[var(--metric-card-bg)] p-3 shadow-[var(--metric-card-shadow)]">
-          <p className="text-lg font-bold text-[var(--color-text-primary)]">{realized}/{planned}</p>
-          <p className="text-[11px] text-[var(--color-text-secondary)]">realizadas</p>
-        </div>
-        <div className="rounded-2xl border border-[var(--metric-card-border)] bg-[var(--metric-card-bg)] p-3 shadow-[var(--metric-card-shadow)]">
-          <p className="text-lg font-bold text-[var(--color-metric-presenca)]">
-            {hasPresenceData ? `${presenceRate}%` : "—"}
-          </p>
-          <p className="text-[11px] text-[var(--color-text-secondary)]">presença</p>
-        </div>
-        <div className="rounded-2xl border border-[var(--metric-card-border)] bg-[var(--metric-card-bg)] p-3 shadow-[var(--metric-card-shadow)]">
-          <p className="text-lg font-bold text-[var(--color-metric-visitantes)]">{visitors}</p>
-          <p className="text-[11px] text-[var(--color-text-secondary)]">visitantes</p>
-        </div>
-      </div>
-    </article>
-  );
 }
