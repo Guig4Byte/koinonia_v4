@@ -74,8 +74,8 @@ function readMembersFilter(value: string): MembersFilter {
 }
 
 function membersFilterHref(groupId: string, filter: MembersFilter) {
-  if (filter === "todos") return `/celulas/${groupId}`;
-  return `/celulas/${groupId}?membros=${filter}`;
+  if (filter === "todos") return `/celulas/${groupId}#membros`;
+  return `/celulas/${groupId}?membros=${filter}#membros`;
 }
 
 function metricToneForPresence(hasPresenceData: boolean, presenceRate: number) {
@@ -260,11 +260,10 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
     });
   const visibleMembers = members.filter((member) => memberMatchesFilter(member, activeMembersFilter));
   const priorityMembers = members.filter((member) => member.priorityRank <= 4);
-  const regularMembers = activeMembersFilter === "todos"
-    ? members.filter((member) => member.priorityRank >= 5)
-    : visibleMembers;
+  const activeMembers = members.filter((member) => member.priorityRank >= 5);
+  const regularMembers = activeMembersFilter === "todos" ? activeMembers : visibleMembers;
   const membersSectionDetail = activeMembersFilter === "todos"
-    ? `${regularMembers.length} ${regularMembers.length === 1 ? "membro ativo" : "membros ativos"}`
+    ? `${members.length} ${members.length === 1 ? "membro" : "membros"}${priorityMembers.length > 0 ? ` · ${priorityMembers.length} em atenção` : ""}`
     : `${visibleMembers.length} ${visibleMembers.length === 1 ? "pessoa neste recorte" : "pessoas neste recorte"}`;
 
   return (
@@ -347,36 +346,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
           </section>
         ) : null}
 
-        {activeMembersFilter === "todos" && priorityMembers.length > 0 ? (
-          <section>
-            <SectionTitle detail={`${priorityMembers.length} ${priorityMembers.length === 1 ? "pessoa no radar" : "pessoas no radar"}`}>
-              Quem merece proximidade
-            </SectionTitle>
-            <div className="group-detail-list">
-              <ProgressiveList
-                initialCount={4}
-                step={4}
-                moreLabel="Ver mais pessoas em atenção"
-                lessLabel="Mostrar menos pessoas em atenção"
-              >
-                {priorityMembers.map((member) => (
-                  <PersonMiniCard
-                    key={member.membershipId}
-                    href={`/pessoas/${member.personId}`}
-                    initials={member.initials}
-                    name={member.name}
-                    context={member.subtitle}
-                    badgeLabel={member.badgeLabel}
-                    badgeTone={member.badgeTone}
-                    cardTone={member.cardTone}
-                  />
-                ))}
-              </ProgressiveList>
-            </div>
-          </section>
-        ) : null}
-
-        <section>
+        <section id="membros" className="scroll-mt-6">
           <SectionTitle detail={membersSectionDetail}>Membros</SectionTitle>
           <div className="group-member-filter-row mb-3">
             {MEMBERS_FILTERS.map((option) => {
@@ -394,31 +364,101 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
               );
             })}
           </div>
-          <div className="group-detail-list">
-            <ProgressiveList
-              initialCount={activeMembersFilter === "todos" ? 4 : 6}
-              step={activeMembersFilter === "todos" ? 4 : 6}
-              moreLabel="Ver mais membros"
-              lessLabel="Mostrar menos membros"
-            >
-              {regularMembers.map((member) => (
-                <PersonMiniCard
-                  key={member.membershipId}
-                  href={`/pessoas/${member.personId}`}
-                  initials={member.initials}
-                  name={member.name}
-                  context={activeMembersFilter === "todos" ? undefined : member.subtitle}
-                  badgeLabel={member.badgeLabel}
-                  badgeTone={member.badgeTone}
-                  cardTone={activeMembersFilter === "todos" ? "muted" : member.cardTone}
-                  compact={activeMembersFilter === "todos" && member.priorityRank >= 5}
-                />
-              ))}
-            </ProgressiveList>
-            {regularMembers.length === 0 ? (
-              <EmptyState compact>Nenhum membro encontrado nesse recorte.</EmptyState>
-            ) : null}
-          </div>
+
+          {activeMembersFilter === "todos" ? (
+            <div className="group-detail-list">
+              {priorityMembers.length > 0 ? (
+                <div className="space-y-2">
+                  <div>
+                    <p className="text-sm font-semibold text-[var(--color-text-primary)]">Quem merece proximidade</p>
+                    <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+                      {priorityMembers.length} {priorityMembers.length === 1 ? "pessoa no radar" : "pessoas no radar"}
+                    </p>
+                  </div>
+                  <ProgressiveList
+                    initialCount={4}
+                    step={4}
+                    moreLabel="Ver mais pessoas em atenção"
+                    lessLabel="Mostrar menos pessoas em atenção"
+                  >
+                    {priorityMembers.map((member) => (
+                      <PersonMiniCard
+                        key={member.membershipId}
+                        href={`/pessoas/${member.personId}`}
+                        initials={member.initials}
+                        name={member.name}
+                        context={member.subtitle}
+                        badgeLabel={member.badgeLabel}
+                        badgeTone={member.badgeTone}
+                        cardTone={member.cardTone}
+                      />
+                    ))}
+                  </ProgressiveList>
+                </div>
+              ) : null}
+
+              {regularMembers.length > 0 ? (
+                <div className={cn("space-y-2", priorityMembers.length > 0 && "pt-1")}>
+                  {priorityMembers.length > 0 ? (
+                    <div>
+                      <p className="text-sm font-semibold text-[var(--color-text-primary)]">Ativos</p>
+                      <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+                        {regularMembers.length} {regularMembers.length === 1 ? "membro sem sinal aberto" : "membros sem sinal aberto"}
+                      </p>
+                    </div>
+                  ) : null}
+                  <ProgressiveList
+                    initialCount={5}
+                    step={5}
+                    moreLabel="Ver mais membros"
+                    lessLabel="Mostrar menos membros"
+                  >
+                    {regularMembers.map((member) => (
+                      <PersonMiniCard
+                        key={member.membershipId}
+                        href={`/pessoas/${member.personId}`}
+                        initials={member.initials}
+                        name={member.name}
+                        badgeLabel={member.badgeLabel}
+                        badgeTone={member.badgeTone}
+                        cardTone="muted"
+                        compact
+                      />
+                    ))}
+                  </ProgressiveList>
+                </div>
+              ) : null}
+
+              {priorityMembers.length === 0 && regularMembers.length === 0 ? (
+                <EmptyState compact>Nenhum membro encontrado nesse recorte.</EmptyState>
+              ) : null}
+            </div>
+          ) : (
+            <div className="group-detail-list">
+              <ProgressiveList
+                initialCount={6}
+                step={6}
+                moreLabel="Ver mais membros"
+                lessLabel="Mostrar menos membros"
+              >
+                {regularMembers.map((member) => (
+                  <PersonMiniCard
+                    key={member.membershipId}
+                    href={`/pessoas/${member.personId}`}
+                    initials={member.initials}
+                    name={member.name}
+                    context={member.subtitle}
+                    badgeLabel={member.badgeLabel}
+                    badgeTone={member.badgeTone}
+                    cardTone={member.cardTone}
+                  />
+                ))}
+              </ProgressiveList>
+              {regularMembers.length === 0 ? (
+                <EmptyState compact>Nenhum membro encontrado nesse recorte.</EmptyState>
+              ) : null}
+            </div>
+          )}
         </section>
 
         <section>
