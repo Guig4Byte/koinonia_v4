@@ -285,7 +285,7 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
     .filter((event) => {
       if (isToday(event.startsAt) || !isWithinPeriod(event.startsAt, weekStart, weekEnd)) return false;
 
-      return isAfter(event.startsAt, now);
+      return isAfter(event.startsAt, now) && !hasRecordedPresence(event);
     })
     .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
 

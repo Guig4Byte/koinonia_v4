@@ -1,6 +1,6 @@
 import { endOfWeek, startOfWeek } from "date-fns";
 import { MembershipRole, PersonStatus, SignalSeverity, SignalStatus, UserRole } from "../../generated/prisma/client";
-import { summarizeEventsPresence, isPresenceRecordedEvent } from "@/features/events/presence-summary";
+import { summarizeEventsPresence, summarizePresenceTrend, isPresenceRecordedEvent } from "@/features/events/presence-summary";
 import { canUsePastorDashboard, getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson } from "@/features/signals/attention";
 import { isSupportRequest } from "@/features/signals/sections";
@@ -271,6 +271,7 @@ export async function getPastorTeamOverview(user: PermissionUser) {
 }
 
 async function getGroupScopedDashboard(user: PermissionUser) {
+  const now = new Date();
   const groups = await prisma.smallGroup.findMany({
     where: getVisibleGroupWhere(user),
     include: {
@@ -278,7 +279,7 @@ async function getGroupScopedDashboard(user: PermissionUser) {
       supervisor: true,
       memberships: { where: { leftAt: null, role: { not: MembershipRole.VISITOR } }, include: { person: true } },
       signals: { where: { status: SignalStatus.OPEN }, include: { person: true, assignedTo: true } },
-      events: { orderBy: { startsAt: "desc" }, take: 4, include: { attendances: true } },
+      events: { orderBy: { startsAt: "desc" }, take: 8, include: { attendances: true } },
     },
     orderBy: { name: "asc" },
   });
@@ -291,13 +292,17 @@ async function getGroupScopedDashboard(user: PermissionUser) {
   const delegatedToPastor = signals.filter((signal) => signal.assignedTo?.role === UserRole.PASTOR || signal.assignedTo?.role === UserRole.ADMIN);
   const presence = summarizeEventsPresence(recordedEvents);
   const groupsWithPresence = groups.map((group) => {
-    const groupPresence = summarizeEventsPresence(group.events);
-    const recordedGroupEvents = group.events.filter(isPresenceRecordedEvent);
+    const recordedGroupEvents = group.events.filter((event) => event.startsAt <= now && isPresenceRecordedEvent(event));
+    const recentGroupEvents = recordedGroupEvents.slice(0, 4);
+    const previousGroupEvents = recordedGroupEvents.slice(4, 8);
+    const groupPresence = summarizeEventsPresence(recentGroupEvents);
+    const previousGroupPresence = summarizeEventsPresence(previousGroupEvents);
 
     return {
       ...group,
       presenceRate: groupPresence.presenceRate,
       hasPresenceData: groupPresence.hasPresenceData,
+      presenceTrend: summarizePresenceTrend(groupPresence, previousGroupPresence),
       recordedEventsCount: recordedGroupEvents.length,
       attentionCount: getPrimarySignalsByPerson(group.signals).length,
       supportRequestsCount: getPrimarySignalsByPerson(group.signals).filter((signal) => isSupportRequest(signal, user)).length,

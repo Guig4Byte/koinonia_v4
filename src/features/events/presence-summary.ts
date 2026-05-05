@@ -27,6 +27,14 @@ export type EventsPresenceSummary = PresenceSummary & {
   recordedEventsCount: number;
 };
 
+export type PresenceTrend = {
+  direction: "up" | "down";
+  delta: number;
+};
+
+const TREND_MIN_ACCOUNTABLE_COUNT = 3;
+const TREND_MIN_DELTA = 6;
+
 export function isPresenceRecordedEvent(event: PresenceEvent) {
   return event.status === "COMPLETED" || event.attendances.length > 0;
 }
@@ -65,5 +73,19 @@ export function summarizeEventsPresence(events: PresenceEvent[]): EventsPresence
   return {
     ...summary,
     recordedEventsCount: recordedEvents.length,
+  };
+}
+
+export function summarizePresenceTrend(current: PresenceSummary, previous: PresenceSummary): PresenceTrend | null {
+  if (current.accountableCount < TREND_MIN_ACCOUNTABLE_COUNT || previous.accountableCount < TREND_MIN_ACCOUNTABLE_COUNT) {
+    return null;
+  }
+
+  const delta = current.presenceRate - previous.presenceRate;
+  if (Math.abs(delta) < TREND_MIN_DELTA) return null;
+
+  return {
+    direction: delta > 0 ? "up" : "down",
+    delta: Math.abs(delta),
   };
 }

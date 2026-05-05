@@ -19,6 +19,13 @@ function daysFromNow(days: number, hour = 20): Date {
   return date;
 }
 
+function dayInCurrentMonth(day: number, hour = 20): Date {
+  const date = new Date();
+  date.setDate(day);
+  date.setHours(hour, 0, 0, 0);
+  return date;
+}
+
 let seedPhoneCounter = 0;
 
 function nextSeedPhone(): string {
@@ -178,29 +185,74 @@ const memberNamesByGroup: Record<string, string[]> = {
   ],
 };
 
+const completedEventDays = [-42, -35, -28, -21, -14, -7] as const;
+const monthlyPresenceEventSlots = [
+  { day: 1, hour: 19 },
+  { day: 2, hour: 19 },
+  { day: 3, hour: 10 },
+  { day: 4, hour: 11 },
+] as const;
+const currentWeekEventIndex = completedEventDays.length;
+
+const P = AttendanceStatus.PRESENT;
+const A = AttendanceStatus.ABSENT;
+const J = AttendanceStatus.JUSTIFIED;
+
+const attendanceScenarios: Record<string, Record<number, AttendanceStatus[]>> = {
+  esperanca: {
+    0: [A, A, A, A, A, A],
+    1: [P, P, J, P, A, P],
+  },
+  agape: {
+    0: [P, J, P, A, P, J, P],
+    2: [P, P, P, J, A, P, P],
+  },
+  betel: {
+    0: [P, A, J, A, A, A, A],
+    1: [P, A, P, A, P, A, P],
+    2: [P, J, P, J, P, J, P],
+    3: [A, P, A, J, A, P, A],
+  },
+  videira: {
+    0: [P, P, J, P, P, A],
+  },
+  semente: {
+    0: [P, P, J, P, A, A, A],
+    1: [P, P, P, J, P, P, P],
+    4: [A, P, A, P, A, P, A],
+    6: [P, P, J, P, P, J, P],
+    11: [A, A, P, J, A, P, A],
+  },
+  caminho: {
+    0: [P, J, P, A, A, A],
+    1: [P, P, J, P, P, P],
+    2: [P, A, P, A, P, A],
+  },
+  graca: {
+    0: [A, A, A, A, A, A, A],
+    1: [P, J, P, A, A, A, A],
+    2: [P, A, P, A, P, A, P],
+    3: [P, P, J, P, P, P, P],
+    4: [A, P, A, P, A, P, A],
+    5: [P, J, P, J, P, J, P],
+    6: [A, A, P, A, A, P, A],
+  },
+};
+
+function statusFromScenario(pattern: AttendanceStatus[], eventIndex: number) {
+  return pattern[eventIndex] ?? pattern[pattern.length - 1] ?? AttendanceStatus.PRESENT;
+}
+
 function memberStatus(
   groupKey: string,
   memberIndex: number,
   eventIndex: number,
 ): AttendanceStatus {
-  if (groupKey === "esperanca" && memberIndex === 0)
-    return AttendanceStatus.ABSENT;
-  if (groupKey === "esperanca" && memberIndex === 1 && eventIndex === 2)
-    return AttendanceStatus.ABSENT;
-  if (groupKey === "betel" && memberIndex < 4)
-    return memberIndex === eventIndex
-      ? AttendanceStatus.JUSTIFIED
-      : AttendanceStatus.ABSENT;
-  if (groupKey === "semente" && memberIndex === 0)
-    return AttendanceStatus.ABSENT;
-  if (groupKey === "graca")
-    return memberIndex < 7 ? AttendanceStatus.ABSENT : AttendanceStatus.PRESENT;
-  if (groupKey === "videira" && memberIndex === 0 && eventIndex === 2)
-    return AttendanceStatus.ABSENT;
-  if (groupKey === "caminho" && memberIndex === 0 && eventIndex > 0)
-    return AttendanceStatus.ABSENT;
+  const scenario = attendanceScenarios[groupKey]?.[memberIndex];
+  if (scenario) return statusFromScenario(scenario, eventIndex);
+
   if ((memberIndex + eventIndex) % 9 === 0) return AttendanceStatus.JUSTIFIED;
-  if ((memberIndex + eventIndex) % 7 === 0) return AttendanceStatus.ABSENT;
+  if ((memberIndex * 2 + eventIndex) % 11 === 0) return AttendanceStatus.ABSENT;
   return AttendanceStatus.PRESENT;
 }
 
@@ -630,27 +682,15 @@ async function main() {
   const churchId = church.id;
 
   for (const group of groups) {
-    await createCompletedEventWithChurch(
-      churchId,
-      group,
-      group.leader.id,
-      -21,
-      0,
-    );
-    await createCompletedEventWithChurch(
-      churchId,
-      group,
-      group.leader.id,
-      -14,
-      1,
-    );
-    await createCompletedEventWithChurch(
-      churchId,
-      group,
-      group.leader.id,
-      -7,
-      2,
-    );
+    for (let eventIndex = 0; eventIndex < completedEventDays.length; eventIndex += 1) {
+      await createCompletedEventWithChurch(
+        churchId,
+        group,
+        group.leader.id,
+        completedEventDays[eventIndex],
+        eventIndex,
+      );
+    }
   }
 
   const [esperanca, agape, betel, videira, semente, caminho, graca] = groups;
@@ -663,6 +703,22 @@ async function main() {
     status: EventStatus.CHECKIN_OPEN,
     hour: 20,
   });
+
+  // Cenario de regressao: o detalhe da pessoa usa o mes atual para o card
+  // "Ritmo de presenca". A Celula Semente garante 4 registros no mes para
+  // validar lista condensada, porcentagem mensal e historico recente.
+  for (let monthEventIndex = 0; monthEventIndex < monthlyPresenceEventSlots.length; monthEventIndex += 1) {
+    const slot = monthlyPresenceEventSlots[monthEventIndex];
+
+    await createCompletedEventAtDate(
+      churchId,
+      semente,
+      gabriel.id,
+      dayInCurrentMonth(slot.day, slot.hour),
+      monthEventIndex,
+      monthEventIndex === 0,
+    );
+  }
   const agapeWeek = await createEvent({
     churchId,
     group: agape,
@@ -686,14 +742,6 @@ async function main() {
     days: 0,
     status: EventStatus.CHECKIN_OPEN,
     hour: 20,
-  });
-  const sementeWeek = await createEvent({
-    churchId,
-    group: semente,
-    createdById: gabriel.id,
-    days: -1,
-    status: EventStatus.COMPLETED,
-    hour: 19,
   });
   await createEvent({
     churchId,
@@ -726,10 +774,9 @@ async function main() {
   // Visitante aparece no check-in como presença de visitante e não vira membro automaticamente.
   // O mesmo visitante pode voltar em outro encontro; duplicidade no mesmo evento é bloqueada pela API de check-in.
   for (const [event, group, eventIndex, hasVisitor] of [
-    [agapeWeek, agape, 3, true],
-    [betelWeek, betel, 3, false],
-    [sementeWeek, semente, 3, true],
-    [gracaWeek, graca, 3, false],
+    [agapeWeek, agape, currentWeekEventIndex, true],
+    [betelWeek, betel, currentWeekEventIndex, false],
+    [gracaWeek, graca, currentWeekEventIndex, false],
   ] as const) {
     await prisma.attendance.createMany({
       data: [
@@ -759,10 +806,10 @@ async function main() {
       personId: esperanca.members[0].id,
       groupId: esperanca.id,
       source: SignalSource.ATTENDANCE,
-      severity: SignalSeverity.ATTENTION,
+      severity: SignalSeverity.URGENT,
       status: SignalStatus.RESOLVED,
-      reason: "Ausência acompanhada pelo líder.",
-      evidence: "Contato realizado e família pediu oração nas últimas semanas.",
+      reason: "4 faltas seguidas. Pode estar se afastando.",
+      evidence: "Presença recente indica afastamento.",
       resolvedAt: daysFromNow(-2, 18),
       lastEvidenceAt: daysFromNow(-7, 20),
     },
@@ -988,7 +1035,7 @@ async function main() {
     `Outros usuários da seed: ${marcos.email} / ${helena.email} / ${paulo.email} / ${carla.email} / ${diego.email} / ${fernanda.email} / ${gabriel.email} / ${juliana.email} / ${lucas.email}`,
   );
   console.log(
-    "Cenários de regressão: urgente sem atribuição, apoio à supervisão, múltiplos sinais, encaminhamento pastoral, cuidado pastoral realizado, sinal resolvido, célula sem registro, célula sem supervisor, evento sem presença e célula inativa.",
+    "Cenários de regressão: histórico de presença nas células com registro, 4 encontros no mês atual para a Célula Semente, faltas consecutivas, faltas intercaladas, justificativas, urgente sem atribuição, apoio à supervisão, múltiplos sinais, encaminhamento pastoral, cuidado pastoral realizado, sinal resolvido, célula sem registro, célula sem supervisor, evento sem presença e célula inativa.",
   );
   console.log("Senha local da seed: koinonia123");
 }
@@ -1018,6 +1065,47 @@ async function createCompletedEventWithChurch(
       personId: member.id,
       status: memberStatus(group.key, memberIndex, eventIndex),
     })),
+  });
+
+  return event;
+}
+
+async function createCompletedEventAtDate(
+  churchId: string,
+  group: SeedGroup,
+  createdById: string,
+  startsAt: Date,
+  eventIndex: number,
+  hasVisitor = false,
+) {
+  const event = await prisma.event.create({
+    data: {
+      churchId,
+      groupId: group.id,
+      createdById,
+      title: group.name,
+      startsAt,
+      status: EventStatus.COMPLETED,
+    },
+  });
+
+  await prisma.attendance.createMany({
+    data: [
+      ...group.members.map((member, memberIndex) => ({
+        eventId: event.id,
+        personId: member.id,
+        status: memberStatus(group.key, memberIndex, eventIndex),
+      })),
+      ...(hasVisitor
+        ? [
+            {
+              eventId: event.id,
+              personId: group.visitor.id,
+              status: AttendanceStatus.VISITOR,
+            },
+          ]
+        : []),
+    ],
   });
 
   return event;

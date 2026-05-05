@@ -57,7 +57,9 @@ O pastor não é operador de sinais e não deve receber toda ausência ou atenç
 - Sinais de atenção por pessoa.
 - Escalonamento mínimo via `CareSignal.assignedToId`.
 - Visão do pastor/admin.
+- Equipe do pastor/admin para supervisores e células.
 - Visão do supervisor.
+- Células supervisionadas.
 - Visão do líder.
 - Busca simples de pessoa.
 - Detalhe simples de pessoa, célula e evento.
@@ -132,7 +134,7 @@ Acessos principais:
 - Supervisor: `ana@koinonia.local`
 - Líder: `bruno@koinonia.local`
 
-A seed também cria outros supervisores/líderes para validar escopo, presença baixa, urgência, pedido de apoio, encaminhamento pastoral e célula inativa.
+A seed também cria cenários pastorais para validar escopo, presença, atenção, pedidos de apoio, encaminhamento pastoral e célula inativa. Os detalhes técnicos da seed ficam em `docs/ARCHITECTURE.md`.
 
 ## Tema
 
@@ -176,7 +178,9 @@ docs                 Produto, vocabulário, arquitetura e briefing.
   redireciona para a visão do papel.
 
 /pastor              Visão do pastor/admin.
+/equipe              Equipe, supervisores e células para pastor/admin.
 /supervisor          Visão do supervisor.
+/celulas             Células supervisionadas.
 /lider               Visão do líder.
 /pessoas             Pessoas/membros dentro da superfície padrão.
 /pessoas/[personId]  Detalhe da pessoa.

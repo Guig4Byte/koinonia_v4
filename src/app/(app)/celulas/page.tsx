@@ -245,6 +245,7 @@ function renderGroups(groups: SupervisorGroup[], sectionKey: GroupSectionKey) {
         cardTone={sectionCardTone(sectionKey)}
         href={`/celulas/${group.id}`}
         hasPresenceData={group.hasPresenceData}
+        presenceTrend={group.presenceTrend}
         noPresenceLabel="Sem presença recente"
       />
     );
@@ -329,7 +330,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
                 label: "Presença da semana",
                 value: dashboard.hasPresenceData ? `${dashboard.presenceRate}%` : "—",
                 detail: dashboard.hasPresenceData
-                  ? "Ritmo percebido nos encontros registrados."
+                  ? "Média dos encontros registrados nesta semana."
                   : "Ainda sem presença registrada nesta semana.",
                 tone: !dashboard.hasPresenceData ? "neutral" : dashboard.presenceRate < 65 ? "risk" : dashboard.presenceRate < 75 ? "warn" : "ok",
               },

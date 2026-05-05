@@ -106,7 +106,7 @@ export default async function PastorPage() {
           {
             label: "Presença da semana",
             value: hasWeekPresence ? `${dashboard.presenceRate}%` : "—",
-            detail: hasWeekPresence ? "Nos encontros já registrados." : "Nenhum encontro registrado nesta semana.",
+            detail: hasWeekPresence ? "Média dos encontros registrados nesta semana." : "Nenhum encontro registrado nesta semana.",
             tone: !hasWeekPresence ? "neutral" : dashboard.presenceRate < 65 ? "risk" : dashboard.presenceRate < 75 ? "warn" : "ok",
           },
         ]}

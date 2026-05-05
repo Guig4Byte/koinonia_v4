@@ -1,24 +1,25 @@
-import Link from "next/link";
+﻿import Link from "next/link";
+import { CalendarCheck2, UsersRound } from "lucide-react";
 import { notFound } from "next/navigation";
-import { AttendanceStatus, PersonStatus, SignalSeverity, SignalStatus, UserRole } from "../../../../generated/prisma/client";
+import type { CSSProperties } from "react";
+import { PersonStatus, SignalSeverity, SignalStatus, UserRole } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
-import { BackLink, EmptyState, MetricRow, PersonMiniCard, PersonSignalCard, SectionTitle } from "@/components/cards";
+import { BackLink, ContextSummary, EmptyState, PersonMiniCard, SectionTitle } from "@/components/cards";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
-import { summarizeEventPresence, summarizeEventsPresence } from "@/features/events/presence-summary";
+import { ProgressiveList } from "@/components/progressive-list";
+import { isPresenceRecordedEvent, summarizeEventPresence, summarizeEventsPresence, summarizePresenceTrend } from "@/features/events/presence-summary";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { canViewGroup } from "@/features/permissions/permissions";
-import { getPastoralSignalsByPerson, getPrimarySignalsByPerson, isPastoralSignal } from "@/features/signals/attention";
+import { getPastoralSignalsByPerson, getPrimarySignalsByPerson } from "@/features/signals/attention";
 import { escalationStatusDetailForViewer } from "@/features/signals/escalation";
-import { groupAttentionLabel, signalBadgeForViewer, signalReasonForViewer, type SignalBadge, type SignalBadgeTone } from "@/features/signals/display";
+import { groupAttentionLabel, signalReasonForViewer, type SignalBadge, type SignalBadgeTone } from "@/features/signals/display";
 import { isSupportRequest, isUrgentOrPastoralCase } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { cn } from "@/lib/cn";
-import { formatShortDate, formatTime, percent } from "@/lib/format";
+import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { initials } from "@/lib/text";
-
-const MEMBER_LOW_PRESENCE_THRESHOLD = 60;
 
 const dayLabels: Record<number, string> = {
   0: "Domingo",
@@ -35,14 +36,6 @@ type MembersFilter = "todos" | "atencao" | "em-cuidado" | "ativos";
 type GroupDetailPageProps = {
   params: Promise<{ groupId: string }>;
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
-};
-
-type MemberPresenceEvent = {
-  startsAt: Date;
-  attendances: Array<{
-    personId: string;
-    status: AttendanceStatus;
-  }>;
 };
 
 type MemberDisplay = {
@@ -86,60 +79,55 @@ function membersFilterHref(groupId: string, filter: MembersFilter) {
 
 function metricToneForPresence(hasPresenceData: boolean, presenceRate: number) {
   if (!hasPresenceData) return "neutral" as const;
-  if (presenceRate < 65) return "risk" as const;
-  if (presenceRate < 75) return "warn" as const;
+  if (presenceRate < 50) return "risk" as const;
+  if (presenceRate < 70) return "warn" as const;
   return "ok" as const;
 }
 
 function badgeToneForPresence(hasPresenceData: boolean, presenceRate: number): BadgeTone {
   if (!hasPresenceData) return "neutral";
-  if (presenceRate < 65) return "risk";
-  if (presenceRate < 75) return "warn";
+  if (presenceRate < 50) return "risk";
+  if (presenceRate < 70) return "warn";
   return "ok";
 }
 
-function summarizeMemberPresence(personId: string, events: MemberPresenceEvent[]) {
-  const explicitAttendances = events.flatMap((event) =>
-    event.attendances.filter((attendance) => attendance.personId === personId && attendance.status !== AttendanceStatus.VISITOR),
-  );
-  const presentCount = explicitAttendances.filter((attendance) => attendance.status === AttendanceStatus.PRESENT).length;
-  const accountableCount = explicitAttendances.length;
-  let lastStatus: AttendanceStatus | undefined;
+function encounterToneVars(tone: BadgeTone): CSSProperties {
+  if (tone === "risk") {
+    return {
+      "--encounter-tone": "var(--color-badge-risco-text)",
+      "--encounter-tone-soft": "var(--color-badge-risco-bg)",
+    } as CSSProperties;
+  }
 
-  for (const event of events) {
-    const latestAttendance = event.attendances.find((attendance) => attendance.personId === personId && attendance.status !== AttendanceStatus.VISITOR);
+  if (tone === "warn") {
+    return {
+      "--encounter-tone": "var(--color-badge-atencao-text)",
+      "--encounter-tone-soft": "var(--color-badge-atencao-bg)",
+    } as CSSProperties;
+  }
 
-    if (latestAttendance) {
-      lastStatus = latestAttendance.status;
-      break;
-    }
+  if (tone === "ok") {
+    return {
+      "--encounter-tone": "var(--color-metric-presenca)",
+      "--encounter-tone-soft": "var(--color-badge-estavel-bg)",
+    } as CSSProperties;
   }
 
   return {
-    hasData: accountableCount > 0,
-    presenceRate: percent(presentCount, accountableCount),
-    lastStatus,
-  };
+    "--encounter-tone": "var(--color-text-secondary)",
+    "--encounter-tone-soft": "var(--surface-alt)",
+  } as CSSProperties;
 }
 
-function recentPresenceSubtitle(lastStatus?: AttendanceStatus) {
-  if (lastStatus === AttendanceStatus.PRESENT) return "Presente no último encontro";
-  if (lastStatus === AttendanceStatus.JUSTIFIED) return "Justificou o último encontro";
-  if (lastStatus === AttendanceStatus.ABSENT) return "Ausente no último encontro";
-  return undefined;
-}
-
-function memberCardTone(badgeTone: BadgeTone, hasPresenceData: boolean, presenceRate: number): MemberDisplay["cardTone"] {
+function memberCardTone(badgeTone: BadgeTone): MemberDisplay["cardTone"] {
   if (badgeTone === "risk" || badgeTone === "support" || badgeTone === "warn" || badgeTone === "care") return badgeTone;
-  if (hasPresenceData && presenceRate < MEMBER_LOW_PRESENCE_THRESHOLD) return "warn";
-  if (!hasPresenceData) return "muted";
   return undefined;
 }
 
 function memberMatchesFilter(member: MemberDisplay, filter: MembersFilter) {
-  if (filter === "atencao") return member.priorityRank <= 6;
+  if (filter === "atencao") return member.priorityRank <= 4;
   if (filter === "em-cuidado") return member.status === PersonStatus.COOLING_AWAY;
-  if (filter === "ativos") return member.status === PersonStatus.ACTIVE && member.priorityRank >= 7;
+  if (filter === "ativos") return member.status === PersonStatus.ACTIVE && member.priorityRank >= 5;
   return true;
 }
 
@@ -168,13 +156,14 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
         where: { type: "CELL_MEETING" },
         include: { attendances: true },
         orderBy: { startsAt: "desc" },
-        take: 6,
+        take: 12,
       },
     },
   });
 
   if (!group || !canViewGroup(user, group)) notFound();
 
+  const referenceDate = new Date();
   const homeHref = user.role === UserRole.LEADER ? "/lider" : user.role === UserRole.SUPERVISOR ? "/supervisor" : "/pastor";
   const isPastorView = user.role === UserRole.PASTOR || user.role === UserRole.ADMIN;
   const isSupervisorView = user.role === UserRole.SUPERVISOR;
@@ -184,23 +173,23 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
   const backLabel = isPastorView ? "Voltar para equipe" : isSupervisorView ? "Voltar para células" : "Voltar para visão";
   const attentionPeople = getPrimarySignalsByPerson(group.signals);
   const pastoralAttentionPeople = getPastoralSignalsByPerson(group.signals);
-  const localAttentionPeople = attentionPeople.filter((signal) => !isPastoralSignal(signal));
   const attentionSignalByPersonId = new Map(attentionPeople.map((signal) => [signal.personId, signal]));
   const supportRequests = attentionPeople.filter((signal) => isSupportRequest(signal, user));
   const urgentAttentionPeople = attentionPeople.filter((signal) => signal.severity === SignalSeverity.URGENT);
   const inCareCount = group.memberships.filter((membership) => membership.person.status === PersonStatus.COOLING_AWAY).length;
   const hasRiskSignal = attentionPeople.some(isUrgentOrPastoralCase);
   const navIndicator = hasRiskSignal ? "risk" : attentionPeople.length > 0 ? "attention" : inCareCount > 0 ? "care" : undefined;
-  const completedEvents = group.events.filter((event) => summarizeEventPresence(event).completed);
-  const presence = summarizeEventsPresence(group.events);
+  const recordedPresenceEvents = group.events.filter((event) => event.startsAt <= referenceDate && isPresenceRecordedEvent(event));
+  const recentPresenceEvents = recordedPresenceEvents.slice(0, 4);
+  const previousPresenceEvents = recordedPresenceEvents.slice(4, 8);
+  const completedEvents = recordedPresenceEvents;
+  const presence = summarizeEventsPresence(recentPresenceEvents);
+  const previousPresence = summarizeEventsPresence(previousPresenceEvents);
+  const presenceTrend = summarizePresenceTrend(presence, previousPresence);
   const hasRecentPresence = presence.hasPresenceData;
-  const relevantEvent = selectRelevantCheckInEvent(group.events);
+  const relevantEvent = selectRelevantCheckInEvent(group.events, referenceDate);
   const pendingEvent = relevantEvent && !hasRecordedPresence(relevantEvent) ? relevantEvent : null;
   const pendingEventActionLabel = user.role === UserRole.LEADER && group.leaderUserId === user.id ? "Registrar presença" : "Abrir encontro";
-  const prioritySectionTitle = isPastorView ? "Irmãos que precisam de um olhar especial" : "Quem merece atenção";
-  const supervisorOtherAttention = isSupervisorView
-    ? attentionPeople.filter((signal) => !isSupportRequest(signal, user))
-    : [];
   const headerBadge: SignalBadge = (() => {
     if (urgentAttentionPeople.length > 0) {
       return { tone: "risk", label: groupAttentionLabel(urgentAttentionPeople.length, "urgente", "urgentes") };
@@ -236,24 +225,17 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
     .map((membership) => {
       const attentionSignal = attentionSignalByPersonId.get(membership.personId);
       const memberBadge = personEffectiveBadgeForViewer(membership.person, attentionSignal, user);
-      const memberPresence = summarizeMemberPresence(membership.personId, completedEvents);
       const escalationSubtitle = attentionSignal ? escalationStatusDetailForViewer(attentionSignal, user) : null;
       const signalSubtitle = attentionSignal ? escalationSubtitle ?? signalReasonForViewer(attentionSignal.reason, user) : undefined;
-      const lowPresence = memberPresence.hasData && memberPresence.presenceRate < MEMBER_LOW_PRESENCE_THRESHOLD;
       const subtitle = signalSubtitle
-        ?? (membership.person.status === PersonStatus.COOLING_AWAY ? "Em cuidado" : undefined)
-        ?? (lowPresence ? `Presença recente em ${memberPresence.presenceRate}%` : undefined)
-        ?? recentPresenceSubtitle(memberPresence.lastStatus)
-        ?? (!memberPresence.hasData ? "Sem presença recente registrada" : undefined);
+        ?? (membership.person.status === PersonStatus.COOLING_AWAY ? "Em cuidado" : undefined);
       const priorityRank = (() => {
         if (attentionSignal && isUrgentOrPastoralCase(attentionSignal)) return 1;
         if (attentionSignal && isSupportRequest(attentionSignal, user)) return 2;
         if (attentionSignal) return 3;
         if (membership.person.status === PersonStatus.COOLING_AWAY) return 4;
-        if (lowPresence) return 5;
-        if (!memberPresence.hasData) return 6;
-        if (membership.person.status === PersonStatus.ACTIVE) return 7;
-        return 8;
+        if (membership.person.status === PersonStatus.ACTIVE) return 5;
+        return 6;
       })();
 
       return {
@@ -264,7 +246,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
         subtitle,
         badgeLabel: memberBadge.label,
         badgeTone: memberBadge.tone,
-        cardTone: memberCardTone(memberBadge.tone, memberPresence.hasData, memberPresence.presenceRate),
+        cardTone: memberCardTone(memberBadge.tone),
         priorityRank,
         status: membership.person.status,
       };
@@ -307,155 +289,54 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
           </p>
         </section>
 
-        <MetricRow
-          metrics={[
-            { label: "Membros", value: String(group.memberships.length), tone: "neutral" },
-            {
-              label: "Presença",
-              value: hasRecentPresence ? `${presence.presenceRate}%` : "—",
-              tone: metricToneForPresence(hasRecentPresence, presence.presenceRate),
-            },
-            {
-              label: isPastorView ? "Atenções" : "Em atenção",
-              value: String(attentionPeople.length),
-              tone: attentionPeople.length > 0 ? "warn" : "ok",
-            },
-          ]}
-        />
-
-        {isPastorView && pastoralAttentionPeople.length > 0 ? (
-          <section className="space-y-3">
-            <SectionTitle>{prioritySectionTitle}</SectionTitle>
-            {pastoralAttentionPeople.slice(0, 4).map((signal) => {
-              const badge = signalBadgeForViewer(signal, user);
-
-              return (
-                <PersonSignalCard
-                  key={signal.id}
-                  initials={initials(signal.person.fullName)}
-                  name={signal.person.fullName}
-                  detailHref={`/pessoas/${signal.person.id}`}
-                  context="Membro da célula"
-                  reason={signalReasonForViewer(signal.reason, user)}
-                  severity={signal.severity === SignalSeverity.URGENT ? "risk" : "warn"}
-                  badgeLabel={badge.label}
-                  badgeTone={badge.tone}
-                  ctaLabel="Abrir pessoa"
-                />
-              );
-            })}
-          </section>
-        ) : null}
-
-        {isPastorView && localAttentionPeople.length > 0 ? (
-          <section className="space-y-3">
-            <SectionTitle>Atenções locais da célula</SectionTitle>
-            {localAttentionPeople.slice(0, 4).map((signal) => {
-              const badge = signalBadgeForViewer(signal, user);
-
-              return (
-                <PersonSignalCard
-                  key={signal.id}
-                  initials={initials(signal.person.fullName)}
-                  name={signal.person.fullName}
-                  detailHref={`/pessoas/${signal.person.id}`}
-                  context="No cuidado do líder ou da supervisão"
-                  reason={signalReasonForViewer(signal.reason, user)}
-                  severity={signal.severity === SignalSeverity.URGENT ? "risk" : signal.severity === SignalSeverity.ATTENTION ? "warn" : "info"}
-                  badgeLabel={badge.label}
-                  badgeTone={badge.tone}
-                  ctaLabel="Abrir pessoa"
-                />
-              );
-            })}
-          </section>
-        ) : null}
-
-        {isSupervisorView && supportRequests.length > 0 ? (
-          <section className="space-y-3">
-            <SectionTitle>Pedidos de apoio</SectionTitle>
-            {supportRequests.slice(0, 4).map((signal) => {
-              const badge = signalBadgeForViewer(signal, user);
-
-              return (
-                <PersonSignalCard
-                  key={signal.id}
-                  initials={initials(signal.person.fullName)}
-                  name={signal.person.fullName}
-                  detailHref={`/pessoas/${signal.person.id}`}
-                  context="Membro da célula"
-                  reason={signalReasonForViewer(signal.reason, user)}
-                  severity={signal.severity === SignalSeverity.URGENT ? "risk" : signal.severity === SignalSeverity.ATTENTION ? "warn" : "info"}
-                  badgeLabel={badge.label}
-                  badgeTone={badge.tone}
-                  ctaLabel="Abrir apoio"
-                />
-              );
-            })}
-          </section>
-        ) : null}
-
-        {isSupervisorView && supervisorOtherAttention.length > 0 ? (
-          <section className="space-y-3">
-            <SectionTitle>Acompanhar de perto</SectionTitle>
-            {supervisorOtherAttention.slice(0, 4).map((signal) => {
-              const badge = signalBadgeForViewer(signal, user);
-
-              return (
-                <PersonSignalCard
-                  key={signal.id}
-                  initials={initials(signal.person.fullName)}
-                  name={signal.person.fullName}
-                  detailHref={`/pessoas/${signal.person.id}`}
-                  context="Membro da célula"
-                  reason={signalReasonForViewer(signal.reason, user)}
-                  severity={signal.severity === SignalSeverity.URGENT ? "risk" : signal.severity === SignalSeverity.ATTENTION ? "warn" : "info"}
-                  badgeLabel={badge.label}
-                  badgeTone={badge.tone}
-                  ctaLabel="Abrir pessoa"
-                />
-              );
-            })}
-          </section>
-        ) : null}
-
-        {user.role === UserRole.LEADER && attentionPeople.length > 0 ? (
-          <section className="space-y-3">
-            <SectionTitle>{prioritySectionTitle}</SectionTitle>
-            {attentionPeople.slice(0, 4).map((signal) => {
-              const badge = signalBadgeForViewer(signal, user);
-
-              return (
-                <PersonSignalCard
-                  key={signal.id}
-                  initials={initials(signal.person.fullName)}
-                  name={signal.person.fullName}
-                  detailHref={`/pessoas/${signal.person.id}`}
-                  context="Membro da célula"
-                  reason={signalReasonForViewer(signal.reason, user)}
-                  severity={signal.severity === SignalSeverity.URGENT ? "risk" : signal.severity === SignalSeverity.ATTENTION ? "warn" : "info"}
-                  badgeLabel={badge.label}
-                  badgeTone={badge.tone}
-                  ctaLabel={isSupportRequest(signal, user) ? "Abrir apoio" : "Abrir pessoa"}
-                />
-              );
-            })}
-          </section>
-        ) : null}
+        <div className="group-detail-summary">
+          <ContextSummary
+            detailTone="strong"
+            trendLayout="stacked"
+            items={[
+              {
+                label: "Membros acompanhados",
+                value: String(group.memberships.length),
+                detail: "Pessoas sob cuidado e convivência desta célula.",
+                tone: "neutral",
+              },
+              {
+                label: "Presença recente",
+                value: hasRecentPresence ? `${presence.presenceRate}%` : "—",
+                detail: hasRecentPresence
+                  ? "Média dos últimos encontros registrados."
+                  : "Ainda sem presença recente registrada.",
+                tone: metricToneForPresence(hasRecentPresence, presence.presenceRate),
+                trend: presenceTrend,
+              },
+              {
+                label: isPastorView ? "Pedem cuidado" : "Pedem proximidade",
+                value: String(attentionPeople.length),
+                detail: attentionPeople.length > 0
+                  ? "Pessoas que merecem acompanhamento próximo."
+                  : "Nenhum sinal aberto pedindo cuidado agora.",
+                tone: attentionPeople.length > 0 ? hasRiskSignal ? "risk" : "warn" : "ok",
+              },
+            ]}
+          />
+        </div>
 
         {pendingEvent ? (
-          <section>
-            <SectionTitle>Encontro pendente</SectionTitle>
-            <Link href={`/eventos/${pendingEvent.id}`} className={cn("group-encounter-card", "priority-card priority-card-warn")}>
-              <span className="min-w-0">
-                <span className="block truncate text-sm font-bold text-[var(--color-text-primary)]">{pendingEvent.title}</span>
-                <span className="mt-1 block text-xs leading-relaxed text-[var(--color-text-secondary)]">
-                  {formatShortDate(pendingEvent.startsAt)} · {formatTime(pendingEvent.startsAt)}
-                </span>
+          <section className="group-pending-event-section">
+            <Link href={`/eventos/${pendingEvent.id}`} className={cn("group-pending-event-card", "priority-card priority-card-warn")}>
+              <span className="group-pending-event-top">
+                <span>Encontro pendente</span>
               </span>
-              <span className="flex shrink-0 flex-col items-end gap-1 text-right">
-                <Badge tone="warn">Presença pendente</Badge>
-                <span className="text-[13px] font-bold text-[var(--color-brand)]">{pendingEventActionLabel} →</span>
+              <span className="group-pending-event-body">
+                <span className="min-w-0">
+                  <span className="block truncate text-base font-bold text-[var(--color-text-primary)]">{pendingEvent.title}</span>
+                  <span className="mt-1 block text-xs font-medium leading-relaxed text-[var(--color-text-secondary)]">
+                    {formatShortDate(pendingEvent.startsAt)} · {formatTime(pendingEvent.startsAt)}
+                  </span>
+                </span>
+                <span className="group-pending-event-action">
+                  {pendingEventActionLabel} →
+                </span>
               </span>
             </Link>
           </section>
@@ -479,8 +360,14 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
               );
             })}
           </div>
-          <div className="space-y-2">
-            {visibleMembers.map((member) => (
+          <div className="group-detail-list">
+            <ProgressiveList
+              initialCount={6}
+              step={6}
+              moreLabel="Ver mais membros"
+              lessLabel="Mostrar menos membros"
+            >
+              {visibleMembers.map((member) => (
               <PersonMiniCard
                 key={member.membershipId}
                 href={`/pessoas/${member.personId}`}
@@ -491,7 +378,8 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
                 badgeTone={member.badgeTone}
                 cardTone={member.cardTone}
               />
-            ))}
+              ))}
+            </ProgressiveList>
             {visibleMembers.length === 0 ? (
               <EmptyState compact>Nenhum membro encontrado nesse recorte.</EmptyState>
             ) : null}
@@ -499,29 +387,60 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
         </section>
 
         <section>
-          <SectionTitle>Últimos encontros</SectionTitle>
-          <div className="space-y-2">
-            {completedEvents.slice(0, 3).map((event) => {
+          <SectionTitle>Últimos encontros do mês</SectionTitle>
+          <div className="group-detail-list">
+            <ProgressiveList
+              initialCount={4}
+              step={4}
+              moreLabel="Ver mais encontros"
+              lessLabel="Mostrar menos encontros"
+            >
+              {completedEvents.map((event) => {
               const metrics = summarizeEventPresence(event);
               const presenceBadgeTone = badgeToneForPresence(metrics.hasPresenceData, metrics.presenceRate);
+              const presenceLabel = metrics.hasPresenceData ? `${metrics.presenceRate}%` : "sem registro";
+              const presenceProgress = metrics.hasPresenceData ? metrics.presenceRate : 0;
 
               return (
-                <Link key={event.id} href={`/eventos/${event.id}`} className="group-encounter-card">
-                  <span className="min-w-0">
-                    <span className="block text-sm font-bold text-[var(--color-text-primary)]">
+                <Link
+                  key={event.id}
+                  href={`/eventos/${event.id}`}
+                  className="group-encounter-card relative min-h-[74px] gap-3 overflow-hidden py-3 pr-4 pl-5"
+                  style={encounterToneVars(presenceBadgeTone)}
+                >
+                  <span className="absolute inset-y-0 left-0 w-1 bg-[var(--encounter-tone)]" aria-hidden="true" />
+                  <span
+                    className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[var(--encounter-tone-soft)] text-[var(--encounter-tone)]"
+                    aria-hidden="true"
+                  >
+                    <CalendarCheck2 className="h-4 w-4" strokeWidth={2.2} />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-bold text-[var(--color-text-secondary)]">
                       {formatShortDate(event.startsAt)} · {formatTime(event.startsAt)}
                     </span>
-                    <span className="mt-1 block text-xs leading-relaxed text-[var(--color-text-secondary)]">
-                      {metrics.visitorCount} {metrics.visitorCount === 1 ? "visitante" : "visitantes"}
+                    <span className="mt-2 flex min-w-0 items-center gap-2 text-xs leading-none text-[var(--color-text-muted)]">
+                      <span className="h-1 w-24 overflow-hidden rounded-full bg-[var(--color-border-divider)]" aria-hidden="true">
+                        <span
+                          className="block h-full rounded-full bg-[var(--encounter-tone)]"
+                          style={{ width: `${presenceProgress}%` }}
+                        />
+                      </span>
+                      <strong className="min-w-8 font-bold text-[var(--encounter-tone)]">{presenceLabel}</strong>
+                      <span className="h-3 w-px bg-[var(--color-border-divider)]" aria-hidden="true" />
+                      <span className="flex min-w-0 items-center gap-1 truncate font-medium text-[var(--color-text-secondary)]">
+                        <UsersRound className="h-3 w-3 shrink-0" strokeWidth={1.8} aria-hidden="true" />
+                        {metrics.visitorCount} {metrics.visitorCount === 1 ? "visitante" : "visitantes"}
+                      </span>
                     </span>
                   </span>
-                  <span className="flex shrink-0 flex-col items-end gap-1 text-right">
-                    <Badge tone={presenceBadgeTone}>{metrics.hasPresenceData ? `${metrics.presenceRate}%` : "Sem registro"}</Badge>
-                    <span className="text-[13px] font-bold text-[var(--color-brand)]">Abrir →</span>
+                  <span className="shrink-0 self-center text-xs font-semibold text-[var(--color-text-secondary)]">
+                    Abrir →
                   </span>
                 </Link>
               );
-            })}
+              })}
+            </ProgressiveList>
             {completedEvents.length === 0 ? (
               <EmptyState compact>Ainda não há encontros registrados para resumir presença.</EmptyState>
             ) : null}

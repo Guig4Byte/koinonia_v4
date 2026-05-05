@@ -122,7 +122,7 @@ export default async function LeaderPage() {
           {
             label: "Presença recente",
             value: hasRecentPresence ? `${dashboard.presenceRate}%` : "—",
-            detail: hasRecentPresence ? "Nos encontros já registrados." : "Ainda sem encontro registrado no recorte atual.",
+            detail: hasRecentPresence ? "Média dos encontros registrados recentemente." : "Ainda sem encontro registrado no recorte atual.",
             tone: !hasRecentPresence ? "neutral" : dashboard.presenceRate < 65 ? "risk" : dashboard.presenceRate < 75 ? "warn" : "ok",
           },
           {

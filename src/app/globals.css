@@ -1025,6 +1025,31 @@ a {
   line-height: 1.35;
 }
 
+.group-detail-summary > section {
+  margin-bottom: 0;
+}
+
+.context-summary-label {
+  font-size: 14px !important;
+  line-height: 1.25 !important;
+}
+
+.context-summary-detail {
+  margin-top: 2px !important;
+  color: var(--color-text-muted) !important;
+  font-size: 12.5px !important;
+  line-height: 1.35 !important;
+}
+
+.context-summary-detail-strong {
+  color: var(--color-text-muted) !important;
+}
+
+.context-summary-value {
+  font-size: 20px !important;
+  line-height: 1 !important;
+}
+
 .group-member-filter-row {
   display: flex;
   gap: 8px;
@@ -1039,14 +1064,12 @@ a {
 
 .group-encounter-card {
   display: flex;
-  min-height: 72px;
+  min-height: 74px;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
   border: 1px solid var(--color-border-card);
   border-radius: 16px;
   background: var(--color-bg-card);
-  padding: 12px 14px;
+  padding: 12px 16px 12px 18px;
   box-shadow: var(--color-shadow-metric-card);
   transition: transform 150ms ease;
 }
@@ -1055,7 +1078,93 @@ a {
   transform: scale(0.99);
 }
 
-.group-detail-page :where(.team-filter-chip, .group-encounter-card):focus-visible {
+.group-pending-event-section {
+  margin-top: 18px;
+}
+
+.group-pending-event-card {
+  display: flex;
+  min-height: 124px;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--color-border-card);
+  border-radius: 16px;
+  background: var(--color-bg-card);
+  padding: 0;
+  box-shadow: var(--color-shadow-metric-card);
+  transition: transform 150ms ease;
+}
+
+.group-pending-event-card:active {
+  transform: scale(0.99);
+}
+
+.group-pending-event-card::before {
+  display: none;
+}
+
+.group-pending-event-top {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--color-border-divider);
+  padding: 14px 18px;
+  color: var(--color-brand);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.group-pending-event-body {
+  display: flex;
+  width: 100%;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+}
+
+.group-pending-event-action {
+  display: inline-flex;
+  min-height: 32px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--color-border-card) 50%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--color-bg-card) 82%, transparent);
+  color: var(--color-brand);
+  font-size: 13px;
+  font-weight: 800;
+  padding: 0 14px;
+  white-space: nowrap;
+}
+
+@media (max-width: 380px) {
+  .group-pending-event-card {
+    min-height: 136px;
+  }
+
+  .group-pending-event-top,
+  .group-pending-event-body {
+    align-items: flex-start;
+  }
+
+  .group-pending-event-body {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .group-pending-event-action {
+    min-height: 30px;
+  }
+}
+
+.group-detail-page :where(.team-filter-chip, .group-encounter-card, .group-pending-event-card):focus-visible {
   outline: 2px solid var(--color-brand-accent);
   outline-offset: 3px;
 }

@@ -51,6 +51,8 @@ Inclui:
 - busca de pessoa;
 - detalhe simples de pessoa, célula e evento;
 - visão por papel;
+- equipe do pastor/admin;
+- células supervisionadas;
 - contato/cuidado com anotação opcional.
 
 Não inclui:
@@ -152,6 +154,25 @@ Regras:
 - manter busca de pessoa para consulta explícita;
 - não criar fila, SLA ou tarefa a partir dessas seções.
 
+## Estrutura de células e equipe
+
+`Equipe` mostra a estrutura pastoral para pastor/admin: supervisores, células acompanhadas e células sem supervisor. A lista de supervisores fica recolhida por padrão e as células aparecem sob demanda, para evitar rolagem longa no mobile.
+
+`Células` mostra a supervisão do usuário supervisor. As células são separadas por:
+
+| Seção | Conteúdo |
+| --- | --- |
+| `Pedem cuidado próximo` | caso pastoral, pedido de apoio, atenção local ou pessoa em cuidado |
+| `Presença em atenção` | presença baixa registrada ou ausência de presença recente |
+| `Acompanhamento estável` | células sem sinal relevante no momento |
+
+Regras:
+
+- ordenar primeiro por gravidade pastoral, depois por presença baixa ou ausência de dado, depois por nome;
+- limitar listas extensas com `Ver mais` / `Mostrar menos`;
+- mostrar status no card da célula, não duplicar o mesmo status no card do supervisor;
+- manter busca e filtros como recorte, não como diretório administrativo.
+
 ## Camadas de atenção
 
 | Camada | Quem vê por padrão | Quando usar | Exemplo de UI |
@@ -198,7 +219,9 @@ A métrica deve dar contexto pastoral, não ranking.
 - Células sem check-in entram como `Sem presença recente` ou `Sem registro`, não como `0%`.
 - Visitantes não entram no denominador.
 - Sem dado deve aparecer como `—`, `Sem registro` ou equivalente.
-- `Presença recente` resume últimos encontros registrados no escopo visível.
+- `Presença recente` na célula resume os últimos 4 encontros registrados e compara com os 4 anteriores quando há amostra suficiente.
+- Percentuais de presença usam cor como leitura rápida: abaixo de 50% em risco, de 50% a 69% em atenção, 70% ou mais como presença positiva.
+- Tendência deve falar de participação ou ritmo, não de saúde espiritual da pessoa ou da célula.
 
 ## Telas principais
 
@@ -225,6 +248,14 @@ Prioriza irmãos que precisam de um olhar especial, saúde geral das células, p
 
 Prioriza pedidos de apoio recebidos, células acompanhadas, presença recente e casos relevantes sob supervisão. Evita duplicar a mesma pessoa em várias seções.
 
+### Equipe
+
+Superfície do pastor/admin para entender supervisores e células sem transformar a tela em gestão pesada de usuários. Usa resumo compacto, busca, filtros e cards de supervisores que expandem células apenas quando necessário.
+
+### Células supervisionadas
+
+Superfície do supervisor para ver células por prioridade pastoral. Deve mostrar rapidamente quem pede cuidado próximo, onde há presença em atenção e quais células estão estáveis.
+
 ### Visão do líder
 
 Prioriza quem merece atenção na célula, check-in/evento relevante, membros da própria célula e ações simples para abrir pessoa e registrar cuidado.
@@ -232,6 +263,10 @@ Prioriza quem merece atenção na célula, check-in/evento relevante, membros da
 ### Pessoas/Membros
 
 Para líder, funciona como lista de membros da célula. Para pastor/supervisor, é superfície pastoral com busca, não diretório completo por padrão.
+
+### Detalhe da célula
+
+Mostra contexto da célula, métricas compactas, encontro pendente quando existir, membros e últimos encontros registrados. A lista de membros começa com poucos itens e pode expandir; encontros do mês aparecem de 4 em 4.
 
 ### Encontros
 
@@ -247,7 +282,7 @@ Responde:
 Por que esta pessoa merece atenção e qual é o próximo gesto de cuidado?
 ```
 
-Mostra status efetivo, ações diretas, motivo principal, última presença, cuidado recente e `Já houve contato?`. Não vira prontuário, CRM ou timeline infinita.
+Mostra status efetivo, ações diretas, ritmo de presença no mês, últimos encontros do mês, motivo principal, cuidado recente e `Já houve contato?`. Não vira prontuário, CRM ou timeline infinita.
 
 ## Fluxo de contato/cuidado
 
@@ -271,6 +306,7 @@ A busca atual é busca de pessoa.
 - Pastor/admin buscam pessoas dentro da igreja.
 - Supervisor busca dentro do escopo supervisionado.
 - Líder busca dentro da própria célula.
+- Busca não deve depender de maiúsculas/minúsculas e deve tolerar acentos quando possível.
 - Resultado leva para `/pessoas/[personId]`.
 - Resultado usa status efetivo, não apenas status persistido.
 - Não prometa busca de evento ou célula enquanto a API não suportar.

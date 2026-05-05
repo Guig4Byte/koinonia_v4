@@ -137,6 +137,9 @@ canViewPerson(user, person)
 canViewEvent(user, event)
 canCheckInEvent(user, event)
 canRegisterCare(user, person)
+canUsePastorDashboard(user)
+canUseSupervisorDashboard(user)
+canUseLeaderDashboard(user)
 getVisibleGroupWhere(user)
 getVisibleEventWhere(user)
 getVisiblePersonWhere(user)
@@ -298,6 +301,7 @@ isPresenceRecordedEvent()
 summarizePresenceFromAttendances()
 summarizeEventPresence()
 summarizeEventsPresence()
+summarizePresenceTrend()
 ```
 
 Regras:
@@ -307,6 +311,7 @@ Regras:
 - UI deve mostrar `—` ou `Sem registro` quando `hasPresenceData` for falso;
 - percentual não deve ser usado como indicador de risco sem dado real;
 - eventos concluídos sem marcação válida continuam sendo leitura de ausência de dado, não `0%`.
+- tendência exige amostra mínima nos dois períodos e variação mínima; não exibir seta quando a comparação for fraca.
 
 ## Check-in
 
@@ -393,9 +398,17 @@ Redireciona o usuário autenticado para a visão do papel.
 
 Telas principais por papel. Todas dependem de `getCurrentUser()` e das permissões centralizadas.
 
+### `/equipe`
+
+Disponível para pastor/admin. Usa `getPastorTeamOverview(user)`, busca/filtros por supervisor ou célula e lista supervisores com células expansíveis. A ordenação deve priorizar pior situação pastoral das células acompanhadas e usar nome como desempate.
+
+### `/celulas`
+
+Disponível para supervisor e perfis autorizados pelo helper de dashboard. Usa `getSupervisorDashboard(user)`, busca/filtros por célula ou liderança e separa células em `Pedem cuidado próximo`, `Presença em atenção` e `Acompanhamento estável`.
+
 ### `/celulas/[groupId]`
 
-Valida `canViewGroup(user, group)`, mostra membros ativos não visitantes, agrega sinais por pessoa, calcula presença com helpers e separa casos pastorais de atenções locais quando o viewer é pastor.
+Valida `canViewGroup(user, group)`, mostra membros ativos não visitantes, agrega sinais por pessoa e separa casos pastorais de atenções locais quando o viewer é pastor. A presença recente da célula usa os últimos 4 encontros registrados, ignora visitantes no denominador e exibe tendência contra os 4 encontros registrados anteriores apenas com amostra mínima.
 
 ### `/pessoas`
 
@@ -403,7 +416,7 @@ Respeita escopo do usuário. Para líder mostra membros da própria célula; par
 
 ### `/pessoas/[personId]`
 
-Valida `canViewPerson(user, person)`, usa status efetivo, respeita escopo para sinais/presenças/cuidados/vínculos e mantém leitura curta para ação.
+Valida `canViewPerson(user, person)`, usa status efetivo, respeita escopo para sinais/presenças/cuidados/vínculos e mantém leitura curta para ação. A leitura de presença do perfil usa o mês atual, ignora visitantes no denominador, mostra até 4 encontros recentes do mês e exibe tendência apenas quando mês atual e anterior têm amostra mínima.
 
 ### `/eventos`
 
@@ -423,7 +436,7 @@ Valida `canViewEvent(user, event)`. Exibe check-in editável somente para o líd
 
 ### `/api/search`
 
-Respeita `getVisiblePersonWhere(user)`, retorna pessoas e contexto visível, retorna status efetivo quando houver sinal primário visível e não promete busca de evento/célula.
+Respeita `getVisiblePersonWhere(user)`, retorna pessoas e contexto visível, retorna status efetivo quando houver sinal primário visível e não promete busca de evento/célula. A busca de nome deve ser case-insensitive e ter fallback normalizado sem acentos.
 
 ## Tema
 
@@ -464,9 +477,15 @@ Tons semânticos:
 - `support`: apoio solicitado/pedido de apoio;
 - `info`: informativo.
 
+Componentes compartilhados:
+
+- `ContextSummary` é o padrão para cards numéricos pastorais com label, detalhe e valor.
+- `ProgressiveList` é o padrão para listas que começam curtas e expandem por partes.
+- Não criar variações locais desses padrões sem necessidade clara; isso evita divergência de tipografia e densidade visual.
+
 ## Seed de desenvolvimento
 
-A seed cria igreja, usuários com senha, células ativas/inativas, eventos concluídos/pendentes/futuros, ausência de dado, visitantes, casos locais, pedidos de apoio, urgentes, resolvidos e encaminhados.
+A seed cria igreja, usuários com senha, células ativas/inativas, histórico de presença nas células com registro, 4 encontros no mês atual para a Célula Semente, eventos pendentes/futuros, ausência de dado, visitantes, faltas consecutivas, faltas intercaladas, justificativas, casos locais, pedidos de apoio, urgentes, resolvidos e encaminhados.
 
 Usuários principais de desenvolvimento:
 

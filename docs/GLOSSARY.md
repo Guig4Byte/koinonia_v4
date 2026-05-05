@@ -42,9 +42,9 @@ Evite transformar evento em calendário amplo antes da hora.
 
 Registro de quem esteve, faltou ou justificou.
 
-Use `Presença`, `Presença pendente`, `Presença registrada`, `Registrar presença`, `Presença da semana`, `Presença recente`, `Salvar presença`, `Salvar ajuste` e `Ver resumo`.
+Use `Presença`, `Ritmo de presença`, `Presença pendente`, `Presença registrada`, `Registrar presença`, `Presença da semana`, `Presença recente`, `Salvar presença`, `Salvar ajuste` e `Ver resumo`.
 
-Para eventos, use `Agendado` quando o encontro ainda não começou e `Aguardando registro` quando a presença depende do líder, mas o usuário atual apenas acompanha.
+Para eventos, use `Agendado` quando o encontro ainda não começou e `Presença ainda não registrada` quando a presença depende do líder, mas o usuário atual apenas acompanha.
 
 Evite `controle de presença` e `fiscalização`.
 
@@ -80,7 +80,7 @@ Sinal não é ticket, SLA, cobrança ou fila burocrática.
 
 Forma visível de apresentar um sinal para alguém agir.
 
-Use `Em atenção`, `Pessoas em atenção`, `Atenção local`, `Quem merece atenção` e `Acompanhar de perto`.
+Use `Em atenção`, `Pessoas em atenção`, `Atenção local`, `Quem merece atenção`, `Acompanhar de perto` e `Pedem cuidado próximo`.
 
 Evite `alerta`, `incidente` e `pendência crítica`, salvo quando houver severidade real.
 
@@ -162,6 +162,8 @@ Estrutura pastoral de supervisores, liderança e células. Use para mostrar quem
 
 Evite transformar `Equipe` em gestão pesada de usuários, ranking de supervisores ou painel de desempenho.
 
+Na lista de supervisores, use `Ver células` / `Mostrar menos` para revelar células acompanhadas sem repetir todos os status no card principal.
+
 ### Login
 
 Entrada do usuário autenticado.
@@ -203,9 +205,10 @@ Tema não é configuração pastoral, não muda escopo e não precisa de tela ad
 | `Informativo` | sinal `INFO`, quando exibido | informativo/neutro |
 | `Sem registro` | ausência de dado de presença | neutro |
 | `Sem presença recente` | célula sem presença recente registrada para leitura pastoral | neutro |
+| `Presença baixa` | presença registrada abaixo do patamar esperado | âmbar/vermelho conforme percentual |
 | `Agendado` | evento futuro | informativo/neutro |
 | `Presença pendente` | evento já iniciado em que o líder pode registrar presença | âmbar |
-| `Aguardando registro` | evento já iniciado sem presença registrada para quem apenas acompanha | âmbar |
+| `Presença ainda não registrada` | evento já iniciado sem presença registrada para quem apenas acompanha | âmbar |
 | `Presença registrada` | evento com presença salva | verde |
 
 Não rebaixar `Urgente` para `Em atenção`. O contexto pode mudar a mensagem, mas a severidade continua sendo severidade.
@@ -218,7 +221,10 @@ Não rebaixar `Urgente` para `Em atenção`. O contexto pode mudar a mensagem, m
 | `Pedidos de apoio` | pedidos de apoio da supervisão |
 | `Acompanhar de perto` | atenções locais comuns |
 | `Acolhidos em cuidado` | pessoas em `Em cuidado` |
-| `Células que pedem atenção` | células com caso pastoral, pedido de apoio, atenção local acumulada ou presença baixa registrada |
+| `Pedem cuidado próximo` | células com caso pastoral, pedido de apoio, atenção local ou pessoa em cuidado |
+| `Presença em atenção` | células com presença baixa registrada ou sem presença recente |
+| `Acompanhamento estável` | células sem sinal relevante no momento |
+| `Células que pedem atenção` | resumo/filtro da equipe pastoral quando houver caso pastoral ou presença baixa registrada |
 | `Sem presença recente` | células sem presença recente registrada; não conta como risco pastoral |
 
 ## CTAs oficiais
@@ -231,6 +237,7 @@ Não rebaixar `Urgente` para `Em atenção`. O contexto pode mudar a mensagem, m
 | Lista de pessoas/casos | `Abrir pessoa` |
 | Pedido recebido pelo supervisor | `Abrir apoio` |
 | Lista com muitos itens | `Ver mais`, `Mostrar menos` |
+| Supervisor com células recolhidas | `Ver células`, `Mostrar menos` |
 | Detalhe da pessoa | `Ligar`, `WhatsApp`, `Já houve contato?` |
 | Célula | `Abrir célula` |
 | Evento pendente | `Registrar presença` |

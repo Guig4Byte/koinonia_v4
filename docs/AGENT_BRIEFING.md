@@ -83,6 +83,13 @@ Regra de lista:
 - não transformar a lista em diretório amplo;
 - busca continua sendo busca de pessoa.
 
+Estrutura pastoral:
+
+- `Equipe` é a visão do pastor/admin sobre supervisores e células;
+- `Células` é a visão do supervisor sobre células acompanhadas;
+- status de célula aparece na célula correspondente, não repetido em todos os containers acima;
+- listas longas expandem por partes, mantendo o mobile leve.
+
 ## Escalonamento
 
 O MVP usa `CareSignal.assignedToId`, sem entidade de tarefa.
@@ -132,6 +139,7 @@ Use `src/features/events/presence-summary.ts`.
 - Evento sem marcação válida de membros não deve mostrar `0%`.
 - Use `hasPresenceData` para decidir entre percentual e `—` / `Sem registro`.
 - Pessoa sem marcação explícita fica `Pendente`, nunca falta presumida.
+- Tendência de presença só aparece com amostra mínima e deve falar de participação/ritmo, não de saúde espiritual.
 
 ## Tema
 
@@ -190,6 +198,7 @@ Não implementar sem pedido explícito:
 - Queries de dashboard: `src/features/dashboard/queries.ts`.
 - Validação de cuidado: `src/features/care/care-validation.ts`.
 - Tema: `src/features/theme/theme.ts`, `src/components/theme-init.tsx`, `src/components/theme-toggle.tsx`.
+- Cards e listas compactas: `src/components/cards.tsx`, `src/components/progressive-list.tsx`.
 
 Consulte `ARCHITECTURE.md` antes de criar regra nova.
 

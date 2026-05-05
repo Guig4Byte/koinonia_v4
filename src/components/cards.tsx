@@ -3,6 +3,7 @@ import { Children, type ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/cn";
 import type { SignalBadgeTone } from "@/features/signals/display";
+import type { PresenceTrend } from "@/features/events/presence-summary";
 
 type CardPriorityTone = SignalBadgeTone | "stable" | "muted";
 
@@ -42,8 +43,12 @@ export function PulseCard({
 
 export function ContextSummary({
   items,
+  detailTone = "default",
+  trendLayout = "inline",
 }: {
-  items: Array<{ label: string; value: string; detail?: string; tone?: "ok" | "warn" | "risk" | "neutral" }>;
+  items: Array<{ label: string; value: string; detail?: string; tone?: "ok" | "warn" | "risk" | "neutral"; trend?: PresenceTrend | null }>;
+  detailTone?: "default" | "strong";
+  trendLayout?: "inline" | "stacked";
 }) {
   const toneClass = {
     ok: "text-[var(--color-metric-presenca)]",
@@ -51,6 +56,12 @@ export function ContextSummary({
     risk: "text-[var(--color-metric-atencoes)]",
     neutral: "text-[var(--color-text-primary)]",
   };
+  const trendToneClass = (trend: PresenceTrend, tone: "ok" | "warn" | "risk" | "neutral") => {
+    if (trend.direction === "up") return "text-[var(--color-metric-presenca)]";
+    if (tone === "ok") return "text-[var(--color-badge-atencao-text)]";
+    return "text-[var(--color-metric-atencoes)]";
+  };
+  const detailClass = detailTone === "strong" ? "context-summary-detail-strong" : undefined;
 
   return (
     <section className="mb-5 rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
@@ -58,10 +69,32 @@ export function ContextSummary({
         {items.map((item) => (
           <div key={item.label} className="flex items-center justify-between gap-4 border-b border-[var(--color-border-divider)] pb-3 last:border-0 last:pb-0">
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-[var(--color-text-primary)]">{item.label}</p>
-              {item.detail ? <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-secondary)]">{item.detail}</p> : null}
+              <p className="context-summary-label font-semibold text-[var(--color-text-primary)]">{item.label}</p>
+              {item.detail ? <p className={cn("context-summary-detail leading-relaxed", detailClass)}>{item.detail}</p> : null}
             </div>
-            <p className={cn("shrink-0 text-xl font-bold tracking-[-0.02em]", toneClass[item.tone ?? "neutral"])}>{item.value}</p>
+            <div className="shrink-0 text-right">
+              <p className={cn("context-summary-value font-bold tracking-[-0.02em]", toneClass[item.tone ?? "neutral"])}>
+              {item.value}
+              {item.trend && trendLayout === "inline" ? (
+                <span
+                  className={cn("ml-1 align-middle text-xs font-bold", trendToneClass(item.trend, item.tone ?? "neutral"))}
+                  aria-label={`${item.trend.direction === "up" ? "subiu" : "caiu"} ${item.trend.delta} pontos em relação ao período anterior`}
+                  title={`${item.trend.direction === "up" ? "Subiu" : "Caiu"} ${item.trend.delta} pontos em relação ao período anterior`}
+                >
+                  {item.trend.direction === "up" ? "↑" : "↓"} {item.trend.delta} pts
+                </span>
+              ) : null}
+              </p>
+              {item.trend && trendLayout === "stacked" ? (
+                <p
+                  className={cn("mt-1 text-[13px] font-bold leading-none", trendToneClass(item.trend, item.tone ?? "neutral"))}
+                  aria-label={`${item.trend.direction === "up" ? "subiu" : "caiu"} ${item.trend.delta} pontos em relação ao período anterior`}
+                  title={`${item.trend.direction === "up" ? "Subiu" : "Caiu"} ${item.trend.delta} pontos em relação ao período anterior`}
+                >
+                  {item.trend.direction === "up" ? "↑" : "↓"} {item.trend.delta} pts
+                </p>
+              ) : null}
+            </div>
           </div>
         ))}
       </div>
@@ -341,6 +374,7 @@ export function GroupCard({
   badgeTone,
   showBadge = true,
   cardTone,
+  presenceTrend,
 }: {
   name: string;
   subtitle: string;
@@ -354,6 +388,7 @@ export function GroupCard({
   badgeTone?: SignalBadgeTone;
   showBadge?: boolean;
   cardTone?: CardPriorityTone;
+  presenceTrend?: PresenceTrend | null;
 }) {
   const tone = !hasPresenceData ? "neutral" : presenceRate < 50 ? "risk" : presenceRate < 70 ? "warn" : "ok";
   const hasLowPresence = hasPresenceData && presenceRate < 70;
@@ -393,6 +428,15 @@ export function GroupCard({
         <span className="min-w-0">
           {presenceLabel}:{" "}
           <strong className={cn("font-bold", presenceToneClass)}>{presenceText}</strong>
+          {presenceTrend ? (
+            <span
+              className={cn("ml-1 font-bold", presenceTrend.direction === "up" ? "text-[var(--color-metric-presenca)]" : tone === "ok" ? "text-[var(--color-badge-atencao-text)]" : "text-[var(--color-metric-atencoes)]")}
+              aria-label={`${presenceTrend.direction === "up" ? "subiu" : "caiu"} ${presenceTrend.delta} pontos em relação ao período anterior`}
+              title={`${presenceTrend.direction === "up" ? "Subiu" : "Caiu"} ${presenceTrend.delta} pontos em relação ao período anterior`}
+            >
+              {presenceTrend.direction === "up" ? "↑" : "↓"} {presenceTrend.delta} pts
+            </span>
+          ) : null}
         </span>
         {href ? <span className="font-semibold text-[var(--color-brand)]">Abrir célula →</span> : null}
       </div>
