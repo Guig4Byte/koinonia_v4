@@ -11,11 +11,20 @@ describe("selectRelevantCheckInEvent", () => {
   it("prefers a pending event from today", () => {
     const selected = selectRelevantCheckInEvent([
       event("past", "2026-04-21T20:00:00-03:00", "COMPLETED", [{}]),
-      event("today", "2026-04-28T20:00:00-03:00", "CHECKIN_OPEN"),
+      event("today", "2026-04-28T10:00:00-03:00", "CHECKIN_OPEN"),
       event("future", "2026-05-05T20:00:00-03:00", "SCHEDULED"),
     ], reference);
 
     expect(selected?.id).toBe("today");
+  });
+
+  it("does not select a pending event from later today", () => {
+    const selected = selectRelevantCheckInEvent([
+      event("past", "2026-04-21T20:00:00-03:00", "COMPLETED", [{}]),
+      event("later-today", "2026-04-28T20:00:00-03:00", "CHECKIN_OPEN"),
+    ], reference);
+
+    expect(selected?.id).toBe("past");
   });
 
   it("does not select a future pending event for check-in", () => {

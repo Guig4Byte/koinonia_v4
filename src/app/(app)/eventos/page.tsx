@@ -112,7 +112,7 @@ function EventCard({ event, user, now }: { event: EventWithRelations; user: Perm
       ? "Agendado"
       : canRegisterPresence
         ? "Presença pendente"
-        : "Presença ainda não registrada";
+        : "Aguardando registro";
   const badgeTone = recordedPresence ? "ok" : isFutureEvent ? "info" : "warn";
   const actionLabel = canRegisterPresence
     ? "Registrar presença"

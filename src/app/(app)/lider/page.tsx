@@ -10,6 +10,7 @@ import { signalBadgeForViewer, signalReasonForViewer } from "@/features/signals/
 import { isSupportRequest, splitPastoralSections } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { redirect } from "next/navigation";
+import { addDays, startOfDay, subDays } from "date-fns";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { initials } from "@/lib/text";
@@ -23,11 +24,19 @@ export default async function LeaderPage() {
 
   const dashboard = await getLeaderDashboard(user);
   const groupIds = dashboard.groups.map((group) => group.id);
+  const now = new Date();
+  const today = startOfDay(now);
+  const historyStart = subDays(today, 60);
+  const tomorrow = addDays(today, 1);
 
   const visibleEvents = groupIds.length > 0
     ? await prisma.event.findMany({
-        where: { groupId: { in: groupIds }, type: "CELL_MEETING" },
-        orderBy: { startsAt: "asc" },
+        where: {
+          groupId: { in: groupIds },
+          type: "CELL_MEETING",
+          startsAt: { gte: historyStart, lt: tomorrow },
+        },
+        orderBy: { startsAt: "desc" },
         take: 20,
         include: {
           group: {
@@ -43,7 +52,7 @@ export default async function LeaderPage() {
       })
     : [];
 
-  const currentEvent = selectRelevantCheckInEvent(visibleEvents);
+  const currentEvent = selectRelevantCheckInEvent(visibleEvents, now);
   const hasRecentPresence = dashboard.hasPresenceData;
   const currentGroup = currentEvent?.group ?? dashboard.groups[0] ?? null;
 
@@ -181,7 +190,7 @@ export default async function LeaderPage() {
                   {formatShortDate(currentEvent.startsAt)}, {formatTime(currentEvent.startsAt)}
                 </p>
               </div>
-              <Badge tone={currentEventCompleted ? "ok" : "warn"}>{currentEventCompleted ? "Registrada" : "Pendente"}</Badge>
+              <Badge tone={currentEventCompleted ? "ok" : "warn"}>{currentEventCompleted ? "Presença registrada" : "Presença pendente"}</Badge>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">
               {currentEventCompleted

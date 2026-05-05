@@ -206,7 +206,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
   const checkInLabel = canEditCheckIn ? (completed ? "Ajuste de presença" : "Registrar presença") : isFutureEvent ? "Encontro agendado" : "Resumo de presença";
   const checkInSectionTitle = canEditCheckIn ? (completed ? "Ajustar presença" : "Registrar presença") : isFutureEvent ? "Sobre o encontro" : "Resumo da presença";
   const checkInSubmitLabel = completed ? "Salvar ajuste" : "Salvar presença";
-  const eventStatusLabel = completed ? "Presença registrada" : isFutureEvent ? "Agendado" : canEditCheckIn ? "Presença pendente" : "Presença ainda não registrada";
+  const eventStatusLabel = completed ? "Presença registrada" : isFutureEvent ? "Agendado" : canEditCheckIn ? "Presença pendente" : "Aguardando registro";
   const eventStatusTone = completed ? "ok" : isFutureEvent ? "info" : "warn";
   const isPastorLike = user.role === "PASTOR" || user.role === "ADMIN";
   const isSupervisor = user.role === "SUPERVISOR";
