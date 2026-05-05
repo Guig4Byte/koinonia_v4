@@ -1,4 +1,5 @@
 import { AppShell } from "@/components/app-shell";
+import { appNavForRole } from "@/features/navigation/app-nav";
 import { ContextSummary, EmptyState, PulseCard, SectionTitle } from "@/components/cards";
 import { InCareSection, PastoralSignalSection } from "@/components/pastoral-list-cards";
 import { CheckInList } from "@/components/check-in-list";
@@ -84,11 +85,7 @@ export default async function LeaderPage() {
     <AppShell
       userName={user.name}
       role={user.role}
-      nav={[
-        { href: "/lider", label: "Visão", icon: "home", active: true, indicator: navIndicator },
-        { href: "/pessoas", label: "Membros", icon: "people" },
-        { href: "/eventos", label: "Eventos", icon: "calendar" },
-      ]}
+      nav={appNavForRole(user, { active: "home", indicator: navIndicator })}
     >
       <SearchBox placeholder="Buscar membro..." />
       <PulseCard

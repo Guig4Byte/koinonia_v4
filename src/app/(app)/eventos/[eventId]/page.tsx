@@ -3,6 +3,7 @@ import { isAfter } from "date-fns";
 import { notFound } from "next/navigation";
 import { AttendanceStatus } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
+import { appNavForRole } from "@/features/navigation/app-nav";
 import { CheckInList } from "@/components/check-in-list";
 import { BackLink, InfoCard, SectionTitle } from "@/components/cards";
 import { Badge } from "@/components/ui/badge";
@@ -208,20 +209,12 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
   const checkInSubmitLabel = completed ? "Salvar ajuste" : "Salvar presença";
   const eventStatusLabel = completed ? "Presença registrada" : isFutureEvent ? "Agendado" : canEditCheckIn ? "Presença pendente" : "Aguardando registro";
   const eventStatusTone = completed ? "ok" : isFutureEvent ? "info" : "warn";
-  const isPastorLike = user.role === "PASTOR" || user.role === "ADMIN";
-  const isSupervisor = user.role === "SUPERVISOR";
-  const secondaryNavHref = isPastorLike ? "/equipe" : isSupervisor ? "/celulas" : "/pessoas";
-  const secondaryNavLabel = isPastorLike ? "Equipe" : isSupervisor ? "Células" : "Membros";
 
   return (
     <AppShell
       userName={user.name}
       role={user.role}
-      nav={[
-        { href: user.role === "LEADER" ? "/lider" : user.role === "SUPERVISOR" ? "/supervisor" : "/pastor", label: "Visão", icon: "home" },
-        { href: secondaryNavHref, label: secondaryNavLabel, icon: "people" },
-        { href: "/eventos", label: "Eventos", icon: "calendar", active: true },
-      ]}
+      nav={appNavForRole(user, { active: "events" })}
     >
       <BackLink href="/eventos">Eventos</BackLink>
 

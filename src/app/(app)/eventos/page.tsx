@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { endOfWeek, isAfter, isToday, startOfDay, startOfWeek, subDays } from "date-fns";
 import { AppShell } from "@/components/app-shell";
+import { appNavForRole } from "@/features/navigation/app-nav";
 import { EmptyState, SectionTitle, priorityCardClass } from "@/components/cards";
 import { ProgressiveList } from "@/components/progressive-list";
 import { Badge } from "@/components/ui/badge";
@@ -264,10 +265,6 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
   const user = await getCurrentUser();
   const now = new Date();
   const events = await getEventsForUser(user, now);
-  const isPastorLike = user.role === "PASTOR" || user.role === "ADMIN";
-  const isSupervisor = user.role === "SUPERVISOR";
-  const secondaryNavHref = isPastorLike ? "/equipe" : isSupervisor ? "/celulas" : "/pessoas";
-  const secondaryNavLabel = isPastorLike ? "Equipe" : isSupervisor ? "Células" : "Membros";
   const resolvedSearchParams: Awaited<EventsSearchParams> = searchParams ? await searchParams : {};
   const rawMode = firstParam(resolvedSearchParams.consulta);
   const mode: EventConsultationMode | null = rawMode === "sem-presenca" || rawMode === "historico" ? rawMode : null;
@@ -293,11 +290,7 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
     <AppShell
       userName={user.name}
       role={user.role}
-      nav={[
-        { href: user.role === "LEADER" ? "/lider" : user.role === "SUPERVISOR" ? "/supervisor" : "/pastor", label: "Visão", icon: "home" },
-        { href: secondaryNavHref, label: secondaryNavLabel, icon: "people" },
-        { href: "/eventos", label: "Eventos", icon: "calendar", active: true },
-      ]}
+      nav={appNavForRole(user, { active: "events" })}
     >
       <div className="events-page">
         {mode ? (

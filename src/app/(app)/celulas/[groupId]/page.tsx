@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
 import { PersonStatus, SignalSeverity, SignalStatus, UserRole } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
+import { appNavForRole, homeHrefForRole, secondaryNavHrefForRole } from "@/features/navigation/app-nav";
 import { BackLink, ContextSummary, EmptyState, PersonMiniCard, SectionTitle } from "@/components/cards";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { ProgressiveList } from "@/components/progressive-list";
@@ -164,11 +165,10 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
   if (!group || !canViewGroup(user, group)) notFound();
 
   const referenceDate = new Date();
-  const homeHref = user.role === UserRole.LEADER ? "/lider" : user.role === UserRole.SUPERVISOR ? "/supervisor" : "/pastor";
+  const homeHref = homeHrefForRole(user.role);
   const isPastorView = user.role === UserRole.PASTOR || user.role === UserRole.ADMIN;
   const isSupervisorView = user.role === UserRole.SUPERVISOR;
-  const secondaryNavHref = isPastorView ? "/equipe" : isSupervisorView ? "/celulas" : "/pessoas";
-  const secondaryNavLabel = isPastorView ? "Equipe" : isSupervisorView ? "Células" : "Membros";
+  const secondaryNavHref = secondaryNavHrefForRole(user.role);
   const backHref = isPastorView || isSupervisorView ? secondaryNavHref : homeHref;
   const backLabel = isPastorView ? "Voltar para equipe" : isSupervisorView ? "Voltar para células" : "Voltar para visão";
   const attentionPeople = getPastoralSectionSignalsByPerson(group.signals, user);
@@ -264,11 +264,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
     <AppShell
       userName={user.name}
       role={user.role}
-      nav={[
-        { href: homeHref, label: "Visão", icon: "home" },
-        { href: secondaryNavHref, label: secondaryNavLabel, icon: "people", active: isPastorView || isSupervisorView || user.role === UserRole.LEADER, indicator: navIndicator },
-        { href: "/eventos", label: "Eventos", icon: "calendar" },
-      ]}
+      nav={appNavForRole(user, { active: "secondary", indicator: navIndicator })}
     >
       <div className="group-detail-page">
         <BackLink href={backHref}>{backLabel}</BackLink>

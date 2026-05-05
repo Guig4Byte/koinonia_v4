@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { MembershipRole, PersonStatus, UserRole } from "@/generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
+import { appNavForRole } from "@/features/navigation/app-nav";
 import { PersonMiniCard, SectionTitle } from "@/components/cards";
 import { InCareSection, PastoralSignalSection } from "@/components/pastoral-list-cards";
 import { SearchBox } from "@/components/search-box";
@@ -95,11 +96,7 @@ export default async function PeoplePage() {
     <AppShell
       userName={user.name}
       role={user.role}
-      nav={[
-        { href: "/lider", label: "Visão", icon: "home" },
-        { href: "/pessoas", label: "Membros", icon: "people", active: true, indicator: navIndicator },
-        { href: "/eventos", label: "Eventos", icon: "calendar" },
-      ]}
+      nav={appNavForRole(user, { active: "secondary", indicator: navIndicator })}
     >
       <SearchBox placeholder="Buscar membro..." />
 

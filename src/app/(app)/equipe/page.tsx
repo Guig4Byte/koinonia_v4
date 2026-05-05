@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Search } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
+import { appNavForRole } from "@/features/navigation/app-nav";
 import { ContextSummary, EmptyState, InfoCard, SectionTitle, priorityCardClass } from "@/components/cards";
 import { ProgressiveList } from "@/components/progressive-list";
 import { Badge } from "@/components/ui/badge";
@@ -321,11 +322,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
     <AppShell
       userName={user.name}
       role={user.role}
-      nav={[
-        { href: "/pastor", label: "Visão", icon: "home" },
-        { href: "/equipe", label: "Equipe", icon: "people", active: true, indicator: navIndicator },
-        { href: "/eventos", label: "Eventos", icon: "calendar" },
-      ]}
+      nav={appNavForRole(user, { active: "secondary", indicator: navIndicator })}
     >
       <div className="team-page">
         <h2 className="team-title">Equipe</h2>

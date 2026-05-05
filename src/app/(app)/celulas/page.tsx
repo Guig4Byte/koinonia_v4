@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Search } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
+import { appNavForRole } from "@/features/navigation/app-nav";
 import { ContextSummary, EmptyState, GroupCard, InfoCard, SectionTitle } from "@/components/cards";
 import { ProgressiveList } from "@/components/progressive-list";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
@@ -303,11 +304,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
     <AppShell
       userName={user.name}
       role={user.role}
-      nav={[
-        { href: "/supervisor", label: "Visão", icon: "home" },
-        { href: "/celulas", label: "Células", icon: "people", active: true, indicator: navIndicator },
-        { href: "/eventos", label: "Eventos", icon: "calendar" },
-      ]}
+      nav={appNavForRole(user, { active: "secondary", indicator: navIndicator })}
     >
       <div className="team-page">
         <h2 className="team-title">Células</h2>

@@ -1,4 +1,5 @@
 import { AppShell } from "@/components/app-shell";
+import { appNavForRole } from "@/features/navigation/app-nav";
 import { ContextSummary, PulseCard, SectionTitle } from "@/components/cards";
 import { InCareSection, PastoralSignalSection } from "@/components/pastoral-list-cards";
 import { SearchBox } from "@/components/search-box";
@@ -35,11 +36,7 @@ export default async function PastorPage() {
     <AppShell
       userName={user.name}
       role={user.role}
-      nav={[
-        { href: "/pastor", label: "Visão", icon: "home", active: true, indicator: navIndicator },
-        { href: "/equipe", label: "Equipe", icon: "people" },
-        { href: "/eventos", label: "Eventos", icon: "calendar" },
-      ]}
+      nav={appNavForRole(user, { active: "home", indicator: navIndicator })}
     >
       <SearchBox placeholder="Buscar qualquer pessoa..." />
       <PulseCard

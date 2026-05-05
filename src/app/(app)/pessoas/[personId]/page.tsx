@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AttendanceStatus, CareKind, PersonStatus } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
+import { appNavForRole, homeHrefForRole, secondaryNavHrefForRole, secondaryNavLabelForRole } from "@/features/navigation/app-nav";
 import { CareActions } from "@/components/care-actions";
 import { PersonStatusActions } from "@/components/person-status-actions";
 import { BackLink, DetailLinkCard, EmptyState, SectionTitle, priorityCardClass } from "@/components/cards";
@@ -157,15 +158,14 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const primaryMembership = person.memberships.find((membership) => canViewGroup(user, membership.group));
   const primaryGroup = primaryMembership?.group;
   const latestAttendance = attendances[0];
-  const homeHref = user.role === "LEADER" ? "/lider" : user.role === "SUPERVISOR" ? "/supervisor" : "/pastor";
+  const homeHref = homeHrefForRole(user.role);
   const openSignalsCount = signals.length;
   const hasCareTouch = careTouches.length > 0;
-  const isPastorLike = user.role === "PASTOR" || user.role === "ADMIN";
-  const isSupervisor = user.role === "SUPERVISOR";
-  const secondaryNavHref = isPastorLike ? "/equipe" : isSupervisor ? "/celulas" : "/pessoas";
-  const secondaryNavLabel = isPastorLike ? "Equipe" : isSupervisor ? "Células" : "Membros";
-  const backHref = isPastorLike || isSupervisor ? homeHref : "/pessoas";
-  const backLabel = isPastorLike || isSupervisor ? "Visão" : secondaryNavLabel;
+  const secondaryNavHref = secondaryNavHrefForRole(user.role);
+  const secondaryNavLabel = secondaryNavLabelForRole(user.role);
+  const isLeader = user.role === "LEADER";
+  const backHref = isLeader ? secondaryNavHref : homeHref;
+  const backLabel = isLeader ? secondaryNavLabel : "Visão";
   const canMarkActive = person.status === PersonStatus.COOLING_AWAY && canRegisterCare(user, person);
   const hasRiskSignal = signals.some(isUrgentOrPastoralCase);
   const navIndicator = hasRiskSignal ? "risk" : openSignalsCount > 0 ? "attention" : person.status === PersonStatus.COOLING_AWAY ? "care" : undefined;
@@ -183,11 +183,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
     <AppShell
       userName={user.name}
       role={user.role}
-      nav={[
-        { href: homeHref, label: "Visão", icon: "home" },
-        { href: secondaryNavHref, label: secondaryNavLabel, icon: "people", active: user.role === "LEADER", indicator: navIndicator },
-        { href: "/eventos", label: "Eventos", icon: "calendar" },
-      ]}
+      nav={appNavForRole(user, { active: isLeader ? "secondary" : "none", indicator: navIndicator })}
     >
       <BackLink href={backHref}>{backLabel}</BackLink>
 
