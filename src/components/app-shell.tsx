@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { LogOut } from "lucide-react";
 import { BottomNav, type NavItem } from "@/components/bottom-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { UserRole } from "../generated/prisma/client";
+import { UserRole } from "@/generated/prisma/client";
 
 const roleLabels: Record<UserRole, string> = {
   ADMIN: "Admin",
@@ -55,7 +55,7 @@ export function AppShell({
         {compactHeader ? null : (
           <div className="app-header-greeting mt-5 flex items-end justify-between gap-4">
             <div>
-              <p className="text-sm text-[var(--color-text-on-header)] opacity-80">Boa noite,</p>
+              <p className="text-sm text-[var(--color-text-on-header)] opacity-80">Olá,</p>
               <h1 className="app-header-name font-serif-display mt-1 text-[2.35rem] font-semibold leading-none text-[var(--color-text-on-header)]">
                 {firstName}.
               </h1>

@@ -389,7 +389,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
         </section>
 
         <section>
-          <SectionTitle>Últimos encontros do mês</SectionTitle>
+          <SectionTitle>Últimos encontros registrados</SectionTitle>
           <div className="group-detail-list">
             <ProgressiveList
               initialCount={4}
@@ -400,7 +400,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
               {completedEvents.map((event) => {
               const metrics = summarizeEventPresence(event);
               const presenceBadgeTone = badgeToneForPresence(metrics.hasPresenceData, metrics.presenceRate);
-              const presenceLabel = metrics.hasPresenceData ? `${metrics.presenceRate}%` : "sem registro";
+              const presenceLabel = metrics.hasPresenceData ? `${metrics.presenceRate}%` : "Sem registro";
               const presenceProgress = metrics.hasPresenceData ? metrics.presenceRate : 0;
 
               return (
