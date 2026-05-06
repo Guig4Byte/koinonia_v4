@@ -10,7 +10,7 @@ import { canUseSupervisorDashboard } from "@/features/permissions/permissions";
 import { groupAttentionLabel, type SignalBadge } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { cn } from "@/lib/cn";
-import { SignalSeverity, UserRole } from "@/generated/prisma/client";
+import { GroupResponsibilityRole, SignalSeverity, UserRole } from "@/generated/prisma/client";
 
 const SECTION_LIMIT = 4;
 const LOW_PRESENCE_THRESHOLD = 70;
@@ -48,8 +48,20 @@ function readCellsFilter(value: string): CellsFilter {
   return CELLS_FILTERS.some((filter) => filter.value === value) ? value as CellsFilter : "todos";
 }
 
+function responsibilityNames(
+  responsibilities: Array<{ role: GroupResponsibilityRole; user: { name: string } }>,
+  role: GroupResponsibilityRole,
+  fallback = "",
+) {
+  const names = responsibilities
+    .filter((responsibility) => responsibility.role === role)
+    .map((responsibility) => responsibility.user.name);
+
+  return names.length > 0 ? names.join(" e ") : fallback;
+}
+
 function groupSearchText(group: SupervisorGroup) {
-  return normalizeSearch(`${group.name} ${group.leader?.name ?? ""}`);
+  return normalizeSearch(`${group.name} ${responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, group.leader?.name ?? "")}`);
 }
 
 function urgentCount(group: SupervisorGroup) {
@@ -218,7 +230,7 @@ function groupBadge(group: SupervisorGroup): SignalBadge | null {
 }
 
 function groupSubtitle(group: SupervisorGroup) {
-  const leadership = group.leader?.name ?? "Liderança não informada";
+  const leadership = responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, group.leader?.name ?? "Liderança não informada");
   const membersLabel = `${group.memberships.length} ${group.memberships.length === 1 ? "membro" : "membros"}`;
 
   return `${leadership} · ${membersLabel}`;

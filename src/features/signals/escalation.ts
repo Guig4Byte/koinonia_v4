@@ -1,4 +1,4 @@
-import { SignalSeverity, UserRole } from "../../generated/prisma/client";
+import { GroupResponsibilityRole, SignalSeverity, UserRole } from "../../generated/prisma/client";
 
 export type SignalAssigneeLike = {
   id?: string | null;
@@ -17,14 +17,63 @@ export type EscalationViewerLike = {
   role: UserRole;
 };
 
+export type EscalationGroupResponsibilityLike = {
+  userId?: string | null;
+  role?: GroupResponsibilityRole | string | null;
+  activeUntil?: Date | string | null;
+};
+
 export type EscalationGroupLike = {
   leaderUserId?: string | null;
   supervisorUserId?: string | null;
+  responsibilities?: EscalationGroupResponsibilityLike[];
 };
 
 export type EscalationScopedSignalLike = EscalationSignalLike & {
   group?: EscalationGroupLike | null;
 };
+
+function isActiveResponsibility(responsibility: EscalationGroupResponsibilityLike) {
+  return responsibility.activeUntil === null || responsibility.activeUntil === undefined;
+}
+
+function hasGroupResponsibility(group: EscalationGroupLike | null | undefined, viewer: EscalationViewerLike, role: GroupResponsibilityRole) {
+  if (!viewer.id) return false;
+
+  return (group?.responsibilities ?? [])
+    .filter(isActiveResponsibility)
+    .some((responsibility) => responsibility.userId === viewer.id && responsibility.role === role);
+}
+
+function hasAnyGroupResponsibility(group: EscalationGroupLike | null | undefined, role: GroupResponsibilityRole) {
+  return (group?.responsibilities ?? [])
+    .filter(isActiveResponsibility)
+    .some((responsibility) => responsibility.role === role);
+}
+
+function isSignalGroupLeader(viewer: EscalationViewerLike, group: EscalationGroupLike | null | undefined) {
+  return Boolean(
+    viewer.id
+    && (
+      hasGroupResponsibility(group, viewer, GroupResponsibilityRole.LEADER)
+      || group?.leaderUserId === viewer.id
+    ),
+  );
+}
+
+function isSignalGroupSupervisor(viewer: EscalationViewerLike, group: EscalationGroupLike | null | undefined) {
+  return Boolean(
+    viewer.id
+    && (
+      hasGroupResponsibility(group, viewer, GroupResponsibilityRole.SUPERVISOR)
+      || group?.supervisorUserId === viewer.id
+    ),
+  );
+}
+
+function hasSupervisorAvailable(group: EscalationGroupLike | null | undefined) {
+  return Boolean(hasAnyGroupResponsibility(group, GroupResponsibilityRole.SUPERVISOR) || group?.supervisorUserId);
+}
 
 export function isAssignedToSupervisor(signal: EscalationSignalLike): boolean {
   return signal.assignedTo?.role === UserRole.SUPERVISOR;
@@ -99,9 +148,8 @@ export function escalationStatusDetailForViewer(signal: EscalationSignalLike, vi
 export function canRequestSupervisorSupport(viewer: EscalationViewerLike, signal: EscalationScopedSignalLike): boolean {
   return Boolean(
     viewer.role === UserRole.LEADER
-    && viewer.id
-    && signal.group?.leaderUserId === viewer.id
-    && signal.group?.supervisorUserId
+    && isSignalGroupLeader(viewer, signal.group)
+    && hasSupervisorAvailable(signal.group)
     && !isAssignedToSupervisor(signal)
     && !isAssignedToPastoralRole(signal),
   );
@@ -110,8 +158,7 @@ export function canRequestSupervisorSupport(viewer: EscalationViewerLike, signal
 export function canEscalateSignalToPastor(viewer: EscalationViewerLike, signal: EscalationScopedSignalLike): boolean {
   return Boolean(
     viewer.role === UserRole.SUPERVISOR
-    && viewer.id
-    && signal.group?.supervisorUserId === viewer.id
+    && isSignalGroupSupervisor(viewer, signal.group)
     && !isAssignedToPastoralRole(signal),
   );
 }

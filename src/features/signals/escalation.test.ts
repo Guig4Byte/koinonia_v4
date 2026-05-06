@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SignalSeverity, UserRole } from "../../generated/prisma/client";
+import { GroupResponsibilityRole, SignalSeverity, UserRole } from "../../generated/prisma/client";
 import { canEscalateSignalToPastor, canRequestSupervisorSupport, escalationStatusDetailForViewer, escalationStatusLabel, escalationStatusLabelForViewer, isPastoralEscalation, shouldShowEscalationStatusForViewer } from "./escalation";
 
 describe("signal escalation helpers", () => {
@@ -61,24 +61,24 @@ describe("signal escalation action eligibility", () => {
   it("allows the cell leader to request supervisor support once", () => {
     expect(canRequestSupervisorSupport(
       { id: "leader-1", role: UserRole.LEADER },
-      { severity: SignalSeverity.ATTENTION, group: { leaderUserId: "leader-1", supervisorUserId: "supervisor-1" } },
+      { severity: SignalSeverity.ATTENTION, group: { responsibilities: [{ userId: "leader-1", role: GroupResponsibilityRole.LEADER }, { userId: "supervisor-1", role: GroupResponsibilityRole.SUPERVISOR }] } },
     )).toBe(true);
 
     expect(canRequestSupervisorSupport(
       { id: "leader-1", role: UserRole.LEADER },
-      { severity: SignalSeverity.ATTENTION, assignedTo: { role: UserRole.SUPERVISOR }, group: { leaderUserId: "leader-1", supervisorUserId: "supervisor-1" } },
+      { severity: SignalSeverity.ATTENTION, assignedTo: { role: UserRole.SUPERVISOR }, group: { responsibilities: [{ userId: "leader-1", role: GroupResponsibilityRole.LEADER }, { userId: "supervisor-1", role: GroupResponsibilityRole.SUPERVISOR }] } },
     )).toBe(false);
   });
 
   it("allows the cell supervisor to escalate to pastor once", () => {
     expect(canEscalateSignalToPastor(
       { id: "supervisor-1", role: UserRole.SUPERVISOR },
-      { severity: SignalSeverity.ATTENTION, group: { supervisorUserId: "supervisor-1" } },
+      { severity: SignalSeverity.ATTENTION, group: { responsibilities: [{ userId: "supervisor-1", role: GroupResponsibilityRole.SUPERVISOR }] } },
     )).toBe(true);
 
     expect(canEscalateSignalToPastor(
       { id: "supervisor-1", role: UserRole.SUPERVISOR },
-      { severity: SignalSeverity.ATTENTION, assignedTo: { role: UserRole.PASTOR }, group: { supervisorUserId: "supervisor-1" } },
+      { severity: SignalSeverity.ATTENTION, assignedTo: { role: UserRole.PASTOR }, group: { responsibilities: [{ userId: "supervisor-1", role: GroupResponsibilityRole.SUPERVISOR }] } },
     )).toBe(false);
   });
 });

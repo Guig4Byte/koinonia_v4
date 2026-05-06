@@ -2,7 +2,7 @@ import Link from "next/link";
 import { CalendarCheck2, UsersRound } from "lucide-react";
 import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
-import { PersonStatus, SignalSeverity, SignalStatus, UserRole } from "../../../../generated/prisma/client";
+import { GroupResponsibilityRole, PersonStatus, SignalSeverity, SignalStatus, UserRole } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole, homeHrefForRole, secondaryNavHrefForRole } from "@/features/navigation/app-nav";
 import { BackLink, ContextSummary, EmptyState, PersonMiniCard, SectionTitle } from "@/components/cards";
@@ -11,7 +11,7 @@ import { ProgressiveList } from "@/components/progressive-list";
 import { isPresenceRecordedEvent, summarizeEventPresence, summarizeEventsPresence, summarizePresenceTrend } from "@/features/events/presence-summary";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
-import { canViewGroup } from "@/features/permissions/permissions";
+import { canViewGroup, isGroupLeader } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson } from "@/features/signals/attention";
 import { escalationStatusDetailForViewer } from "@/features/signals/escalation";
 import { groupAttentionLabel, signalReasonForViewer, type SignalBadge, type SignalBadgeTone } from "@/features/signals/display";
@@ -62,6 +62,18 @@ const MEMBERS_FILTERS: Array<{ value: MembersFilter; label: string }> = [
 function groupMeetingText(day?: number | null, time?: string | null) {
   if (day === null || day === undefined) return time ? `Horário: ${time}` : "Encontro sem horário fixo informado.";
   return `${dayLabels[day] ?? "Dia informado"}${time ? ` · ${time}` : ""}`;
+}
+
+function responsibilityNames(
+  responsibilities: Array<{ role: GroupResponsibilityRole; user: { name: string } }>,
+  role: GroupResponsibilityRole,
+  fallback = "não informada",
+) {
+  const names = responsibilities
+    .filter((responsibility) => responsibility.role === role)
+    .map((responsibility) => responsibility.user.name);
+
+  return names.length > 0 ? names.join(" e ") : fallback;
 }
 
 function firstParam(value: string | string[] | undefined) {
@@ -143,6 +155,11 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
     include: {
       leader: true,
       supervisor: true,
+      responsibilities: {
+        where: { activeUntil: null },
+        include: { user: true },
+        orderBy: { createdAt: "asc" },
+      },
       memberships: {
         where: { leftAt: null, role: { not: "VISITOR" } },
         include: { person: true },
@@ -163,6 +180,9 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
   });
 
   if (!group || !canViewGroup(user, group)) notFound();
+
+  const leadershipName = responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, group.leader?.name ?? "não informada");
+  const supervisionName = responsibilityNames(group.responsibilities, GroupResponsibilityRole.SUPERVISOR, group.supervisor?.name ?? "");
 
   const referenceDate = new Date();
   const homeHref = homeHrefForRole(user.role);
@@ -189,7 +209,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
   const hasRecentPresence = presence.hasPresenceData;
   const relevantEvent = selectRelevantCheckInEvent(group.events, referenceDate);
   const pendingEvent = relevantEvent && !hasRecordedPresence(relevantEvent) ? relevantEvent : null;
-  const canRegisterPendingEvent = user.role === UserRole.LEADER && group.leaderUserId === user.id;
+  const canRegisterPendingEvent = user.role === UserRole.LEADER && isGroupLeader(user, group);
   const pendingEventStatusLabel = canRegisterPendingEvent ? "Presença pendente" : "Aguardando registro";
   const pendingEventActionLabel = canRegisterPendingEvent ? "Registrar presença" : "Abrir encontro";
   const headerBadge: SignalBadge = (() => {
@@ -281,8 +301,8 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">Célula</p>
               <h2 className="mt-1 text-[1.45rem] font-extrabold leading-tight tracking-[-0.02em] text-[var(--color-text-primary)]">{group.name}</h2>
               <p className="mt-2 text-[13px] leading-relaxed text-[var(--color-text-secondary)]">
-                Liderança: {group.leader?.name ?? "não informada"}
-                {group.supervisor?.name ? ` · Supervisão: ${group.supervisor.name}` : ""}
+                Liderança: {leadershipName}
+                {supervisionName ? ` · Supervisão: ${supervisionName}` : ""}
               </p>
             </div>
             <Badge tone={headerBadge.tone}>{headerBadge.label}</Badge>

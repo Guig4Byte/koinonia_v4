@@ -34,7 +34,7 @@ async function getEventsForUser(user: PermissionUser, referenceDate: Date) {
         { startsAt: { gte: historyStart, lte: weekEnd } },
       ],
     },
-    include: { group: true, attendances: true },
+    include: { group: { include: { responsibilities: { where: { activeUntil: null } } } }, attendances: true },
     orderBy: { startsAt: "asc" },
     take: 120,
   });

@@ -10,7 +10,7 @@ export async function POST(_request: Request, context: { params: Promise<{ perso
 
   const person = await prisma.person.findUnique({
     where: { id: personId },
-    include: { memberships: { where: { leftAt: null }, include: { group: true } } },
+    include: { memberships: { where: { leftAt: null }, include: { group: { include: { responsibilities: { where: { activeUntil: null } } } } } } },
   });
 
   if (!person || person.churchId !== user.churchId) {

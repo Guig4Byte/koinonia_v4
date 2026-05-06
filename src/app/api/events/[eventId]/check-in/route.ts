@@ -44,7 +44,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ev
 
   const event = await prisma.event.findUnique({
     where: { id: eventId },
-    include: { group: true },
+    include: { group: { include: { responsibilities: { where: { activeUntil: null } } } } },
   });
 
   if (!event || event.churchId !== user.churchId) {

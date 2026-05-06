@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SignalStatus, UserRole } from "@/generated/prisma/client";
+import { GroupResponsibilityRole, SignalStatus, UserRole } from "@/generated/prisma/client";
 import { canViewGroup } from "@/features/permissions/permissions";
 import { canEscalateSignalToPastor, canRequestSupervisorSupport } from "@/features/signals/escalation";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -40,7 +40,18 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
 
   const signal = await prisma.careSignal.findUnique({
     where: { id: signalId },
-    include: { group: true, assignedTo: true },
+    include: {
+      group: {
+        include: {
+          responsibilities: {
+            where: { activeUntil: null },
+            include: { user: true },
+            orderBy: { createdAt: "asc" },
+          },
+        },
+      },
+      assignedTo: true,
+    },
   });
 
   if (!signal || signal.churchId !== user.churchId || signal.status !== SignalStatus.OPEN) {
@@ -52,15 +63,13 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
   }
 
   if (action === "REQUEST_SUPERVISOR") {
-    if (user.role === UserRole.LEADER && signal.group?.leaderUserId === user.id && !signal.group?.supervisorUserId) {
-      return NextResponse.json({ error: "Esta célula ainda não tem supervisor definido" }, { status: 400 });
-    }
-
     if (!canRequestSupervisorSupport(user, signal)) {
       return NextResponse.json({ error: "Apenas o líder da célula pode pedir apoio à supervisão" }, { status: 403 });
     }
 
-    const supervisorUserId = signal.group?.supervisorUserId;
+    const supervisorUserId =
+      signal.group?.responsibilities.find((responsibility) => responsibility.role === GroupResponsibilityRole.SUPERVISOR)?.userId
+      ?? signal.group?.supervisorUserId;
 
     if (!supervisorUserId) {
       return NextResponse.json({ error: "Esta célula ainda não tem supervisor definido" }, { status: 400 });

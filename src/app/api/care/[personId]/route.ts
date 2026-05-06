@@ -24,7 +24,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pe
 
   const person = await prisma.person.findUnique({
     where: { id: personId },
-    include: { memberships: { where: { leftAt: null }, include: { group: true } } },
+    include: { memberships: { where: { leftAt: null }, include: { group: { include: { responsibilities: { where: { activeUntil: null } } } } } } },
   });
 
   if (!person || person.churchId !== user.churchId) {

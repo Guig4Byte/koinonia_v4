@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { UserRole } from "../../generated/prisma/client";
+import { GroupResponsibilityRole, UserRole } from "../../generated/prisma/client";
 import {
   canCheckInEvent,
   canRegisterCare,
@@ -23,12 +23,40 @@ const supervisor = { id: "supervisor-1", churchId: "church-1", role: UserRole.SU
 const leader = { id: "leader-1", churchId: "church-1", role: UserRole.LEADER };
 const otherLeader = { id: "leader-2", churchId: "church-1", role: UserRole.LEADER };
 
+function responsibility(userId: string, role: GroupResponsibilityRole) {
+  return { userId, role, activeUntil: null };
+}
+
+function scopedGroupWhere(userId: string, role: GroupResponsibilityRole) {
+  return {
+    churchId: "church-1",
+    isActive: true,
+    OR: [
+      {
+        responsibilities: {
+          some: {
+            churchId: "church-1",
+            userId,
+            role,
+            activeUntil: null,
+          },
+        },
+      },
+      role === GroupResponsibilityRole.LEADER ? { leaderUserId: userId } : { supervisorUserId: userId },
+    ],
+  };
+}
+
 const group = {
   id: "group-1",
   churchId: "church-1",
   isActive: true,
-  leaderUserId: leader.id,
-  supervisorUserId: supervisor.id,
+  leaderUserId: null,
+  supervisorUserId: null,
+  responsibilities: [
+    responsibility(leader.id, GroupResponsibilityRole.LEADER),
+    responsibility(supervisor.id, GroupResponsibilityRole.SUPERVISOR),
+  ],
 };
 
 const event = { churchId: "church-1", startsAt: new Date(Date.now() - 60 * 1000), group };
@@ -92,8 +120,9 @@ describe("permission helpers", () => {
       id: "group-2",
       churchId: "church-1",
       isActive: true,
-      leaderUserId: "leader-2",
-      supervisorUserId: supervisor.id,
+      leaderUserId: null,
+      supervisorUserId: null,
+      responsibilities: [responsibility(supervisor.id, GroupResponsibilityRole.SUPERVISOR)],
     };
     const inactiveGroup = { ...group, id: "group-inactive", isActive: false };
     const multiGroupPerson = {
@@ -120,12 +149,12 @@ describe("permission helpers", () => {
   it("builds visible membership filters for search result context", () => {
     expect(getVisibleMembershipWhere(leader)).toEqual({
       leftAt: null,
-      group: { is: { churchId: leader.churchId, isActive: true, leaderUserId: leader.id } },
+      group: { is: scopedGroupWhere(leader.id, GroupResponsibilityRole.LEADER) },
     });
 
     expect(getVisibleMembershipWhere(supervisor)).toEqual({
       leftAt: null,
-      group: { is: { churchId: supervisor.churchId, isActive: true, supervisorUserId: supervisor.id } },
+      group: { is: scopedGroupWhere(supervisor.id, GroupResponsibilityRole.SUPERVISOR) },
     });
   });
 
@@ -137,12 +166,12 @@ describe("permission helpers", () => {
 
     expect(getVisibleEventWhere(leader)).toEqual({
       churchId: leader.churchId,
-      group: { is: { churchId: leader.churchId, isActive: true, leaderUserId: leader.id } },
+      group: { is: scopedGroupWhere(leader.id, GroupResponsibilityRole.LEADER) },
     });
 
     expect(getVisiblePersonWhere(leader)).toEqual({
       churchId: leader.churchId,
-      memberships: { some: { leftAt: null, group: { is: { churchId: leader.churchId, isActive: true, leaderUserId: leader.id } } } },
+      memberships: { some: { leftAt: null, group: { is: scopedGroupWhere(leader.id, GroupResponsibilityRole.LEADER) } } },
     });
 
 
@@ -158,7 +187,7 @@ describe("permission helpers", () => {
     expect(getVisibleOpenSignalWhere(supervisor)).toEqual({
       churchId: supervisor.churchId,
       status: "OPEN",
-      group: { is: { churchId: supervisor.churchId, isActive: true, supervisorUserId: supervisor.id } },
+      group: { is: scopedGroupWhere(supervisor.id, GroupResponsibilityRole.SUPERVISOR) },
     });
   });
 
@@ -177,7 +206,7 @@ describe("permission helpers", () => {
     expect(getVisibleCareTouchWhere(leader, "person-1")).toEqual({
       churchId: leader.churchId,
       personId: "person-1",
-      group: { is: { churchId: leader.churchId, isActive: true, leaderUserId: leader.id } },
+      group: { is: scopedGroupWhere(leader.id, GroupResponsibilityRole.LEADER) },
     });
 
     expect(getVisibleCareTouchWhere(pastor, "person-1")).toEqual({

@@ -1,5 +1,5 @@
 import { endOfWeek, startOfWeek } from "date-fns";
-import { MembershipRole, PersonStatus, SignalSeverity, SignalStatus, UserRole } from "../../generated/prisma/client";
+import { GroupResponsibilityRole, MembershipRole, PersonStatus, SignalSeverity, SignalStatus, UserRole } from "../../generated/prisma/client";
 import { summarizeEventsPresence, summarizePresenceTrend, isPresenceRecordedEvent } from "@/features/events/presence-summary";
 import { canUsePastorDashboard, getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson } from "@/features/signals/attention";
@@ -12,6 +12,25 @@ const pastoralSignalWhere = {
     { assignedTo: { is: { role: { in: [UserRole.PASTOR, UserRole.ADMIN] } } } },
   ],
 };
+
+const activeGroupResponsibilityInclude = {
+  where: { activeUntil: null },
+  include: { user: true },
+  orderBy: { createdAt: "asc" as const },
+};
+
+function namesForResponsibilities(
+  responsibilities: Array<{ role: GroupResponsibilityRole; user: { name: string } }>,
+  role: GroupResponsibilityRole,
+  fallback = "não informada",
+) {
+  const names = responsibilities
+    .filter((responsibility) => responsibility.role === role)
+    .map((responsibility) => responsibility.user.name);
+
+  if (names.length === 0) return fallback;
+  return names.join(" e ");
+}
 
 export async function getPastorDashboard(user: PermissionUser) {
   if (!canUsePastorDashboard(user)) {
@@ -35,7 +54,7 @@ export async function getPastorDashboard(user: PermissionUser) {
         startsAt: { gte: weekStart, lte: weekEnd },
         group: { is: { churchId, isActive: true } },
       },
-      include: { attendances: true, group: { include: { leader: true, supervisor: true } } },
+      include: { attendances: true, group: { include: { leader: true, supervisor: true, responsibilities: activeGroupResponsibilityInclude } } },
       orderBy: { startsAt: "asc" },
     }),
     prisma.careSignal.findMany({
@@ -47,7 +66,7 @@ export async function getPastorDashboard(user: PermissionUser) {
           { OR: [{ groupId: null }, { group: { is: { churchId, isActive: true } } }] },
         ],
       },
-      include: { person: true, assignedTo: true, group: { include: { leader: true, supervisor: true } } },
+      include: { person: true, assignedTo: true, group: { include: { leader: true, supervisor: true, responsibilities: activeGroupResponsibilityInclude } } },
       orderBy: [{ detectedAt: "desc" }],
       take: 50,
     }),
@@ -56,6 +75,7 @@ export async function getPastorDashboard(user: PermissionUser) {
       include: {
         leader: true,
         supervisor: true,
+        responsibilities: activeGroupResponsibilityInclude,
         signals: { where: { status: SignalStatus.OPEN }, include: { assignedTo: true } },
         events: { orderBy: { startsAt: "desc" }, take: 4, include: { attendances: true } },
       },
@@ -93,8 +113,8 @@ export async function getPastorDashboard(user: PermissionUser) {
     return {
       id: group.id,
       name: group.name,
-      leaderName: group.leader?.name ?? "Sem líder",
-      supervisorName: group.supervisor?.name ?? "Sem supervisor",
+      leaderName: namesForResponsibilities(group.responsibilities, GroupResponsibilityRole.LEADER, group.leader?.name ?? "Sem liderança"),
+      supervisorName: namesForResponsibilities(group.responsibilities, GroupResponsibilityRole.SUPERVISOR, group.supervisor?.name ?? "Sem supervisão"),
       presenceRate: groupPresence.presenceRate,
       hasPresenceData: groupPresence.hasPresenceData,
       recordedEventsCount: recordedEvents.length,
@@ -131,6 +151,7 @@ export async function getPastorTeamOverview(user: PermissionUser) {
 
   const groupInclude = {
     leader: true,
+    responsibilities: activeGroupResponsibilityInclude,
     memberships: {
       where: { leftAt: null, role: { not: MembershipRole.VISITOR } },
       include: { person: { select: { status: true } } },
@@ -143,16 +164,24 @@ export async function getPastorTeamOverview(user: PermissionUser) {
     prisma.user.findMany({
       where: { churchId, role: UserRole.SUPERVISOR },
       include: {
-        groupsSupervised: {
-          where: { churchId, isActive: true },
-          include: groupInclude,
-          orderBy: { name: "asc" },
+        groupResponsibilities: {
+          where: { churchId, role: GroupResponsibilityRole.SUPERVISOR, activeUntil: null },
+          include: {
+            group: {
+              include: groupInclude,
+            },
+          },
+          orderBy: { createdAt: "asc" },
         },
       },
       orderBy: { name: "asc" },
     }),
     prisma.smallGroup.findMany({
-      where: { churchId, isActive: true, supervisorUserId: null },
+      where: {
+        churchId,
+        isActive: true,
+        responsibilities: { none: { role: GroupResponsibilityRole.SUPERVISOR, activeUntil: null } },
+      },
       include: groupInclude,
       orderBy: { name: "asc" },
     }),
@@ -187,7 +216,7 @@ export async function getPastorTeamOverview(user: PermissionUser) {
     return {
       id: group.id,
       name: group.name,
-      leadershipName: group.leader?.name ?? "não informada",
+      leadershipName: namesForResponsibilities(group.responsibilities, GroupResponsibilityRole.LEADER, group.leader?.name ?? "não informada"),
       membersCount: group.memberships.length,
       presenceRate: presence.presenceRate,
       hasPresenceData: presence.hasPresenceData,
@@ -212,7 +241,7 @@ export async function getPastorTeamOverview(user: PermissionUser) {
   };
 
   const supervisorTeams = supervisors.map((supervisor) => {
-    const groups = supervisor.groupsSupervised.map(toTeamGroup).sort(compareTeamGroups);
+    const groups = supervisor.groupResponsibilities.map((responsibility) => responsibility.group).map(toTeamGroup).sort(compareTeamGroups);
     const highestPriorityScore = groups[0]?.pastoralPriorityScore ?? 0;
     const groupsNeedingAttentionCount = groups.filter((group) => group.pastoralPriorityScore > 0).length;
     const pastoralCasesCount = groups.reduce((total, group) => total + group.pastoralCasesCount, 0);
@@ -277,6 +306,7 @@ async function getGroupScopedDashboard(user: PermissionUser) {
     include: {
       leader: true,
       supervisor: true,
+      responsibilities: activeGroupResponsibilityInclude,
       memberships: { where: { leftAt: null, role: { not: MembershipRole.VISITOR } }, include: { person: true } },
       signals: { where: { status: SignalStatus.OPEN }, include: { person: true, assignedTo: true } },
       events: { orderBy: { startsAt: "desc" }, take: 8, include: { attendances: true } },

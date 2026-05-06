@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AttendanceStatus, CareKind, PersonStatus, UserRole } from "../../../../generated/prisma/client";
+import { AttendanceStatus, CareKind, GroupResponsibilityRole, PersonStatus, UserRole } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole, homeHrefForRole, secondaryNavHrefForRole, secondaryNavLabelForRole } from "@/features/navigation/app-nav";
 import { CareActions } from "@/components/care-actions";
@@ -81,6 +81,18 @@ function monthPresenceTrendLabel(
   return "A presença caiu em relação ao mês anterior. Vale se aproximar com cuidado.";
 }
 
+function responsibilityNames(
+  responsibilities: Array<{ role: GroupResponsibilityRole; user: { name: string } }>,
+  role: GroupResponsibilityRole,
+  fallback = "",
+) {
+  const names = responsibilities
+    .filter((responsibility) => responsibility.role === role)
+    .map((responsibility) => responsibility.user.name);
+
+  return names.length > 0 ? names.join(" e ") : fallback;
+}
+
 export default async function PersonDetailPage({ params }: { params: Promise<{ personId: string }> }) {
   const user = await getCurrentUser();
   const { personId } = await params;
@@ -90,7 +102,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
     include: {
       memberships: {
         where: { leftAt: null },
-        include: { group: { include: { leader: true, supervisor: true } } },
+        include: { group: { include: { leader: true, supervisor: true, responsibilities: { where: { activeUntil: null }, include: { user: true }, orderBy: { createdAt: "asc" } } } } },
       },
     },
   });
@@ -114,12 +126,12 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const [signals, attendances, monthAttendances, previousMonthAttendances, careTouches] = await Promise.all([
     prisma.careSignal.findMany({
       where: { ...visibleOpenSignalWhere, personId: person.id },
-      include: { assignedTo: true, group: { include: { leader: true, supervisor: true } } },
+      include: { assignedTo: true, group: { include: { leader: true, supervisor: true, responsibilities: { where: { activeUntil: null }, include: { user: true }, orderBy: { createdAt: "asc" } } } } },
       orderBy: [{ severity: "desc" }, { detectedAt: "desc" }],
     }),
     prisma.attendance.findMany({
       where: { personId: person.id, event: recordedEventWhere },
-      include: { event: { include: { group: true } } },
+      include: { event: { include: { group: { include: { responsibilities: { where: { activeUntil: null }, include: { user: true }, orderBy: { createdAt: "asc" } } } } } } },
       orderBy: [{ event: { startsAt: "desc" } }, { markedAt: "desc" }],
       take: 8,
     }),
@@ -132,7 +144,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           startsAt: { gte: monthStart, lt: nextMonthStart, lte: referenceDate },
         },
       },
-      include: { event: { include: { group: true } } },
+      include: { event: { include: { group: { include: { responsibilities: { where: { activeUntil: null }, include: { user: true }, orderBy: { createdAt: "asc" } } } } } } },
       orderBy: [{ event: { startsAt: "desc" } }, { markedAt: "desc" }],
     }),
     prisma.attendance.findMany({
@@ -144,12 +156,12 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           startsAt: { gte: previousMonthStart, lt: monthStart },
         },
       },
-      include: { event: { include: { group: true } } },
+      include: { event: { include: { group: { include: { responsibilities: { where: { activeUntil: null }, include: { user: true }, orderBy: { createdAt: "asc" } } } } } } },
       orderBy: [{ event: { startsAt: "desc" } }, { markedAt: "desc" }],
     }),
     prisma.careTouch.findMany({
       where: visibleCareTouchWhere,
-      include: { actor: true, group: true },
+      include: { actor: true, group: { include: { responsibilities: { where: { activeUntil: null }, include: { user: true }, orderBy: { createdAt: "asc" } } } } },
       orderBy: { happenedAt: "desc" },
       take: 5,
     }),
@@ -157,6 +169,12 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
 
   const primaryMembership = person.memberships.find((membership) => canViewGroup(user, membership.group));
   const primaryGroup = primaryMembership?.group;
+  const primaryLeadershipName = primaryGroup
+    ? responsibilityNames(primaryGroup.responsibilities, GroupResponsibilityRole.LEADER, primaryGroup.leader?.name ?? "")
+    : "";
+  const primarySupervisionName = primaryGroup
+    ? responsibilityNames(primaryGroup.responsibilities, GroupResponsibilityRole.SUPERVISOR, primaryGroup.supervisor?.name ?? "")
+    : "";
   const latestAttendance = attendances[0];
   const homeHref = homeHrefForRole(user.role);
   const openSignalsCount = signals.length;
@@ -198,7 +216,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
                 <h2 className="text-2xl font-semibold leading-tight text-[var(--color-text-primary)]">{person.fullName}</h2>
                 <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
                   {primaryGroup?.name ?? "Sem célula"}
-                  {primaryGroup?.leader?.name ? ` · ${primaryGroup.leader.name}` : ""}
+                  {primaryLeadershipName ? ` · ${primaryLeadershipName}` : ""}
                 </p>
               </div>
               <Badge tone={personBadge.tone}>{personBadge.label}</Badge>
@@ -371,8 +389,8 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
             title={primaryGroup.name}
             meta={
               <>
-                Liderança: {primaryGroup.leader?.name ?? "não informada"}
-                {primaryGroup.supervisor?.name ? ` · Supervisor: ${primaryGroup.supervisor.name}` : ""}
+                Liderança: {primaryLeadershipName || "não informada"}
+                {primarySupervisionName ? ` · Supervisão: ${primarySupervisionName}` : ""}
               </>
             }
             actionLabel="Abrir célula"
