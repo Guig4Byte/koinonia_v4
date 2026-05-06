@@ -17,6 +17,7 @@ import { summarizePresenceFromAttendances, summarizePresenceTrend } from "@/feat
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { formatBrasiliaMonthName, startOfBrasiliaMonth, startOfNextBrasiliaMonth, startOfPreviousBrasiliaMonth } from "@/lib/brasilia-time";
 import { initials } from "@/lib/text";
 
 const attendanceLabels: Record<AttendanceStatus, string> = {
@@ -114,10 +115,10 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const visibleEventWhere = getVisibleEventWhere(user);
   const visibleCareTouchWhere = getVisibleCareTouchWhere(user, person.id);
   const referenceDate = new Date();
-  const monthStart = new Date(referenceDate.getFullYear(), referenceDate.getMonth(), 1);
-  const nextMonthStart = new Date(referenceDate.getFullYear(), referenceDate.getMonth() + 1, 1);
-  const previousMonthStart = new Date(referenceDate.getFullYear(), referenceDate.getMonth() - 1, 1);
-  const monthLabel = new Intl.DateTimeFormat("pt-BR", { month: "long" }).format(referenceDate);
+  const monthStart = startOfBrasiliaMonth(referenceDate);
+  const nextMonthStart = startOfNextBrasiliaMonth(referenceDate);
+  const previousMonthStart = startOfPreviousBrasiliaMonth(referenceDate);
+  const monthLabel = formatBrasiliaMonthName(referenceDate);
   const recordedEventWhere = {
     ...visibleEventWhere,
     startsAt: { lte: referenceDate },

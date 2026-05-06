@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { addDays, startOfDay, subDays } from "date-fns";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
@@ -15,6 +14,7 @@ import { splitPastoralSections } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { addBrasiliaDays, startOfBrasiliaDay } from "@/lib/brasilia-time";
 
 export default async function LeaderPage() {
   const user = await getCurrentUser();
@@ -26,9 +26,9 @@ export default async function LeaderPage() {
   const dashboard = await getLeaderDashboard(user);
   const groupIds = dashboard.groups.map((group) => group.id);
   const now = new Date();
-  const today = startOfDay(now);
-  const historyStart = subDays(today, 60);
-  const tomorrow = addDays(today, 1);
+  const today = startOfBrasiliaDay(now);
+  const historyStart = addBrasiliaDays(today, -60);
+  const tomorrow = addBrasiliaDays(today, 1);
 
   if (groupIds.length > 0) {
     await ensureUpcomingCellMeetingsForUser(user, { groupIds, referenceDate: now });

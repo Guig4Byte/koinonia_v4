@@ -1,10 +1,10 @@
-import { endOfWeek, startOfWeek } from "date-fns";
 import { GroupResponsibilityRole, MembershipRole, PersonStatus, SignalSeverity, SignalStatus, UserRole } from "../../generated/prisma/client";
 import { summarizeEventsPresence, summarizePresenceTrend, isPresenceRecordedEvent } from "@/features/events/presence-summary";
 import { canUsePastorDashboard, getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson } from "@/features/signals/attention";
 import { getPastoralSectionSignalsByPerson, isSupportRequest } from "@/features/signals/sections";
 import { prisma } from "@/lib/prisma";
+import { addBrasiliaDays, endOfBrasiliaWeek, startOfBrasiliaDay, startOfBrasiliaWeek } from "@/lib/brasilia-time";
 
 const pastoralSignalWhere = {
   OR: [
@@ -39,12 +39,9 @@ export async function getPastorDashboard(user: PermissionUser) {
 
   const churchId = user.churchId;
   const now = new Date();
-  const weekStart = startOfWeek(now, { weekStartsOn: 1 });
-  const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
-
-  const tomorrow = new Date(now);
-  tomorrow.setHours(0, 0, 0, 0);
-  tomorrow.setDate(tomorrow.getDate() + 1);
+  const weekStart = startOfBrasiliaWeek(now, 1);
+  const weekEnd = endOfBrasiliaWeek(now, 1);
+  const tomorrow = addBrasiliaDays(startOfBrasiliaDay(now), 1);
 
   const [events, openSignals, groups, inCarePeople] = await Promise.all([
     prisma.event.findMany({

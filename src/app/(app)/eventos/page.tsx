@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { endOfWeek, isAfter, isToday, startOfDay, startOfWeek, subDays } from "date-fns";
+import { isAfter } from "date-fns";
 import { EventStatus } from "../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
@@ -13,6 +13,7 @@ import { cn } from "@/lib/cn";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { addBrasiliaDays, endOfBrasiliaWeek, isTodayInBrasilia, startOfBrasiliaDay, startOfBrasiliaWeek } from "@/lib/brasilia-time";
 
 const EVENT_LIST_LIMIT = 4;
 
@@ -25,9 +26,9 @@ type EventConsultationMode = "sem-presenca" | "historico";
 type EventPeriod = "semana" | "semana-passada" | "30d";
 
 async function getEventsForUser(user: PermissionUser, referenceDate: Date) {
-  const today = startOfDay(referenceDate);
-  const historyStart = subDays(today, 60);
-  const weekEnd = endOfWeek(today, { weekStartsOn: 1 });
+  const today = startOfBrasiliaDay(referenceDate);
+  const historyStart = addBrasiliaDays(today, -60);
+  const weekEnd = endOfBrasiliaWeek(today, 1);
 
   return prisma.event.findMany({
     where: {
@@ -92,18 +93,18 @@ function isWithinPeriod(date: Date, start: Date, end: Date) {
 }
 
 function periodRange(period: EventPeriod, now: Date) {
-  const today = startOfDay(now);
-  const currentWeekStart = startOfWeek(today, { weekStartsOn: 1 });
-  const currentWeekEnd = endOfWeek(today, { weekStartsOn: 1 });
+  const today = startOfBrasiliaDay(now);
+  const currentWeekStart = startOfBrasiliaWeek(today, 1);
+  const currentWeekEnd = endOfBrasiliaWeek(today, 1);
 
   if (period === "semana-passada") {
-    const lastWeekStart = subDays(currentWeekStart, 7);
-    const lastWeekEnd = subDays(currentWeekEnd, 7);
+    const lastWeekStart = addBrasiliaDays(currentWeekStart, -7);
+    const lastWeekEnd = addBrasiliaDays(currentWeekEnd, -7);
     return { start: lastWeekStart, end: lastWeekEnd };
   }
 
   if (period === "30d") {
-    return { start: subDays(today, 30), end: now };
+    return { start: addBrasiliaDays(today, -30), end: now };
   }
 
   return { start: currentWeekStart, end: currentWeekEnd };
@@ -294,16 +295,16 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
   const rawPeriod = firstParam(resolvedSearchParams.periodo);
   const period: EventPeriod = rawPeriod === "semana-passada" || rawPeriod === "30d" ? rawPeriod : "semana";
 
-  const today = startOfDay(now);
-  const weekStart = startOfWeek(today, { weekStartsOn: 1 });
-  const weekEnd = endOfWeek(today, { weekStartsOn: 1 });
+  const today = startOfBrasiliaDay(now);
+  const weekStart = startOfBrasiliaWeek(today, 1);
+  const weekEnd = endOfBrasiliaWeek(today, 1);
 
   const todayEvents = events
-    .filter((event) => isToday(event.startsAt))
+    .filter((event) => isTodayInBrasilia(event.startsAt, now))
     .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
   const weekEvents = events
     .filter((event) => {
-      if (isToday(event.startsAt) || !isWithinPeriod(event.startsAt, weekStart, weekEnd)) return false;
+      if (isTodayInBrasilia(event.startsAt, now) || !isWithinPeriod(event.startsAt, weekStart, weekEnd)) return false;
 
       return !isClosedWithoutPresence(event) && isAfter(event.startsAt, now) && !hasRecordedPresence(event);
     })

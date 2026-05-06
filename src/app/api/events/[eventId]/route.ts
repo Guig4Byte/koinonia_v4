@@ -46,17 +46,32 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ e
     return NextResponse.json({ error: "Você não pode alterar este encontro" }, { status: 403 });
   }
 
+  let nextStartsAt = event.startsAt;
+
+  if (body.startsAt !== undefined) {
+    if (event._count.attendances > 0) {
+      return NextResponse.json({ error: "Este encontro já tem presença registrada e não pode ser remarcado" }, { status: 400 });
+    }
+
+    nextStartsAt = new Date(body.startsAt);
+    if (Number.isNaN(nextStartsAt.getTime())) {
+      return NextResponse.json({ error: "Data e horário do encontro inválidos" }, { status: 400 });
+    }
+  }
+
   const closesMeeting = body.status === EventStatus.CANCELLED || body.status === EventStatus.NO_MEETING;
 
   if (closesMeeting && event._count.attendances > 0) {
     return NextResponse.json({ error: "Este encontro já tem presença registrada e não pode ser cancelado" }, { status: 400 });
   }
 
-  if (body.status === EventStatus.CANCELLED && event.startsAt <= new Date()) {
+  const now = new Date();
+
+  if (body.status === EventStatus.CANCELLED && nextStartsAt <= now) {
     return NextResponse.json({ error: "Encontro já iniciado deve ser marcado como não realizado" }, { status: 400 });
   }
 
-  if (body.status === EventStatus.NO_MEETING && event.startsAt > new Date()) {
+  if (body.status === EventStatus.NO_MEETING && nextStartsAt > now) {
     return NextResponse.json({ error: "Encontro futuro deve ser cancelado" }, { status: 400 });
   }
 
@@ -67,15 +82,6 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ e
   }
 
   if (body.startsAt !== undefined) {
-    if (event._count.attendances > 0) {
-      return NextResponse.json({ error: "Este encontro já tem presença registrada e não pode ser remarcado" }, { status: 400 });
-    }
-
-    const nextStartsAt = new Date(body.startsAt);
-    if (Number.isNaN(nextStartsAt.getTime())) {
-      return NextResponse.json({ error: "Data e horário do encontro inválidos" }, { status: 400 });
-    }
-
     const duplicatedEvent = await prisma.event.findFirst({
       where: {
         id: { not: event.id },

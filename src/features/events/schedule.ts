@@ -1,6 +1,7 @@
 import { EventStatus, EventType, GroupKind } from "../../generated/prisma/client";
 import { getVisibleGroupWhere, type PermissionUser } from "../permissions/permissions";
 import { prisma } from "../../lib/prisma";
+import { addBrasiliaDays, dateFromBrasiliaParts, getBrasiliaDateParts, startOfBrasiliaDay } from "../../lib/brasilia-time";
 
 export const DEFAULT_CELL_MEETING_GENERATION_WEEKS = 12;
 
@@ -20,18 +21,6 @@ export type EnsureUpcomingCellMeetingsResult = {
   eventsCreated: number;
   generatedUntil: Date;
 };
-
-function startOfLocalDay(date: Date) {
-  const copy = new Date(date);
-  copy.setHours(0, 0, 0, 0);
-  return copy;
-}
-
-function addDays(date: Date, days: number) {
-  const copy = new Date(date);
-  copy.setDate(copy.getDate() + days);
-  return copy;
-}
 
 export function parseMeetingTime(meetingTime: string | null) {
   if (!meetingTime) return null;
@@ -62,21 +51,28 @@ export function scheduledCellMeetingStarts({
   if (!isValidWeekday(meetingDayOfWeek) || !time) return [];
   if (until < from) return [];
 
-  const first = startOfLocalDay(from);
-  const daysUntilMeeting = (meetingDayOfWeek - first.getDay() + 7) % 7;
-  first.setDate(first.getDate() + daysUntilMeeting);
-  first.setHours(time.hours, time.minutes, 0, 0);
+  const firstDay = startOfBrasiliaDay(from);
+  const firstDayParts = getBrasiliaDateParts(firstDay);
+  const daysUntilMeeting = (meetingDayOfWeek - firstDayParts.weekday + 7) % 7;
+  const firstMeetingDayParts = getBrasiliaDateParts(addBrasiliaDays(firstDay, daysUntilMeeting));
+  let first = dateFromBrasiliaParts(
+    firstMeetingDayParts.year,
+    firstMeetingDayParts.month,
+    firstMeetingDayParts.day,
+    time.hours,
+    time.minutes,
+  );
 
   if (first < from) {
-    first.setDate(first.getDate() + 7);
+    first = addBrasiliaDays(first, 7);
   }
 
   const starts: Date[] = [];
-  const cursor = new Date(first);
+  let cursor = new Date(first);
 
   while (cursor <= until) {
     starts.push(new Date(cursor));
-    cursor.setDate(cursor.getDate() + 7);
+    cursor = addBrasiliaDays(cursor, 7);
   }
 
   return starts;
@@ -87,9 +83,9 @@ export async function ensureUpcomingCellMeetingsForUser(
   options: EnsureUpcomingCellMeetingsOptions = {},
 ): Promise<EnsureUpcomingCellMeetingsResult> {
   const referenceDate = options.referenceDate ?? new Date();
-  const generationStart = startOfLocalDay(referenceDate);
+  const generationStart = startOfBrasiliaDay(referenceDate);
   const weeksAhead = options.weeksAhead ?? DEFAULT_CELL_MEETING_GENERATION_WEEKS;
-  const generatedUntil = addDays(generationStart, weeksAhead * 7);
+  const generatedUntil = addBrasiliaDays(generationStart, weeksAhead * 7);
 
   const groups = await prisma.smallGroup.findMany({
     where: {

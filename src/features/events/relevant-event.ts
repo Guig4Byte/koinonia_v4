@@ -1,23 +1,13 @@
+import { addBrasiliaDays, isSameBrasiliaDay, startOfBrasiliaDay } from "../../lib/brasilia-time";
+
 export type RelevantEventCandidate = {
   startsAt: Date;
   status: string;
   attendances?: unknown[];
 };
 
-function startOfLocalDay(date: Date) {
-  const copy = new Date(date);
-  copy.setHours(0, 0, 0, 0);
-  return copy;
-}
-
-function nextLocalDay(date: Date) {
-  const copy = startOfLocalDay(date);
-  copy.setDate(copy.getDate() + 1);
-  return copy;
-}
-
-function isSameLocalDay(left: Date, right: Date) {
-  return startOfLocalDay(left).getTime() === startOfLocalDay(right).getTime();
+function nextBrasiliaDay(date: Date) {
+  return addBrasiliaDays(startOfBrasiliaDay(date), 1);
 }
 
 export function hasRecordedPresence(event: RelevantEventCandidate) {
@@ -36,14 +26,14 @@ export function selectRelevantCheckInEvent<T extends RelevantEventCandidate>(eve
 
   const pendingToday = ascending.find(
     (event) =>
-      isSameLocalDay(event.startsAt, referenceDate) &&
+      isSameBrasiliaDay(event.startsAt, referenceDate) &&
       event.startsAt <= referenceDate &&
       !isCancelledEvent(event) &&
       !hasRecordedPresence(event),
   );
   if (pendingToday) return pendingToday;
 
-  const latestDone = descending.find((event) => hasRecordedPresence(event) && event.startsAt < nextLocalDay(referenceDate));
+  const latestDone = descending.find((event) => hasRecordedPresence(event) && event.startsAt < nextBrasiliaDay(referenceDate));
   if (latestDone) return latestDone;
 
   return null;

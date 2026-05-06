@@ -1,14 +1,11 @@
-import { format, isToday, isTomorrow } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { formatBrasiliaShortDate, formatBrasiliaTime } from "./brasilia-time";
 
 export function formatShortDate(date: Date) {
-  if (isToday(date)) return "Hoje";
-  if (isTomorrow(date)) return "Amanhã";
-  return format(date, "dd MMM", { locale: ptBR });
+  return formatBrasiliaShortDate(date);
 }
 
 export function formatTime(date: Date) {
-  return format(date, "HH:mm", { locale: ptBR });
+  return formatBrasiliaTime(date);
 }
 
 export function percent(numerator: number, denominator: number) {
