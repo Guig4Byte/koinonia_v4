@@ -1051,6 +1051,58 @@ a {
   line-height: 1 !important;
 }
 
+.context-summary-prominent .context-summary-label {
+  font-size: 14.5px !important;
+}
+
+.context-summary-prominent .context-summary-detail {
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+}
+
+.context-summary-prominent .context-summary-value {
+  font-size: 22px !important;
+}
+
+
+.context-summary-balanced .context-summary-label {
+  font-size: 14px !important;
+}
+
+.context-summary-balanced .context-summary-detail {
+  font-size: 12.75px !important;
+  line-height: 1.38 !important;
+}
+
+.context-summary-balanced .context-summary-value {
+  font-size: 21px !important;
+}
+
+.context-summary-compact .context-summary-label {
+  font-size: 13.5px !important;
+}
+
+.context-summary-compact .context-summary-detail {
+  font-size: 12px !important;
+}
+
+.context-summary-compact .context-summary-value {
+  font-size: 20px !important;
+}
+
+.context-summary-inset {
+  margin-bottom: 0 !important;
+}
+
+.context-summary-inset .context-summary-row {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.context-summary-inset .context-summary-row:last-child {
+  padding-bottom: 10px;
+}
+
 .group-member-filter-row {
   display: flex;
   gap: 8px;

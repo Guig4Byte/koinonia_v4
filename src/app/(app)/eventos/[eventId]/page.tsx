@@ -5,11 +5,10 @@ import { AttendanceStatus } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { CheckInList } from "@/components/check-in-list";
-import { BackLink, InfoCard, SectionTitle } from "@/components/cards";
+import { BackLink, ContextSummary, InfoCard, SectionTitle } from "@/components/cards";
 import { Badge } from "@/components/ui/badge";
 import { summarizeEventPresence } from "@/features/events/presence-summary";
 import { canCheckInEvent, canViewEvent } from "@/features/permissions/permissions";
-import { cn } from "@/lib/cn";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -48,11 +47,11 @@ function justifiedCountLabel(count: number) {
   return count === 1 ? "1 justificou" : `${count} justificaram`;
 }
 
-function presenceToneClass(hasPresenceData: boolean, presenceRate: number) {
-  if (!hasPresenceData) return "text-[var(--color-text-primary)]";
-  if (presenceRate < 50) return "text-[var(--color-metric-atencoes)]";
-  if (presenceRate < 70) return "text-[var(--color-badge-atencao-text)]";
-  return "text-[var(--color-metric-presenca)]";
+function presenceSummaryTone(hasPresenceData: boolean, presenceRate: number): "ok" | "warn" | "risk" | "neutral" {
+  if (!hasPresenceData) return "neutral";
+  if (presenceRate < 50) return "risk";
+  if (presenceRate < 70) return "warn";
+  return "ok";
 }
 
 function sortMembersByName<T extends { fullName: string }>(members: T[]) {
@@ -292,41 +291,31 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
           <Badge tone={eventStatusTone}>{eventStatusLabel}</Badge>
         </div>
 
-        <div className="mt-4 rounded-[1rem] border border-[var(--color-border-divider)] bg-[var(--metric-card-bg)] px-4 py-2">
-          {[
-            {
-              label: "Presença",
-              detail: hasPresenceData ? "Ritmo do encontro registrado." : "Ainda sem presença registrada.",
-              value: hasPresenceData ? `${presence.presenceRate}%` : "—",
-              valueClassName: presenceToneClass(hasPresenceData, presence.presenceRate),
-            },
-            {
-              label: "Visitantes",
-              detail: visitors.length > 0 ? "Pessoas novas ou visitantes marcados." : "Nenhum visitante marcado neste encontro.",
-              value: String(visitors.length),
-              valueClassName: "text-[var(--color-metric-visitantes)]",
-            },
-            {
-              label: "Membros da célula",
-              detail: "Base do encontro, sem contar visitantes.",
-              value: String(members.length),
-              valueClassName: "text-[var(--color-text-primary)]",
-            },
-          ].map((item, index) => (
-            <div
-              key={item.label}
-              className={cn(
-                "flex items-center justify-between gap-4 py-2.5",
-                index > 0 && "border-t border-[var(--color-border-divider)]",
-              )}
-            >
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-[var(--color-text-primary)]">{item.label}</p>
-                <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-secondary)]">{item.detail}</p>
-              </div>
-              <p className={cn("shrink-0 text-xl font-bold tracking-[-0.02em]", item.valueClassName)}>{item.value}</p>
-            </div>
-          ))}
+        <div className="mt-4">
+          <ContextSummary
+            surface="inset"
+            variant="balanced"
+            items={[
+              {
+                label: "Presença",
+                detail: hasPresenceData ? "Ritmo do encontro registrado." : "Ainda sem presença registrada.",
+                value: hasPresenceData ? `${presence.presenceRate}%` : "—",
+                tone: presenceSummaryTone(hasPresenceData, presence.presenceRate),
+              },
+              {
+                label: "Visitantes",
+                detail: visitors.length > 0 ? "Pessoas novas ou visitantes marcados." : "Nenhum visitante marcado neste encontro.",
+                value: String(visitors.length),
+                tone: "neutral",
+              },
+              {
+                label: "Membros da célula",
+                detail: "Base do encontro, sem contar visitantes.",
+                value: String(members.length),
+                tone: "neutral",
+              },
+            ]}
+          />
         </div>
       </section>
 

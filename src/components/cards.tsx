@@ -45,10 +45,14 @@ export function ContextSummary({
   items,
   detailTone = "default",
   trendLayout = "inline",
+  variant = "default",
+  surface = "card",
 }: {
   items: Array<{ label: string; value: string; detail?: string; tone?: "ok" | "warn" | "risk" | "neutral"; trend?: PresenceTrend | null }>;
   detailTone?: "default" | "strong";
   trendLayout?: "inline" | "stacked";
+  variant?: "default" | "compact" | "prominent" | "balanced";
+  surface?: "card" | "inset";
 }) {
   const toneClass = {
     ok: "text-[var(--color-metric-presenca)]",
@@ -62,12 +66,15 @@ export function ContextSummary({
     return "text-[var(--color-metric-atencoes)]";
   };
   const detailClass = detailTone === "strong" ? "context-summary-detail-strong" : undefined;
+  const surfaceClass = surface === "inset"
+    ? "context-summary-inset border border-[var(--color-border-divider)] bg-[var(--metric-card-bg)] px-4 py-2 shadow-none"
+    : "border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card";
 
   return (
-    <section className="mb-5 rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
-      <div className="space-y-3">
+    <section className={cn("context-summary mb-5 rounded-[1.15rem]", `context-summary-${variant}`, surfaceClass)}>
+      <div className={surface === "inset" ? "space-y-0" : "space-y-3"}>
         {items.map((item) => (
-          <div key={item.label} className="flex items-center justify-between gap-4 border-b border-[var(--color-border-divider)] pb-3 last:border-0 last:pb-0">
+          <div key={item.label} className="context-summary-row flex items-center justify-between gap-4 border-b border-[var(--color-border-divider)] pb-3 last:border-0 last:pb-0">
             <div className="min-w-0">
               <p className="context-summary-label font-semibold text-[var(--color-text-primary)]">{item.label}</p>
               {item.detail ? <p className={cn("context-summary-detail leading-relaxed", detailClass)}>{item.detail}</p> : null}

@@ -76,9 +76,9 @@ function monthPresenceTrendLabel(
   trend: { direction: "up" | "down"; delta: number },
   currentTone: "ok" | "warn" | "risk" | "neutral",
 ) {
-  if (trend.direction === "up") return `Participação subiu ${trend.delta} pts em relação ao mês anterior.`;
-  if (currentTone === "ok") return `Participação segue frequente, mas caiu ${trend.delta} pts em relação ao mês anterior.`;
-  return `Participação caiu ${trend.delta} pts em relação ao mês anterior. Vale acompanhar de perto.`;
+  if (trend.direction === "up") return "Presença mais constante que no mês anterior.";
+  if (currentTone === "ok") return "Ainda há boa presença, mesmo com queda em relação ao mês anterior.";
+  return "A presença caiu em relação ao mês anterior. Vale se aproximar com cuidado.";
 }
 
 export default async function PersonDetailPage({ params }: { params: Promise<{ personId: string }> }) {
@@ -222,7 +222,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           <div className="min-w-0">
             <p className="text-sm font-semibold text-[var(--color-text-primary)]">Presença no mês</p>
             <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-              Ritmo registrado em {monthLabel}.
+              Ritmo registrado em {monthLabel}. Ajuda a perceber se vale se aproximar.
             </p>
             {monthPresenceTrend ? (
               <p className={`mt-1 text-xs leading-relaxed ${presenceTrendToneClass(monthPresenceTrend.direction, monthPresenceTone)}`}>
@@ -230,18 +230,20 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
               </p>
             ) : null}
           </div>
-          <p className={`shrink-0 text-2xl font-bold tracking-[-0.02em] ${presenceToneClass(monthPresenceTone)}`}>
-            {monthPresence.hasPresenceData ? `${monthPresence.presenceRate}%` : "—"}
+          <div className="shrink-0 text-right">
+            <p className={`text-[21px] font-bold leading-none tracking-[-0.02em] ${presenceToneClass(monthPresenceTone)}`}>
+              {monthPresence.hasPresenceData ? `${monthPresence.presenceRate}%` : "—"}
+            </p>
             {monthPresenceTrend ? (
-              <span
-                className={`ml-1 align-middle text-xs font-bold ${presenceTrendToneClass(monthPresenceTrend.direction, monthPresenceTone)}`}
+              <p
+                className={`mt-1 text-[13px] font-bold leading-none ${presenceTrendToneClass(monthPresenceTrend.direction, monthPresenceTone)}`}
                 aria-label={`${monthPresenceTrend.direction === "up" ? "subiu" : "caiu"} ${monthPresenceTrend.delta} pontos em relação ao mês anterior`}
                 title={`${monthPresenceTrend.direction === "up" ? "Subiu" : "Caiu"} ${monthPresenceTrend.delta} pontos em relação ao mês anterior`}
               >
                 {monthPresenceTrend.direction === "up" ? "↑" : "↓"} {monthPresenceTrend.delta} pts
-              </span>
+              </p>
             ) : null}
-          </p>
+          </div>
         </div>
 
         <div className="mt-3 border-t border-[var(--color-border-divider)] pt-3">

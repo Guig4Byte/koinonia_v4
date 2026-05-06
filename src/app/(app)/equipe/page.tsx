@@ -16,6 +16,7 @@ import { initials } from "@/lib/text";
 const SECTION_LIMIT = 4;
 const SUPERVISOR_SECTION_LIMIT = 4;
 const GROUPS_PER_SUPERVISOR_LIMIT = 4;
+const SUPERVISORS_SECTION_ID = "supervisores";
 
 type TeamFilter = "todos" | "atencao" | "sem-presenca";
 
@@ -120,7 +121,8 @@ function teamFilterHref(filter: TeamFilter, query: string) {
   if (filter !== "todos") params.set("filtro", filter);
 
   const queryString = params.toString();
-  return queryString ? `/equipe?${queryString}` : "/equipe";
+  const path = queryString ? `/equipe?${queryString}` : "/equipe";
+  return `${path}#${SUPERVISORS_SECTION_ID}`;
 }
 
 function TeamStructureSearch({ query, filter }: { query: string; filter: TeamFilter }) {
@@ -159,7 +161,7 @@ function TeamStructureSearch({ query, filter }: { query: string; filter: TeamFil
           );
         })}
         {query || filter !== "todos" ? (
-          <Link href="/equipe" className="team-filter-chip">
+          <Link href={`/equipe#${SUPERVISORS_SECTION_ID}`} className="team-filter-chip">
             Limpar
           </Link>
         ) : null}
@@ -247,7 +249,6 @@ function SupervisorCard({ supervisor }: { supervisor: SupervisorTeam }) {
         <div className="min-w-0 flex-1">
           <div className="min-w-0">
             <p className="font-semibold text-[var(--color-text-primary)]">{supervisor.name}</p>
-            <p className="mt-0.5 truncate text-[13px] leading-snug text-[var(--color-text-secondary)]">{supervisor.email}</p>
           </div>
 
           {!hasGroups ? (
@@ -335,6 +336,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
         <div className="team-summary-block">
           <SectionTitle>Resumo</SectionTitle>
           <ContextSummary
+            variant="balanced"
             items={[
               {
                 label: "Supervisores",
@@ -368,7 +370,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
           />
         </div>
 
-        <section>
+        <section id={SUPERVISORS_SECTION_ID} className="scroll-mt-4">
           <SectionTitle detail="Resumo por supervisor, priorizando casos pastorais e presença baixa.">Supervisores</SectionTitle>
           {supervisorList.length > 0 ? (
             <ProgressiveList

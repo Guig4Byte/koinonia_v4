@@ -295,6 +295,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
 
         <div className="group-detail-summary">
           <ContextSummary
+            variant="balanced"
             detailTone="strong"
             trendLayout="stacked"
             items={[
