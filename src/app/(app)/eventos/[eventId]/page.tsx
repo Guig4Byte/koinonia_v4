@@ -214,9 +214,16 @@ function EventReadOnlySummary({
   );
 }
 
-export default async function EventDetailPage({ params }: { params: Promise<{ eventId: string }> }) {
+type EventDetailPageProps = {
+  params: Promise<{ eventId: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function EventDetailPage({ params, searchParams }: EventDetailPageProps) {
   const user = await getCurrentUser();
   const { eventId } = await params;
+  const queryParams = searchParams ? await searchParams : {};
+  const mode = Array.isArray(queryParams.modo) ? queryParams.modo[0] : queryParams.modo;
 
   const event = await prisma.event.findUnique({
     where: { id: eventId },
@@ -258,8 +265,22 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
   }));
 
   const isFutureEvent = isAfter(event.startsAt, new Date());
-  const checkInLabel = canEditCheckIn ? (completed ? "Ajuste de presença" : "Registrar presença") : isFutureEvent ? "Encontro agendado" : "Resumo de presença";
-  const checkInSectionTitle = canEditCheckIn ? (completed ? "Ajustar presença" : "Registrar presença") : isFutureEvent ? "Sobre o encontro" : "Resumo da presença";
+  const showCheckInForm = canEditCheckIn && (!completed || mode === "ajuste");
+  const canOfferAdjustment = canEditCheckIn && completed && !showCheckInForm;
+  const checkInLabel = showCheckInForm
+    ? completed
+      ? "Ajuste de presença"
+      : "Registrar presença"
+    : isFutureEvent
+      ? "Encontro agendado"
+      : "Resumo de presença";
+  const checkInSectionTitle = showCheckInForm
+    ? completed
+      ? "Ajustar presença"
+      : "Registrar presença"
+    : isFutureEvent
+      ? "Sobre o encontro"
+      : "Resumo da presença";
   const checkInSubmitLabel = completed ? "Salvar ajuste" : "Salvar presença";
   const eventStatusLabel = completed ? "Presença registrada" : isFutureEvent ? "Agendado" : canEditCheckIn ? "Presença pendente" : "Aguardando registro";
   const eventStatusTone = completed ? "ok" : isFutureEvent ? "info" : "warn";
@@ -321,7 +342,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
 
       <SectionTitle>{checkInSectionTitle}</SectionTitle>
       {event.groupId ? (
-        canEditCheckIn ? (
+        showCheckInForm ? (
           <CheckInList
             eventId={event.id}
             members={members}
@@ -332,7 +353,17 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
             attentionLabel="Ver atenção da célula"
           />
         ) : (
-          <EventReadOnlySummary completed={completed} isFutureEvent={isFutureEvent} members={members} visitors={visitorRows} />
+          <div className="space-y-3">
+            <EventReadOnlySummary completed={completed} isFutureEvent={isFutureEvent} members={members} visitors={visitorRows} />
+            {canOfferAdjustment ? (
+              <Link
+                href={`/eventos/${event.id}?modo=ajuste`}
+                className="k-primary-action inline-flex w-full items-center justify-center rounded-full px-4 py-3 text-sm font-semibold transition active:scale-[0.99]"
+              >
+                Ajustar presença →
+              </Link>
+            ) : null}
+          </div>
         )
       ) : (
         <InfoCard>Este evento não está vinculado a uma célula. A presença completa entra depois.</InfoCard>
