@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CheckCircle2, AlertCircle, Info } from "lucide-react";
+import { ArrowLeft, CheckCircle2, AlertCircle, Info } from "lucide-react";
 import { Children, type ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/cn";
@@ -164,8 +164,12 @@ export function BackLink({
   children: ReactNode;
 }) {
   return (
-    <Link href={href} className="mb-4 inline-flex min-h-9 items-center text-sm font-semibold text-[var(--color-brand)] transition active:scale-[0.98]">
-      ← {children}
+    <Link
+      href={href}
+      className="mb-4 inline-flex min-h-10 items-center gap-1.5 rounded-xl px-2.5 text-sm font-semibold text-[var(--color-brand)] transition active:scale-[0.98]"
+    >
+      <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+      {children}
     </Link>
   );
 }

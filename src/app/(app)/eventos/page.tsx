@@ -3,7 +3,7 @@ import { isAfter } from "date-fns";
 import { EventStatus } from "../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
-import { EmptyState, SectionTitle, priorityCardClass } from "@/components/cards";
+import { BackLink, EmptyState, SectionTitle, priorityCardClass } from "@/components/cards";
 import { ProgressiveList } from "@/components/progressive-list";
 import { Badge } from "@/components/ui/badge";
 import { summarizeEventPresence } from "@/features/events/presence-summary";
@@ -272,9 +272,7 @@ function EventsConsultationView({
 
   return (
     <>
-      <Link href="/eventos" className="mb-4 inline-flex min-h-9 items-center text-sm font-semibold text-[var(--color-brand)] transition active:scale-[0.98]">
-        ← Encontros
-      </Link>
+      <BackLink href="/eventos">Encontros</BackLink>
       <h2 className="events-title">{title}</h2>
       <p className="events-description">{description}</p>
       <PeriodChips mode={mode} activePeriod={period} />

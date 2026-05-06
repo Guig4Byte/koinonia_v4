@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, MessageCircleMore, NotebookPen, Phone } from "lucide-react";
+import { ArrowLeft, CheckCircle2, MessageCircleMore, NotebookPen, Phone } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { cn } from "@/lib/cn";
@@ -267,6 +267,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
               }}
               className={cn(secondaryButton, isPending && disabled)}
             >
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
               Voltar
             </button>
             <button

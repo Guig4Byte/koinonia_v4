@@ -65,10 +65,21 @@ function presenceTrendToneClass(direction: "up" | "down", currentTone: "ok" | "w
 
 function monthPresenceCountLabel(presentCount: number, encountersCount: number) {
   if (encountersCount === 1) {
-    return presentCount === 1 ? "1 vez presente em 1 encontro" : "Nenhuma presença em 1 encontro";
+    return presentCount === 1 ? "Presente no único encontro" : "Faltou no único encontro";
   }
 
-  if (presentCount === 0) return `Nenhuma presença em ${encountersCount} encontros`;
+  if (presentCount === 0) {
+    return encountersCount === 1
+      ? "Faltou no único encontro"
+      : `Nenhuma presença em ${encountersCount} encontros`;
+  }
+
+  if (presentCount === encountersCount) {
+    return encountersCount === 1
+      ? "Presente no único encontro"
+      : `Presente em todos os ${encountersCount} encontros`;
+  }
+
   if (presentCount === 1) return `1 vez presente em ${encountersCount} encontros`;
   return `${presentCount} vezes presente em ${encountersCount} encontros`;
 }
@@ -237,7 +248,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
 
       <SectionTitle>Ritmo de presença</SectionTitle>
       <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
             <p className="text-sm font-semibold text-[var(--color-text-primary)]">Presença no mês</p>
             <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-secondary)]">
@@ -266,8 +277,8 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
         </div>
 
         <div className="mt-3 border-t border-[var(--color-border-divider)] pt-3">
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">Últimos encontros do mês</p>
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">Encontros do mês</p>
             {monthPresence.hasPresenceData ? (
               <p className="shrink-0 text-xs text-[var(--color-text-secondary)]">
                 {monthPresenceCountLabel(monthPresence.presentCount, monthPresence.accountableCount)}
