@@ -886,12 +886,6 @@ a {
   box-shadow: var(--color-shadow-header);
 }
 
-.app-header-compact {
-  margin-bottom: 14px;
-  border-radius: 24px;
-  padding: 12px;
-}
-
 .header-action-button {
   display: inline-flex;
   align-items: center;

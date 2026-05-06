@@ -22,7 +22,7 @@ Quando houver conflito, siga a ordem acima. `docs/Koinonia.txt` não autoriza an
 Ciclo:
 
 ```txt
-Evento -> Presença -> Atenção -> Contato -> Cuidado
+Encontro -> Presença -> Atenção -> Contato -> Cuidado
 ```
 
 Papéis:
@@ -50,7 +50,7 @@ O pastor não é operador de sinais e não deve receber toda ausência ou atenç
 - Tema local no login e no app.
 - Pessoas.
 - Células.
-- Eventos de célula.
+- Encontros de célula.
 - Check-in simples feito pelo líder da célula.
 - Visitantes no check-in.
 - Métricas de presença que distinguem dado real de `Sem registro`.
@@ -185,6 +185,6 @@ docs                 Produto, vocabulário, arquitetura e briefing.
 /pessoas             Pessoas/membros dentro da superfície padrão.
 /pessoas/[personId]  Detalhe da pessoa.
 /celulas/[groupId]   Detalhe da célula.
-/eventos             Eventos visíveis.
-/eventos/[eventId]   Check-in ou resumo do evento.
+/eventos             Encontros visíveis.
+/eventos/[eventId]   Check-in ou resumo do encontro.
 ```

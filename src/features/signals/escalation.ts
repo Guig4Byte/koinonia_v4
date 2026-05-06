@@ -114,18 +114,6 @@ export function escalationStatusLabelForViewer(signal: EscalationSignalLike, vie
   return escalationStatusLabel(signal);
 }
 
-export function escalationStatusDetail(signal: EscalationSignalLike): string | null {
-  if (isAssignedToPastoralRole(signal)) {
-    return "Encaminhado ao cuidado pastoral.";
-  }
-
-  if (isAssignedToSupervisor(signal)) {
-    return "Apoio solicitado à supervisão.";
-  }
-
-  return null;
-}
-
 export function escalationStatusDetailForViewer(signal: EscalationSignalLike, viewer: EscalationViewerLike): string | null {
   if (!shouldShowEscalationStatusForViewer(signal, viewer)) return null;
 

@@ -16,19 +16,6 @@ async function markPersonInAttention(personId: string) {
   });
 }
 
-async function markPersonActiveIfNoOpenSignals(churchId: string, personId: string) {
-  const openSignalsCount = await prisma.careSignal.count({
-    where: { churchId, personId, status: SignalStatus.OPEN },
-  });
-
-  if (openSignalsCount > 0) return;
-
-  await prisma.person.updateMany({
-    where: { id: personId, status: PersonStatus.NEEDS_ATTENTION },
-    data: { status: PersonStatus.ACTIVE },
-  });
-}
-
 export type AttendanceSnapshot = {
   personId: string;
   fullName: string;
@@ -76,13 +63,9 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string) {
 
     if (!signal) {
       if (existing) {
-        await prisma.careSignal.update({
-          where: { id: existing.id },
-          data: { status: SignalStatus.RESOLVED, resolvedAt: new Date() },
-        });
+        await markPersonInAttention(membership.personId);
       }
 
-      await markPersonActiveIfNoOpenSignals(group.churchId, membership.personId);
       continue;
     }
 
@@ -112,7 +95,6 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string) {
       });
 
       if (shouldKeepAttendanceSignalResolved(signal, latestEvidenceAt, lastResolvedAttendanceSignal)) {
-        await markPersonActiveIfNoOpenSignals(group.churchId, membership.personId);
         continue;
       }
 

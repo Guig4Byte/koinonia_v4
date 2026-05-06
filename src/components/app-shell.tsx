@@ -16,65 +16,47 @@ export function AppShell({
   role,
   nav,
   children,
-  compactHeader = false,
   hideBottomNav = false,
 }: {
   userName: string;
   role: UserRole;
   nav: NavItem[];
   children: ReactNode;
-  compactHeader?: boolean;
   hideBottomNav?: boolean;
 }) {
   const firstName = userName.split(" ")[0];
 
   return (
     <main className={`safe-page${hideBottomNav ? " safe-page-focus" : ""}`}>
-      <header className={`app-header${compactHeader ? " app-header-compact" : ""}`}>
+      <header className="app-header">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-[11px] font-bold uppercase text-[var(--color-brand-accent)]">Koinonia</p>
             <p className="mt-1 text-xs font-semibold text-[var(--color-text-on-header)]">{roleLabels[role]}</p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <ThemeToggle className="header-action-button" />
-            {compactHeader ? (
-              <form action="/logout" method="post" className="shrink-0">
-                <button
-                  type="submit"
-                  aria-label="Sair"
-                  title="Sair"
-                  className="header-action-button"
-                >
-                  <LogOut className="h-4 w-4" aria-hidden="true" />
-                </button>
-              </form>
-            ) : null}
-          </div>
+          <ThemeToggle className="header-action-button" />
         </div>
 
-        {compactHeader ? null : (
-          <div className="app-header-greeting mt-5 flex items-end justify-between gap-4">
-            <div>
-              <p className="text-sm text-[var(--color-text-on-header)] opacity-80">Olá,</p>
-              <h1 className="app-header-name font-serif-display mt-1 text-[2.35rem] font-semibold leading-none text-[var(--color-text-on-header)]">
-                {firstName}.
-              </h1>
-            </div>
-
-            <form action="/logout" method="post" className="shrink-0">
-              <button
-                type="submit"
-                aria-label="Sair"
-                title="Sair"
-                className="header-action-button"
-              >
-                <LogOut className="h-4 w-4" aria-hidden="true" />
-              </button>
-            </form>
+        <div className="app-header-greeting mt-5 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-sm text-[var(--color-text-on-header)] opacity-80">Olá,</p>
+            <h1 className="app-header-name font-serif-display mt-1 text-[2.35rem] font-semibold leading-none text-[var(--color-text-on-header)]">
+              {firstName}.
+            </h1>
           </div>
-        )}
+
+          <form action="/logout" method="post" className="shrink-0">
+            <button
+              type="submit"
+              aria-label="Sair"
+              title="Sair"
+              className="header-action-button"
+            >
+              <LogOut className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </form>
+        </div>
       </header>
 
       <section className="content-flow">{children}</section>

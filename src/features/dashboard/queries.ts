@@ -381,14 +381,3 @@ export function getLeaderDashboard(user: PermissionUser) {
   return getGroupScopedDashboard(user);
 }
 
-export async function getScopedDashboard(user: PermissionUser) {
-  if (user.role === UserRole.PASTOR || user.role === UserRole.ADMIN) {
-    return getPastorDashboard(user);
-  }
-
-  if (user.role === UserRole.SUPERVISOR) {
-    return getSupervisorDashboard(user);
-  }
-
-  return getLeaderDashboard(user);
-}
