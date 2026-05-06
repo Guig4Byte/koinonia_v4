@@ -4,9 +4,13 @@ import { CalendarDays, Clock3 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { GhostButton } from "@/components/ui/button";
+import { cn } from "@/lib/cn";
 import { readJsonResponse, isRecord } from "@/lib/json";
 
 type EventActionStatus = "SCHEDULED" | "CHECKIN_OPEN" | "COMPLETED" | "CANCELLED" | "NO_MEETING";
+type OpenPicker = "date" | "time" | null;
+type DateParts = { year: number; month: number; day: number };
+type CalendarMonth = { year: number; monthIndex: number };
 
 function responseError(payload: unknown) {
   if (isRecord(payload) && typeof payload.error === "string") return payload.error;
@@ -15,9 +19,69 @@ function responseError(payload: unknown) {
 
 const BRASILIA_UTC_OFFSET_HOURS = 3;
 const BRASILIA_UTC_OFFSET_MS = BRASILIA_UTC_OFFSET_HOURS * 60 * 60 * 1000;
+const MONTH_NAMES = [
+  "janeiro",
+  "fevereiro",
+  "março",
+  "abril",
+  "maio",
+  "junho",
+  "julho",
+  "agosto",
+  "setembro",
+  "outubro",
+  "novembro",
+  "dezembro",
+];
+const WEEKDAY_LABELS = ["D", "S", "T", "Q", "Q", "S", "S"];
+const TIME_OPTIONS = ["18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00"];
 
 function padDatePart(part: number) {
   return String(part).padStart(2, "0");
+}
+
+function formatBrasiliaDate({ year, month, day }: DateParts) {
+  return `${padDatePart(day)}/${padDatePart(month)}/${year}`;
+}
+
+function parseBrasiliaDateValue(dateValue: string): DateParts | null {
+  const rawDate = dateValue.trim();
+  const isoDateMatch = rawDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  const brDateMatch = rawDate.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+
+  if (!isoDateMatch && !brDateMatch) return null;
+
+  const year = Number(isoDateMatch?.[1] ?? brDateMatch?.[3]);
+  const month = Number(isoDateMatch?.[2] ?? brDateMatch?.[2]);
+  const day = Number(isoDateMatch?.[3] ?? brDateMatch?.[1]);
+
+  if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+
+  const parsed = new Date(Date.UTC(year, month - 1, day));
+  if (
+    parsed.getUTCFullYear() !== year ||
+    parsed.getUTCMonth() !== month - 1 ||
+    parsed.getUTCDate() !== day
+  ) {
+    return null;
+  }
+
+  return { year, month, day };
+}
+
+function shiftCalendarMonth(month: CalendarMonth, amount: number): CalendarMonth {
+  const next = new Date(Date.UTC(month.year, month.monthIndex + amount, 1));
+  return { year: next.getUTCFullYear(), monthIndex: next.getUTCMonth() };
+}
+
+function calendarDays(month: CalendarMonth) {
+  const firstWeekday = new Date(Date.UTC(month.year, month.monthIndex, 1)).getUTCDay();
+  const daysInMonth = new Date(Date.UTC(month.year, month.monthIndex + 1, 0)).getUTCDate();
+
+  return [
+    ...Array.from({ length: firstWeekday }, () => null),
+    ...Array.from({ length: daysInMonth }, (_, index) => index + 1),
+  ];
 }
 
 function toBrasiliaDateTimeParts(value: string) {
@@ -27,30 +91,26 @@ function toBrasiliaDateTimeParts(value: string) {
   const brasiliaTime = new Date(date.getTime() - BRASILIA_UTC_OFFSET_MS);
 
   return {
-    date: [
-      brasiliaTime.getUTCFullYear(),
-      padDatePart(brasiliaTime.getUTCMonth() + 1),
-      padDatePart(brasiliaTime.getUTCDate()),
-    ].join("-"),
+    date: formatBrasiliaDate({
+      year: brasiliaTime.getUTCFullYear(),
+      month: brasiliaTime.getUTCMonth() + 1,
+      day: brasiliaTime.getUTCDate(),
+    }),
     time: [padDatePart(brasiliaTime.getUTCHours()), padDatePart(brasiliaTime.getUTCMinutes())].join(":"),
   };
 }
 
 function parseBrasiliaDateTime(dateValue: string, timeValue: string) {
-  const rawDate = dateValue.trim();
-  const isoDateMatch = rawDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  const brDateMatch = rawDate.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  const dateParts = parseBrasiliaDateValue(dateValue);
   const timeMatch = timeValue.trim().match(/^(\d{2}):(\d{2})$/);
 
-  if ((!isoDateMatch && !brDateMatch) || !timeMatch) return null;
+  if (!dateParts || !timeMatch) return null;
 
-  const year = Number(isoDateMatch?.[1] ?? brDateMatch?.[3]);
-  const month = Number(isoDateMatch?.[2] ?? brDateMatch?.[2]);
-  const day = Number(isoDateMatch?.[3] ?? brDateMatch?.[1]);
+  const { year, month, day } = dateParts;
   const hour = Number(timeMatch[1]);
   const minute = Number(timeMatch[2]);
 
-  if (month < 1 || month > 12 || day < 1 || day > 31 || hour > 23 || minute > 59) return null;
+  if (hour > 23 || minute > 59) return null;
 
   const utcTime = Date.UTC(year, month - 1, day, hour + BRASILIA_UTC_OFFSET_HOURS, minute);
   const parsed = new Date(utcTime);
@@ -92,6 +152,16 @@ export function EventDetailsActions({
   const initialStartsAt = toBrasiliaDateTimeParts(startsAt);
   const [localDate, setLocalDate] = useState(initialStartsAt.date);
   const [localTime, setLocalTime] = useState(initialStartsAt.time);
+  const [openPicker, setOpenPicker] = useState<OpenPicker>(null);
+  const [calendarMonth, setCalendarMonth] = useState<CalendarMonth>(() => {
+    const initialDateParts = parseBrasiliaDateValue(initialStartsAt.date);
+    const fallbackDate = new Date();
+
+    return {
+      year: initialDateParts?.year ?? fallbackDate.getFullYear(),
+      monthIndex: initialDateParts ? initialDateParts.month - 1 : fallbackDate.getMonth(),
+    };
+  });
   const [message, setMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const isClosedWithoutPresence = status === "CANCELLED" || status === "NO_MEETING";
@@ -187,6 +257,36 @@ export function EventDetailsActions({
     });
   }
 
+  const selectedDateParts = parseBrasiliaDateValue(localDate);
+  const timeOptions = localTime && !TIME_OPTIONS.includes(localTime)
+    ? [localTime, ...TIME_OPTIONS]
+    : TIME_OPTIONS;
+
+  function updateLocalDate(value: string) {
+    setLocalDate(value);
+
+    const nextDateParts = parseBrasiliaDateValue(value);
+    if (nextDateParts) {
+      setCalendarMonth({ year: nextDateParts.year, monthIndex: nextDateParts.month - 1 });
+    }
+  }
+
+  function selectCalendarDay(day: number) {
+    const nextDate = formatBrasiliaDate({
+      year: calendarMonth.year,
+      month: calendarMonth.monthIndex + 1,
+      day,
+    });
+
+    setLocalDate(nextDate);
+    setOpenPicker(null);
+  }
+
+  function selectTime(time: string) {
+    setLocalTime(time);
+    setOpenPicker(null);
+  }
+
   return (
     <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
       <p className="font-semibold text-[var(--color-text-primary)]">Ajustes do encontro</p>
@@ -223,33 +323,104 @@ export function EventDetailsActions({
               <label className="block text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]" htmlFor="event-start-date">
                 Nova data
               </label>
-              <div className="event-datetime-field">
-                <CalendarDays className="event-datetime-icon h-4 w-4" aria-hidden="true" />
+              <div className="event-picker-field">
                 <input
                   id="event-start-date"
-                  type="date"
-                  lang="pt-BR"
                   value={localDate}
-                  onChange={(event) => setLocalDate(event.target.value)}
-                  className="event-datetime-input min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] pr-3 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--color-brand)]"
+                  onChange={(event) => updateLocalDate(event.target.value)}
+                  inputMode="numeric"
+                  placeholder="dd/mm/aaaa"
+                  className="event-picker-input min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-brand)]"
                 />
+                <button
+                  type="button"
+                  className="event-picker-trigger"
+                  aria-label="Escolher data"
+                  aria-expanded={openPicker === "date"}
+                  onClick={() => setOpenPicker(openPicker === "date" ? null : "date")}
+                >
+                  <CalendarDays className="h-4 w-4" aria-hidden="true" />
+                </button>
+                {openPicker === "date" ? (
+                  <div className="event-picker-popover event-calendar-popover">
+                    <div className="event-calendar-header">
+                      <button type="button" onClick={() => setCalendarMonth((current) => shiftCalendarMonth(current, -1))} aria-label="Mês anterior">
+                        ‹
+                      </button>
+                      <span>{MONTH_NAMES[calendarMonth.monthIndex]} {calendarMonth.year}</span>
+                      <button type="button" onClick={() => setCalendarMonth((current) => shiftCalendarMonth(current, 1))} aria-label="Próximo mês">
+                        ›
+                      </button>
+                    </div>
+                    <div className="event-calendar-weekdays">
+                      {WEEKDAY_LABELS.map((label, index) => (
+                        <span key={`${label}-${index}`}>{label}</span>
+                      ))}
+                    </div>
+                    <div className="event-calendar-grid">
+                      {calendarDays(calendarMonth).map((day, index) => {
+                        const selected = Boolean(
+                          day &&
+                          selectedDateParts?.year === calendarMonth.year &&
+                          selectedDateParts.month === calendarMonth.monthIndex + 1 &&
+                          selectedDateParts.day === day,
+                        );
+
+                        return day ? (
+                          <button
+                            key={`${calendarMonth.year}-${calendarMonth.monthIndex}-${day}`}
+                            type="button"
+                            className={cn("event-calendar-day", selected && "event-calendar-day-selected")}
+                            onClick={() => selectCalendarDay(day)}
+                          >
+                            {day}
+                          </button>
+                        ) : (
+                          <span key={`empty-${index}`} className="event-calendar-empty" aria-hidden="true" />
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : null}
               </div>
             </div>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]" htmlFor="event-start-time">
                 Novo horário
               </label>
-              <div className="event-datetime-field">
-                <Clock3 className="event-datetime-icon h-4 w-4" aria-hidden="true" />
+              <div className="event-picker-field">
                 <input
                   id="event-start-time"
-                  type="time"
-                  lang="pt-BR"
                   value={localTime}
                   onChange={(event) => setLocalTime(event.target.value)}
-                  step="300"
-                  className="event-datetime-input min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] pr-3 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--color-brand)]"
+                  inputMode="numeric"
+                  placeholder="HH:mm"
+                  maxLength={5}
+                  className="event-picker-input min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-brand)]"
                 />
+                <button
+                  type="button"
+                  className="event-picker-trigger"
+                  aria-label="Escolher horário"
+                  aria-expanded={openPicker === "time"}
+                  onClick={() => setOpenPicker(openPicker === "time" ? null : "time")}
+                >
+                  <Clock3 className="h-4 w-4" aria-hidden="true" />
+                </button>
+                {openPicker === "time" ? (
+                  <div className="event-picker-popover event-time-popover">
+                    {timeOptions.map((time) => (
+                      <button
+                        key={time}
+                        type="button"
+                        className={cn("event-time-option", localTime === time && "event-time-option-selected")}
+                        onClick={() => selectTime(time)}
+                      >
+                        {time}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>

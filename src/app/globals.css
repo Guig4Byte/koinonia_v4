@@ -583,34 +583,171 @@ a {
   gap: 12px;
 }
 
-.event-datetime-field {
+.event-picker-field {
   position: relative;
   margin-top: 8px;
 }
 
-.event-datetime-icon {
-  position: absolute;
-  top: 50%;
-  left: 14px;
-  z-index: 1;
-  color: var(--color-text-secondary);
-  pointer-events: none;
-  transform: translateY(-50%);
-}
-
-.event-datetime-input {
+.event-picker-input {
   min-width: 0;
-  padding-left: 42px;
+  padding-left: 14px;
+  padding-right: 50px;
   text-align: left;
 }
 
-.event-datetime-input:focus {
+.event-picker-input:focus {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand) 18%, transparent);
 }
 
-.event-datetime-input::-webkit-calendar-picker-indicator {
-  cursor: pointer;
-  opacity: 0.62;
+.event-picker-trigger {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  z-index: 1;
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border-divider);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--color-bg-card) 78%, transparent);
+  color: var(--color-text-secondary);
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+  transform: translateY(-50%);
+}
+
+.event-picker-trigger:hover {
+  background: var(--color-btn-secondary-bg);
+  color: var(--color-brand);
+}
+
+.event-picker-trigger:active {
+  transform: translateY(-50%) scale(0.96);
+}
+
+.event-picker-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 30;
+  width: min(292px, calc(100vw - 48px));
+  border: 1px solid var(--color-border-card);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--color-bg-card) 96%, transparent);
+  padding: 12px;
+  box-shadow: 0 18px 42px color-mix(in srgb, #000 28%, transparent);
+}
+
+.event-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--color-text-primary);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.event-calendar-header button {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border-divider);
+  border-radius: 12px;
+  color: var(--color-brand);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.event-calendar-weekdays,
+.event-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.event-calendar-weekdays {
+  margin-top: 12px;
+  color: var(--color-text-muted);
+  font-size: 10px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.event-calendar-grid {
+  margin-top: 6px;
+}
+
+.event-calendar-day,
+.event-calendar-empty {
+  min-height: 32px;
+  border-radius: 12px;
+}
+
+.event-calendar-day {
+  color: var(--color-text-primary);
+  font-size: 12px;
+  font-weight: 700;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.event-calendar-day:hover {
+  background: var(--color-btn-secondary-bg);
+  color: var(--color-brand);
+}
+
+.event-calendar-day:active {
+  transform: scale(0.96);
+}
+
+.event-calendar-day-selected {
+  background: var(--color-brand) !important;
+  color: var(--color-btn-primary-text) !important;
+}
+
+.event-time-popover {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.event-time-option {
+  min-height: 36px;
+  border: 1px solid var(--color-border-divider);
+  border-radius: 13px;
+  background: var(--surface-alt);
+  color: var(--color-text-primary);
+  font-size: 13px;
+  font-weight: 700;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.event-time-option:hover {
+  background: var(--color-btn-secondary-bg);
+  color: var(--color-brand);
+}
+
+.event-time-option:active {
+  transform: scale(0.97);
+}
+
+.event-time-option-selected {
+  border-color: var(--color-brand);
+  background: var(--color-brand) !important;
+  color: var(--color-btn-primary-text) !important;
 }
 
 @media (max-width: 360px) {
