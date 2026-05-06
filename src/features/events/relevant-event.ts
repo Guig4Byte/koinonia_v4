@@ -25,7 +25,7 @@ export function hasRecordedPresence(event: RelevantEventCandidate) {
 }
 
 function isCancelledEvent(event: RelevantEventCandidate) {
-  return event.status === "CANCELLED";
+  return event.status === "CANCELLED" || event.status === "NO_MEETING";
 }
 
 export function selectRelevantCheckInEvent<T extends RelevantEventCandidate>(events: T[], referenceDate = new Date()) {

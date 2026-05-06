@@ -63,6 +63,16 @@ function eventLocation(event: { locationName?: string | null; group?: { location
   return event.locationName ?? event.group?.locationName ?? null;
 }
 
+function isClosedWithoutPresenceStatus(status: EventStatus) {
+  return status === EventStatus.CANCELLED || status === EventStatus.NO_MEETING;
+}
+
+function closedWithoutPresenceLabel(status: EventStatus) {
+  if (status === EventStatus.CANCELLED) return "Cancelado";
+  if (status === EventStatus.NO_MEETING) return "Não houve encontro";
+  return "Sobre o encontro";
+}
+
 function AttendanceMemberRow({ member }: { member: ReadOnlyMember }) {
   return (
     <Link
@@ -107,19 +117,23 @@ function EventReadOnlySummary({
   completed,
   isFutureEvent,
   isCancelled,
+  closedLabel,
   members,
   visitors,
 }: {
   completed: boolean;
   isFutureEvent: boolean;
   isCancelled: boolean;
+  closedLabel: string;
   members: ReadOnlyMember[];
   visitors: ReadOnlyVisitor[];
 }) {
   if (isCancelled) {
     return (
       <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm leading-relaxed text-[var(--color-text-secondary)] shadow-card">
-        Este encontro foi marcado como não realizado. Ele não entra como presença atrasada.
+        {closedLabel === "Cancelado"
+          ? "Este encontro foi cancelado. Ele não aparece como presença pendente."
+          : "Este encontro foi marcado como não realizado. Ele não entra como presença atrasada."}
       </section>
     );
   }
@@ -262,7 +276,7 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
 
   if (!canViewEvent(user, event)) notFound();
 
-  const isCancelledEvent = event.status === EventStatus.CANCELLED;
+  const isCancelledEvent = isClosedWithoutPresenceStatus(event.status);
   const canEditCheckIn = !isCancelledEvent && canCheckInEvent(user, event);
   const canEditEventDetails = canManageEventDetails(user, event);
   const presence = summarizeEventPresence(event);
@@ -291,7 +305,7 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
       ? "Ajuste de presença"
       : "Registrar presença"
     : isCancelledEvent
-      ? "Encontro não realizado"
+      ? closedWithoutPresenceLabel(event.status)
       : isFutureEvent
         ? "Encontro agendado"
         : "Resumo de presença";
@@ -306,7 +320,7 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
         : "Resumo da presença";
   const checkInSubmitLabel = completed ? "Salvar ajuste" : "Salvar presença";
   const eventStatusLabel = isCancelledEvent
-    ? "Não houve encontro"
+    ? closedWithoutPresenceLabel(event.status)
     : completed
       ? "Presença registrada"
       : isFutureEvent
@@ -395,14 +409,16 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
           />
         ) : (
           <div className="space-y-3">
-            <EventReadOnlySummary completed={completed} isFutureEvent={isFutureEvent} isCancelled={isCancelledEvent} members={members} visitors={visitorRows} />
+            <EventReadOnlySummary completed={completed} isFutureEvent={isFutureEvent} isCancelled={isCancelledEvent} closedLabel={closedWithoutPresenceLabel(event.status)} members={members} visitors={visitorRows} />
             {canEditEventDetails ? (
               <EventDetailsActions
                 eventId={event.id}
                 status={event.status}
+                startsAt={event.startsAt.toISOString()}
                 locationName={event.locationName}
                 defaultLocationName={event.group?.locationName}
                 hasPresenceData={completed}
+                isFutureEvent={isFutureEvent}
               />
             ) : null}
             {canOfferAdjustment ? (

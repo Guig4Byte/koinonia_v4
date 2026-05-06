@@ -132,12 +132,15 @@ export async function ensureUpcomingCellMeetingsForUser(
       where: {
         groupId: group.id,
         type: EventType.CELL_MEETING,
-        startsAt: { gte: generationStart, lte: generatedUntil },
+        OR: [
+          { startsAt: { gte: generationStart, lte: generatedUntil } },
+          { scheduleStartsAt: { gte: generationStart, lte: generatedUntil } },
+        ],
       },
-      select: { startsAt: true },
+      select: { startsAt: true, scheduleStartsAt: true },
     });
 
-    const existingStarts = new Set(existingEvents.map((event) => event.startsAt.getTime()));
+    const existingStarts = new Set(existingEvents.map((event) => (event.scheduleStartsAt ?? event.startsAt).getTime()));
     const startsToCreate = starts.filter((startsAt) => !existingStarts.has(startsAt.getTime()));
 
     if (startsToCreate.length > 0) {
@@ -152,6 +155,7 @@ export async function ensureUpcomingCellMeetingsForUser(
           status: EventStatus.SCHEDULED,
           locationName: group.locationName,
           generatedFromSchedule: true,
+          scheduleStartsAt: startsAt,
         })),
         skipDuplicates: true,
       });

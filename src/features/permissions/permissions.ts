@@ -141,7 +141,7 @@ export function canViewEvent(user: PermissionUser, event: ScopedEvent | null | u
 
 export function canCheckInEvent(user: PermissionUser, event: ScopedEvent | null | undefined) {
   if (!event || event.churchId !== user.churchId || !event.group || !isPastOrCurrentInstant(event.startsAt)) return false;
-  if (event.status === EventStatus.CANCELLED) return false;
+  if (event.status === EventStatus.CANCELLED || event.status === EventStatus.NO_MEETING) return false;
   return user.role === UserRole.LEADER && canViewGroup(user, event.group) && isGroupLeader(user, event.group);
 }
 

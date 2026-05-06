@@ -27,10 +27,11 @@ describe("selectRelevantCheckInEvent", () => {
     expect(selected?.id).toBe("past");
   });
 
-  it("does not select a cancelled event as pending", () => {
+  it("does not select a cancelled or not-realized event as pending", () => {
     const selected = selectRelevantCheckInEvent([
       event("past", "2026-04-21T20:00:00-03:00", "COMPLETED", [{}]),
       event("cancelled-today", "2026-04-28T10:00:00-03:00", "CANCELLED"),
+      event("no-meeting-today", "2026-04-28T11:00:00-03:00", "NO_MEETING"),
     ], reference);
 
     expect(selected?.id).toBe("past");

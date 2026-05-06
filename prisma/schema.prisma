@@ -54,6 +54,7 @@ enum EventStatus {
   CHECKIN_OPEN
   COMPLETED
   CANCELLED
+  NO_MEETING
 }
 
 enum AttendanceStatus {
@@ -239,6 +240,7 @@ model Event {
   status      EventStatus @default(SCHEDULED)
   locationName String?
   generatedFromSchedule Boolean @default(false)
+  scheduleStartsAt DateTime?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
@@ -248,8 +250,10 @@ model Event {
   attendances Attendance[]
 
   @@unique([groupId, startsAt, type])
+  @@unique([groupId, scheduleStartsAt, type])
   @@index([churchId, startsAt])
   @@index([groupId, startsAt])
+  @@index([groupId, scheduleStartsAt])
   @@map("events")
 }
 

@@ -76,6 +76,16 @@ function hasRecordedPresence(event: EventWithRelations) {
   return summarizeEventPresence(event).hasPresenceData;
 }
 
+function isClosedWithoutPresence(event: EventWithRelations) {
+  return event.status === EventStatus.CANCELLED || event.status === EventStatus.NO_MEETING;
+}
+
+function closedWithoutPresenceLabel(event: EventWithRelations) {
+  if (event.status === EventStatus.CANCELLED) return "Cancelado";
+  if (event.status === EventStatus.NO_MEETING) return "Não houve encontro";
+  return "Ver encontro";
+}
+
 function isWithinPeriod(date: Date, start: Date, end: Date) {
   const time = date.getTime();
   return time >= start.getTime() && time <= end.getTime();
@@ -108,13 +118,13 @@ function periodLabel(period: EventPeriod) {
 function EventCard({ event, user, now }: { event: EventWithRelations; user: PermissionUser; now: Date }) {
   const metrics = summarizeEventPresence(event);
   const recordedPresence = metrics.hasPresenceData;
-  const isCancelledEvent = event.status === EventStatus.CANCELLED;
+  const isCancelledEvent = isClosedWithoutPresence(event);
   const isFutureEvent = isAfter(event.startsAt, now);
   const isPendingEvent = !isCancelledEvent && !recordedPresence && !isFutureEvent;
   const canEditPresence = !isCancelledEvent && canCheckInEvent(user, event);
   const canRegisterPresence = canEditPresence && !recordedPresence;
   const label = isCancelledEvent
-    ? "Não houve encontro"
+    ? closedWithoutPresenceLabel(event)
     : recordedPresence
       ? "Presença registrada"
       : isFutureEvent
@@ -244,7 +254,7 @@ function EventsConsultationView({
     .filter((event) => {
       const recordedPresence = hasRecordedPresence(event);
       if (mode === "historico") return recordedPresence;
-      return event.status !== EventStatus.CANCELLED && !recordedPresence && !isAfter(event.startsAt, now);
+      return !isClosedWithoutPresence(event) && !recordedPresence && !isAfter(event.startsAt, now);
     })
     .sort((a, b) => {
       if (mode === "historico") return b.startsAt.getTime() - a.startsAt.getTime();
@@ -295,7 +305,7 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
     .filter((event) => {
       if (isToday(event.startsAt) || !isWithinPeriod(event.startsAt, weekStart, weekEnd)) return false;
 
-      return event.status !== EventStatus.CANCELLED && isAfter(event.startsAt, now) && !hasRecordedPresence(event);
+      return !isClosedWithoutPresence(event) && isAfter(event.startsAt, now) && !hasRecordedPresence(event);
     })
     .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
 
