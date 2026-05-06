@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Plus, Search } from "lucide-react";
+import { Plus } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { ContextSummary, EmptyState, InfoCard, SectionTitle, priorityCardClass } from "@/components/cards";
 import { ProgressiveList } from "@/components/progressive-list";
+import { TeamStructureSearch } from "@/components/team-structure-search";
 import { Badge } from "@/components/ui/badge";
 import { GroupKind } from "@/generated/prisma/client";
 import { getPastorTeamOverview } from "@/features/dashboard/queries";
@@ -115,61 +116,6 @@ function filterSupervisors(supervisors: SupervisorTeam[], normalizedQuery: strin
 
     return [];
   });
-}
-
-function teamFilterHref(filter: TeamFilter, query: string) {
-  const params = new URLSearchParams();
-  if (query) params.set("q", query);
-  if (filter !== "todos") params.set("filtro", filter);
-
-  const queryString = params.toString();
-  const path = queryString ? `/equipe?${queryString}` : "/equipe";
-  return `${path}#${SUPERVISORS_SECTION_ID}`;
-}
-
-function TeamStructureSearch({ query, filter }: { query: string; filter: TeamFilter }) {
-  return (
-    <section className="team-tools">
-      <form action="/equipe" className="team-search-form">
-        <Search className="h-4 w-4 text-[var(--color-text-secondary)]" />
-        <input
-          name="q"
-          defaultValue={query}
-          aria-label="Buscar supervisor ou célula"
-          placeholder="Buscar supervisor ou célula..."
-          className="w-full bg-transparent text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)]"
-        />
-        {filter !== "todos" ? <input type="hidden" name="filtro" value={filter} /> : null}
-        <button type="submit" className="team-search-submit">
-          Buscar
-        </button>
-      </form>
-
-      <div className="team-filter-row">
-        {TEAM_FILTERS.map((option) => {
-          const active = option.value === filter;
-
-          return (
-            <Link
-              key={option.value}
-              href={teamFilterHref(option.value, query)}
-              className={cn(
-                "team-filter-chip",
-                active && "team-filter-chip-active",
-              )}
-            >
-              {option.label}
-            </Link>
-          );
-        })}
-        {query || filter !== "todos" ? (
-          <Link href={`/equipe#${SUPERVISORS_SECTION_ID}`} className="team-filter-chip">
-            Limpar
-          </Link>
-        ) : null}
-      </div>
-    </section>
-  );
 }
 
 function compactGroupSubtitle(group: TeamGroup) {
@@ -375,7 +321,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
       nav={appNavForRole(user, { active: "secondary", indicator: navIndicator })}
     >
       <div className="team-page">
-        <div className="flex items-center justify-between gap-3">
+        <div className="team-page-header flex items-center justify-between gap-3">
           <div className="min-w-0">
             <h2 className="team-title">Equipe</h2>
             <p className="team-description">
@@ -394,8 +340,6 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
         </div>
 
         {savedMessage ? <InfoCard tone="success">{savedMessage}</InfoCard> : null}
-
-        <TeamStructureSearch query={query} filter={activeFilter} />
 
         <div className="team-summary-block">
           <SectionTitle>Resumo</SectionTitle>
@@ -435,6 +379,11 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
         </div>
 
         <section id={SUPERVISORS_SECTION_ID} className="scroll-mt-4">
+          <SectionTitle detail="Busque e filtre supervisores e células listadas abaixo.">Estrutura da equipe</SectionTitle>
+          <TeamStructureSearch query={query} filter={activeFilter} sectionId={SUPERVISORS_SECTION_ID} />
+        </section>
+
+        <section>
           <SectionTitle detail="Resumo por supervisor, priorizando casos pastorais e presença baixa.">Supervisores</SectionTitle>
           {supervisorList.length > 0 ? (
             <ProgressiveList

@@ -1001,6 +1001,14 @@ a {
   line-height: 1.5;
 }
 
+.team-page-header .team-description {
+  margin-bottom: 6px;
+}
+
+.team-page-header + .team-summary-block {
+  margin-top: 6px;
+}
+
 .team-page h2 {
   letter-spacing: 0;
 }
@@ -1013,7 +1021,7 @@ a {
 }
 
 .team-summary-block {
-  margin-top: 24px;
+  margin-top: 8px;
   margin-bottom: 0;
 }
 
