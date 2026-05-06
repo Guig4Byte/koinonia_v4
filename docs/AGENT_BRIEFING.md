@@ -1,23 +1,25 @@
 # Koinonia — briefing para agentes
 
-Este é o arquivo de entrada para qualquer pessoa ou IA que vá alterar o projeto. Ele diz **o que preservar**, **onde procurar cada decisão** e **o que não antecipar**.
+Este é o primeiro arquivo para qualquer pessoa ou IA que vá alterar o projeto. Ele resume o que deve ser preservado e aponta onde cada assunto mora.
 
-## Autoridade dos documentos
+## Ordem de leitura e autoridade
 
 1. `docs/AGENT_BRIEFING.md` — orientação operacional rápida.
-2. `docs/PRODUCT.md` — comportamento esperado do MVP.
-3. `docs/GLOSSARY.md` — vocabulário, rótulos e CTAs oficiais.
-4. `docs/ARCHITECTURE.md` — implementação, rotas, permissões e helpers.
-5. `docs/Perfil.txt` — sensação de uso mobile/pastoral.
+2. `docs/PRODUCT.md` — comportamento, escopo e fluxos do MVP.
+3. `docs/GLOSSARY.md` — vocabulário oficial da UI.
+4. `docs/ARCHITECTURE.md` — implementação, permissões, rotas, entidades e helpers.
+5. `docs/Perfil.txt` — sensação mobile/pastoral.
 6. `docs/Koinonia.txt` — visão futura/legada, sem autoridade sobre o MVP atual.
 
-Quando houver conflito entre documentação e código, confira o código atual primeiro e atualize o documento depois. Não use a visão futura para antecipar complexidade.
+Quando houver conflito entre docs e código atual, preserve o comportamento do código e atualize os docs depois.
 
-## Norte do produto
+## Ideia central
 
 > O Koinonia não registra cuidado por obrigação. Ele ajuda a não esquecer pessoas.
 
-O MVP é um radar pastoral mobile-first para células. A pergunta de corte é:
+O MVP é um radar pastoral mobile-first para células. Ele ajuda liderança a perceber quem pode estar se afastando e facilita um gesto simples de cuidado.
+
+Pergunta de corte:
 
 ```txt
 Isso ajuda alguém a cuidar melhor de uma pessoa com menos esforço?
@@ -28,7 +30,7 @@ Se a resposta for não, não entra agora.
 ## Ciclo oficial
 
 ```txt
-Evento -> Presença -> Atenção -> Contato -> Cuidado
+Encontro -> Presença -> Atenção -> Contato -> Cuidado
 ```
 
 Presença não é fiscalização. Sinal não é tarefa. Cuidado não é prontuário.
@@ -41,89 +43,149 @@ Supervisor acompanha.
 Pastor interpreta.
 ```
 
-| Papel | Foco | Não deve virar |
+| Papel | Responsabilidade padrão | Não deve virar |
 | --- | --- | --- |
-| Líder | Check-in da própria célula e cuidado local. | Operador de outras células. |
-| Supervisor | Apoio a líderes e leitura das células supervisionadas. | Substituto do líder no check-in. |
-| Pastor/Admin | Saúde geral, equipe, casos graves/encaminhados e busca. | Central de tickets ou fila de ausências. |
+| Líder | Registrar presença, ajustar encontro da própria célula e cuidar da atenção local. | Operador de outras células. |
+| Supervisor | Acompanhar células supervisionadas, exceções, padrões e pedidos de apoio. | Substituto do líder no check-in. |
+| Pastor/Admin | Interpretar saúde geral, equipe, casos graves/encaminhados e buscar pessoas quando necessário. | Central de tickets ou fila de ausências. |
 
 ## Superfícies atuais
 
-| Papel | Visão | Aba secundária | Encontros |
+| Papel | Visão | Superfície estrutural | Encontros |
 | --- | --- | --- | --- |
 | Líder | `/lider` | `/pessoas` como `Membros` | `/eventos` |
 | Supervisor | `/supervisor` | `/celulas` | `/eventos` |
 | Pastor/Admin | `/pastor` | `/equipe` | `/eventos` |
 
-`/pessoas` não é diretório geral. Na navegação atual, é a lista de membros do líder. Pastor/admin usam `/equipe` para estrutura e busca de pessoa para consulta explícita. Supervisor usa `/celulas`.
+A UI usa `Encontros`. Rotas, entidades e código técnico continuam usando `eventos`/`Event`.
 
-A navegação por papel fica em `src/features/navigation/app-nav.ts`. A UI chama a rota `/eventos` de `Encontros`; rotas e entidades técnicas continuam como `eventos`/`Event`.
+## Encontros e presença
+
+- Células ativas podem ter agenda padrão (`meetingDayOfWeek`, `meetingTime`, `locationName`).
+- O sistema garante automaticamente encontros futuros para a janela configurada.
+- O local efetivo fica no encontro (`Event.locationName`) e pode ser diferente do local padrão da célula.
+- Remarcar encontro altera data/horário/local de uma ocorrência específica.
+- `Cancelar encontro` é ação antes do horário.
+- `Não houve encontro` é confirmação depois do horário.
+- Encontro com presença registrada não pode ser cancelado, remarcado ou marcado como não realizado.
+- Líder registra e ajusta presença; pastor/supervisor consultam o resumo.
+
+## Responsabilidades de célula
+
+A fonte atual para liderança e supervisão é `GroupResponsibility`.
+
+- Use responsabilidades ativas (`activeUntil = null`) para escopo atual.
+- O modelo suporta mais de um líder/supervisor por célula.
+- Campos legados `leaderUserId` e `supervisorUserId` continuam apenas como compatibilidade temporária.
+- Rode o backfill quando um banco antigo precisar migrar vínculos legados.
+
+## Seções pastorais
+
+Listas iniciais são para decisão, não exploração. Mostre primeiro quem pede cuidado agora, com poucos itens e ação clara.
+
+Seções principais:
+
+1. `Irmãos que precisam de um olhar especial`: urgentes ou encaminhados ao cuidado pastoral.
+2. `Pedidos de apoio`: pedidos de apoio à supervisão.
+3. `Acompanhar de perto`: atenção local comum.
+4. `Acolhidos em cuidado`: pessoas em `Em cuidado`.
+
+Regras:
+
+- mostrar poucos itens inicialmente, normalmente até 4;
+- usar `Ver mais` / `Mostrar menos` quando houver excedente;
+- não transformar lista em diretório amplo;
+- busca continua sendo busca de pessoa.
+
+## Escalonamento
+
+O MVP usa `CareSignal.assignedToId`, sem entidade de tarefa.
+
+- `assignedToId` para supervisor = pedido de apoio.
+- `assignedToId` para pastor/admin = encaminhamento pastoral.
+- `severity = URGENT` = caso pastoral por gravidade.
+
+Mensagens devem ser contextuais ao perfil que está vendo. Não use frases como `Ana recebeu...` ou `Roberto recebeu...`.
+
+Exemplos corretos:
+
+- líder: `Apoio solicitado à supervisão.`
+- supervisor: `Essa célula pediu apoio da supervisão.`
+- pastor/admin: `Encaminhado ao cuidado pastoral.`
+- líder/supervisor vendo encaminhamento pastoral: `Encaminhado ao pastor.`
+
+## Presença e ausência de dado
+
+Use `src/features/events/presence-summary.ts`.
+
+- Visitantes não entram no denominador.
+- Evento sem marcação válida de membros não deve mostrar `0%`.
+- Pessoa sem marcação explícita fica `Pendente`, nunca falta presumida.
+- `Sem registro` é ausência real de dado, não risco automático.
+- `Marcar todos como presentes` é atalho do líder e deve confirmar antes de sobrescrever ausências/justificativas.
 
 ## Regras que não devem quebrar
 
-- O usuário autenticado define papel e escopo; não há seletor de perfil, sessão demo ou bypass visual.
-- Check-in é operação do líder da célula e nunca pode ser salvo antes do início do encontro.
-- Presença registrada abre resumo primeiro; ajuste do líder é ação explícita em modo focado.
-- Modo de registro/ajuste não deve competir com a bottom nav e precisa oferecer cancelar/voltar.
-- `Marcar todos como presentes` deve confirmar antes de sobrescrever ausentes ou justificativas.
-- Pastor, supervisor e admin acompanham presença em leitura; não registram pelo líder.
+- Check-in é operação do líder da célula.
+- Pastor/supervisor veem presença em resumo; não registram, ajustam nem cancelam encontros.
+- Check-in futuro não pode ser salvo.
 - Atenção por ausência só nasce de encontro real, passado e com presença registrada.
-- Pessoa sem marcação explícita fica `Pendente`, nunca falta presumida.
-- Métrica sem dado aparece como `—`, `Sem registro` ou `Sem presença recente`, nunca `0%`.
-- Visitantes não entram no denominador de presença.
-- Grupo inativo não libera visibilidade, evento, check-in, histórico padrão nem resolução automática de sinal.
-- Listas de atenção agregam por pessoa e escolhem a seção mais específica.
-- Urgente/caso pastoral vence pedido de apoio; pedido de apoio vence atenção local.
-- Cards de lista usam CTA neutro, normalmente `Abrir pessoa`; ações sensíveis ficam no detalhe.
+- Métrica sem dado aparece como ausência de dado, não `0%`.
+- Listas de atenção agregam por pessoa, não por sinal bruto.
+- Cards de lista usam CTA neutro, normalmente `Abrir pessoa`.
 - `Já houve contato?` precisa confirmar antes de resolver atenção.
 - Se o cuidado resolver todos os sinais ativos no escopo, a pessoa fica `Em cuidado`.
-- Pessoa em `Em cuidado` só volta para `Ativo` por ação explícita e sem sinal aberto relevante.
-- Recalcular presença não reabre motivo já cuidado sem nova evidência posterior.
+- A pessoa só volta para `Ativo` por ação explícita.
+- Grupo inativo não libera visibilidade, encontro, check-in ou histórico padrão.
 
-## Onde implementar
+## Limites atuais
 
-| Assunto | Fonte principal |
-| --- | --- |
-| Autenticação/sessão | `src/lib/auth`, `middleware.ts`, `src/app/login`, `src/app/logout` |
-| Permissões/escopo | `src/features/permissions/permissions.ts` |
-| Navegação por papel | `src/features/navigation/app-nav.ts` |
-| Queries de visão | `src/features/dashboard/queries.ts` |
-| Sinais e seções | `src/features/signals` |
-| Status de pessoa | `src/features/people/status-display.ts` |
-| Presença | `src/features/events/presence-summary.ts` |
-| Evento relevante para check-in | `src/features/events/relevant-event.ts` |
-| Validação de cuidado | `src/features/care/care-validation.ts` |
-| Tema | `src/features/theme/theme.ts`, `src/components/theme-init.tsx`, `src/components/theme-toggle.tsx` |
-| Cards/listas compartilhadas | `src/components/cards.tsx`, `src/components/pastoral-list-cards.tsx`, `src/components/progressive-list.tsx` |
-
-Consulte `ARCHITECTURE.md` antes de criar regra técnica nova. Consulte `GLOSSARY.md` antes de criar texto de UI.
-
-## Limites do MVP
-
-Não implementar sem pedido explícito:
+Não implementar sem decisão explícita:
 
 - cadastro público;
 - recuperação de senha;
 - gestão avançada de usuários;
+- importação em massa de planilhas;
 - acompanhamento formal;
 - CRM pastoral pesado;
 - task manager, kanban, fila ou SLA;
 - BI/analytics avançado;
-- mapas, geolocalização ou QR Code;
+- mapas/geolocalização/QR Code;
 - notificações;
 - área rica do membro;
 - calendário amplo de igreja;
 - formulários longos.
 
+## Onde implementar
+
+- Autenticação/sessão: `src/lib/auth`.
+- Middleware: `middleware.ts`.
+- Login/logout: `src/app/login`, `src/app/logout`.
+- Permissões/escopo: `src/features/permissions/permissions.ts`.
+- Navegação por papel: `src/features/navigation/app-nav.ts`.
+- Responsabilidades/backfill: `src/features/groups/responsibilities-backfill.ts`, `prisma/backfill-group-responsibilities.ts`.
+- Geração de encontros: `src/features/events/schedule.ts`.
+- Presença: `src/features/events/presence-summary.ts`.
+- Seleção de encontro relevante: `src/features/events/relevant-event.ts`.
+- Ações de encontro: `src/app/api/events/[eventId]/route.ts`, `src/components/event-details-actions.tsx`.
+- Regras de sinais: `src/features/signals`.
+- Status visual de sinais: `src/features/signals/display.ts`.
+- Seções pastorais: `src/features/signals/sections.ts`.
+- Status de pessoa: `src/features/people/status-display.ts`.
+- Queries de dashboard: `src/features/dashboard/queries.ts`.
+- Validação de cuidado: `src/features/care/care-validation.ts`.
+- Tema: `src/features/theme/theme.ts`, `src/components/theme-init.tsx`, `src/components/theme-toggle.tsx`.
+
 ## Checklist antes de responder ou codar
 
 1. A mudança respeita o ciclo oficial?
-2. Reduz esforço de cuidado?
-3. Mantém papel e escopo vindos do usuário autenticado?
-4. Mantém o líder como dono do check-in local?
-5. Mantém supervisor como apoio, não operador de presença?
-6. Mantém pastor fora da fila operacional comum?
-7. Usa helpers existentes de permissão, status, seção e navegação?
-8. Usa vocabulário do `GLOSSARY.md`?
-9. Continua mobile-first e sem burocracia?
-10. O patch promete apenas o que o código entrega?
+2. A mudança reduz esforço de cuidado?
+3. O usuário autenticado continua sendo a fonte do papel?
+4. Responsabilidades múltiplas continuam respeitadas?
+5. O pastor continua fora da operação comum?
+6. O supervisor continua acompanhando, não registrando presença?
+7. O líder continua dono do check-in e das ações operacionais do encontro?
+8. A linguagem vem do `GLOSSARY.md`?
+9. As permissões usam helpers existentes?
+10. A UI continua mobile-first e sem burocracia?
+11. O patch promete apenas o que o código entrega?

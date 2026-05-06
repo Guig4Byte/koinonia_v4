@@ -23,16 +23,24 @@ O MVP atual já possui:
 - visão por papel;
 - `Membros` para líder, `Células` para supervisor, `Equipe` para pastor/admin e `Encontros` como rótulo da rota `/eventos`;
 - busca de pessoa;
-- presença, atenção, contato e cuidado.
+- presença, atenção, contato e cuidado;
+- responsabilidades múltiplas por célula;
+- agenda padrão de célula;
+- geração automática de encontros;
+- local específico por encontro;
+- remarcação, cancelamento e marcação de `Não houve encontro` para líder;
+- resumo de presença antes do ajuste.
 
 Não trate esses itens como pendências futuras.
 
 ## Visão ampla
 
-O Koinonia pode se tornar um sistema mais completo de cuidado pastoral para igrejas com células, combinando presença, vínculo, leitura de saúde dos grupos e ações de cuidado.
+O Koinonia pode se tornar um sistema mais completo de cuidado pastoral para igrejas com células, combinando presença, vínculo, leitura de saúde dos grupos, ações de cuidado e cadastro real da estrutura pastoral.
 
 Possibilidades futuras:
 
+- cadastro administrativo simples;
+- importação validada de planilhas;
 - gestão simples de usuários e troca de senha;
 - recuperação de acesso;
 - convites controlados;
@@ -52,6 +60,7 @@ Possibilidades futuras:
 No MVP Lite atual, essas possibilidades **não entram por padrão**:
 
 - cadastro público;
+- importação livre de planilhas;
 - CRM pastoral completo;
 - task manager;
 - SLA;
@@ -68,7 +77,7 @@ No MVP Lite atual, essas possibilidades **não entram por padrão**:
 O MVP atual continua governado por:
 
 ```txt
-Evento -> Presença -> Atenção -> Contato -> Cuidado
+Encontro -> Presença -> Atenção -> Contato -> Cuidado
 ```
 
 E por:

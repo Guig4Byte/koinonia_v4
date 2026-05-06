@@ -26,17 +26,48 @@ Evite `lead`, `cliente` e `contato comercial`.
 
 Comunidade local onde presença, vínculo e cuidado acontecem. Use `Célula` na UI. Use `grupo` apenas quando a abstração técnica pedir.
 
-### Liderança
+### Liderança e supervisão
 
-Forma pastoral de se referir a quem conduz uma célula. Use `Liderança` em cards e contexto de célula.
+Use `Liderança` e `Supervisão` em cards e contexto de célula.
 
-Evite fixar a UI em `Líder` quando o contexto for a responsabilidade da célula como um todo.
+Esses termos podem representar uma pessoa, casal ou equipe pequena. Evite fixar a UI em `Líder`/`Supervisor` quando o contexto for responsabilidade compartilhada.
 
 ### Encontro / evento
 
-Encontro real que pode gerar presença. Na UI, prefira `Encontro` e `Encontros`. Em código, rotas e entidades técnicas, `Event`/`evento` continuam válidos.
+Na UI, prefira `Encontro` e `Encontros`. Em código, rotas e entidades técnicas, `Event`/`evento` continuam válidos.
 
-Use `Reunião da célula` quando precisar explicar o tipo de encontro. Evite transformar encontro em calendário amplo antes da hora.
+Use `Reunião da célula` quando precisar explicar o tipo de encontro. Evite transformar encontro em calendário amplo.
+
+### Local do encontro
+
+Use `Local deste encontro` para o local efetivo de uma ocorrência. Use `Local padrão` apenas quando estiver falando da agenda da célula.
+
+CTAs relacionados:
+
+- `Salvar local`;
+- `Ajustar local`.
+
+### Remarcar encontro
+
+Use quando o encontro muda de data/horário/local, mas continua sendo a mesma ocorrência da célula.
+
+CTA: `Remarcar encontro`.
+
+Evite usar `Cancelar` quando a célula apenas mudou de dia.
+
+### Cancelar encontro
+
+Use antes do horário do encontro, quando a célula já sabe que não vai se reunir naquela data.
+
+CTA: `Cancelar encontro`.
+
+### Não houve encontro
+
+Use depois do horário, quando a célula não se reuniu e não há presença registrada.
+
+CTA: `Não houve encontro`.
+
+Não use quando já existe presença registrada.
 
 ### Presença
 
@@ -48,7 +79,9 @@ Para encontros:
 
 - `Agendado`: encontro ainda não começou;
 - `Presença pendente`: encontro já começou e o líder pode registrar;
-- `Aguardando registro`: encontro já começou sem presença registrada para quem apenas acompanha.
+- `Aguardando registro`: encontro já começou sem presença registrada para quem apenas acompanha;
+- `Cancelado`: encontro futuro cancelado;
+- `Não houve encontro`: encontro passado marcado como não realizado.
 
 Evite `controle de presença` e `fiscalização`.
 
@@ -82,7 +115,7 @@ Sinal não é ticket, SLA, cobrança ou fila burocrática.
 
 Forma visível de apresentar um sinal para alguém agir.
 
-Use `Em atenção`, `Pessoas em atenção`, `Atenção local`, `Quem merece atenção`, `Acompanhar de perto` e `Pedem cuidado próximo`.
+Use `Em atenção`, `Pessoas em atenção`, `Atenção local`, `Quem merece atenção`, `Acompanhar de perto`, `Pedem cuidado próximo` e `Quem merece proximidade`.
 
 Evite `alerta`, `incidente` e `pendência crítica`, salvo quando houver severidade real.
 
@@ -172,10 +205,6 @@ Rótulo da aba do pastor/admin. Use para supervisores, liderança e células.
 
 Evite transformar `Equipe` em gestão pesada de usuários, ranking de supervisores ou painel de desempenho.
 
-### Encontros
-
-Rótulo da aba `/eventos` para todos os papéis. Use `Encontros` na navegação e em títulos de tela. Use `evento` apenas quando a abstração técnica pedir.
-
 ### Login
 
 Entrada do usuário autenticado.
@@ -207,25 +236,26 @@ Tema não é configuração pastoral, não muda escopo e não precisa de tela ad
 | `Novo` | pessoa recém-adicionada | informativo/neutro |
 | `Em atenção` | atenção comum para líder/supervisor | âmbar |
 | `Atenção local` | pastor vendo atenção comum dentro de contexto | âmbar |
-| `Apoio solicitado` | líder vendo pedido enviado à supervisão | roxo/lilás discreto |
-| `Pedido de apoio` | supervisor vendo pedido recebido | roxo/lilás discreto |
+| `Apoio solicitado` | líder vendo pedido enviado à supervisão | apoio |
+| `Pedido de apoio` | supervisor vendo pedido recebido | apoio |
 | `Urgente` | severidade real `URGENT` | vermelho |
 | `Caso pastoral` | pastor vendo sinal encaminhado a pastor/admin | vermelho |
 | `Encaminhado` | líder/supervisor vendo envio ao pastor | vermelho |
-| `Em cuidado` | pessoa que recebeu cuidado e deve continuar no radar | azul/care |
-| `Cuidado realizado` | contato/cuidado registrado | azul/care |
+| `Em cuidado` | pessoa que recebeu cuidado e deve continuar no radar | care |
+| `Cuidado realizado` | contato/cuidado registrado | care |
 | `Informativo` | sinal `INFO`, quando exibido | informativo/neutro |
 | `Sem registro` | ausência de dado de presença | neutro |
 | `Sem presença recente` | célula sem presença recente registrada | neutro |
-| `Presença baixa` | presença registrada abaixo do patamar esperado | âmbar/vermelho conforme percentual |
-| `Agendado` | evento futuro | informativo/neutro |
-| `Presença pendente` | evento já iniciado em que o líder pode registrar presença | âmbar |
-| `Aguardando registro` | evento já iniciado sem presença registrada para quem apenas acompanha | âmbar |
-| `Presença registrada` | evento com presença salva | verde |
+| `Agendado` | encontro futuro | informativo/neutro |
+| `Presença pendente` | encontro já iniciado em que o líder pode registrar presença | âmbar |
+| `Aguardando registro` | encontro já iniciado sem presença registrada para quem apenas acompanha | âmbar |
+| `Presença registrada` | encontro com presença salva | verde |
+| `Cancelado` | encontro futuro cancelado | neutro |
+| `Não houve encontro` | encontro passado marcado como não realizado | neutro |
 
 Não rebaixar `Urgente` para `Em atenção`. O contexto pode mudar a mensagem, mas a severidade continua sendo severidade.
 
-## Seções oficiais
+## Seções pastorais
 
 | Seção | Conteúdo |
 | --- | --- |
@@ -233,10 +263,7 @@ Não rebaixar `Urgente` para `Em atenção`. O contexto pode mudar a mensagem, m
 | `Pedidos de apoio` | pedidos de apoio da supervisão |
 | `Acompanhar de perto` | atenções locais comuns |
 | `Acolhidos em cuidado` | pessoas em `Em cuidado` |
-| `Pedem cuidado próximo` | células com caso pastoral, pedido de apoio, atenção local ou pessoa em cuidado |
-| `Presença em atenção` | células com presença baixa registrada ou sem presença recente |
-| `Acompanhamento estável` | células sem sinal relevante no momento |
-| `Células que pedem atenção` | resumo/filtro da equipe pastoral quando houver caso pastoral ou presença baixa registrada |
+| `Células que pedem atenção` | células com caso pastoral, pedido de apoio, atenção local acumulada ou presença baixa registrada |
 | `Sem presença recente` | células sem presença recente registrada; não conta como risco pastoral |
 
 ## CTAs oficiais
@@ -249,12 +276,14 @@ Não rebaixar `Urgente` para `Em atenção`. O contexto pode mudar a mensagem, m
 | Lista de pessoas/casos | `Abrir pessoa` |
 | Pedido recebido pelo supervisor | `Abrir apoio` |
 | Lista com muitos itens | `Ver mais`, `Mostrar menos` |
-| Supervisor com células recolhidas | `Ver células`, `Mostrar menos` |
 | Detalhe da pessoa | `Ligar`, `WhatsApp`, `Já houve contato?` |
 | Célula | `Abrir célula` |
-| Encontro pendente | `Registrar presença` |
-| Encontro registrado | `Ver resumo`, `Ajustar presença` |
+| Encontro futuro | `Ver encontro`, `Remarcar encontro`, `Cancelar encontro` |
+| Encontro pendente | `Registrar presença`, `Não houve encontro` |
+| Encontro registrado | `Ver resumo`, `Ajustar presença`, `Ajustar local` |
+| Local do encontro | `Salvar local`, `Ajustar local` |
 | Cuidado | `Registrar cuidado`, `Salvar sem anotação` |
+| Operação de presença | `Cancelar`, `Voltar`, `Salvar presença`, `Salvar ajuste` |
 
 Evite `Abrir cuidado` em lista, porque sugere módulo formal de acompanhamento.
 
@@ -263,11 +292,13 @@ Evite `Abrir cuidado` em lista, porque sugere módulo formal de acompanhamento.
 | Técnico | UI preferida | Observação |
 | --- | --- | --- |
 | `User` | usuário autenticado | fonte real do papel e escopo |
-| `passwordHash` | senha | nunca exibir ou manipular em UI comum |
-| `koinonia-session` | sessão | cookie técnico; não aparece na UI |
+| `GroupResponsibility` | liderança/supervisão | permite múltiplos responsáveis |
+| `SmallGroup` | célula | comunidade local de cuidado |
+| `Event` | encontro | UI usa `Encontros` |
+| `scheduleStartsAt` | ocorrência original | não aparece na UI |
+| `Event.locationName` | local deste encontro | local efetivo |
 | `CareSignal` | atenção / pessoa em atenção | sinal sustenta a atenção |
 | `CareTouch` | contato feito / cuidado realizado | registro mínimo após ação |
-| `Event` | evento / encontro | não virar calendário amplo |
 | `Attendance` | presença | fonte pastoral, não fiscalização |
 | `assignedToId` | apoio/encaminhamento | escalonamento mínimo |
 | `dashboard` | visão | evitar linguagem executiva pesada |

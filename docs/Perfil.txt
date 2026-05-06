@@ -49,25 +49,13 @@ A primeira tela deve responder em poucos segundos:
 - quem precisa ser acompanhado de perto?
 - existe alguém já acolhido em cuidado?
 - alguma célula está sem presença ou com presença baixa?
+- há encontro que pede ação do líder?
 
 Evite telas iniciais com muitos cards, gráficos, tabelas ou linguagem executiva.
-
-## Decisão antes de exploração
-
-Listas não devem obrigar o usuário a procurar prioridade. A tela deve apresentar a decisão em camadas curtas:
-
-1. `Irmãos que precisam de um olhar especial`.
-2. `Pedidos de apoio`.
-3. `Acompanhar de perto`.
-4. `Acolhidos em cuidado`.
-
-Cada seção deve mostrar poucos itens, normalmente até 4, e oferecer `Ver mais` quando necessário. A busca existe para consulta explícita, não para compensar uma lista mal organizada.
 
 ## Navegação mobile
 
 A navegação deve caber no polegar e usar poucos destinos.
-
-A estrutura atual tem três destinos por papel:
 
 | Papel | Destinos |
 | --- | --- |
@@ -77,33 +65,72 @@ A estrutura atual tem três destinos por papel:
 
 Não adicionar novas abas sem necessidade clara. Uma nova aba só entra se reduzir esforço real de cuidado.
 
-## Identidade no app
+## Decisão antes de exploração
 
-Após login, o app mostra o papel do usuário e uma saudação simples. Não mostrar seletor de perfil.
+Listas não devem obrigar o usuário a procurar prioridade. A tela deve apresentar a decisão em camadas curtas:
 
-O usuário deve sentir:
+1. quem pede cuidado agora;
+2. pedidos de apoio;
+3. atenção local;
+4. pessoas em cuidado;
+5. ativos/estrutura apenas quando a superfície pedir.
+
+Cada seção deve mostrar poucos itens e oferecer `Ver mais` quando necessário. A busca existe para consulta explícita, não para compensar lista mal organizada.
+
+## Visão por papel
+
+### Líder
+
+A `Visão` do líder é radar, não diretório. Mostra pessoas no radar e o encontro relevante. A lista completa fica em `Membros`.
+
+### Supervisor
+
+A `Visão` e `Células` do supervisor ajudam a perceber onde apoiar líderes, sem assumir check-in.
+
+### Pastor/Admin
+
+`Visão` e `Equipe` devem mostrar saúde pastoral, exceções e estrutura de cuidado, não organograma pesado.
+
+## Membros e células
+
+Em listas longas, diferencie peso visual:
 
 ```txt
-Estou vendo o que é minha responsabilidade.
+Quem pede cuidado aparece completo.
+Quem está ativo aparece leve.
 ```
 
-E não:
+Ativos podem usar card compacto. Pessoas em atenção, apoio, cuidado ou risco devem manter contexto suficiente para ação.
 
-```txt
-Estou operando um modo do sistema.
-```
+## Encontros no mobile
 
-## Tema
+Resumo vem antes da operação.
 
-Tema é uma escolha visual leve. Deve funcionar no login e continuar no app.
+- Presença registrada abre resumo.
+- Ajustar presença é escolha explícita.
+- Pastor/supervisor ficam em consulta.
+- Líder entra no modo operacional só quando precisa registrar ou ajustar.
 
-Use os rótulos:
+No modo de registro/ajuste:
 
-- `Claro`;
-- `Pergaminho`;
-- `Escuro`.
+- use header compacto;
+- esconda a navegação inferior;
+- mostre `Cancelar` ou `Voltar`;
+- preserve botões grandes para evitar toque errado;
+- use cores suaves por status para orientar, não pressionar;
+- mantenha a barra de salvar clara e sem competir com a navegação;
+- `Marcar todos como presentes` é atalho, não substituto da revisão pastoral.
 
-Não transforme tema em uma página de configuração no MVP.
+## Local, cancelamento e remarcação
+
+Ações de encontro devem soar simples:
+
+- mudou a casa: `Salvar local` ou `Ajustar local`;
+- mudou dia/horário: `Remarcar encontro`;
+- não vai acontecer antes do horário: `Cancelar encontro`;
+- passou do horário e não aconteceu: `Não houve encontro`.
+
+Não mostrar ações que o perfil não pode executar. Pastor/supervisor leem; líder opera.
 
 ## Busca
 
@@ -129,17 +156,18 @@ Cada card deve mostrar:
 - status claro;
 - CTA simples, normalmente `Abrir pessoa`.
 
-Ações mais sensíveis pertencem ao detalhe da pessoa.
+Ações sensíveis pertencem ao detalhe da pessoa ou ao modo operacional adequado.
 
 ## Estados vazios
 
 Estado vazio deve aliviar, não parecer falha.
 
-Bons exemplos de intenção:
+Bons exemplos:
 
 - não há pessoas pedindo atenção agora;
 - ainda não há presença registrada;
-- nenhum cuidado recente anotado.
+- nenhum cuidado recente anotado;
+- nenhuma célula ativa vinculada a este supervisor.
 
 Evite estados vazios técnicos, como “nenhum registro encontrado no banco”.
 
@@ -160,18 +188,17 @@ Essa célula pediu apoio da supervisão.
 Encaminhado ao cuidado pastoral.
 ```
 
-## Check-in no mobile
+## Tema
 
-A presença é uma operação focada. Quando o líder está registrando ou ajustando presença, reduza distrações:
+Tema é escolha visual leve. Deve funcionar no login e continuar no app.
 
-- use header compacto;
-- esconda a navegação inferior;
-- mantenha ação de `Cancelar` ou `Voltar`;
-- preserve botões grandes para evitar toque errado;
-- use cores suaves por status para orientar, não pressionar;
-- `Marcar todos como presentes` é atalho, não substituto da revisão pastoral.
+Use os rótulos:
 
-Quando a presença já estiver registrada, mostre resumo primeiro. O ajuste deve ser uma escolha explícita.
+- `Claro`;
+- `Pergaminho`;
+- `Escuro`.
+
+Não transforme tema em uma página de configuração no MVP.
 
 ## O que evitar no mobile
 

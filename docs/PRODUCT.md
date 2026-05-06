@@ -29,7 +29,7 @@ Se não ajuda, não entra no MVP.
 ## Ciclo central
 
 ```txt
-Evento -> Presença -> Atenção -> Contato -> Cuidado
+Encontro -> Presença -> Atenção -> Contato -> Cuidado
 ```
 
 Presença não é fiscalização. Sinal não é tarefa. Cuidado não é prontuário.
@@ -40,8 +40,14 @@ Inclui:
 
 - autenticação simples por e-mail e senha;
 - tema local no login e no app;
-- pessoas, células e encontros de célula;
+- pessoas, células, membros e encontros de célula;
+- liderança/supervisão múltipla por célula;
+- agenda padrão da célula;
+- geração automática de encontros futuros;
+- local específico por encontro;
+- remarcação, cancelamento e marcação de `Não houve encontro` pelo líder;
 - check-in do líder, com visitantes;
+- resumo antes de ajuste de presença;
 - métricas de presença com distinção entre dado real e ausência de registro;
 - sinais por pessoa;
 - escalonamento mínimo por atribuição do sinal;
@@ -57,6 +63,7 @@ Não inclui:
 - cadastro público;
 - recuperação de senha;
 - gestão avançada de usuários;
+- importação em massa de planilhas/arquivos;
 - acompanhamento formal;
 - CRM pesado;
 - task manager, kanban, fila ou SLA;
@@ -64,8 +71,8 @@ Não inclui:
 - mapas, QR Code ou geolocalização;
 - notificações;
 - área rica do membro;
-- formulários longos;
-- calendário amplo de igreja.
+- calendário amplo de igreja;
+- formulários longos.
 
 ## Papéis
 
@@ -77,7 +84,7 @@ Pastor interpreta.
 
 ### Líder
 
-Pode ver a própria célula, registrar check-in dos encontros da própria célula, adicionar visitantes, ver membros ativos, ver pessoas em atenção, pedir apoio da supervisão e registrar contato/cuidado.
+Pode ver a própria célula, registrar e ajustar presença dos encontros da própria célula, adicionar visitantes, ver membros ativos, ver pessoas em atenção, pedir apoio da supervisão, registrar contato/cuidado e ajustar detalhes operacionais de encontros da própria célula.
 
 Não deve registrar check-in de outra célula, registrar check-in futuro, operar visão macro ou substituir supervisor/pastor.
 
@@ -85,13 +92,13 @@ Não deve registrar check-in de outra célula, registrar check-in futuro, operar
 
 Pode ver células sob sua supervisão, presença, encontros, atenções, pedidos de apoio, exceções, acúmulos e recorrências. Pode encaminhar ao pastor quando houver gravidade ou necessidade pastoral.
 
-Não deve registrar check-in pelo líder, ver dados fora do escopo ou virar operador de presença.
+Não deve registrar/ajustar presença pelo líder, cancelar encontro, remarcar encontro, alterar local operacional ou ver dados fora do escopo.
 
 ### Pastor/Admin
 
 Pode ver saúde geral, equipe, presença por célula, células sem presença recente ou com presença baixa registrada, casos graves/urgentes/encaminhados, buscar pessoas dentro da igreja e abrir células para contexto local.
 
-Não deve registrar check-in, receber toda atenção comum como fila inicial, virar central de tickets ou transformar a visão macro em relatório burocrático.
+Não deve registrar check-in, operar encontros das células, receber toda atenção comum como fila inicial, virar central de tickets ou transformar a visão macro em relatório burocrático.
 
 ## Visibilidade: escopo não é lista padrão
 
@@ -123,33 +130,107 @@ A UI usa `Encontros`. Rotas, entidades e código continuam usando `eventos`/`Eve
 
 Visão rápida do líder. Prioriza pessoas no radar da própria célula e o encontro relevante. Não é lista ampla de membros nem tela de check-in completa.
 
+### `/pessoas`
+
+Para líder, é a superfície de **Membros**. Mostra busca, filtros (`Todos`, `Atenção`, `Em cuidado`, `Ativos`) e lista organizada por prioridade pastoral: pessoas no radar primeiro, ativos depois. Pastor/admin são direcionados para `/equipe`; supervisores são direcionados para `/celulas`.
+
 ### `/supervisor`
 
 Prioriza pedidos de apoio recebidos, células acompanhadas, presença recente e casos relevantes sob supervisão. Evita duplicar a mesma pessoa em várias seções.
+
+### `/celulas`
+
+Superfície do supervisor para ver células por prioridade pastoral. Mostra rapidamente quem pede cuidado próximo, onde há presença em atenção e quais células estão estáveis.
 
 ### `/pastor`
 
 Prioriza irmãos que precisam de um olhar especial, saúde geral das células, baixa presença/ausência de dado e busca de pessoa. Não lista toda atenção comum como fila padrão.
 
-### `/pessoas`
-
-Na navegação atual, é a superfície de **membros do líder**. Mostra busca, filtros (`Todos`, `Atenção`, `Em cuidado`, `Ativos`) e lista organizada por prioridade pastoral: pessoas no radar primeiro, ativos depois. Pastor/admin são direcionados para `/equipe`; supervisores são direcionados para `/celulas`.
-
-### `/celulas`
-
-Superfície do supervisor para ver células por prioridade pastoral. Deve mostrar rapidamente quem pede cuidado próximo, onde há presença em atenção e quais células estão estáveis.
-
 ### `/equipe`
 
-Superfície do pastor/admin para entender supervisores, células acompanhadas e células sem supervisor. Mostra primeiro exceções pastorais e mantém estrutura saudável recolhida para evitar organograma pesado.
+Superfície do pastor/admin para ler a estrutura de cuidado. Deve mostrar supervisores, células e exceções pastorais sem virar organograma pesado.
 
 ### `/eventos`
 
-Rota dos `Encontros`. Lista encontros dentro do escopo visível. O líder registra presença quando o encontro já começou; pastor e supervisor acompanham o estado do encontro sem assumir o registro.
+Na UI, `Encontros`. Lista encontros dentro do escopo visível. A organização padrão separa encontros de hoje, próximos encontros, presença não registrada e histórico.
+
+## Responsabilidades de célula
+
+A célula pode ter mais de uma pessoa na liderança ou supervisão.
+
+Na UI, use:
+
+```txt
+Liderança: Bruno e Camila
+Supervisão: Ana e Pedro
+```
+
+Produto não deve assumir que liderança ou supervisão é sempre uma pessoa só. As responsabilidades ativas definem escopo atual.
+
+## Agenda e encontros
+
+A célula pode ter agenda padrão:
+
+```txt
+Dia da semana
+Horário
+Local padrão
+```
+
+O sistema usa essa agenda para garantir encontros futuros. O líder não deve precisar criar o encontro toda semana.
+
+Cada encontro tem local próprio. Quando gerado automaticamente, começa com o local padrão da célula, mas pode ser ajustado para aquela semana.
+
+### Estados e ações
+
+| Situação | Leitura | Ações do líder |
+| --- | --- | --- |
+| Futuro | `Agendado` | Ajustar local, remarcar, cancelar |
+| Já começou/passado sem presença | `Presença pendente` | Registrar presença, ajustar local, marcar `Não houve encontro` |
+| Presença registrada | `Presença registrada` | Ver resumo, ajustar presença, ajustar local |
+| Cancelado antes do horário | `Cancelado` | Marcar que houve encontro |
+| Não realizado depois do horário | `Não houve encontro` | Marcar que houve encontro |
+
+Pastor/supervisor veem o estado e o resumo, mas não executam essas ações.
+
+### Remarcar, cancelar e não houve encontro
+
+- `Remarcar encontro`: muda data/horário/local de uma ocorrência específica.
+- `Cancelar encontro`: usado antes do horário quando a célula já sabe que não vai se reunir.
+- `Não houve encontro`: usado depois do horário quando a célula não se reuniu.
+- Encontro com presença registrada não pode ser cancelado, remarcado ou marcado como não realizado.
+
+## Check-in
+
+Check-in é exclusivo do líder da célula.
+
+Regras:
+
+- evento futuro não é acionável para check-in;
+- presença pendente só aparece quando o encontro já começou;
+- presença registrada abre resumo primeiro;
+- ajuste de presença é escolha explícita;
+- pastor/supervisor veem resumo somente leitura;
+- pessoa sem marcação explícita fica `Pendente`;
+- visitante não vira membro automaticamente;
+- visitante duplicado no mesmo encontro deve ser bloqueado por nome normalizado;
+- `Marcar todos como presentes` é atalho e deve confirmar antes de sobrescrever ausências/justificativas.
+
+No modo de registro/ajuste, reduza distrações: header compacto, sem navegação inferior, botão de cancelar/voltar e barra de salvar clara.
+
+## Métricas de presença
+
+A métrica deve dar contexto pastoral, não ranking.
+
+- Visitantes não entram no denominador.
+- Sem dado deve aparecer como `—`, `Sem registro` ou equivalente.
+- `0%` só deve aparecer quando há dado real que sustente esse valor.
+- `Presença recente` na célula resume encontros registrados e compara tendência quando houver amostra suficiente.
+- Células sem check-in entram como `Sem presença recente` ou `Sem registro`, não como risco automático.
 
 ## Seções pastorais
 
-As telas principais organizam pessoas por intenção pastoral, não por lista bruta.
+As telas principais organizam pessoas por intenção pastoral.
 
 | Seção | Quando aparece | Propósito |
 | --- | --- | --- |
@@ -160,92 +241,11 @@ As telas principais organizam pessoas por intenção pastoral, não por lista br
 
 Regras:
 
-- mostrar até 4 registros por seção;
+- mostrar poucos registros por seção;
 - usar `Ver mais` quando houver excedente;
 - evitar duplicar a mesma pessoa na mesma superfície;
-- escolher a seção mais específica possível;
+- manter busca de pessoa para consulta explícita;
 - não criar fila, SLA ou tarefa a partir dessas seções.
-
-Prioridade entre sinais da mesma pessoa:
-
-```txt
-Urgente/Caso pastoral -> Pedido de apoio -> Atenção local -> severidade/recência
-```
-
-## Estrutura de células e equipe
-
-`/celulas` separa células do supervisor por:
-
-| Seção | Conteúdo |
-| --- | --- |
-| `Pedem cuidado próximo` | caso pastoral, pedido de apoio, atenção local ou pessoa em cuidado |
-| `Presença em atenção` | presença baixa registrada ou ausência de presença recente |
-| `Acompanhamento estável` | células sem sinal relevante no momento |
-
-`/equipe` mostra supervisores e células para pastor/admin. A lista de supervisores fica compacta e as células aparecem sob demanda.
-
-Regras:
-
-- ordenar primeiro por gravidade pastoral, depois por presença baixa ou ausência de dado, depois por nome;
-- limitar listas extensas com `Ver mais` / `Mostrar menos`;
-- mostrar status no card da célula, não repetir todo status no card do supervisor;
-- manter busca e filtros como recorte, não como diretório administrativo.
-
-## Escalonamento
-
-O MVP usa `CareSignal.assignedToId` como mecanismo mínimo.
-
-| Situação técnica | Significado de produto |
-| --- | --- |
-| `assignedToId` aponta para supervisor | pedido de apoio da supervisão |
-| `assignedToId` aponta para pastor/admin | caso encaminhado ao pastor |
-| `severity = URGENT` | caso pastoral por gravidade |
-
-Escalonamento não cria task, SLA nem transferência total de responsabilidade. Mensagens devem ser contextuais, sem dizer que alguém “recebeu” o caso.
-
-## Check-in
-
-Check-in é exclusivo do líder da célula.
-
-Regras:
-
-- encontro de hoje pendente tem prioridade apenas depois de começar;
-- depois vem último encontro realizado ou concluído editável;
-- encontro futuro não deve ser acionável para check-in;
-- pastor/supervisor veem resumo somente leitura;
-- líder também vê resumo quando a presença já foi registrada;
-- ajuste de presença é ação explícita, aberta a partir do resumo (`?modo=ajuste`);
-- no modo de registro/ajuste, a tela vira operação focada: header compacto, sem bottom nav e com ação de cancelar/voltar;
-- pessoa sem marcação explícita fica `Pendente`;
-- visitante não vira membro automaticamente;
-- visitante duplicado no mesmo encontro deve ser bloqueado por nome normalizado;
-- no resumo, ausentes, justificativas e pendências aparecem antes; presentes ficam recolhidos para reduzir rolagem no mobile;
-- no formulário, cards usam cores suaves por status para orientar sem fiscalizar;
-- `Marcar todos como presentes` é atalho permitido, mas deve confirmar quando sobrescrever ausências ou justificativas.
-
-Encontros futuros são informativos, não pendência operacional.
-
-## Métricas de presença
-
-A métrica deve dar contexto pastoral, não ranking.
-
-- `Presença da semana` considera encontros da semana atual com presença registrada.
-- Células sem check-in entram como `Sem presença recente` ou `Sem registro`, não como `0%`.
-- Visitantes não entram no denominador.
-- Sem dado deve aparecer como `—`, `Sem registro` ou equivalente.
-- `Presença recente` na célula resume os últimos 4 encontros registrados e compara com os 4 anteriores quando há amostra suficiente.
-- Percentuais de presença usam cor como leitura rápida: abaixo de 50% em risco, de 50% a 69% em atenção, 70% ou mais como presença positiva.
-- Tendência deve falar de participação ou ritmo, não de saúde espiritual da pessoa ou da célula.
-
-## Detalhe da pessoa
-
-Responde:
-
-```txt
-Por que esta pessoa merece atenção e qual é o próximo gesto de cuidado?
-```
-
-Mostra status efetivo, ações diretas, ritmo de presença no mês, últimos encontros do mês, motivo principal, cuidado recente e `Já houve contato?`. Não vira prontuário, CRM ou timeline infinita.
 
 ## Fluxo de contato/cuidado
 
@@ -255,14 +255,12 @@ Pessoa em atenção -> Abrir pessoa -> Já houve contato? -> confirmar -> anotar
 
 Regras:
 
-- `Já houve contato?` é pergunta, não ação destrutiva imediata;
-- `Salvar sem anotação` é válido;
-- cuidado resolve sinais ativos dentro do escopo do usuário;
-- pastor/admin resolvem apenas sinais sem grupo ou de grupo ativo;
-- líder/supervisor resolvem sinais dos grupos ativos visíveis;
-- se resolver todos os sinais ativos relevantes, a pessoa fica `Em cuidado`;
-- a pessoa só volta para `Ativo` por ação explícita;
-- o mesmo motivo não deve reabrir por recalcular presença; precisa haver nova evidência posterior.
+- `Já houve contato?` é pergunta, não ação destrutiva imediata.
+- `Salvar sem anotação` é válido.
+- Cuidado resolve sinais ativos dentro do escopo do usuário.
+- Se resolver todos os sinais ativos, a pessoa fica `Em cuidado`.
+- A pessoa só volta para `Ativo` por ação explícita.
+- O mesmo motivo não deve reabrir por recalcular presença; precisa haver nova evidência posterior.
 
 ## Busca
 
@@ -271,10 +269,9 @@ A busca atual é busca de pessoa.
 - Pastor/admin buscam pessoas dentro da igreja.
 - Supervisor busca dentro do escopo supervisionado.
 - Líder busca dentro da própria célula.
-- Busca não deve depender de maiúsculas/minúsculas e deve tolerar acentos quando possível.
 - Resultado leva para `/pessoas/[personId]`.
 - Resultado usa status efetivo, não apenas status persistido.
-- Não prometa busca de evento ou célula enquanto a API não suportar.
+- Não prometa busca ampla de evento/célula enquanto a API não suportar.
 
 ## Tema
 
@@ -286,8 +283,10 @@ Temas atuais:
 - `Pergaminho`;
 - `Escuro`.
 
-O tema aparece no login e no app autenticado. Ele não muda permissão, escopo ou dado pastoral.
+Tema não muda permissão, escopo ou dado pastoral.
 
-## Linguagem e experiência
+## Cadastros e importação
 
-A UI deve ser curta, humana e acionável. Use os rótulos e CTAs oficiais de `GLOSSARY.md`. Evite linguagem de cobrança ou operação corporativa.
+O modelo já prepara agenda, responsabilidades e local por encontro. A UI de cadastros completos e importação em massa ainda não faz parte do MVP atual.
+
+Quando entrar, cadastros devem ser mínimos e pastorais. Importação de planilhas deve ter validação e prévia antes de criar dados reais.
