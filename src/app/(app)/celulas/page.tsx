@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Plus, Search } from "lucide-react";
+import { Plus } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { ContextSummary, EmptyState, GroupCard, InfoCard, SectionTitle } from "@/components/cards";
 import { ProgressiveList } from "@/components/progressive-list";
+import { CellsStructureSearch } from "@/components/cells-structure-search";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { canManageGroups, canUseSupervisorDashboard } from "@/features/permissions/permissions";
 import { groupAttentionLabel, type SignalBadge } from "@/features/signals/display";
@@ -14,6 +15,7 @@ import { GroupResponsibilityRole, SignalSeverity, UserRole } from "@/generated/p
 
 const SECTION_LIMIT = 4;
 const LOW_PRESENCE_THRESHOLD = 70;
+const CELLS_SECTION_ID = "celulas-supervisionadas";
 
 type CellsFilter = "todos" | "atencao" | "sem-presenca";
 
@@ -141,57 +143,6 @@ function filterGroups(groups: SupervisorGroup[], normalizedQuery: string, filter
     .filter((group) => groupMatchesFilter(group, filter))
     .filter((group) => !normalizedQuery || groupSearchText(group).includes(normalizedQuery))
     .sort(compareGroups);
-}
-
-function cellsFilterHref(filter: CellsFilter, query: string) {
-  const params = new URLSearchParams();
-  if (query) params.set("q", query);
-  if (filter !== "todos") params.set("filtro", filter);
-
-  const queryString = params.toString();
-  return queryString ? `/celulas?${queryString}` : "/celulas";
-}
-
-function CellsStructureSearch({ query, filter }: { query: string; filter: CellsFilter }) {
-  return (
-    <section className="team-tools">
-      <form action="/celulas" className="team-search-form">
-        <Search className="h-4 w-4 text-[var(--color-text-secondary)]" />
-        <input
-          name="q"
-          defaultValue={query}
-          aria-label="Buscar célula ou liderança"
-          placeholder="Buscar célula ou liderança..."
-          className="w-full bg-transparent text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)]"
-        />
-        {filter !== "todos" ? <input type="hidden" name="filtro" value={filter} /> : null}
-        <button type="submit" className="team-search-submit">
-          Buscar
-        </button>
-      </form>
-
-      <div className="team-filter-row">
-        {CELLS_FILTERS.map((option) => {
-          const active = option.value === filter;
-
-          return (
-            <Link
-              key={option.value}
-              href={cellsFilterHref(option.value, query)}
-              className={cn("team-filter-chip", active && "team-filter-chip-active")}
-            >
-              {option.label}
-            </Link>
-          );
-        })}
-        {query || filter !== "todos" ? (
-          <Link href="/celulas" className="team-filter-chip">
-            Limpar
-          </Link>
-        ) : null}
-      </div>
-    </section>
-  );
 }
 
 function groupBadge(group: SupervisorGroup): SignalBadge | null {
@@ -339,8 +290,6 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
           ) : null}
         </div>
 
-        <CellsStructureSearch query={query} filter={activeFilter} />
-
         <div className="team-summary-block">
           <ContextSummary
             items={[
@@ -378,15 +327,19 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
           />
         </div>
 
-        <section>
-          <SectionTitle detail="As células aparecem por prioridade pastoral; as estáveis ficam ao final.">Células supervisionadas</SectionTitle>
-          {groups.length > 0 ? (
-            <div className="cell-priority-sections">{groupSections}</div>
-          ) : (
-            <EmptyState>
-              {isFiltered ? "Nenhuma célula encontrada nesse recorte." : "Nenhuma célula ativa vinculada à sua supervisão."}
-            </EmptyState>
-          )}
+        <section id={CELLS_SECTION_ID} className="scroll-mt-4">
+          <SectionTitle detail="Busque e filtre as células listadas abaixo.">Células supervisionadas</SectionTitle>
+          <CellsStructureSearch query={query} filter={activeFilter} sectionId={CELLS_SECTION_ID} />
+
+          <div className="mt-6">
+            {groups.length > 0 ? (
+              <div className="cell-priority-sections">{groupSections}</div>
+            ) : (
+              <EmptyState>
+                {isFiltered ? "Nenhuma célula encontrada nesse recorte." : "Nenhuma célula ativa vinculada à sua supervisão."}
+              </EmptyState>
+            )}
+          </div>
         </section>
 
         <SectionTitle>Consulta</SectionTitle>
