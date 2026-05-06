@@ -17,17 +17,19 @@ export function AppShell({
   nav,
   children,
   compactHeader = false,
+  hideBottomNav = false,
 }: {
   userName: string;
   role: UserRole;
   nav: NavItem[];
   children: ReactNode;
   compactHeader?: boolean;
+  hideBottomNav?: boolean;
 }) {
   const firstName = userName.split(" ")[0];
 
   return (
-    <main className="safe-page">
+    <main className={`safe-page${hideBottomNav ? " safe-page-focus" : ""}`}>
       <header className={`app-header${compactHeader ? " app-header-compact" : ""}`}>
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -76,7 +78,7 @@ export function AppShell({
       </header>
 
       <section className="content-flow">{children}</section>
-      <BottomNav items={nav} />
+      {hideBottomNav ? null : <BottomNav items={nav} />}
     </main>
   );
 }

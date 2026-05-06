@@ -460,6 +460,123 @@ a {
   padding: 14px 16px calc(var(--bottom-nav-height) + var(--bottom-nav-offset) + env(safe-area-inset-bottom) + 32px);
 }
 
+.safe-page-focus {
+  padding-bottom: calc(112px + env(safe-area-inset-bottom));
+}
+
+.check-in-save-bar {
+  position: sticky;
+  z-index: 20;
+}
+
+.check-in-save-bar-nav {
+  bottom: 86px;
+}
+
+.check-in-save-bar-page {
+  bottom: calc(12px + env(safe-area-inset-bottom));
+}
+
+.check-in-member-card {
+  --check-in-card-accent: var(--color-border-card);
+  --check-in-card-bg: var(--color-bg-card);
+  --check-in-card-border: var(--color-border-card);
+  position: relative;
+  overflow: hidden;
+  border-color: var(--check-in-card-border) !important;
+  background: var(--check-in-card-bg) !important;
+  box-shadow:
+    inset 4px 0 0 color-mix(in srgb, var(--check-in-card-accent) 72%, transparent),
+    var(--color-shadow-card);
+}
+
+.check-in-member-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--check-in-card-accent);
+  opacity: 0.72;
+}
+
+.check-in-member-card > * {
+  position: relative;
+}
+
+.check-in-member-card-present {
+  --check-in-card-accent: var(--color-badge-estavel-text);
+  --check-in-card-bg: color-mix(in srgb, var(--color-bg-card) 94%, var(--color-badge-estavel-bg));
+  --check-in-card-border: color-mix(in srgb, var(--color-border-card) 72%, var(--color-badge-estavel-border));
+}
+
+.check-in-member-card-absent {
+  --check-in-card-accent: var(--color-badge-risco-text);
+  --check-in-card-bg: color-mix(in srgb, var(--color-bg-card) 90%, var(--color-badge-risco-bg));
+  --check-in-card-border: color-mix(in srgb, var(--color-border-card) 58%, var(--color-badge-risco-border));
+}
+
+.check-in-member-card-justified {
+  --check-in-card-accent: var(--color-badge-atencao-text);
+  --check-in-card-bg: color-mix(in srgb, var(--color-bg-card) 93%, var(--color-badge-atencao-bg));
+  --check-in-card-border: color-mix(in srgb, var(--color-border-card) 64%, var(--color-badge-atencao-border));
+}
+
+.check-in-member-card-pending {
+  --check-in-card-accent: var(--color-text-muted);
+  --check-in-card-bg: var(--color-bg-card);
+  --check-in-card-border: var(--color-border-card);
+}
+
+.check-in-status-badge {
+  line-height: 1;
+}
+
+.check-in-status-badge-present {
+  border-color: var(--color-badge-estavel-border);
+  background: var(--color-badge-estavel-bg);
+  color: var(--color-badge-estavel-text);
+}
+
+.check-in-status-badge-absent {
+  border-color: var(--color-badge-risco-border);
+  background: var(--color-badge-risco-bg);
+  color: var(--color-badge-risco-text);
+}
+
+.check-in-status-badge-justified {
+  border-color: var(--color-badge-atencao-border);
+  background: var(--color-badge-atencao-bg);
+  color: var(--color-badge-atencao-text);
+}
+
+.check-in-status-badge-pending {
+  border-color: var(--color-badge-atencao-border);
+  background: var(--color-badge-atencao-bg);
+  color: var(--color-badge-atencao-text);
+}
+
+.check-in-status-button {
+  background: color-mix(in srgb, var(--color-btn-secondary-bg) 82%, transparent);
+}
+
+.check-in-status-button-selected-present {
+  border-color: var(--color-badge-estavel-border) !important;
+  background: var(--color-badge-estavel-bg) !important;
+  color: var(--color-badge-estavel-text) !important;
+}
+
+.check-in-status-button-selected-absent {
+  border-color: var(--color-badge-risco-border) !important;
+  background: var(--color-badge-risco-bg) !important;
+  color: var(--color-badge-risco-text) !important;
+}
+
+.check-in-status-button-selected-justified {
+  border-color: var(--color-badge-atencao-border) !important;
+  background: var(--color-badge-atencao-bg) !important;
+  color: var(--color-badge-atencao-text) !important;
+}
+
 .login-page {
   min-height: 100svh;
   max-width: 500px;

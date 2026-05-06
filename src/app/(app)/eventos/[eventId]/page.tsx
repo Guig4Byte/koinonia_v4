@@ -266,6 +266,7 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
 
   const isFutureEvent = isAfter(event.startsAt, new Date());
   const showCheckInForm = canEditCheckIn && (!completed || mode === "ajuste");
+  const checkInCancelHref = completed ? `/eventos/${event.id}` : "/eventos";
   const canOfferAdjustment = canEditCheckIn && completed && !showCheckInForm;
   const checkInLabel = showCheckInForm
     ? completed
@@ -290,8 +291,11 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
       userName={user.name}
       role={user.role}
       nav={appNavForRole(user, { active: "events" })}
+      hideBottomNav={showCheckInForm}
     >
-      <BackLink href="/eventos">Encontros</BackLink>
+      <BackLink href={showCheckInForm && completed ? `/eventos/${event.id}` : "/eventos"}>
+        {showCheckInForm && completed ? "Voltar ao resumo" : "Encontros"}
+      </BackLink>
 
       <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
         <div className="flex items-start justify-between gap-3">
@@ -303,7 +307,7 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
             <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
               {event.group?.name ?? "Encontro geral"} · {formatShortDate(event.startsAt)}, {formatTime(event.startsAt)}
             </p>
-            {event.group ? (
+            {event.group && !showCheckInForm ? (
               <Link href={`/celulas/${event.group.id}`} className="mt-3 inline-flex text-sm font-semibold text-[var(--color-brand)]">
                 Abrir célula →
               </Link>
@@ -351,6 +355,9 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
             mode={completed ? "adjust" : "register"}
             attentionHref={event.groupId ? `/celulas/${event.groupId}` : "/pessoas"}
             attentionLabel="Ver atenção da célula"
+            cancelHref={checkInCancelHref}
+            cancelLabel={completed ? "Cancelar" : "Voltar"}
+            saveBarOffset="page"
           />
         ) : (
           <div className="space-y-3">
