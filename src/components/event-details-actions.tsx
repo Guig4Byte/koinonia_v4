@@ -1,5 +1,6 @@
 "use client";
 
+import { CalendarDays, Clock3 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { GhostButton } from "@/components/ui/button";
@@ -27,23 +28,25 @@ function toBrasiliaDateTimeParts(value: string) {
 
   return {
     date: [
-      padDatePart(brasiliaTime.getUTCDate()),
-      padDatePart(brasiliaTime.getUTCMonth() + 1),
       brasiliaTime.getUTCFullYear(),
-    ].join("/"),
+      padDatePart(brasiliaTime.getUTCMonth() + 1),
+      padDatePart(brasiliaTime.getUTCDate()),
+    ].join("-"),
     time: [padDatePart(brasiliaTime.getUTCHours()), padDatePart(brasiliaTime.getUTCMinutes())].join(":"),
   };
 }
 
 function parseBrasiliaDateTime(dateValue: string, timeValue: string) {
-  const dateMatch = dateValue.trim().match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  const rawDate = dateValue.trim();
+  const isoDateMatch = rawDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  const brDateMatch = rawDate.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
   const timeMatch = timeValue.trim().match(/^(\d{2}):(\d{2})$/);
 
-  if (!dateMatch || !timeMatch) return null;
+  if ((!isoDateMatch && !brDateMatch) || !timeMatch) return null;
 
-  const day = Number(dateMatch[1]);
-  const month = Number(dateMatch[2]);
-  const year = Number(dateMatch[3]);
+  const year = Number(isoDateMatch?.[1] ?? brDateMatch?.[3]);
+  const month = Number(isoDateMatch?.[2] ?? brDateMatch?.[2]);
+  const day = Number(isoDateMatch?.[3] ?? brDateMatch?.[1]);
   const hour = Number(timeMatch[1]);
   const minute = Number(timeMatch[2]);
 
@@ -215,36 +218,43 @@ export function EventDetailsActions({
           <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">
             Use quando a célula vai se reunir em outro dia ou horário. O local informado acima será salvo junto.
           </p>
-          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="event-reschedule-fields mt-3">
             <div>
               <label className="block text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]" htmlFor="event-start-date">
                 Nova data
               </label>
-              <input
-                id="event-start-date"
-                value={localDate}
-                onChange={(event) => setLocalDate(event.target.value)}
-                inputMode="numeric"
-                placeholder="dd/mm/aaaa"
-                className="mt-2 min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] px-3 text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-brand)]"
-              />
+              <div className="event-datetime-field">
+                <CalendarDays className="event-datetime-icon h-4 w-4" aria-hidden="true" />
+                <input
+                  id="event-start-date"
+                  type="date"
+                  lang="pt-BR"
+                  value={localDate}
+                  onChange={(event) => setLocalDate(event.target.value)}
+                  className="event-datetime-input min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] pr-3 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--color-brand)]"
+                />
+              </div>
             </div>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]" htmlFor="event-start-time">
                 Novo horário
               </label>
-              <input
-                id="event-start-time"
-                value={localTime}
-                onChange={(event) => setLocalTime(event.target.value)}
-                inputMode="numeric"
-                placeholder="hh:mm"
-                className="mt-2 min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] px-3 text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-brand)]"
-              />
+              <div className="event-datetime-field">
+                <Clock3 className="event-datetime-icon h-4 w-4" aria-hidden="true" />
+                <input
+                  id="event-start-time"
+                  type="time"
+                  lang="pt-BR"
+                  value={localTime}
+                  onChange={(event) => setLocalTime(event.target.value)}
+                  step="300"
+                  className="event-datetime-input min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] pr-3 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--color-brand)]"
+                />
+              </div>
             </div>
           </div>
           <p className="mt-2 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-            Use o horário de Brasília (UTC-3), no formato 24h.
+            Data e horário seguem Brasília (UTC-3), em formato 24h.
           </p>
           <GhostButton type="button" onClick={rescheduleMeeting} disabled={isPending} className="mt-3 w-full rounded-xl">
             Remarcar encontro

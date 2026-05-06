@@ -577,6 +577,48 @@ a {
   color: var(--color-badge-atencao-text) !important;
 }
 
+.event-reschedule-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 12px;
+}
+
+.event-datetime-field {
+  position: relative;
+  margin-top: 8px;
+}
+
+.event-datetime-icon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  z-index: 1;
+  color: var(--color-text-secondary);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.event-datetime-input {
+  min-width: 0;
+  padding-left: 42px;
+  text-align: left;
+}
+
+.event-datetime-input:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand) 18%, transparent);
+}
+
+.event-datetime-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.62;
+}
+
+@media (max-width: 360px) {
+  .event-reschedule-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
 .login-page {
   min-height: 100svh;
   max-width: 500px;
