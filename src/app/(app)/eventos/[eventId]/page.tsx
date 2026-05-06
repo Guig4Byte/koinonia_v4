@@ -1,14 +1,15 @@
 import Link from "next/link";
 import { isAfter } from "date-fns";
 import { notFound } from "next/navigation";
-import { AttendanceStatus } from "../../../../generated/prisma/client";
+import { AttendanceStatus, EventStatus } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { CheckInList } from "@/components/check-in-list";
+import { EventDetailsActions } from "@/components/event-details-actions";
 import { BackLink, ContextSummary, InfoCard, SectionTitle } from "@/components/cards";
 import { Badge } from "@/components/ui/badge";
 import { summarizeEventPresence } from "@/features/events/presence-summary";
-import { canCheckInEvent, canViewEvent } from "@/features/permissions/permissions";
+import { canCheckInEvent, canManageEventDetails, canViewEvent } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -105,14 +106,24 @@ function AttendanceGroup({
 function EventReadOnlySummary({
   completed,
   isFutureEvent,
+  isCancelled,
   members,
   visitors,
 }: {
   completed: boolean;
   isFutureEvent: boolean;
+  isCancelled: boolean;
   members: ReadOnlyMember[];
   visitors: ReadOnlyVisitor[];
 }) {
+  if (isCancelled) {
+    return (
+      <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm leading-relaxed text-[var(--color-text-secondary)] shadow-card">
+        Este encontro foi marcado como não realizado. Ele não entra como presença atrasada.
+      </section>
+    );
+  }
+
   if (!completed) {
     return (
       <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm leading-relaxed text-[var(--color-text-secondary)] shadow-card">
@@ -251,7 +262,9 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
 
   if (!canViewEvent(user, event)) notFound();
 
-  const canEditCheckIn = canCheckInEvent(user, event);
+  const isCancelledEvent = event.status === EventStatus.CANCELLED;
+  const canEditCheckIn = !isCancelledEvent && canCheckInEvent(user, event);
+  const canEditEventDetails = canManageEventDetails(user, event);
   const presence = summarizeEventPresence(event);
   const visitors = event.attendances.filter((attendance) => attendance.status === "VISITOR");
   const completed = presence.hasPresenceData;
@@ -270,26 +283,38 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
   }));
 
   const isFutureEvent = isAfter(event.startsAt, new Date());
-  const showCheckInForm = canEditCheckIn && (!completed || mode === "ajuste");
+  const showCheckInForm = !isCancelledEvent && canEditCheckIn && (!completed || mode === "ajuste");
   const checkInCancelHref = completed ? `/eventos/${event.id}` : "/eventos";
   const canOfferAdjustment = canEditCheckIn && completed && !showCheckInForm;
   const checkInLabel = showCheckInForm
     ? completed
       ? "Ajuste de presença"
       : "Registrar presença"
-    : isFutureEvent
-      ? "Encontro agendado"
-      : "Resumo de presença";
+    : isCancelledEvent
+      ? "Encontro não realizado"
+      : isFutureEvent
+        ? "Encontro agendado"
+        : "Resumo de presença";
   const checkInSectionTitle = showCheckInForm
     ? completed
       ? "Ajustar presença"
       : "Registrar presença"
-    : isFutureEvent
+    : isCancelledEvent
       ? "Sobre o encontro"
-      : "Resumo da presença";
+      : isFutureEvent
+        ? "Sobre o encontro"
+        : "Resumo da presença";
   const checkInSubmitLabel = completed ? "Salvar ajuste" : "Salvar presença";
-  const eventStatusLabel = completed ? "Presença registrada" : isFutureEvent ? "Agendado" : canEditCheckIn ? "Presença pendente" : "Aguardando registro";
-  const eventStatusTone = completed ? "ok" : isFutureEvent ? "info" : "warn";
+  const eventStatusLabel = isCancelledEvent
+    ? "Não houve encontro"
+    : completed
+      ? "Presença registrada"
+      : isFutureEvent
+        ? "Agendado"
+        : canEditCheckIn
+          ? "Presença pendente"
+          : "Aguardando registro";
+  const eventStatusTone = isCancelledEvent ? "neutral" : completed ? "ok" : isFutureEvent ? "info" : "warn";
   const locationName = eventLocation(event);
 
   return (
@@ -370,7 +395,16 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
           />
         ) : (
           <div className="space-y-3">
-            <EventReadOnlySummary completed={completed} isFutureEvent={isFutureEvent} members={members} visitors={visitorRows} />
+            <EventReadOnlySummary completed={completed} isFutureEvent={isFutureEvent} isCancelled={isCancelledEvent} members={members} visitors={visitorRows} />
+            {canEditEventDetails ? (
+              <EventDetailsActions
+                eventId={event.id}
+                status={event.status}
+                locationName={event.locationName}
+                defaultLocationName={event.group?.locationName}
+                hasPresenceData={completed}
+              />
+            ) : null}
             {canOfferAdjustment ? (
               <Link
                 href={`/eventos/${event.id}?modo=ajuste`}

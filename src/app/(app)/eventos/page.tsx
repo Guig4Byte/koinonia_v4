@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { endOfWeek, isAfter, isToday, startOfDay, startOfWeek, subDays } from "date-fns";
+import { EventStatus } from "../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { EmptyState, SectionTitle, priorityCardClass } from "@/components/cards";
 import { ProgressiveList } from "@/components/progressive-list";
 import { Badge } from "@/components/ui/badge";
 import { summarizeEventPresence } from "@/features/events/presence-summary";
+import { ensureUpcomingCellMeetingsForUser } from "@/features/events/schedule";
 import { canCheckInEvent, getVisibleEventWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { cn } from "@/lib/cn";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -106,26 +108,26 @@ function periodLabel(period: EventPeriod) {
 function EventCard({ event, user, now }: { event: EventWithRelations; user: PermissionUser; now: Date }) {
   const metrics = summarizeEventPresence(event);
   const recordedPresence = metrics.hasPresenceData;
+  const isCancelledEvent = event.status === EventStatus.CANCELLED;
   const isFutureEvent = isAfter(event.startsAt, now);
-  const isPendingEvent = !recordedPresence && !isFutureEvent;
-  const canEditPresence = canCheckInEvent(user, event);
+  const isPendingEvent = !isCancelledEvent && !recordedPresence && !isFutureEvent;
+  const canEditPresence = !isCancelledEvent && canCheckInEvent(user, event);
   const canRegisterPresence = canEditPresence && !recordedPresence;
-  const canAdjustPresence = canEditPresence && recordedPresence;
-  const label = recordedPresence
-    ? "Presença registrada"
-    : isFutureEvent
-      ? "Agendado"
-      : canRegisterPresence
-        ? "Presença pendente"
-        : "Aguardando registro";
-  const badgeTone = recordedPresence ? "ok" : isFutureEvent ? "info" : "warn";
+  const label = isCancelledEvent
+    ? "Não houve encontro"
+    : recordedPresence
+      ? "Presença registrada"
+      : isFutureEvent
+        ? "Agendado"
+        : canRegisterPresence
+          ? "Presença pendente"
+          : "Aguardando registro";
+  const badgeTone = isCancelledEvent ? "neutral" : recordedPresence ? "ok" : isFutureEvent ? "info" : "warn";
   const actionLabel = canRegisterPresence
     ? "Registrar presença"
-    : canAdjustPresence
-      ? "Ajustar presença"
-      : recordedPresence
-        ? "Ver resumo"
-        : "Ver encontro";
+    : recordedPresence
+      ? "Ver resumo"
+      : "Ver encontro";
   const locationName = eventLocation(event);
 
   return (
@@ -242,7 +244,7 @@ function EventsConsultationView({
     .filter((event) => {
       const recordedPresence = hasRecordedPresence(event);
       if (mode === "historico") return recordedPresence;
-      return !recordedPresence && !isAfter(event.startsAt, now);
+      return event.status !== EventStatus.CANCELLED && !recordedPresence && !isAfter(event.startsAt, now);
     })
     .sort((a, b) => {
       if (mode === "historico") return b.startsAt.getTime() - a.startsAt.getTime();
@@ -274,6 +276,7 @@ function EventsConsultationView({
 export default async function EventsPage({ searchParams }: { searchParams?: EventsSearchParams }) {
   const user = await getCurrentUser();
   const now = new Date();
+  await ensureUpcomingCellMeetingsForUser(user, { referenceDate: now });
   const events = await getEventsForUser(user, now);
   const resolvedSearchParams: Awaited<EventsSearchParams> = searchParams ? await searchParams : {};
   const rawMode = firstParam(resolvedSearchParams.consulta);
@@ -292,7 +295,7 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
     .filter((event) => {
       if (isToday(event.startsAt) || !isWithinPeriod(event.startsAt, weekStart, weekEnd)) return false;
 
-      return isAfter(event.startsAt, now) && !hasRecordedPresence(event);
+      return event.status !== EventStatus.CANCELLED && isAfter(event.startsAt, now) && !hasRecordedPresence(event);
     })
     .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
 

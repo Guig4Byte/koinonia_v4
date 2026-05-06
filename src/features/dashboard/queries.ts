@@ -151,6 +151,7 @@ export async function getPastorTeamOverview(user: PermissionUser) {
 
   const groupInclude = {
     leader: true,
+    supervisor: true,
     responsibilities: activeGroupResponsibilityInclude,
     memberships: {
       where: { leftAt: null, role: { not: MembershipRole.VISITOR } },
@@ -165,13 +166,23 @@ export async function getPastorTeamOverview(user: PermissionUser) {
       where: { churchId, role: UserRole.SUPERVISOR },
       include: {
         groupResponsibilities: {
-          where: { churchId, role: GroupResponsibilityRole.SUPERVISOR, activeUntil: null },
+          where: {
+            churchId,
+            role: GroupResponsibilityRole.SUPERVISOR,
+            activeUntil: null,
+            group: { is: { churchId, isActive: true } },
+          },
           include: {
             group: {
               include: groupInclude,
             },
           },
           orderBy: { createdAt: "asc" },
+        },
+        groupsSupervised: {
+          where: { churchId, isActive: true },
+          include: groupInclude,
+          orderBy: { name: "asc" },
         },
       },
       orderBy: { name: "asc" },
@@ -180,6 +191,7 @@ export async function getPastorTeamOverview(user: PermissionUser) {
       where: {
         churchId,
         isActive: true,
+        supervisorUserId: null,
         responsibilities: { none: { role: GroupResponsibilityRole.SUPERVISOR, activeUntil: null } },
       },
       include: groupInclude,
@@ -241,7 +253,17 @@ export async function getPastorTeamOverview(user: PermissionUser) {
   };
 
   const supervisorTeams = supervisors.map((supervisor) => {
-    const groups = supervisor.groupResponsibilities.map((responsibility) => responsibility.group).map(toTeamGroup).sort(compareTeamGroups);
+    const groupsById = new Map<string, typeof groupsWithoutSupervisor[number]>();
+
+    supervisor.groupResponsibilities.forEach((responsibility) => {
+      groupsById.set(responsibility.group.id, responsibility.group);
+    });
+
+    supervisor.groupsSupervised.forEach((group) => {
+      groupsById.set(group.id, group);
+    });
+
+    const groups = Array.from(groupsById.values()).map(toTeamGroup).sort(compareTeamGroups);
     const highestPriorityScore = groups[0]?.pastoralPriorityScore ?? 0;
     const groupsNeedingAttentionCount = groups.filter((group) => group.pastoralPriorityScore > 0).length;
     const pastoralCasesCount = groups.reduce((total, group) => total + group.pastoralCasesCount, 0);

@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { getLeaderDashboard } from "@/features/dashboard/queries";
 import { canUseLeaderDashboard } from "@/features/permissions/permissions";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
+import { ensureUpcomingCellMeetingsForUser } from "@/features/events/schedule";
 import { signalDetailForViewer } from "@/features/signals/display";
 import { splitPastoralSections } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -28,6 +29,10 @@ export default async function LeaderPage() {
   const today = startOfDay(now);
   const historyStart = subDays(today, 60);
   const tomorrow = addDays(today, 1);
+
+  if (groupIds.length > 0) {
+    await ensureUpcomingCellMeetingsForUser(user, { groupIds, referenceDate: now });
+  }
 
   const visibleEvents = groupIds.length > 0
     ? await prisma.event.findMany({

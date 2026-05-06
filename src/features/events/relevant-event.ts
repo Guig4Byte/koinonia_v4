@@ -24,6 +24,10 @@ export function hasRecordedPresence(event: RelevantEventCandidate) {
   return event.status === "COMPLETED" || (event.attendances?.length ?? 0) > 0;
 }
 
+function isCancelledEvent(event: RelevantEventCandidate) {
+  return event.status === "CANCELLED";
+}
+
 export function selectRelevantCheckInEvent<T extends RelevantEventCandidate>(events: T[], referenceDate = new Date()) {
   if (events.length === 0) return null;
 
@@ -34,6 +38,7 @@ export function selectRelevantCheckInEvent<T extends RelevantEventCandidate>(eve
     (event) =>
       isSameLocalDay(event.startsAt, referenceDate) &&
       event.startsAt <= referenceDate &&
+      !isCancelledEvent(event) &&
       !hasRecordedPresence(event),
   );
   if (pendingToday) return pendingToday;

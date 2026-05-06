@@ -1,4 +1,4 @@
-import { GroupResponsibilityRole, SignalStatus, UserRole, type Prisma } from "../../generated/prisma/client";
+import { EventStatus, GroupResponsibilityRole, SignalStatus, UserRole, type Prisma } from "../../generated/prisma/client";
 
 export type PermissionUser = {
   id: string;
@@ -35,6 +35,7 @@ type ScopedPerson = {
 type ScopedEvent = {
   churchId: string;
   startsAt?: Date | string | null;
+  status?: EventStatus | string | null;
   group?: ScopedGroup | null;
 };
 
@@ -140,7 +141,16 @@ export function canViewEvent(user: PermissionUser, event: ScopedEvent | null | u
 
 export function canCheckInEvent(user: PermissionUser, event: ScopedEvent | null | undefined) {
   if (!event || event.churchId !== user.churchId || !event.group || !isPastOrCurrentInstant(event.startsAt)) return false;
+  if (event.status === EventStatus.CANCELLED) return false;
   return user.role === UserRole.LEADER && canViewGroup(user, event.group) && isGroupLeader(user, event.group);
+}
+
+export function canManageEventDetails(user: PermissionUser, event: ScopedEvent | null | undefined) {
+  if (!event || event.churchId !== user.churchId || !event.group || !canViewGroup(user, event.group)) return false;
+  if (hasWholeChurchScope(user)) return true;
+  if (user.role === UserRole.SUPERVISOR) return isGroupSupervisor(user, event.group);
+  if (user.role === UserRole.LEADER) return isGroupLeader(user, event.group);
+  return false;
 }
 
 function isActiveMembership(membership: ScopedMembership) {

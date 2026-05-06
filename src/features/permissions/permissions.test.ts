@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { GroupResponsibilityRole, UserRole } from "../../generated/prisma/client";
 import {
   canCheckInEvent,
+  canManageEventDetails,
   canRegisterCare,
   canUseLeaderDashboard,
   canUsePastorDashboard,
@@ -101,6 +102,20 @@ describe("permission helpers", () => {
     expect(canCheckInEvent(supervisor, event)).toBe(false);
     expect(canCheckInEvent(pastor, event)).toBe(false);
     expect(canCheckInEvent(otherLeader, event)).toBe(false);
+  });
+
+  it("allows event details to be managed by pastoral scope without granting check-in", () => {
+    expect(canManageEventDetails(leader, event)).toBe(true);
+    expect(canManageEventDetails(supervisor, event)).toBe(true);
+    expect(canManageEventDetails(pastor, event)).toBe(true);
+    expect(canManageEventDetails(otherLeader, event)).toBe(false);
+  });
+
+  it("blocks check-in for a cancelled event", () => {
+    const cancelledEvent = { ...event, status: "CANCELLED" };
+
+    expect(canCheckInEvent(leader, cancelledEvent)).toBe(false);
+    expect(canManageEventDetails(leader, cancelledEvent)).toBe(true);
   });
 
   it("blocks check-in for future events", () => {

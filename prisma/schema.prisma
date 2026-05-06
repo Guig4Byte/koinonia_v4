@@ -247,6 +247,7 @@ model Event {
   createdBy   User?      @relation("EventCreator", fields: [createdById], references: [id], onDelete: SetNull)
   attendances Attendance[]
 
+  @@unique([groupId, startsAt, type])
   @@index([churchId, startsAt])
   @@index([groupId, startsAt])
   @@map("events")
