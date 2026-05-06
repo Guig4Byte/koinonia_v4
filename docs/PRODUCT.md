@@ -41,6 +41,7 @@ Inclui:
 - autenticação simples por e-mail e senha;
 - tema local no login e no app;
 - pessoas, células, membros e encontros de célula;
+- cadastro/edição mínima de célula pelo pastor/admin;
 - liderança/supervisão múltipla por célula;
 - agenda padrão da célula;
 - geração automática de encontros futuros;
@@ -96,7 +97,7 @@ Não deve registrar/ajustar presença pelo líder, cancelar encontro, remarcar e
 
 ### Pastor/Admin
 
-Pode ver saúde geral, equipe, presença por célula, células sem presença recente ou com presença baixa registrada, casos graves/urgentes/encaminhados, buscar pessoas dentro da igreja e abrir células para contexto local.
+Pode ver saúde geral, equipe, presença por célula, células sem presença recente ou com presença baixa registrada, casos graves/urgentes/encaminhados, buscar pessoas dentro da igreja, abrir células para contexto local e cadastrar/editar dados básicos de célula.
 
 Não deve registrar check-in, operar encontros das células, receber toda atenção comum como fila inicial, virar central de tickets ou transformar a visão macro em relatório burocrático.
 
@@ -148,7 +149,7 @@ Prioriza irmãos que precisam de um olhar especial, saúde geral das células, b
 
 ### `/equipe`
 
-Superfície do pastor/admin para ler a estrutura de cuidado. Deve mostrar supervisores, células e exceções pastorais sem virar organograma pesado.
+Superfície do pastor/admin para ler a estrutura de cuidado. Deve mostrar supervisores, células e exceções pastorais sem virar organograma pesado. Também é o ponto de entrada para cadastrar célula mínima.
 
 ### `/eventos`
 
@@ -287,6 +288,6 @@ Tema não muda permissão, escopo ou dado pastoral.
 
 ## Cadastros e importação
 
-O modelo já prepara agenda, responsabilidades e local por encontro. A UI de cadastros completos e importação em massa ainda não faz parte do MVP atual.
+O MVP atual inclui cadastro/edição mínima de célula pelo pastor/admin: nome, dia padrão, horário padrão, local padrão e status ativa/inativa.
 
-Quando entrar, cadastros devem ser mínimos e pastorais. Importação de planilhas deve ter validação e prévia antes de criar dados reais.
+Ainda não inclui cadastro completo de pessoas, membros, usuários, responsáveis ou importação em massa. Quando entrarem, cadastros devem ser mínimos e pastorais. Importação de planilhas deve ter validação e prévia antes de criar dados reais.

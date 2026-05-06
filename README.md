@@ -57,12 +57,13 @@ O pastor não é operador de sinais e não deve receber toda ausência ou atenç
 - Sinais de atenção por pessoa.
 - Escalonamento mínimo via `CareSignal.assignedToId`.
 - Visão do pastor/admin.
-- Equipe do pastor/admin para supervisores e células.
+- Equipe do pastor/admin para supervisores, células e cadastro mínimo de célula.
 - Visão do supervisor.
 - Células supervisionadas.
 - Visão do líder.
 - Busca simples de pessoa.
-- Detalhe simples de pessoa, célula e evento.
+- Detalhe simples de pessoa, célula e encontro.
+- Cadastro/edição mínima de célula: nome, dia padrão, horário padrão, local padrão e status ativa/inativa.
 - Contato/cuidado simples com anotação opcional.
 
 ## O que não existe de propósito
@@ -184,7 +185,9 @@ docs                 Produto, vocabulário, arquitetura e briefing.
 /lider               Visão do líder.
 /pessoas             Pessoas/membros dentro da superfície padrão.
 /pessoas/[personId]  Detalhe da pessoa.
+/celulas/nova        Cadastro mínimo de célula para pastor/admin.
 /celulas/[groupId]   Detalhe da célula.
+/celulas/[groupId]/editar  Edição mínima de célula para pastor/admin.
 /eventos             Encontros visíveis.
 /eventos/[eventId]   Check-in ou resumo do encontro.
 ```

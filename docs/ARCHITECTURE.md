@@ -26,7 +26,7 @@ A pessoa é o centro. Presença é fonte de leitura pastoral. A arquitetura deve
 
 ```txt
 src/app
-  Rotas, páginas, login/logout e API handlers.
+  Rotas, páginas, login/logout, server actions e API handlers.
 
 src/components
   Componentes reutilizáveis de UI. Devem ser majoritariamente burros.
@@ -205,6 +205,7 @@ Regras:
 - Check-in: somente líder ativo da célula, encontro já iniciado e não fechado.
 - Ações operacionais do encontro: somente líder ativo da célula.
 - Pastor/supervisor podem ver encontro dentro do escopo, mas não ajustar/cancelar/remarcar.
+- Pastor/Admin podem cadastrar e editar dados básicos de célula.
 - Contato/cuidado: somente quem tem escopo pastoral sobre a pessoa.
 - Grupo inativo não deve liberar visibilidade, encontro, check-in ou histórico padrão.
 - Sinais sem grupo podem continuar visíveis quando estiverem dentro do escopo institucional.
@@ -413,6 +414,27 @@ Regras:
 - `supportRequests` representa pessoas/casos relevantes, não fila bruta de sinais;
 - métricas de presença consideram apenas encontros com dado válido.
 
+## Cadastro mínimo de célula
+
+Fontes:
+
+```txt
+src/app/(app)/celulas/actions.ts
+src/app/(app)/celulas/nova/page.tsx
+src/app/(app)/celulas/[groupId]/editar/page.tsx
+src/components/group-form.tsx
+src/features/groups/group-form.ts
+```
+
+Regras:
+
+- somente Pastor/Admin pode cadastrar ou editar célula;
+- campos atuais: nome, dia padrão, horário padrão, local padrão e ativa/inativa;
+- dia e horário padrão devem ser preenchidos juntos, ou ambos ficam vazios;
+- liderança, supervisão, membros e usuários ficam fora desta fase;
+- ao alterar agenda, local padrão ou status da célula, encontros futuros gerados automaticamente e ainda não registrados podem ser regenerados;
+- células inativas não aparecem nas superfícies padrão, encontros ou check-in.
+
 ## Rotas principais
 
 | Rota | Função |
@@ -424,7 +446,9 @@ Regras:
 | `/equipe` | estrutura pastoral para pastor/admin |
 | `/supervisor` | visão do supervisor |
 | `/celulas` | células supervisionadas |
+| `/celulas/nova` | cadastro mínimo de célula para pastor/admin |
 | `/celulas/[groupId]` | detalhe da célula |
+| `/celulas/[groupId]/editar` | edição mínima de célula para pastor/admin |
 | `/lider` | visão do líder |
 | `/pessoas` | membros do líder |
 | `/pessoas/[personId]` | detalhe da pessoa |

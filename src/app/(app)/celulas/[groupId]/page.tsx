@@ -5,13 +5,13 @@ import type { CSSProperties } from "react";
 import { GroupResponsibilityRole, PersonStatus, SignalSeverity, SignalStatus, UserRole } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole, homeHrefForRole, secondaryNavHrefForRole } from "@/features/navigation/app-nav";
-import { BackLink, ContextSummary, EmptyState, PersonMiniCard, SectionTitle } from "@/components/cards";
+import { BackLink, ContextSummary, EmptyState, InfoCard, PersonMiniCard, SectionTitle } from "@/components/cards";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { ProgressiveList } from "@/components/progressive-list";
 import { isPresenceRecordedEvent, summarizeEventPresence, summarizeEventsPresence, summarizePresenceTrend } from "@/features/events/presence-summary";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
-import { canViewGroup, isGroupLeader } from "@/features/permissions/permissions";
+import { canManageGroups, canViewGroup, isGroupLeader } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson } from "@/features/signals/attention";
 import { escalationStatusDetailForViewer } from "@/features/signals/escalation";
 import { groupAttentionLabel, signalReasonForViewer, type SignalBadge, type SignalBadgeTone } from "@/features/signals/display";
@@ -149,6 +149,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
   const { groupId } = await params;
   const queryParams = searchParams ? await searchParams : {};
   const activeMembersFilter = readMembersFilter(firstParam(queryParams.membros));
+  const savedParam = firstParam(queryParams.salvo);
 
   const group = await prisma.smallGroup.findUnique({
     where: { id: groupId },
@@ -285,6 +286,12 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
   const membersSectionDetail = activeMembersFilter === "todos"
     ? `${members.length} ${members.length === 1 ? "membro" : "membros"}${priorityMembers.length > 0 ? ` · ${priorityMembers.length} em atenção` : ""}`
     : `${visibleMembers.length} ${visibleMembers.length === 1 ? "pessoa neste recorte" : "pessoas neste recorte"}`;
+  const canEditGroup = canManageGroups(user);
+  const savedMessage = savedParam === "celula-criada"
+    ? "Célula criada."
+    : savedParam === "celula-atualizada"
+      ? "Célula atualizada."
+      : null;
 
   return (
     <AppShell
@@ -294,6 +301,19 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
     >
       <div className="group-detail-page">
         <BackLink href={backHref}>{backLabel}</BackLink>
+
+        {savedMessage ? <InfoCard>{savedMessage}</InfoCard> : null}
+
+        {canEditGroup ? (
+          <div className="mb-4 flex justify-end">
+            <Link
+              href={`/celulas/${group.id}/editar`}
+              className="inline-flex min-h-10 items-center justify-center rounded-2xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)] transition active:scale-[0.98]"
+            >
+              Editar célula
+            </Link>
+          </div>
+        ) : null}
 
         <section className="group-detail-hero">
           <div className="flex items-start justify-between gap-3">

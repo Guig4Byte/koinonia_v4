@@ -3,6 +3,7 @@ import { GroupResponsibilityRole, UserRole } from "../../generated/prisma/client
 import {
   canCheckInEvent,
   canManageEventDetails,
+  canManageGroups,
   canRegisterCare,
   canUseLeaderDashboard,
   canUsePastorDashboard,
@@ -71,6 +72,9 @@ describe("permission helpers", () => {
     expect(canUseSupervisorDashboard(leader)).toBe(false);
     expect(canUseLeaderDashboard(leader)).toBe(true);
     expect(canUseLeaderDashboard(pastor)).toBe(false);
+    expect(canManageGroups(pastor)).toBe(true);
+    expect(canManageGroups(supervisor)).toBe(false);
+    expect(canManageGroups(leader)).toBe(false);
   });
 
   it("allows whole-church users to view scoped pastoral data", () => {

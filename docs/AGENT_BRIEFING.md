@@ -61,6 +61,7 @@ A UI usa `Encontros`. Rotas, entidades e código técnico continuam usando `even
 
 ## Encontros e presença
 
+- Pastor/Admin podem cadastrar/editar célula mínima: nome, agenda padrão, local padrão e ativa/inativa.
 - Células ativas podem ter agenda padrão (`meetingDayOfWeek`, `meetingTime`, `locationName`).
 - O sistema garante automaticamente encontros futuros para a janela configurada.
 - O local efetivo fica no encontro (`Event.locationName`) e pode ser diferente do local padrão da célula.
@@ -145,6 +146,7 @@ Não implementar sem decisão explícita:
 - cadastro público;
 - recuperação de senha;
 - gestão avançada de usuários;
+- cadastro completo de pessoas/membros/responsáveis;
 - importação em massa de planilhas;
 - acompanhamento formal;
 - CRM pastoral pesado;
@@ -165,6 +167,7 @@ Não implementar sem decisão explícita:
 - Navegação por papel: `src/features/navigation/app-nav.ts`.
 - Responsabilidades/backfill: `src/features/groups/responsibilities-backfill.ts`, `prisma/backfill-group-responsibilities.ts`.
 - Geração de encontros: `src/features/events/schedule.ts`.
+- Cadastro mínimo de célula: `src/app/(app)/celulas/actions.ts`, `src/app/(app)/celulas/nova/page.tsx`, `src/app/(app)/celulas/[groupId]/editar/page.tsx`, `src/components/group-form.tsx`, `src/features/groups/group-form.ts`.
 - Presença: `src/features/events/presence-summary.ts`.
 - Seleção de encontro relevante: `src/features/events/relevant-event.ts`.
 - Ações de encontro: `src/app/api/events/[eventId]/route.ts`, `src/components/event-details-actions.tsx`.

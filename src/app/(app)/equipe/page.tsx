@@ -1,15 +1,17 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { ContextSummary, EmptyState, InfoCard, SectionTitle, priorityCardClass } from "@/components/cards";
 import { ProgressiveList } from "@/components/progressive-list";
 import { Badge } from "@/components/ui/badge";
+import { GroupKind } from "@/generated/prisma/client";
 import { getPastorTeamOverview } from "@/features/dashboard/queries";
-import { canUsePastorDashboard } from "@/features/permissions/permissions";
+import { canManageGroups, canUsePastorDashboard } from "@/features/permissions/permissions";
 import type { SignalBadgeTone } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { prisma } from "@/lib/prisma";
 import { cn } from "@/lib/cn";
 import { initials } from "@/lib/text";
 
@@ -236,6 +238,33 @@ function CompactGroupLink({ group }: { group: TeamGroup }) {
   );
 }
 
+
+function InactiveGroupLink({ group }: { group: { id: string; name: string; meetingDayOfWeek: number | null; meetingTime: string | null; locationName: string | null } }) {
+  const scheduleText = group.meetingDayOfWeek === null || !group.meetingTime
+    ? "Sem agenda padrão"
+    : `${["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"][group.meetingDayOfWeek]} · ${group.meetingTime}`;
+
+  return (
+    <Link
+      href={`/celulas/${group.id}/editar`}
+      className="team-cell-link team-cell-link-neutral"
+    >
+      <span className="min-w-0">
+        <span className="block truncate text-sm font-semibold text-[var(--color-text-primary)]">{group.name}</span>
+        <span className="mt-0.5 block truncate text-xs text-[var(--color-text-secondary)]">
+          {scheduleText}{group.locationName ? ` · ${group.locationName}` : ""}
+        </span>
+      </span>
+      <span className="flex shrink-0 items-center gap-2">
+        <Badge tone="neutral">Inativa</Badge>
+        <span className="text-sm font-bold text-[var(--color-brand)] opacity-60" aria-hidden="true">
+          →
+        </span>
+      </span>
+    </Link>
+  );
+}
+
 function SupervisorCard({ supervisor }: { supervisor: SupervisorTeam }) {
   const hasGroups = supervisor.groups.length > 0;
   const badgeTone = supervisorBadgeTone(supervisor);
@@ -307,17 +336,37 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
   const query = firstParam(params.q).trim();
   const normalizedQuery = normalizeSearch(query);
   const activeFilter = readTeamFilter(firstParam(params.filtro));
+  const savedParam = firstParam(params.salvo);
   const team = await getPastorTeamOverview(user);
+  const inactiveGroups = canManageGroups(user)
+    ? await prisma.smallGroup.findMany({
+      where: { churchId: user.churchId, kind: GroupKind.CELL, isActive: false },
+      select: { id: true, name: true, meetingDayOfWeek: true, meetingTime: true, locationName: true },
+      orderBy: { name: "asc" },
+    })
+    : [];
   const filteredSupervisors = filterSupervisors(team.supervisors, normalizedQuery, activeFilter);
   const filteredUnassignedGroups = filterGroups(team.unassignedGroups, normalizedQuery, activeFilter);
+  const filteredInactiveGroups = activeFilter === "todos"
+    ? inactiveGroups.filter((group) => !normalizedQuery || normalizeSearch(`${group.name} ${group.locationName ?? ""}`).includes(normalizedQuery))
+    : [];
   const supervisorList = renderSupervisorCards(filteredSupervisors);
   const unassignedGroupList = filteredUnassignedGroups.map((group) => (
     <CompactGroupLink key={group.id} group={group} />
+  ));
+  const inactiveGroupList = filteredInactiveGroups.map((group) => (
+    <InactiveGroupLink key={group.id} group={group} />
   ));
   const needsAttentionCount = team.summary.groupsNeedingAttentionCount;
   const hasPastoralRisk = team.summary.urgentCount > 0 || team.summary.pastoralCasesCount > 0;
   const navIndicator = hasPastoralRisk ? "risk" : needsAttentionCount > 0 ? "attention" : undefined;
   const isFiltered = Boolean(query) || activeFilter !== "todos";
+  const canCreateGroup = canManageGroups(user);
+  const savedMessage = savedParam === "celula-criada"
+    ? "Célula criada."
+    : savedParam === "celula-atualizada"
+      ? "Célula atualizada."
+      : null;
 
   return (
     <AppShell
@@ -326,10 +375,25 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
       nav={appNavForRole(user, { active: "secondary", indicator: navIndicator })}
     >
       <div className="team-page">
-        <h2 className="team-title">Equipe</h2>
-        <p className="team-description">
-          Supervisores e células em ordem de atenção pastoral, com presença baixa destacada sem duplicar listas.
-        </p>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="team-title">Equipe</h2>
+            <p className="team-description">
+              Supervisores e células em ordem de atenção pastoral, com presença baixa destacada sem duplicar listas.
+            </p>
+          </div>
+          {canCreateGroup ? (
+            <Link
+              href="/celulas/nova"
+              className="k-primary-action inline-flex min-h-10 shrink-0 items-center gap-2 rounded-2xl px-3 text-sm font-bold transition active:scale-[0.98]"
+            >
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              Nova célula
+            </Link>
+          ) : null}
+        </div>
+
+        {savedMessage ? <InfoCard>{savedMessage}</InfoCard> : null}
 
         <TeamStructureSearch query={query} filter={activeFilter} />
 
@@ -398,6 +462,20 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
               lessLabel="Mostrar menos células"
             >
               {unassignedGroupList}
+            </ProgressiveList>
+          </section>
+        ) : null}
+
+        {inactiveGroupList.length > 0 ? (
+          <section>
+            <SectionTitle detail="Fora das superfícies padrão, encontros e check-in. Abra para reativar ou ajustar dados básicos.">Células inativas</SectionTitle>
+            <ProgressiveList
+              initialCount={SECTION_LIMIT}
+              step={SECTION_LIMIT}
+              moreLabel="Ver mais células inativas"
+              lessLabel="Mostrar menos células inativas"
+            >
+              {inactiveGroupList}
             </ProgressiveList>
           </section>
         ) : null}
