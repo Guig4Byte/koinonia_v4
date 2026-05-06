@@ -117,7 +117,7 @@ src/features/navigation/app-nav.ts
 
 - item `Visão` por papel;
 - aba secundária (`Membros`, `Células` ou `Equipe`);
-- item `Eventos`;
+- item `Encontros`;
 - estado ativo;
 - indicador visual de atenção/cuidado/risco.
 
@@ -305,6 +305,8 @@ src/features/events/relevant-event.ts
 src/features/check-in/check-in-validation.ts
 src/features/check-in/visitor-validation.ts
 src/app/api/events/[eventId]/check-in/route.ts
+src/components/check-in-list.tsx
+src/app/(app)/eventos/[eventId]/page.tsx
 ```
 
 A rota de escrita deve validar:
@@ -318,6 +320,16 @@ A rota de escrita deve validar:
 - visitantes entram apenas pelo bloco de visitantes;
 - visitante duplicado no mesmo evento é bloqueado por nome normalizado;
 - evento concluído pode ser editado pelo líder apenas como correção.
+
+Comportamento de UI:
+
+- líder com presença pendente abre o formulário de registro;
+- líder com presença registrada abre primeiro o resumo;
+- `?modo=ajuste` abre o formulário de ajuste;
+- pastor, supervisor e admin veem resumo, sem formulário;
+- modo registro/ajuste usa `AppShell` com `compactHeader` e `hideBottomNav`;
+- `CheckInList` mantém barra de salvar focada, botão cancelar/voltar e cores suaves por status;
+- `Marcar todos como presentes` confirma antes de sobrescrever ausentes ou justificativas.
 
 Pastor, supervisor e admin não salvam check-in nesta fase.
 
@@ -400,7 +412,7 @@ Telas principais por papel. Todas dependem de `getCurrentUser()` e das permissõ
 
 ### `/equipe`
 
-Disponível para pastor/admin. Usa `getPastorTeamOverview(user)`, busca/filtros por supervisor ou célula e lista supervisores com células expansíveis.
+Disponível para pastor/admin. Usa `getPastorTeamOverview(user)`, busca/filtros por supervisor ou célula e lista primeiro exceções pastorais; células estáveis ficam recolhidas.
 
 ### `/celulas`
 
@@ -412,7 +424,7 @@ Valida `canViewGroup(user, group)`, mostra membros ativos não visitantes, prese
 
 ### `/pessoas`
 
-Superfície de membros do líder. Supervisor redireciona para `/celulas`; pastor/admin redirecionam para `/equipe`.
+Superfície de membros do líder, com busca e filtros `Todos`, `Atenção`, `Em cuidado` e `Ativos`. Supervisor redireciona para `/celulas`; pastor/admin redirecionam para `/equipe`.
 
 ### `/pessoas/[personId]`
 
@@ -420,11 +432,11 @@ Valida `canViewPerson(user, person)`, usa status efetivo, respeita escopo para s
 
 ### `/eventos`
 
-Lista eventos dentro do escopo visível. Futuros aparecem como `Agendado`; eventos já iniciados sem presença válida aparecem como pendência para líder autorizado ou acompanhamento para outros perfis.
+Rota técnica da aba `Encontros`. Lista eventos dentro do escopo visível. Futuros aparecem como `Agendado`; eventos já iniciados sem presença válida aparecem como pendência para líder autorizado ou acompanhamento para outros perfis.
 
 ### `/eventos/[eventId]`
 
-Valida `canViewEvent(user, event)`. Exibe check-in editável somente para o líder autorizado; outros perfis veem resumo.
+Valida `canViewEvent(user, event)`. Para presença registrada, exibe resumo primeiro inclusive para líder; o ajuste do líder acontece apenas com `?modo=ajuste`. Para presença pendente de líder autorizado, exibe formulário de registro. Outros perfis veem resumo.
 
 ### `/api/search`
 

@@ -49,7 +49,7 @@ Pastor interpreta.
 
 ## Superfícies atuais
 
-| Papel | Visão | Aba secundária | Eventos |
+| Papel | Visão | Aba secundária | Encontros |
 | --- | --- | --- | --- |
 | Líder | `/lider` | `/pessoas` como `Membros` | `/eventos` |
 | Supervisor | `/supervisor` | `/celulas` | `/eventos` |
@@ -57,12 +57,15 @@ Pastor interpreta.
 
 `/pessoas` não é diretório geral. Na navegação atual, é a lista de membros do líder. Pastor/admin usam `/equipe` para estrutura e busca de pessoa para consulta explícita. Supervisor usa `/celulas`.
 
-A navegação por papel fica em `src/features/navigation/app-nav.ts`.
+A navegação por papel fica em `src/features/navigation/app-nav.ts`. A UI chama a rota `/eventos` de `Encontros`; rotas e entidades técnicas continuam como `eventos`/`Event`.
 
 ## Regras que não devem quebrar
 
 - O usuário autenticado define papel e escopo; não há seletor de perfil, sessão demo ou bypass visual.
 - Check-in é operação do líder da célula e nunca pode ser salvo antes do início do encontro.
+- Presença registrada abre resumo primeiro; ajuste do líder é ação explícita em modo focado.
+- Modo de registro/ajuste não deve competir com a bottom nav e precisa oferecer cancelar/voltar.
+- `Marcar todos como presentes` deve confirmar antes de sobrescrever ausentes ou justificativas.
 - Pastor, supervisor e admin acompanham presença em leitura; não registram pelo líder.
 - Atenção por ausência só nasce de encontro real, passado e com presença registrada.
 - Pessoa sem marcação explícita fica `Pendente`, nunca falta presumida.

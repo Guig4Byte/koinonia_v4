@@ -71,9 +71,9 @@ A estrutura atual tem três destinos por papel:
 
 | Papel | Destinos |
 | --- | --- |
-| Líder | `Visão`, `Membros`, `Eventos` |
-| Supervisor | `Visão`, `Células`, `Eventos` |
-| Pastor/Admin | `Visão`, `Equipe`, `Eventos` |
+| Líder | `Visão`, `Membros`, `Encontros` |
+| Supervisor | `Visão`, `Células`, `Encontros` |
+| Pastor/Admin | `Visão`, `Equipe`, `Encontros` |
 
 Não adicionar novas abas sem necessidade clara. Uma nova aba só entra se reduzir esforço real de cuidado.
 
@@ -159,6 +159,19 @@ Apoio solicitado à supervisão.
 Essa célula pediu apoio da supervisão.
 Encaminhado ao cuidado pastoral.
 ```
+
+## Check-in no mobile
+
+A presença é uma operação focada. Quando o líder está registrando ou ajustando presença, reduza distrações:
+
+- use header compacto;
+- esconda a navegação inferior;
+- mantenha ação de `Cancelar` ou `Voltar`;
+- preserve botões grandes para evitar toque errado;
+- use cores suaves por status para orientar, não pressionar;
+- `Marcar todos como presentes` é atalho, não substituto da revisão pastoral.
+
+Quando a presença já estiver registrada, mostre resumo primeiro. O ajuste deve ser uma escolha explícita.
 
 ## O que evitar no mobile
 

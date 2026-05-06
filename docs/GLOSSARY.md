@@ -32,19 +32,19 @@ Forma pastoral de se referir a quem conduz uma célula. Use `Liderança` em card
 
 Evite fixar a UI em `Líder` quando o contexto for a responsabilidade da célula como um todo.
 
-### Evento / encontro
+### Encontro / evento
 
-Encontro real que pode gerar presença. Use `Evento`, `Encontro` ou `Reunião da célula`.
+Encontro real que pode gerar presença. Na UI, prefira `Encontro` e `Encontros`. Em código, rotas e entidades técnicas, `Event`/`evento` continuam válidos.
 
-Evite transformar evento em calendário amplo antes da hora.
+Use `Reunião da célula` quando precisar explicar o tipo de encontro. Evite transformar encontro em calendário amplo antes da hora.
 
 ### Presença
 
 Registro de quem esteve, faltou ou justificou.
 
-Use `Presença`, `Ritmo de presença`, `Presença pendente`, `Presença registrada`, `Registrar presença`, `Presença da semana`, `Presença recente`, `Salvar presença`, `Salvar ajuste` e `Ver resumo`.
+Use `Presença`, `Ritmo de presença`, `Presença pendente`, `Presença registrada`, `Registrar presença`, `Ajustar presença`, `Salvar presença`, `Salvar ajuste`, `Ver resumo` e `Marcar todos como presentes`.
 
-Para eventos:
+Para encontros:
 
 - `Agendado`: encontro ainda não começou;
 - `Presença pendente`: encontro já começou e o líder pode registrar;
@@ -172,6 +172,10 @@ Rótulo da aba do pastor/admin. Use para supervisores, liderança e células.
 
 Evite transformar `Equipe` em gestão pesada de usuários, ranking de supervisores ou painel de desempenho.
 
+### Encontros
+
+Rótulo da aba `/eventos` para todos os papéis. Use `Encontros` na navegação e em títulos de tela. Use `evento` apenas quando a abstração técnica pedir.
+
 ### Login
 
 Entrada do usuário autenticado.
@@ -248,8 +252,8 @@ Não rebaixar `Urgente` para `Em atenção`. O contexto pode mudar a mensagem, m
 | Supervisor com células recolhidas | `Ver células`, `Mostrar menos` |
 | Detalhe da pessoa | `Ligar`, `WhatsApp`, `Já houve contato?` |
 | Célula | `Abrir célula` |
-| Evento pendente | `Registrar presença` |
-| Evento registrado | `Ver resumo`, `Ajustar presença` |
+| Encontro pendente | `Registrar presença` |
+| Encontro registrado | `Ver resumo`, `Ajustar presença` |
 | Cuidado | `Registrar cuidado`, `Salvar sem anotação` |
 
 Evite `Abrir cuidado` em lista, porque sugere módulo formal de acompanhamento.

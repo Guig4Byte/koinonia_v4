@@ -40,7 +40,7 @@ Inclui:
 
 - autenticação simples por e-mail e senha;
 - tema local no login e no app;
-- pessoas, células e eventos de célula;
+- pessoas, células e encontros de célula;
 - check-in do líder, com visitantes;
 - métricas de presença com distinção entre dado real e ausência de registro;
 - sinais por pessoa;
@@ -49,7 +49,7 @@ Inclui:
 - visão por papel;
 - equipe do pastor/admin;
 - células supervisionadas;
-- detalhe simples de pessoa, célula e evento;
+- detalhe simples de pessoa, célula e encontro;
 - contato/cuidado com anotação opcional.
 
 Não inclui:
@@ -77,13 +77,13 @@ Pastor interpreta.
 
 ### Líder
 
-Pode ver a própria célula, registrar check-in dos eventos da própria célula, adicionar visitantes, ver membros ativos, ver pessoas em atenção, pedir apoio da supervisão e registrar contato/cuidado.
+Pode ver a própria célula, registrar check-in dos encontros da própria célula, adicionar visitantes, ver membros ativos, ver pessoas em atenção, pedir apoio da supervisão e registrar contato/cuidado.
 
 Não deve registrar check-in de outra célula, registrar check-in futuro, operar visão macro ou substituir supervisor/pastor.
 
 ### Supervisor
 
-Pode ver células sob sua supervisão, presença, eventos, atenções, pedidos de apoio, exceções, acúmulos e recorrências. Pode encaminhar ao pastor quando houver gravidade ou necessidade pastoral.
+Pode ver células sob sua supervisão, presença, encontros, atenções, pedidos de apoio, exceções, acúmulos e recorrências. Pode encaminhar ao pastor quando houver gravidade ou necessidade pastoral.
 
 Não deve registrar check-in pelo líder, ver dados fora do escopo ou virar operador de presença.
 
@@ -101,7 +101,7 @@ Há diferença entre **poder acessar** e **receber por padrão**.
 - Atenção local aparece para pastor/admin quando há contexto explícito, como célula ou pessoa aberta.
 - Supervisor vê o escopo supervisionado.
 - Líder vê a própria célula.
-- Grupos inativos não entram na superfície padrão, eventos, check-in ou histórico visível.
+- Grupos inativos não entram na superfície padrão, encontros, check-in ou histórico visível.
 
 ```txt
 Visão inicial do pastor = saúde geral + casos pastorais.
@@ -111,15 +111,17 @@ Busca = acesso explícito a pessoa dentro do escopo.
 
 ## Navegação e superfícies
 
-| Papel | Visão | Superfície estrutural | Eventos |
+| Papel | Visão | Superfície estrutural | Encontros |
 | --- | --- | --- | --- |
 | Líder | `/lider` | `/pessoas` como `Membros` | `/eventos` |
 | Supervisor | `/supervisor` | `/celulas` | `/eventos` |
 | Pastor/Admin | `/pastor` | `/equipe` | `/eventos` |
 
+A UI usa `Encontros`. Rotas, entidades e código continuam usando `eventos`/`Event`.
+
 ### `/lider`
 
-Prioriza quem merece atenção na célula, check-in/evento relevante, membros da própria célula e ações simples para abrir pessoa e registrar cuidado.
+Visão rápida do líder. Prioriza pessoas no radar da própria célula e o encontro relevante. Não é lista ampla de membros nem tela de check-in completa.
 
 ### `/supervisor`
 
@@ -131,7 +133,7 @@ Prioriza irmãos que precisam de um olhar especial, saúde geral das células, b
 
 ### `/pessoas`
 
-Na navegação atual, é a superfície de **membros do líder**. Pastor/admin são direcionados para `/equipe`; supervisores são direcionados para `/celulas`.
+Na navegação atual, é a superfície de **membros do líder**. Mostra busca, filtros (`Todos`, `Atenção`, `Em cuidado`, `Ativos`) e lista organizada por prioridade pastoral: pessoas no radar primeiro, ativos depois. Pastor/admin são direcionados para `/equipe`; supervisores são direcionados para `/celulas`.
 
 ### `/celulas`
 
@@ -139,11 +141,11 @@ Superfície do supervisor para ver células por prioridade pastoral. Deve mostra
 
 ### `/equipe`
 
-Superfície do pastor/admin para entender supervisores, células acompanhadas e células sem supervisor. Usa resumo compacto, busca, filtros e cards expansíveis para evitar gestão pesada de usuários.
+Superfície do pastor/admin para entender supervisores, células acompanhadas e células sem supervisor. Mostra primeiro exceções pastorais e mantém estrutura saudável recolhida para evitar organograma pesado.
 
 ### `/eventos`
 
-Lista eventos dentro do escopo visível. O líder vê `Registrar presença` apenas quando pode salvar o check-in. Pastor e supervisor acompanham o estado do encontro sem assumir o registro.
+Rota dos `Encontros`. Lista encontros dentro do escopo visível. O líder registra presença quando o encontro já começou; pastor e supervisor acompanham o estado do encontro sem assumir o registro.
 
 ## Seções pastorais
 
@@ -207,17 +209,21 @@ Check-in é exclusivo do líder da célula.
 
 Regras:
 
-- evento de hoje pendente tem prioridade apenas depois de começar;
-- depois vem último evento realizado ou concluído editável;
-- evento futuro não deve ser acionável para check-in;
+- encontro de hoje pendente tem prioridade apenas depois de começar;
+- depois vem último encontro realizado ou concluído editável;
+- encontro futuro não deve ser acionável para check-in;
 - pastor/supervisor veem resumo somente leitura;
-- evento concluído pode ser corrigido pelo líder;
+- líder também vê resumo quando a presença já foi registrada;
+- ajuste de presença é ação explícita, aberta a partir do resumo (`?modo=ajuste`);
+- no modo de registro/ajuste, a tela vira operação focada: header compacto, sem bottom nav e com ação de cancelar/voltar;
 - pessoa sem marcação explícita fica `Pendente`;
 - visitante não vira membro automaticamente;
-- visitante duplicado no mesmo evento deve ser bloqueado por nome normalizado;
-- no resumo somente leitura, ausentes, justificativas e pendências aparecem antes; presentes ficam recolhidos para reduzir rolagem no mobile.
+- visitante duplicado no mesmo encontro deve ser bloqueado por nome normalizado;
+- no resumo, ausentes, justificativas e pendências aparecem antes; presentes ficam recolhidos para reduzir rolagem no mobile;
+- no formulário, cards usam cores suaves por status para orientar sem fiscalizar;
+- `Marcar todos como presentes` é atalho permitido, mas deve confirmar quando sobrescrever ausências ou justificativas.
 
-Eventos futuros são informativos, não pendência operacional.
+Encontros futuros são informativos, não pendência operacional.
 
 ## Métricas de presença
 
