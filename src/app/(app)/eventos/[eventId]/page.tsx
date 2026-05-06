@@ -270,7 +270,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
       role={user.role}
       nav={appNavForRole(user, { active: "events" })}
     >
-      <BackLink href="/eventos">Eventos</BackLink>
+      <BackLink href="/eventos">Encontros</BackLink>
 
       <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
         <div className="flex items-start justify-between gap-3">
@@ -280,7 +280,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
             </p>
             <h2 className="mt-1 text-2xl font-semibold text-[var(--color-text-primary)]">{event.title}</h2>
             <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
-              {event.group?.name ?? "Evento geral"} · {formatShortDate(event.startsAt)}, {formatTime(event.startsAt)}
+              {event.group?.name ?? "Encontro geral"} · {formatShortDate(event.startsAt)}, {formatTime(event.startsAt)}
             </p>
             {event.group ? (
               <Link href={`/celulas/${event.group.id}`} className="mt-3 inline-flex text-sm font-semibold text-[var(--color-brand)]">

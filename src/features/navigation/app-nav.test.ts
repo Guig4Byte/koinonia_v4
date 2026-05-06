@@ -20,6 +20,7 @@ describe("app navigation", () => {
   it("marks only the selected tab as active and receives the indicator", () => {
     const nav = appNavForRole(UserRole.LEADER, { active: "secondary", indicator: "attention" });
 
+    expect(nav.map((item) => item.label)).toEqual(["Visão", "Membros", "Encontros"]);
     expect(nav.map((item) => item.active)).toEqual([false, true, false]);
     expect(nav.map((item) => item.indicator)).toEqual([undefined, "attention", undefined]);
   });

@@ -5,7 +5,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Koinonia Lite",
-  description: "Radar pastoral simples para células, eventos e presença.",
+  description: "Radar pastoral simples para células, encontros e presença.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

@@ -57,7 +57,7 @@ function eventMeta(event: EventWithRelations) {
   const dateTime = `${formatShortDate(event.startsAt)}, ${formatTime(event.startsAt)}`;
   const groupName = event.group?.name;
 
-  if (!groupName) return `Evento geral · ${dateTime}`;
+  if (!groupName) return `Encontro geral · ${dateTime}`;
 
   const normalizedTitle = normalizeEventText(event.title);
   const normalizedGroup = normalizeEventText(groupName);

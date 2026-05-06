@@ -354,7 +354,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
         <DetailLinkCard
           href={`/eventos/${latestAttendance.event.id}`}
           title={latestAttendance.event.title}
-          meta={`${latestAttendance.event.group?.name ?? "Evento"} · ${formatShortDate(latestAttendance.event.startsAt)}, ${formatTime(latestAttendance.event.startsAt)}`}
+          meta={`${latestAttendance.event.group?.name ?? "Encontro"} · ${formatShortDate(latestAttendance.event.startsAt)}, ${formatTime(latestAttendance.event.startsAt)}`}
           badgeLabel={attendanceLabels[latestAttendance.status]}
           badgeTone={attendanceTone(latestAttendance.status)}
           actionLabel="Abrir encontro"

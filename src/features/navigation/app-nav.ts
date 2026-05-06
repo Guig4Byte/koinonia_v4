@@ -55,7 +55,7 @@ export function appNavForRole(
     },
     {
       href: "/eventos",
-      label: "Eventos",
+      label: "Encontros",
       icon: "calendar",
       active: active === "events",
       indicator: active === "events" ? options.indicator : undefined,
