@@ -7,7 +7,7 @@ import { readJsonBody } from "@/lib/json";
 import { prisma } from "@/lib/prisma";
 
 const payloadSchema = z.object({
-  locationName: z.string().trim().max(160).nullable().optional(),
+  locationName: z.string().trim().min(1).max(160).optional(),
   status: z.union([z.literal(EventStatus.SCHEDULED), z.literal(EventStatus.CANCELLED)]).optional(),
 }).refine((payload) => payload.locationName !== undefined || payload.status !== undefined, {
   message: "Nenhuma alteração informada",
@@ -48,8 +48,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ e
   const data: { locationName?: string | null; status?: EventStatus } = {};
 
   if (body.locationName !== undefined) {
-    const locationName = body.locationName?.trim() ?? "";
-    data.locationName = locationName.length > 0 ? locationName : null;
+    data.locationName = body.locationName.trim();
   }
 
   if (body.status !== undefined) {

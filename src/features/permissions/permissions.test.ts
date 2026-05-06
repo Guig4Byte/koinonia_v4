@@ -104,10 +104,10 @@ describe("permission helpers", () => {
     expect(canCheckInEvent(otherLeader, event)).toBe(false);
   });
 
-  it("allows event details to be managed by pastoral scope without granting check-in", () => {
+  it("keeps event detail management restricted to the group leader", () => {
     expect(canManageEventDetails(leader, event)).toBe(true);
-    expect(canManageEventDetails(supervisor, event)).toBe(true);
-    expect(canManageEventDetails(pastor, event)).toBe(true);
+    expect(canManageEventDetails(supervisor, event)).toBe(false);
+    expect(canManageEventDetails(pastor, event)).toBe(false);
     expect(canManageEventDetails(otherLeader, event)).toBe(false);
   });
 

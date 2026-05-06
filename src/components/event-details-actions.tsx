@@ -31,6 +31,7 @@ export function EventDetailsActions({
   const [message, setMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const isCancelled = status === "CANCELLED";
+  const locationActionLabel = hasPresenceData ? "Ajustar local" : "Salvar local";
 
   async function patchEvent(payload: { locationName?: string | null; status?: "SCHEDULED" | "CANCELLED" }, successMessage: string) {
     setMessage(null);
@@ -54,8 +55,16 @@ export function EventDetailsActions({
   }
 
   function saveLocation() {
+    const nextLocationName = localLocationName.trim();
+
+    if (!nextLocationName) {
+      setMessage(null);
+      setErrorMessage("Informe o local deste encontro antes de salvar.");
+      return;
+    }
+
     startTransition(() => {
-      void patchEvent({ locationName: localLocationName }, "Local do encontro atualizado.");
+      void patchEvent({ locationName: nextLocationName }, "Local do encontro atualizado.");
     });
   }
 
@@ -92,37 +101,39 @@ export function EventDetailsActions({
           placeholder={defaultLocationName ? `Padrão: ${defaultLocationName}` : "Ex.: Casa da família Souza"}
           className="min-h-11 rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] px-3 text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-brand)]"
           maxLength={160}
+          required
         />
         <GhostButton type="button" onClick={saveLocation} disabled={isPending} className="w-full rounded-xl">
-          Salvar local
+          {locationActionLabel}
         </GhostButton>
       </div>
 
-      <div className="mt-4 rounded-2xl border border-[var(--color-border-divider)] bg-[var(--surface-alt)] p-3">
-        <p className="text-sm font-semibold text-[var(--color-text-primary)]">Aconteceu nesta semana?</p>
-        <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-          Use esta opção quando a célula não se reuniu. Isso evita tratar o encontro como presença atrasada.
+      {hasPresenceData ? (
+        <p className="mt-4 rounded-2xl border border-[var(--color-border-divider)] bg-[var(--surface-alt)] p-3 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+          Este encontro já tem presença registrada. O local ainda pode ser ajustado, mas o encontro não pode ser marcado como não realizado.
         </p>
-        {isCancelled ? (
-          <GhostButton type="button" onClick={reopenMeeting} disabled={isPending} className="mt-3 w-full rounded-xl">
-            Marcar que houve encontro
-          </GhostButton>
-        ) : (
-          <GhostButton
-            type="button"
-            onClick={markAsCancelled}
-            disabled={isPending || hasPresenceData}
-            className="mt-3 w-full rounded-xl"
-          >
-            Não houve encontro
-          </GhostButton>
-        )}
-        {hasPresenceData ? (
-          <p className="mt-2 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-            Este encontro já tem presença registrada. Para corrigir, use Ajustar presença.
+      ) : (
+        <div className="mt-4 rounded-2xl border border-[var(--color-border-divider)] bg-[var(--surface-alt)] p-3">
+          <p className="text-sm font-semibold text-[var(--color-text-primary)]">Aconteceu nesta semana?</p>
+          <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+            Use esta opção quando a célula não se reuniu. Isso evita tratar o encontro como presença atrasada.
           </p>
-        ) : null}
-      </div>
+          {isCancelled ? (
+            <GhostButton type="button" onClick={reopenMeeting} disabled={isPending} className="mt-3 w-full rounded-xl">
+              Marcar que houve encontro
+            </GhostButton>
+          ) : (
+            <GhostButton
+              type="button"
+              onClick={markAsCancelled}
+              disabled={isPending}
+              className="mt-3 w-full rounded-xl"
+            >
+              Não houve encontro
+            </GhostButton>
+          )}
+        </div>
+      )}
 
       {message ? <p className="mt-3 text-sm font-semibold text-[var(--color-metric-presenca)]">{message}</p> : null}
       {errorMessage ? <p className="mt-3 text-sm font-semibold text-[var(--color-badge-risco-text)]">{errorMessage}</p> : null}

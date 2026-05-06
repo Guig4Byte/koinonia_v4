@@ -147,10 +147,7 @@ export function canCheckInEvent(user: PermissionUser, event: ScopedEvent | null 
 
 export function canManageEventDetails(user: PermissionUser, event: ScopedEvent | null | undefined) {
   if (!event || event.churchId !== user.churchId || !event.group || !canViewGroup(user, event.group)) return false;
-  if (hasWholeChurchScope(user)) return true;
-  if (user.role === UserRole.SUPERVISOR) return isGroupSupervisor(user, event.group);
-  if (user.role === UserRole.LEADER) return isGroupLeader(user, event.group);
-  return false;
+  return user.role === UserRole.LEADER && isGroupLeader(user, event.group);
 }
 
 function isActiveMembership(membership: ScopedMembership) {
