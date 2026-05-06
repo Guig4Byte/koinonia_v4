@@ -58,6 +58,10 @@ function sortMembersByName<T extends { fullName: string }>(members: T[]) {
   return [...members].sort((left, right) => left.fullName.localeCompare(right.fullName, "pt-BR"));
 }
 
+function eventLocation(event: { locationName?: string | null; group?: { locationName?: string | null } | null }) {
+  return event.locationName ?? event.group?.locationName ?? null;
+}
+
 function AttendanceMemberRow({ member }: { member: ReadOnlyMember }) {
   return (
     <Link
@@ -285,6 +289,7 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
   const checkInSubmitLabel = completed ? "Salvar ajuste" : "Salvar presença";
   const eventStatusLabel = completed ? "Presença registrada" : isFutureEvent ? "Agendado" : canEditCheckIn ? "Presença pendente" : "Aguardando registro";
   const eventStatusTone = completed ? "ok" : isFutureEvent ? "info" : "warn";
+  const locationName = eventLocation(event);
 
   return (
     <AppShell
@@ -307,6 +312,9 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
             <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
               {event.group?.name ?? "Encontro geral"} · {formatShortDate(event.startsAt)}, {formatTime(event.startsAt)}
             </p>
+            {locationName ? (
+              <p className="mt-1 text-sm text-[var(--color-text-secondary)]">{locationName}</p>
+            ) : null}
             {event.group && !showCheckInForm ? (
               <Link href={`/celulas/${event.group.id}`} className="mt-3 inline-flex text-sm font-semibold text-[var(--color-brand)]">
                 Abrir célula →

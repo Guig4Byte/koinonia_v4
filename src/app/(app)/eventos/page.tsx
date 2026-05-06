@@ -66,6 +66,10 @@ function eventMeta(event: EventWithRelations) {
   return titleAlreadyIdentifiesGroup ? dateTime : `${groupName} · ${dateTime}`;
 }
 
+function eventLocation(event: EventWithRelations) {
+  return event.locationName ?? event.group?.locationName ?? null;
+}
+
 function hasRecordedPresence(event: EventWithRelations) {
   return summarizeEventPresence(event).hasPresenceData;
 }
@@ -122,6 +126,7 @@ function EventCard({ event, user, now }: { event: EventWithRelations; user: Perm
       : recordedPresence
         ? "Ver resumo"
         : "Ver encontro";
+  const locationName = eventLocation(event);
 
   return (
     <article className={cn(
@@ -135,6 +140,11 @@ function EventCard({ event, user, now }: { event: EventWithRelations; user: Perm
           <p className="mt-0.5 text-sm leading-relaxed text-[var(--color-text-secondary)]">
             {eventMeta(event)}
           </p>
+          {locationName ? (
+            <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+              {locationName}
+            </p>
+          ) : null}
         </div>
         <Badge tone={badgeTone} className="event-card-badge">{label}</Badge>
       </div>

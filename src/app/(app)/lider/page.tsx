@@ -47,6 +47,7 @@ export default async function LeaderPage() {
 
   const currentEvent = selectRelevantCheckInEvent(visibleEvents, now);
   const currentEventCompleted = currentEvent ? hasRecordedPresence(currentEvent) : false;
+  const currentEventLocation = currentEvent?.locationName ?? currentEvent?.group?.locationName ?? null;
   const primaryGroup = dashboard.groups[0] ?? null;
   const rawInCarePeople = dashboard.groups
     .flatMap((group) => group.memberships.map((membership) => ({ ...membership.person, groupName: group.name })));
@@ -152,6 +153,11 @@ export default async function LeaderPage() {
               <p className="mt-0.5 text-sm text-[var(--color-text-secondary)]">
                 {formatShortDate(currentEvent.startsAt)}, {formatTime(currentEvent.startsAt)}
               </p>
+              {currentEventLocation ? (
+                <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+                  {currentEventLocation}
+                </p>
+              ) : null}
             </div>
             <Badge tone={currentEventCompleted ? "ok" : "warn"}>{currentEventCompleted ? "Presença registrada" : "Presença pendente"}</Badge>
           </div>

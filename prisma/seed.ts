@@ -3,6 +3,7 @@ import {
   AttendanceStatus,
   CareKind,
   EventStatus,
+  GroupResponsibilityRole,
   MembershipRole,
   PersonStatus,
   SignalSeverity,
@@ -52,6 +53,7 @@ type SeedGroup = {
   name: string;
   leader: SeedUser;
   supervisor: SeedUser | null;
+  locationName: string;
   members: SeedMember[];
   visitor: SeedMember;
 };
@@ -324,6 +326,27 @@ async function createGroupWithMembers({
     },
   });
 
+  await prisma.groupResponsibility.createMany({
+    data: [
+      {
+        churchId,
+        groupId: group.id,
+        userId: leader.id,
+        role: GroupResponsibilityRole.LEADER,
+      },
+      ...(supervisor
+        ? [
+            {
+              churchId,
+              groupId: group.id,
+              userId: supervisor.id,
+              role: GroupResponsibilityRole.SUPERVISOR,
+            },
+          ]
+        : []),
+    ],
+  });
+
   const members = await Promise.all(
     memberNamesByGroup[key].map((fullName, index) =>
       prisma.person.create({
@@ -377,6 +400,7 @@ async function createGroupWithMembers({
     name,
     leader,
     supervisor,
+    locationName,
     members: members.map((member) => ({
       id: member.id,
       fullName: member.fullName,
@@ -392,6 +416,7 @@ async function createEvent({
   days,
   status,
   hour = 20,
+  locationName,
 }: {
   churchId: string;
   group: SeedGroup;
@@ -399,6 +424,7 @@ async function createEvent({
   days: number;
   status: EventStatus;
   hour?: number;
+  locationName?: string;
 }) {
   return prisma.event.create({
     data: {
@@ -408,6 +434,8 @@ async function createEvent({
       title: group.name,
       startsAt: daysFromNow(days, hour),
       status,
+      locationName: locationName ?? group.locationName,
+      generatedFromSchedule: true,
     },
   });
 }
@@ -460,6 +488,7 @@ async function main() {
   await prisma.attendance.deleteMany();
   await prisma.event.deleteMany();
   await prisma.groupMembership.deleteMany();
+  await prisma.groupResponsibility.deleteMany();
   await prisma.smallGroup.deleteMany();
   await prisma.user.deleteMany();
   await prisma.person.deleteMany();
@@ -726,6 +755,7 @@ async function main() {
     days: -1,
     status: EventStatus.COMPLETED,
     hour: 19,
+    locationName: "Casa da irmã Maria",
   });
   const betelWeek = await createEvent({
     churchId,
@@ -980,6 +1010,23 @@ async function main() {
     },
   });
 
+  await prisma.groupResponsibility.createMany({
+    data: [
+      {
+        churchId,
+        groupId: inactiveGroup.id,
+        userId: bruno.id,
+        role: GroupResponsibilityRole.LEADER,
+      },
+      {
+        churchId,
+        groupId: inactiveGroup.id,
+        userId: ana.id,
+        role: GroupResponsibilityRole.SUPERVISOR,
+      },
+    ],
+  });
+
   const inactivePerson = await prisma.person.create({
     data: {
       churchId,
@@ -1056,6 +1103,8 @@ async function createCompletedEventWithChurch(
       title: group.name,
       startsAt: daysFromNow(days, hour),
       status: EventStatus.COMPLETED,
+      locationName: group.locationName,
+      generatedFromSchedule: true,
     },
   });
 
@@ -1086,6 +1135,8 @@ async function createCompletedEventAtDate(
       title: group.name,
       startsAt,
       status: EventStatus.COMPLETED,
+      locationName: group.locationName,
+      generatedFromSchedule: true,
     },
   });
 
