@@ -931,7 +931,7 @@ a {
 
 .group-schedule-fields {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(132px, 0.75fr);
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
 

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CheckCircle2, AlertCircle, Info } from "lucide-react";
 import { Children, type ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/cn";
@@ -171,13 +172,30 @@ export function BackLink({
 
 export function InfoCard({
   children,
+  tone = "default",
 }: {
   children: ReactNode;
+  tone?: "default" | "success" | "error" | "warning";
 }) {
+  const toneStyles = {
+    default: "border-[var(--color-border-card)] bg-[var(--color-bg-card)] text-[var(--color-text-secondary)]",
+    success: "border-[var(--color-metric-presenca)]/25 bg-[var(--color-metric-presenca)]/8 text-[var(--color-metric-presenca)]",
+    error: "border-[var(--color-metric-atencoes)]/25 bg-[var(--color-metric-atencoes)]/8 text-[var(--color-metric-atencoes)]",
+    warning: "border-[var(--color-badge-atencao-text)]/25 bg-[var(--color-badge-atencao-text)]/8 text-[var(--color-badge-atencao-text)]",
+  };
+
+  const Icon = {
+    default: Info,
+    success: CheckCircle2,
+    error: AlertCircle,
+    warning: AlertCircle,
+  }[tone];
+
   return (
-    <p className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm leading-relaxed text-[var(--color-text-secondary)] shadow-card">
-      {children}
-    </p>
+    <div className={cn("mb-4 flex items-start gap-2.5 rounded-2xl border p-4 text-sm leading-relaxed shadow-card", toneStyles[tone])}>
+      <Icon className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+      <p>{children}</p>
+    </div>
   );
 }
 

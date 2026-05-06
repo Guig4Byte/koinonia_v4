@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { ContextSummary, EmptyState, GroupCard, InfoCard, SectionTitle } from "@/components/cards";
 import { ProgressiveList } from "@/components/progressive-list";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
-import { canUseSupervisorDashboard } from "@/features/permissions/permissions";
+import { canManageGroups, canUseSupervisorDashboard } from "@/features/permissions/permissions";
 import { groupAttentionLabel, type SignalBadge } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { cn } from "@/lib/cn";
@@ -312,6 +312,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
   const hasCare = dashboard.groups.some((group) => group.inCareCount > 0);
   const navIndicator = hasRisk ? "risk" : groupsNeedingAttentionCount > 0 ? "attention" : hasCare ? "care" : undefined;
   const isFiltered = Boolean(query) || activeFilter !== "todos";
+  const canCreateGroup = canManageGroups(user);
 
   return (
     <AppShell
@@ -320,10 +321,23 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
       nav={appNavForRole(user, { active: "secondary", indicator: navIndicator })}
     >
       <div className="team-page">
-        <h2 className="team-title">Células</h2>
-        <p className="team-description">
-          Acompanhe as células sob sua supervisão sem duplicar os sinais de pessoas da Visão.
-        </p>
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="team-title">Células</h2>
+            <p className="team-description">
+              Acompanhe as células sob sua supervisão sem duplicar os sinais de pessoas da Visão.
+            </p>
+          </div>
+          {canCreateGroup ? (
+            <Link
+              href="/celulas/nova"
+              className="k-primary-action inline-flex min-h-10 shrink-0 items-center gap-2 rounded-2xl px-3 text-sm font-bold transition active:scale-[0.98]"
+            >
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              Nova célula
+            </Link>
+          ) : null}
+        </div>
 
         <CellsStructureSearch query={query} filter={activeFilter} />
 

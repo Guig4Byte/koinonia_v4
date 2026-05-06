@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronDown } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import { BackLink, InfoCard } from "@/components/cards";
 import { GroupMeetingTimeInput } from "@/components/group-meeting-time-input";
 import { GROUP_LOCATION_MAX_LENGTH, GROUP_NAME_MAX_LENGTH, WEEKDAY_OPTIONS, groupFormErrorMessage, type GroupFormValues } from "@/features/groups/group-form";
@@ -96,7 +96,7 @@ export function GroupForm({
                   ))}
                 </select>
                 <span className="group-select-icon" aria-hidden="true">
-                  <ChevronDown className="h-4 w-4" />
+                  <CalendarDays className="h-4 w-4" />
                 </span>
               </div>
             </label>

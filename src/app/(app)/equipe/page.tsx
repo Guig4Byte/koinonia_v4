@@ -375,7 +375,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
       nav={appNavForRole(user, { active: "secondary", indicator: navIndicator })}
     >
       <div className="team-page">
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
             <h2 className="team-title">Equipe</h2>
             <p className="team-description">
@@ -393,7 +393,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
           ) : null}
         </div>
 
-        {savedMessage ? <InfoCard>{savedMessage}</InfoCard> : null}
+        {savedMessage ? <InfoCard tone="success">{savedMessage}</InfoCard> : null}
 
         <TeamStructureSearch query={query} filter={activeFilter} />
 

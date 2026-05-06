@@ -302,7 +302,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
       <div className="group-detail-page">
         <BackLink href={backHref}>{backLabel}</BackLink>
 
-        {savedMessage ? <InfoCard>{savedMessage}</InfoCard> : null}
+        {savedMessage ? <InfoCard tone="success">{savedMessage}</InfoCard> : null}
 
         {canEditGroup ? (
           <div className="mb-4 flex justify-end">
