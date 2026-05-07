@@ -7,7 +7,7 @@ import { CareActions } from "@/components/care-actions";
 import { PersonStatusActions } from "@/components/person-status-actions";
 import { BackLink, DetailLinkCard, EmptyState, SectionTitle, priorityCardClass } from "@/components/cards";
 import { SignalSupportActions } from "@/components/signal-support-actions";
-import { Badge } from "@/components/ui/badge";
+import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { canRegisterCare, canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { canEscalateSignalToPastor, canRequestSupervisorSupport, escalationStatusDetailForViewer } from "@/features/signals/escalation";
@@ -34,7 +34,15 @@ const careKindLabels: Record<CareKind, string> = {
   PRAYER: "Oração",
   MARKED_CARED: "Contato feito",
   NOTE: "Anotação",
+  REQUESTED_SUPPORT: "Pedido de apoio",
+  ESCALATED_TO_PASTOR: "Encaminhado ao pastor",
 };
+
+function careTouchBadge(kind: CareKind): { label: string; tone: BadgeTone } {
+  if (kind === CareKind.REQUESTED_SUPPORT) return { label: "Apoio solicitado", tone: "support" };
+  if (kind === CareKind.ESCALATED_TO_PASTOR) return { label: "Encaminhado", tone: "risk" };
+  return { label: "Cuidado realizado", tone: "care" };
+}
 
 function attendanceTone(status?: AttendanceStatus | null): "ok" | "warn" | "risk" | "info" {
   if (status === AttendanceStatus.PRESENT) return "ok";
@@ -362,20 +370,24 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
 
       <SectionTitle>Cuidado recente</SectionTitle>
       <div className="space-y-3">
-        {careTouches.map((touch) => (
-          <article key={touch.id} className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="font-semibold text-[var(--color-text-primary)]">{careKindLabels[touch.kind]}</p>
-                <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
-                  {touch.actor?.name ?? "Koinonia"} · {formatShortDate(touch.happenedAt)}, {formatTime(touch.happenedAt)}
-                </p>
+        {careTouches.map((touch) => {
+          const badge = careTouchBadge(touch.kind);
+
+          return (
+            <article key={touch.id} className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-semibold text-[var(--color-text-primary)]">{careKindLabels[touch.kind]}</p>
+                  <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
+                    {touch.actor?.name ?? "Koinonia"} · {formatShortDate(touch.happenedAt)}, {formatTime(touch.happenedAt)}
+                  </p>
+                </div>
+                <Badge tone={badge.tone}>{badge.label}</Badge>
               </div>
-              <Badge tone="care">Cuidado realizado</Badge>
-            </div>
-            {touch.note ? <p className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-primary)]">{touch.note}</p> : null}
-          </article>
-        ))}
+              {touch.note ? <p className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-primary)]">{touch.note}</p> : null}
+            </article>
+          );
+        })}
 
         {careTouches.length === 0 ? (
           <EmptyState>Nenhum contato registrado ainda. Use as ações acima quando houver ligação, WhatsApp ou cuidado real.</EmptyState>

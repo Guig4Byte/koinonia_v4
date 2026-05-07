@@ -292,17 +292,7 @@ function initials(name: string): string {
     .toUpperCase();
 }
 
-export function PersonMiniCard({
-  href,
-  initials: initialsProp,
-  name,
-  context,
-  badgeLabel,
-  badgeTone = "neutral",
-  cardTone,
-  ctaLabel = "Acompanhar",
-  compact = false,
-}: {
+export function PersonMiniCard(props: {
   href: string;
   initials: string;
   name: string;
@@ -313,6 +303,16 @@ export function PersonMiniCard({
   ctaLabel?: string;
   compact?: boolean;
 }) {
+  const {
+    href,
+    name,
+    context,
+    badgeLabel,
+    badgeTone = "neutral",
+    cardTone,
+    ctaLabel = "Acompanhar",
+    compact = false,
+  } = props;
   return (
     <Link
       href={href}
@@ -340,18 +340,7 @@ export function PersonMiniCard({
   );
 }
 
-export function PersonSignalCard({
-  initials: initialsProp,
-  name,
-  context,
-  reason,
-  severity = "risk",
-  badgeLabel,
-  badgeTone,
-  detailHref,
-  href,
-  ctaLabel = "Acompanhar",
-}: {
+export function PersonSignalCard(props: {
   initials: string;
   name: string;
   context: string;
@@ -363,6 +352,17 @@ export function PersonSignalCard({
   href?: string;
   ctaLabel?: string;
 }) {
+  const {
+    name,
+    context,
+    reason,
+    severity = "risk",
+    badgeLabel,
+    badgeTone,
+    detailHref,
+    href,
+    ctaLabel = "Acompanhar",
+  } = props;
   const resolvedBadgeTone = badgeTone ?? (severity === "risk" ? "risk" : severity === "ok" ? "ok" : severity === "info" ? "info" : "warn");
   const resolvedBadgeLabel = badgeLabel ?? (severity === "risk" ? "Urgente" : "Em atenção");
   const cardHref = detailHref ?? href;

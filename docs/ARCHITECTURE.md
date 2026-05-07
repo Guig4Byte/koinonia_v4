@@ -57,7 +57,7 @@ docs
 | `Event` | encontro da célula, local efetivo e status |
 | `Attendance` | presença no encontro |
 | `CareSignal` | sinal que sustenta atenção |
-| `CareTouch` | contato/cuidado registrado |
+| `CareTouch` | contato/cuidado registrado, incluindo contexto opcional de apoio/encaminhamento |
 
 ## Modelo atual de célula e encontro
 
@@ -396,6 +396,23 @@ Regras:
 - se resolver todos os sinais ativos, muda `Person.status` para `COOLING_AWAY`.
 
 `Já houve contato?` só chama a rota depois de confirmação explícita.
+
+### Apoio e encaminhamento
+
+Rota:
+
+```txt
+/api/signals/[signalId]/support
+```
+
+Regras:
+
+- líder pode pedir apoio à supervisão quando lidera a célula do sinal;
+- supervisor pode encaminhar ao pastor quando supervisiona a célula do sinal;
+- a ação atualiza `CareSignal.assignedToId`;
+- a ação cria um `CareTouch` com `REQUESTED_SUPPORT` ou `ESCALATED_TO_PASTOR`;
+- a anotação é opcional, limitada e não resolve o sinal automaticamente;
+- o histórico da pessoa mostra esse registro como cuidado recente, sem virar tarefa ou prontuário.
 
 ## Queries de dashboard
 

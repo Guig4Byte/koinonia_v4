@@ -90,6 +90,8 @@ enum CareKind {
   PRAYER
   MARKED_CARED
   NOTE
+  REQUESTED_SUPPORT
+  ESCALATED_TO_PASTOR
 }
 
 model Church {

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/cn";
@@ -32,13 +32,9 @@ function cellsStructurePath(filter: CellsFilter, query: string, sectionId: strin
   return `${path}#${sectionId}`;
 }
 
-export function CellsStructureSearch({ query, filter, sectionId }: CellsStructureSearchProps) {
+function CellsStructureSearchContent({ query, filter, sectionId }: CellsStructureSearchProps) {
   const router = useRouter();
   const [draftQuery, setDraftQuery] = useState(query);
-
-  useEffect(() => {
-    setDraftQuery(query);
-  }, [query]);
 
   function searchPath(nextQuery: string) {
     return cellsStructurePath(filter, nextQuery, sectionId);
@@ -105,4 +101,8 @@ export function CellsStructureSearch({ query, filter, sectionId }: CellsStructur
       </div>
     </section>
   );
+}
+
+export function CellsStructureSearch(props: CellsStructureSearchProps) {
+  return <CellsStructureSearchContent key={props.query} {...props} />;
 }

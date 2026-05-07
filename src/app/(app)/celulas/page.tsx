@@ -10,7 +10,6 @@ import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { canManageGroups, canUseSupervisorDashboard } from "@/features/permissions/permissions";
 import { groupAttentionLabel, type SignalBadge } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
-import { cn } from "@/lib/cn";
 import { GroupResponsibilityRole, SignalSeverity, UserRole } from "@/generated/prisma/client";
 
 const SECTION_LIMIT = 4;

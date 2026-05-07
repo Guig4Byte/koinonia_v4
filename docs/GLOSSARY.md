@@ -173,6 +173,8 @@ Líder -> Pastor
 
 Escalonamento não transfere toda responsabilidade, não cria SLA e não vira task manager.
 
+Ao pedir apoio ou encaminhar, use contexto breve e opcional. Bons rótulos: `Quer deixar um contexto breve?`, `Contexto opcional`, `Pedir apoio` e `Encaminhar`. Evite exigir anotação para concluir a ação.
+
 ### Contato
 
 Ação concreta de aproximação.
@@ -183,7 +185,7 @@ Use `Ligar`, `WhatsApp`, `Já houve contato?`, `Sim, houve contato` e `Ainda nã
 
 Registro mínimo de que alguém percebeu e agiu.
 
-Use `Em cuidado`, `Acolhidos em cuidado`, `Cuidado realizado`, `Registrar cuidado`, `Anotar cuidado` e `Salvar sem anotação`.
+Use `Em cuidado`, `Acolhidos em cuidado`, `Cuidado realizado`, `Registrar cuidado`, `Anotar cuidado`, `Salvar sem anotação`, `Pedido de apoio` e `Encaminhado ao pastor`.
 
 Evite `task`, `workflow`, `chamado`, `ticket` e `SLA`.
 

@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GroupResponsibilityRole, SignalStatus, UserRole } from "@/generated/prisma/client";
+import { CareKind, GroupResponsibilityRole, SignalStatus, UserRole } from "@/generated/prisma/client";
 import { canViewGroup } from "@/features/permissions/permissions";
 import { canEscalateSignalToPastor, canRequestSupervisorSupport } from "@/features/signals/escalation";
 import { getCurrentUser } from "@/lib/auth/current-user";
-import { readJsonBody } from "@/lib/json";
+import { isRecord, readJsonBody } from "@/lib/json";
 import { prisma } from "@/lib/prisma";
 
 const supportActions = ["REQUEST_SUPERVISOR", "ESCALATE_PASTOR"] as const;
 type SupportAction = (typeof supportActions)[number];
+
+type ParsedSupportPayload = {
+  action: SupportAction;
+  note?: string;
+};
 
 const supportActionValues = new Set<string>(supportActions);
 
@@ -15,11 +20,22 @@ function isSupportAction(value: unknown): value is SupportAction {
   return typeof value === "string" && supportActionValues.has(value);
 }
 
-function parseAction(input: unknown): SupportAction | null {
-  if (typeof input !== "object" || input === null || !("action" in input)) return null;
+function parseSupportPayload(input: unknown): ParsedSupportPayload | null {
+  if (!isRecord(input)) return null;
 
   const action = input.action;
-  return isSupportAction(action) ? action : null;
+  if (!isSupportAction(action)) return null;
+
+  const rawNote = input.note;
+  if (rawNote !== undefined && typeof rawNote !== "string") return null;
+
+  const note = rawNote?.trim();
+  if (note && note.length > 500) return null;
+
+  return {
+    action,
+    note: note && note.length > 0 ? note : undefined,
+  };
 }
 
 async function findPastoralAssignee(churchId: string) {
@@ -32,11 +48,13 @@ async function findPastoralAssignee(churchId: string) {
 export async function PATCH(request: NextRequest, context: { params: Promise<{ signalId: string }> }) {
   const user = await getCurrentUser();
   const { signalId } = await context.params;
-  const action = parseAction(await readJsonBody(request));
+  const payload = parseSupportPayload(await readJsonBody(request));
 
-  if (!action) {
+  if (!payload) {
     return NextResponse.json({ error: "Pedido de apoio inválido" }, { status: 400 });
   }
+
+  const { action, note } = payload;
 
   const signal = await prisma.careSignal.findUnique({
     where: { id: signalId },
@@ -75,10 +93,25 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
       return NextResponse.json({ error: "Esta célula ainda não tem supervisor definido" }, { status: 400 });
     }
 
-    const updated = await prisma.careSignal.update({
-      where: { id: signal.id },
-      data: { assignedToId: supervisorUserId },
-      include: { assignedTo: true },
+    const updated = await prisma.$transaction(async (tx) => {
+      const updatedSignal = await tx.careSignal.update({
+        where: { id: signal.id },
+        data: { assignedToId: supervisorUserId },
+        include: { assignedTo: true },
+      });
+
+      await tx.careTouch.create({
+        data: {
+          churchId: user.churchId,
+          personId: signal.personId,
+          groupId: signal.groupId,
+          actorId: user.id,
+          kind: CareKind.REQUESTED_SUPPORT,
+          note,
+        },
+      });
+
+      return updatedSignal;
     });
 
     return NextResponse.json({
@@ -99,10 +132,25 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
     return NextResponse.json({ error: "Nenhum pastor/admin disponível para encaminhamento pastoral" }, { status: 400 });
   }
 
-  const updated = await prisma.careSignal.update({
-    where: { id: signal.id },
-    data: { assignedToId: pastoralAssignee.id },
-    include: { assignedTo: true },
+  const updated = await prisma.$transaction(async (tx) => {
+    const updatedSignal = await tx.careSignal.update({
+      where: { id: signal.id },
+      data: { assignedToId: pastoralAssignee.id },
+      include: { assignedTo: true },
+    });
+
+    await tx.careTouch.create({
+      data: {
+        churchId: user.churchId,
+        personId: signal.personId,
+        groupId: signal.groupId,
+        actorId: user.id,
+        kind: CareKind.ESCALATED_TO_PASTOR,
+        note,
+      },
+    });
+
+    return updatedSignal;
   });
 
   return NextResponse.json({

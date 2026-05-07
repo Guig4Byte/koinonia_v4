@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/cn";
@@ -32,13 +32,9 @@ function teamStructurePath(filter: TeamFilter, query: string, sectionId: string)
   return `${path}#${sectionId}`;
 }
 
-export function TeamStructureSearch({ query, filter, sectionId }: TeamStructureSearchProps) {
+function TeamStructureSearchContent({ query, filter, sectionId }: TeamStructureSearchProps) {
   const router = useRouter();
   const [draftQuery, setDraftQuery] = useState(query);
-
-  useEffect(() => {
-    setDraftQuery(query);
-  }, [query]);
 
   function searchPath(nextQuery: string) {
     return teamStructurePath(filter, nextQuery, sectionId);
@@ -105,4 +101,8 @@ export function TeamStructureSearch({ query, filter, sectionId }: TeamStructureS
       </div>
     </section>
   );
+}
+
+export function TeamStructureSearch(props: TeamStructureSearchProps) {
+  return <TeamStructureSearchContent key={props.query} {...props} />;
 }

@@ -105,6 +105,7 @@ O MVP usa `CareSignal.assignedToId`, sem entidade de tarefa.
 - `assignedToId` para supervisor = pedido de apoio.
 - `assignedToId` para pastor/admin = encaminhamento pastoral.
 - `severity = URGENT` = caso pastoral por gravidade.
+- Pedir apoio ou encaminhar pode registrar contexto opcional em `CareTouch`, sem resolver o sinal.
 
 Mensagens devem ser contextuais ao perfil que está vendo. Não use frases como `Ana recebeu...` ou `Roberto recebeu...`.
 
@@ -114,6 +115,8 @@ Exemplos corretos:
 - supervisor: `Essa célula pediu apoio da supervisão.`
 - pastor/admin: `Encaminhado ao cuidado pastoral.`
 - líder/supervisor vendo encaminhamento pastoral: `Encaminhado ao pastor.`
+
+A anotação de apoio/encaminhamento deve ser breve, opcional e aparecer no cuidado recente da pessoa. Não crie prontuário, tarefa ou fila a partir dela.
 
 ## Presença e ausência de dado
 

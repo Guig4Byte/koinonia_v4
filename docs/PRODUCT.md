@@ -258,6 +258,8 @@ Regras:
 
 - `Já houve contato?` é pergunta, não ação destrutiva imediata.
 - `Salvar sem anotação` é válido.
+- Pedir apoio ou encaminhar pode pedir uma anotação breve e opcional.
+- Essa anotação entra no cuidado recente da pessoa, mas não resolve o sinal por si só.
 - Cuidado resolve sinais ativos dentro do escopo do usuário.
 - Se resolver todos os sinais ativos, a pessoa fica `Em cuidado`.
 - A pessoa só volta para `Ativo` por ação explícita.
