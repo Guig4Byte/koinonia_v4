@@ -137,7 +137,9 @@ Use `src/features/events/presence-summary.ts`.
 - Métrica sem dado aparece como ausência de dado, não `0%`.
 - Listas de atenção agregam por pessoa, não por sinal bruto.
 - Cards de lista usam CTA neutro, normalmente `Abrir pessoa`.
+- `Ligar` e `WhatsApp` são atalhos, não categorias administrativas do histórico.
 - `Já houve contato?` precisa confirmar antes de resolver atenção.
+- Contato confirmado aparece como `Contato feito`.
 - Se o cuidado resolver todos os sinais ativos no escopo, a pessoa fica `Em cuidado`.
 - A pessoa só volta para `Ativo` por ação explícita.
 - Grupo inativo não libera visibilidade, encontro, check-in ou histórico padrão.

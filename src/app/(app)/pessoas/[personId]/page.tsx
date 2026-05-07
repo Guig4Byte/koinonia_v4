@@ -7,7 +7,8 @@ import { CareActions } from "@/components/care-actions";
 import { PersonStatusActions } from "@/components/person-status-actions";
 import { BackLink, DetailLinkCard, EmptyState, SectionTitle, priorityCardClass } from "@/components/cards";
 import { SignalSupportActions } from "@/components/signal-support-actions";
-import { Badge, type BadgeTone } from "@/components/ui/badge";
+import { CareTouchHistory, type CareTouchHistoryItem } from "@/components/care-touch-history";
+import { Badge } from "@/components/ui/badge";
 import { canRegisterCare, canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { canEscalateSignalToPastor, canRequestSupervisorSupport, escalationStatusDetailForViewer } from "@/features/signals/escalation";
@@ -28,23 +29,15 @@ const attendanceLabels: Record<AttendanceStatus, string> = {
 };
 
 const careKindLabels: Record<CareKind, string> = {
-  CALL: "Ligação",
-  WHATSAPP: "WhatsApp",
-  VISIT: "Visita",
-  PRAYER: "Oração",
+  CALL: "Contato feito",
+  WHATSAPP: "Contato feito",
+  VISIT: "Contato feito",
+  PRAYER: "Contato feito",
   MARKED_CARED: "Contato feito",
   NOTE: "Anotação",
   REQUESTED_SUPPORT: "Pedido de apoio à supervisão",
   ESCALATED_TO_PASTOR: "Encaminhado ao cuidado pastoral",
 };
-
-function careTouchBadge(kind: CareKind): { label: string; tone: BadgeTone } | null {
-  if (kind === CareKind.CALL || kind === CareKind.WHATSAPP || kind === CareKind.VISIT || kind === CareKind.PRAYER) {
-    return { label: "Cuidado realizado", tone: "care" };
-  }
-
-  return null;
-}
 
 function attendanceTone(status?: AttendanceStatus | null): "ok" | "warn" | "risk" | "info" {
   if (status === AttendanceStatus.PRESENT) return "ok";
@@ -185,7 +178,6 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       where: visibleCareTouchWhere,
       include: { actor: true, group: { include: { responsibilities: { where: { activeUntil: null }, include: { user: true }, orderBy: { createdAt: "asc" } } } } },
       orderBy: { happenedAt: "desc" },
-      take: 3,
     }),
   ]);
 
@@ -218,6 +210,13 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const monthPresenceTone = presenceTone(monthPresence.hasPresenceData, monthPresence.presenceRate);
   const recentMonthAttendances = monthAttendances.slice(0, 4);
   const hiddenMonthAttendancesCount = Math.max(monthAttendances.length - recentMonthAttendances.length, 0);
+  const careTouchHistoryItems: CareTouchHistoryItem[] = careTouches.map((touch) => ({
+    id: touch.id,
+    title: careKindLabels[touch.kind],
+    actorName: touch.actor?.name ?? "Koinonia",
+    happenedAtLabel: `${formatShortDate(touch.happenedAt)}, ${formatTime(touch.happenedAt)}`,
+    note: touch.note,
+  }));
 
   return (
     <AppShell
@@ -371,32 +370,10 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       </div>
 
       <SectionTitle>Cuidado recente</SectionTitle>
-      {careTouches.length > 0 ? (
-        <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
-          <div className="divide-y divide-[var(--color-border-divider)]">
-            {careTouches.map((touch) => {
-              const badge = careTouchBadge(touch.kind);
-              const note = touch.note?.trim();
-
-              return (
-                <article key={touch.id} className="py-3 first:pt-0 last:pb-0">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="font-semibold text-[var(--color-text-primary)]">{careKindLabels[touch.kind]}</p>
-                      <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
-                        {touch.actor?.name ?? "Koinonia"} · {formatShortDate(touch.happenedAt)}, {formatTime(touch.happenedAt)}
-                      </p>
-                    </div>
-                    {badge ? <Badge tone={badge.tone}>{badge.label}</Badge> : null}
-                  </div>
-                  {note ? <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-primary)]">{note}</p> : null}
-                </article>
-              );
-            })}
-          </div>
-        </section>
+      {careTouchHistoryItems.length > 0 ? (
+        <CareTouchHistory items={careTouchHistoryItems} />
       ) : (
-        <EmptyState>Nenhum contato registrado ainda. Use as ações acima quando houver ligação, WhatsApp ou cuidado real.</EmptyState>
+        <EmptyState>Nenhum cuidado registrado ainda. Use “Já houve contato?” quando houver um contato real para guardar.</EmptyState>
       )}
 
       <SectionTitle>Último encontro</SectionTitle>

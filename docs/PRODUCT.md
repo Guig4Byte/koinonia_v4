@@ -256,10 +256,13 @@ Pessoa em atenção -> Abrir pessoa -> Já houve contato? -> confirmar -> anotar
 
 Regras:
 
+- `Ligar` e `WhatsApp` são atalhos de aproximação, não categorias do histórico.
 - `Já houve contato?` é pergunta, não ação destrutiva imediata.
+- Quando confirmado, o histórico mostra `Contato feito`, com anotação opcional.
 - `Salvar sem anotação` é válido.
 - Pedir apoio ou encaminhar pode pedir uma anotação breve e opcional.
 - Essa anotação entra no cuidado recente da pessoa, mas não resolve o sinal por si só.
+- `Cuidado recente` mostra poucos registros inicialmente e permite `Ver histórico` quando houver mais.
 - Cuidado resolve sinais ativos dentro do escopo do usuário.
 - Se resolver todos os sinais ativos, a pessoa fica `Em cuidado`.
 - A pessoa só volta para `Ativo` por ação explícita.

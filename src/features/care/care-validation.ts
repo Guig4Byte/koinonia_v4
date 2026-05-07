@@ -1,13 +1,24 @@
 import { z } from "zod";
 import { CareKind } from "../../generated/prisma/client";
 
+const contactShortcutKinds = new Set<CareKind>([
+  CareKind.CALL,
+  CareKind.WHATSAPP,
+  CareKind.VISIT,
+  CareKind.PRAYER,
+]);
+
+const careKindSchema = z.nativeEnum(CareKind).transform((kind) =>
+  contactShortcutKinds.has(kind) ? CareKind.MARKED_CARED : kind,
+);
+
 const noteSchema = z.preprocess(
   (value) => (typeof value === "string" ? value.trim() : value),
   z.string().max(500, "A anotação deve ter no máximo 500 caracteres.").optional(),
 ).transform((value) => (value && value.length > 0 ? value : undefined));
 
 export const carePayloadSchema = z.object({
-  kind: z.nativeEnum(CareKind),
+  kind: careKindSchema,
   note: noteSchema,
   resolveOpenSignals: z.boolean().default(true),
 });

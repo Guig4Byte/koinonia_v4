@@ -181,11 +181,13 @@ Ação concreta de aproximação.
 
 Use `Ligar`, `WhatsApp`, `Já houve contato?`, `Sim, houve contato` e `Ainda não consegui contato`.
 
+`Ligar` e `WhatsApp` são atalhos para facilitar a aproximação. Eles não devem virar categorias administrativas no histórico. Quando o contato for confirmado, o histórico mostra `Contato feito`.
+
 ### Cuidado
 
 Registro mínimo de que alguém percebeu e agiu.
 
-Use `Em cuidado`, `Acolhidos em cuidado`, `Cuidado realizado`, `Registrar cuidado`, `Anotar cuidado`, `Salvar sem anotação`, `Pedido de apoio` e `Encaminhado ao pastor`.
+Use `Em cuidado`, `Acolhidos em cuidado`, `Contato feito`, `Registrar cuidado`, `Anotar cuidado`, `Salvar sem anotação`, `Pedido de apoio` e `Encaminhado ao pastor`.
 
 Evite `task`, `workflow`, `chamado`, `ticket` e `SLA`.
 
@@ -244,7 +246,7 @@ Tema não é configuração pastoral, não muda escopo e não precisa de tela ad
 | `Caso pastoral` | pastor vendo sinal encaminhado a pastor/admin | vermelho |
 | `Encaminhado` | líder/supervisor vendo envio ao pastor | vermelho |
 | `Em cuidado` | pessoa que recebeu cuidado e deve continuar no radar | care |
-| `Cuidado realizado` | contato/cuidado registrado | care |
+| `Contato feito` | contato/cuidado registrado sem classificar o canal | care |
 | `Informativo` | sinal `INFO`, quando exibido | informativo/neutro |
 | `Sem registro` | ausência de dado de presença | neutro |
 | `Sem presença recente` | célula sem presença recente registrada | neutro |

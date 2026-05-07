@@ -395,7 +395,9 @@ Regras:
 - líder/supervisor resolvem sinais dos grupos ativos visíveis da pessoa;
 - se resolver todos os sinais ativos, muda `Person.status` para `COOLING_AWAY`.
 
-`Já houve contato?` só chama a rota depois de confirmação explícita.
+`Ligar` e `WhatsApp` são atalhos externos de aproximação. O registro persistido de contato confirmado usa `MARKED_CARED` e aparece como `Contato feito`, sem classificar o canal.
+
+`Já houve contato?` só chama a rota depois de confirmação explícita. O detalhe da pessoa mostra poucos itens em `Cuidado recente` e revela o restante com `Ver histórico`.
 
 ### Apoio e encaminhamento
 
@@ -412,7 +414,8 @@ Regras:
 - a ação atualiza `CareSignal.assignedToId`;
 - a ação cria um `CareTouch` com `REQUESTED_SUPPORT` ou `ESCALATED_TO_PASTOR`;
 - a anotação é opcional, limitada e não resolve o sinal automaticamente;
-- o histórico da pessoa mostra esse registro como cuidado recente, sem virar tarefa ou prontuário.
+- o histórico da pessoa mostra esse registro como cuidado recente, sem virar tarefa ou prontuário;
+- o detalhe da pessoa mostra poucos registros inicialmente e usa `Ver histórico` para revelar os demais.
 
 ## Queries de dashboard
 

@@ -200,7 +200,10 @@ const P = AttendanceStatus.PRESENT;
 const A = AttendanceStatus.ABSENT;
 const J = AttendanceStatus.JUSTIFIED;
 
-const attendanceScenarios: Record<string, Record<number, AttendanceStatus[]>> = {
+const attendanceScenarios: Record<
+  string,
+  Record<number, AttendanceStatus[]>
+> = {
   esperanca: {
     0: [A, A, A, A, A, A],
     1: [P, P, J, P, A, P],
@@ -242,7 +245,11 @@ const attendanceScenarios: Record<string, Record<number, AttendanceStatus[]>> = 
 };
 
 function statusFromScenario(pattern: AttendanceStatus[], eventIndex: number) {
-  return pattern[eventIndex] ?? pattern[pattern.length - 1] ?? AttendanceStatus.PRESENT;
+  return (
+    pattern[eventIndex] ??
+    pattern[pattern.length - 1] ??
+    AttendanceStatus.PRESENT
+  );
 }
 
 function memberStatus(
@@ -482,6 +489,38 @@ async function createSignal({
   return signal;
 }
 
+async function createCareTouch({
+  churchId,
+  group,
+  personIndex,
+  actorId,
+  kind,
+  note,
+  days,
+  hour,
+}: {
+  churchId: string;
+  group: SeedGroup;
+  personIndex: number;
+  actorId?: string | null;
+  kind: CareKind;
+  note?: string | null;
+  days: number;
+  hour: number;
+}) {
+  return prisma.careTouch.create({
+    data: {
+      churchId,
+      personId: group.members[personIndex].id,
+      groupId: group.id,
+      actorId: actorId ?? null,
+      kind,
+      note: note?.trim() ? note.trim() : null,
+      happenedAt: daysFromNow(days, hour),
+    },
+  });
+}
+
 async function main() {
   await prisma.careTouch.deleteMany();
   await prisma.careSignal.deleteMany();
@@ -711,7 +750,11 @@ async function main() {
   const churchId = church.id;
 
   for (const group of groups) {
-    for (let eventIndex = 0; eventIndex < completedEventDays.length; eventIndex += 1) {
+    for (
+      let eventIndex = 0;
+      eventIndex < completedEventDays.length;
+      eventIndex += 1
+    ) {
       await createCompletedEventWithChurch(
         churchId,
         group,
@@ -736,7 +779,11 @@ async function main() {
   // Cenario de regressao: o detalhe da pessoa usa o mes atual para o card
   // "Ritmo de presenca". A Celula Semente garante 4 registros no mes para
   // validar lista condensada, porcentagem mensal e historico recente.
-  for (let monthEventIndex = 0; monthEventIndex < monthlyPresenceEventSlots.length; monthEventIndex += 1) {
+  for (
+    let monthEventIndex = 0;
+    monthEventIndex < monthlyPresenceEventSlots.length;
+    monthEventIndex += 1
+  ) {
     const slot = monthlyPresenceEventSlots[monthEventIndex];
 
     await createCompletedEventAtDate(
@@ -856,6 +903,17 @@ async function main() {
     evidence: "João está desempregado e ainda não respondeu esta semana.",
   });
 
+  await createCareTouch({
+    churchId,
+    group: esperanca,
+    personIndex: 1,
+    actorId: bruno.id,
+    kind: CareKind.REQUESTED_SUPPORT,
+    note: "Tentei contato por WhatsApp e ligação, mas ainda não consegui conversar com calma.",
+    days: -1,
+    hour: 13,
+  });
+
   await createSignal({
     churchId,
     group: agape,
@@ -960,6 +1018,16 @@ async function main() {
       "Não é urgente automático, mas aparece ao pastor por encaminhamento explícito.",
   });
 
+  await createCareTouch({
+    churchId,
+    group: caminho,
+    personIndex: 0,
+    actorId: helena.id,
+    kind: CareKind.ESCALATED_TO_PASTOR,
+    days: -1,
+    hour: 14,
+  });
+
   // Cenário de regressão: cuidado pastoral realizado pelo pastor deve aparecer
   // em Acolhidos em cuidado pastoral, sem misturar cuidado local do líder.
   await prisma.careSignal.create({
@@ -972,7 +1040,8 @@ async function main() {
       severity: SignalSeverity.ATTENTION,
       status: SignalStatus.RESOLVED,
       reason: "Caso encaminhado e acolhido em cuidado pastoral.",
-      evidence: "Pastor conversou com a família e combinou acompanhamento simples.",
+      evidence:
+        "Pastor conversou com a família e combinou acompanhamento simples.",
       detectedAt: daysFromNow(-5, 18),
       lastEvidenceAt: daysFromNow(-5, 18),
       resolvedAt: daysFromNow(-1, 18),
@@ -1059,16 +1128,60 @@ async function main() {
     },
   });
 
-  await prisma.careTouch.create({
-    data: {
-      churchId,
-      personId: esperanca.members[0].id,
-      groupId: esperanca.id,
-      actorId: bruno.id,
-      kind: CareKind.MARKED_CARED,
-      note: "Conversa rápida após a célula. Pessoa fica em cuidado, sem sinal aberto.",
-      happenedAt: daysFromNow(-2, 18),
-    },
+  // Cenários para validar o bloco compacto de Cuidado recente no detalhe da pessoa:
+  // múltiplos registros, primeiros 3 itens, Ver histórico, registros com e sem anotação
+  // e ações atuais do MVP sem transformar canal de contato em classificação administrativa.
+  await createCareTouch({
+    churchId,
+    group: esperanca,
+    personIndex: 0,
+    actorId: bruno.id,
+    kind: CareKind.REQUESTED_SUPPORT,
+    note: "Pedi apoio porque a ausência ficou recorrente e a família pediu oração.",
+    days: -8,
+    hour: 20,
+  });
+
+  await createCareTouch({
+    churchId,
+    group: esperanca,
+    personIndex: 0,
+    actorId: ana.id,
+    kind: CareKind.MARKED_CARED,
+    days: -6,
+    hour: 19,
+  });
+
+  await createCareTouch({
+    churchId,
+    group: esperanca,
+    personIndex: 0,
+    actorId: ana.id,
+    kind: CareKind.ESCALATED_TO_PASTOR,
+    note: "Família pediu uma visita pastoral breve.",
+    days: -4,
+    hour: 18,
+  });
+
+  await createCareTouch({
+    churchId,
+    group: esperanca,
+    personIndex: 0,
+    actorId: pastor.id,
+    kind: CareKind.MARKED_CARED,
+    days: -3,
+    hour: 19,
+  });
+
+  await createCareTouch({
+    churchId,
+    group: esperanca,
+    personIndex: 0,
+    actorId: bruno.id,
+    kind: CareKind.MARKED_CARED,
+    note: "Conversa rápida após a célula. Pessoa fica em cuidado, sem sinal aberto.",
+    days: -2,
+    hour: 18,
   });
 
   console.log("Seed concluído.");
@@ -1082,7 +1195,7 @@ async function main() {
     `Outros usuários da seed: ${marcos.email} / ${helena.email} / ${paulo.email} / ${carla.email} / ${diego.email} / ${fernanda.email} / ${gabriel.email} / ${juliana.email} / ${lucas.email}`,
   );
   console.log(
-    "Cenários de regressão: histórico de presença nas células com registro, 4 encontros no mês atual para a Célula Semente, faltas consecutivas, faltas intercaladas, justificativas, urgente sem atribuição, apoio à supervisão, múltiplos sinais, encaminhamento pastoral, cuidado pastoral realizado, sinal resolvido, célula sem registro, célula sem supervisor, evento sem presença e célula inativa.",
+    "Cenários de regressão: histórico de presença nas células com registro, 4 encontros no mês atual para a Célula Semente, faltas consecutivas, faltas intercaladas, justificativas, urgente sem atribuição, apoio à supervisão, múltiplos sinais, encaminhamento pastoral, cuidado pastoral realizado, histórico compacto de cuidado com e sem anotação, sinal resolvido, célula sem registro, célula sem supervisor, evento sem presença e célula inativa.",
   );
   console.log("Senha local da seed: koinonia123");
 }

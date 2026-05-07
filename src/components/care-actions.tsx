@@ -6,7 +6,6 @@ import { useMemo, useState, useTransition } from "react";
 import { cn } from "@/lib/cn";
 import { readApiMessage } from "@/lib/json";
 
-type ContactKind = "CALL" | "WHATSAPP";
 type FlowStage = "idle" | "confirm" | "confirm-existing" | "ask-note" | "note" | "done";
 
 function digitsOnly(value?: string | null) {
@@ -21,7 +20,6 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
   const [savedMessage, setSavedMessage] = useState("");
   const [resolvedMessage, setResolvedMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [lastContactKind, setLastContactKind] = useState<ContactKind | null>(null);
   const digits = digitsOnly(phone);
   const hasPhone = digits.length >= 10;
 
@@ -37,7 +35,6 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
     setStage("idle");
     setNote("");
     setErrorMessage("");
-    setLastContactKind(null);
   }
 
   function registerContact(noteValue?: string) {
@@ -50,7 +47,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          kind: lastContactKind ?? "MARKED_CARED",
+          kind: "MARKED_CARED",
           note: noteValue?.trim() || undefined,
           resolveOpenSignals: true,
         }),
@@ -63,13 +60,12 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
         return;
       }
 
-      setSavedMessage(noteValue?.trim() ? "Cuidado realizado com anotação." : "Cuidado realizado.");
+      setSavedMessage(noteValue?.trim() ? "Contato feito com anotação." : "Contato feito.");
       setResolvedMessage(responseBody?.message ?? "A atenção ficou em dia sem criar acompanhamento formal.");
       setErrorMessage("");
       setStage("done");
       setNote("");
-      setLastContactKind(null);
-      router.refresh();
+        router.refresh();
     });
   }
 
@@ -118,7 +114,6 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
                 }
 
                 setErrorMessage("");
-                setLastContactKind("CALL");
                 setStage("confirm");
               }}
             >
@@ -144,7 +139,6 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
                 }
 
                 setErrorMessage("");
-                setLastContactKind("WHATSAPP");
                 setStage("confirm");
               }}
             >
@@ -159,8 +153,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
               disabled={isPending}
               onClick={() => {
                 setErrorMessage("");
-                setLastContactKind(null);
-                setStage("confirm-existing");
+                            setStage("confirm-existing");
               }}
               className={cn(secondaryButton, isPending && disabled)}
             >
