@@ -34,14 +34,16 @@ const careKindLabels: Record<CareKind, string> = {
   PRAYER: "Oração",
   MARKED_CARED: "Contato feito",
   NOTE: "Anotação",
-  REQUESTED_SUPPORT: "Pedido de apoio",
-  ESCALATED_TO_PASTOR: "Encaminhado ao pastor",
+  REQUESTED_SUPPORT: "Pedido de apoio à supervisão",
+  ESCALATED_TO_PASTOR: "Encaminhado ao cuidado pastoral",
 };
 
-function careTouchBadge(kind: CareKind): { label: string; tone: BadgeTone } {
-  if (kind === CareKind.REQUESTED_SUPPORT) return { label: "Apoio solicitado", tone: "support" };
-  if (kind === CareKind.ESCALATED_TO_PASTOR) return { label: "Encaminhado", tone: "risk" };
-  return { label: "Cuidado realizado", tone: "care" };
+function careTouchBadge(kind: CareKind): { label: string; tone: BadgeTone } | null {
+  if (kind === CareKind.CALL || kind === CareKind.WHATSAPP || kind === CareKind.VISIT || kind === CareKind.PRAYER) {
+    return { label: "Cuidado realizado", tone: "care" };
+  }
+
+  return null;
 }
 
 function attendanceTone(status?: AttendanceStatus | null): "ok" | "warn" | "risk" | "info" {
@@ -183,7 +185,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       where: visibleCareTouchWhere,
       include: { actor: true, group: { include: { responsibilities: { where: { activeUntil: null }, include: { user: true }, orderBy: { createdAt: "asc" } } } } },
       orderBy: { happenedAt: "desc" },
-      take: 5,
+      take: 3,
     }),
   ]);
 
@@ -369,30 +371,33 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       </div>
 
       <SectionTitle>Cuidado recente</SectionTitle>
-      <div className="space-y-3">
-        {careTouches.map((touch) => {
-          const badge = careTouchBadge(touch.kind);
+      {careTouches.length > 0 ? (
+        <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
+          <div className="divide-y divide-[var(--color-border-divider)]">
+            {careTouches.map((touch) => {
+              const badge = careTouchBadge(touch.kind);
+              const note = touch.note?.trim();
 
-          return (
-            <article key={touch.id} className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="font-semibold text-[var(--color-text-primary)]">{careKindLabels[touch.kind]}</p>
-                  <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
-                    {touch.actor?.name ?? "Koinonia"} · {formatShortDate(touch.happenedAt)}, {formatTime(touch.happenedAt)}
-                  </p>
-                </div>
-                <Badge tone={badge.tone}>{badge.label}</Badge>
-              </div>
-              {touch.note ? <p className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-primary)]">{touch.note}</p> : null}
-            </article>
-          );
-        })}
-
-        {careTouches.length === 0 ? (
-          <EmptyState>Nenhum contato registrado ainda. Use as ações acima quando houver ligação, WhatsApp ou cuidado real.</EmptyState>
-        ) : null}
-      </div>
+              return (
+                <article key={touch.id} className="py-3 first:pt-0 last:pb-0">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-semibold text-[var(--color-text-primary)]">{careKindLabels[touch.kind]}</p>
+                      <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
+                        {touch.actor?.name ?? "Koinonia"} · {formatShortDate(touch.happenedAt)}, {formatTime(touch.happenedAt)}
+                      </p>
+                    </div>
+                    {badge ? <Badge tone={badge.tone}>{badge.label}</Badge> : null}
+                  </div>
+                  {note ? <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-primary)]">{note}</p> : null}
+                </article>
+              );
+            })}
+          </div>
+        </section>
+      ) : (
+        <EmptyState>Nenhum contato registrado ainda. Use as ações acima quando houver ligação, WhatsApp ou cuidado real.</EmptyState>
+      )}
 
       <SectionTitle>Último encontro</SectionTitle>
       {latestAttendance ? (
