@@ -36,16 +36,24 @@ export default async function SupervisorPage() {
   const inCarePeople = pastoralSections.inCarePeople;
   const navIndicator = urgentSignals.length > 0 ? "risk" : dashboard.attentionPeople.length > 0 ? "attention" : inCarePeople.length > 0 ? "care" : undefined;
   const pulseTitle = firstUrgentSignal
-    ? `${urgentSignalsCount} ${urgentSignalsCount === 1 ? "caso urgente precisa" : "casos urgentes precisam"} da sua presença.`
+    ? urgentSignalsCount === 1
+      ? `${firstUrgentSignal.person.fullName} pede cuidado mais próximo.`
+      : `${urgentSignalsCount} irmãos pedem cuidado mais próximo.`
     : firstSupportRequest
-      ? `${supportRequestsCount} ${supportRequestsCount === 1 ? "pedido de apoio precisa" : "pedidos de apoio precisam"} da sua presença.`
+      ? supportRequestsCount === 1
+        ? `${firstSupportRequest.person.fullName} precisa de apoio da supervisão.`
+        : `${supportRequestsCount} pedidos de apoio chegaram à supervisão.`
       : firstSignal
-        ? `${firstSignal.person.fullName} precisa de um olhar mais próximo.`
+        ? `${firstSignal.person.fullName} merece um olhar mais próximo.`
         : "Suas células estão estáveis agora.";
   const pulseSubtitle = firstUrgentSignal
-    ? `${firstUrgentSignal.person.fullName} · ${firstUrgentSignal.group.name}: comece por este cuidado antes dos demais acompanhamentos.`
+    ? urgentSignalsCount === 1
+      ? `${firstUrgentSignal.group.name}: vale uma aproximação com calma e proximidade.`
+      : "Há sinais diferentes aqui. Olhe com calma e acompanhe cada cuidado com proximidade."
     : firstSupportRequest
-      ? `${firstSupportRequest.person.fullName} · ${firstSupportRequest.group.name}: comece por este cuidado e acompanhe os líderes com calma.`
+      ? supportRequestsCount === 1
+        ? `${firstSupportRequest.group.name}: apoie a liderança com calma, sem assumir a operação da célula.`
+        : "Veja o contexto de cada célula e apoie a liderança com calma, sem assumir a operação do encontro."
       : firstSignal
         ? `${firstSignal.group.name}: ${signalDetailForViewer(firstSignal, user)}`
         : "Continue perto dos líderes e das células, sem transformar acompanhamento em cobrança.";
