@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, AlertCircle, Info } from "lucide-react";
+import { ArrowLeft, CheckCircle2, AlertCircle, Info, Heart } from "lucide-react";
 import { Children, type ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/cn";
+import { avatarColorForName } from "@/lib/text";
 import type { SignalBadgeTone } from "@/features/signals/display";
 import type { PresenceTrend } from "@/features/events/presence-summary";
 
@@ -119,6 +120,15 @@ export function SectionTitle({ children, detail }: { children: ReactNode; detail
   );
 }
 
+export function PastoralSectionTitle({ children, detail }: { children: ReactNode; detail?: string }) {
+  return (
+    <div className="mb-3 mt-7">
+      <h2 className="pastoral-section-title">{children}</h2>
+      {detail ? <p className="pastoral-section-detail">{detail}</p> : null}
+    </div>
+  );
+}
+
 export function PastoralListSection({
   title,
   detail,
@@ -139,15 +149,17 @@ export function PastoralListSection({
 
   return (
     <section className="space-y-3">
-      <SectionTitle detail={detail}>{title}</SectionTitle>
-      {children}
+      <PastoralSectionTitle detail={detail}>{title}</PastoralSectionTitle>
+      <div className="stagger-children space-y-2.5">
+        {children}
+      </div>
       {hasHiddenChildren ? (
         <details className="group rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card">
           <summary className="flex min-h-10 cursor-pointer list-none items-center justify-center rounded-xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)] transition active:scale-[0.98] [&::-webkit-details-marker]:hidden">
             <span className="group-open:hidden">{moreLabel}</span>
             <span className="hidden group-open:inline">Mostrar menos</span>
           </summary>
-          <div className="mt-3 space-y-3">{hiddenChildren}</div>
+          <div className="stagger-children mt-3 space-y-2.5">{hiddenChildren}</div>
         </details>
       ) : null}
       {!hasChildren && emptyMessage ? <EmptyState>{emptyMessage}</EmptyState> : null}
@@ -211,14 +223,15 @@ export function EmptyState({
   compact?: boolean;
 }) {
   return (
-    <p
+    <div
       className={cn(
-        "rounded-2xl border border-dashed border-[var(--color-border-card)] bg-[var(--surface-alt)] text-sm leading-relaxed text-[var(--color-text-secondary)]",
-        compact ? "px-3 py-2.5" : "p-3",
+        "flex items-center gap-2.5 rounded-2xl border border-dashed border-[var(--color-border-card)] bg-[var(--surface-alt)] text-sm leading-relaxed text-[var(--color-text-secondary)]",
+        compact ? "px-3 py-2.5" : "p-4",
       )}
     >
-      {children}
-    </p>
+      <Heart className="h-4 w-4 shrink-0 opacity-50" aria-hidden="true" />
+      <p>{children}</p>
+    </div>
   );
 }
 
@@ -240,7 +253,7 @@ export function DetailLinkCard({
   children?: ReactNode;
 }) {
   return (
-    <Link href={href} className={cn("block rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]", priorityCardClass(badgeTone))}>
+    <Link href={href} className={cn("card-hover-lift block rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]", priorityCardClass(badgeTone))}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate font-semibold text-[var(--color-text-primary)]">{title}</p>
@@ -249,20 +262,45 @@ export function DetailLinkCard({
         {badgeLabel ? <Badge tone={badgeTone}>{badgeLabel}</Badge> : null}
       </div>
       {children ? <div className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">{children}</div> : null}
-      <p className="mt-3 text-sm font-semibold text-[var(--color-brand)]">{actionLabel} →</p>
+      <p className="mt-3 text-sm font-semibold text-[var(--color-brand)]">{actionLabel} <span className="inline-block transition group-active:translate-x-0.5">→</span></p>
     </Link>
   );
 }
 
+function Avatar({ name, compact = false }: { name: string; compact?: boolean }) {
+  const colors = avatarColorForName(name);
+  return (
+    <span
+      className={cn(
+        "flex shrink-0 items-center justify-center rounded-full font-bold",
+        compact ? "h-8 w-8 text-[11px]" : "h-9 w-9 text-xs",
+      )}
+      style={{ backgroundColor: colors.bg, color: colors.text }}
+    >
+      {initials(name)}
+    </span>
+  );
+}
+
+function initials(name: string): string {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part.at(0) ?? "")
+    .join("")
+    .toUpperCase();
+}
+
 export function PersonMiniCard({
   href,
-  initials,
+  initials: initialsProp,
   name,
   context,
   badgeLabel,
   badgeTone = "neutral",
   cardTone,
-  ctaLabel = "Abrir pessoa",
+  ctaLabel = "Acompanhar",
   compact = false,
 }: {
   href: string;
@@ -280,20 +318,13 @@ export function PersonMiniCard({
       href={href}
       aria-label={`${ctaLabel}: ${name}`}
       className={cn(
-        "group flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] shadow-card transition active:scale-[0.99]",
+        "card-hover-lift group flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] shadow-card transition active:scale-[0.99]",
         compact ? "min-h-[3.75rem] px-3 py-2.5" : "min-h-[4.25rem] px-3 py-3",
         priorityCardClass(cardTone ?? badgeTone),
       )}
     >
       <span className="flex min-w-0 items-center gap-3">
-        <span
-          className={cn(
-            "flex shrink-0 items-center justify-center rounded-full bg-[var(--color-avatar-bg)] font-bold text-[var(--color-avatar-text)]",
-            compact ? "h-8 w-8 text-[11px]" : "h-9 w-9 text-xs",
-          )}
-        >
-          {initials}
-        </span>
+        <Avatar name={name} compact={compact} />
         <span className="min-w-0">
           <span className="block truncate text-sm font-semibold text-[var(--color-text-primary)]">{name}</span>
           {context ? <span className="mt-0.5 block truncate text-xs text-[var(--color-text-secondary)]">{context}</span> : null}
@@ -310,7 +341,7 @@ export function PersonMiniCard({
 }
 
 export function PersonSignalCard({
-  initials,
+  initials: initialsProp,
   name,
   context,
   reason,
@@ -319,7 +350,7 @@ export function PersonSignalCard({
   badgeTone,
   detailHref,
   href,
-  ctaLabel = "Abrir pessoa",
+  ctaLabel = "Acompanhar",
 }: {
   initials: string;
   name: string;
@@ -340,11 +371,9 @@ export function PersonSignalCard({
     : resolvedBadgeTone;
 
   const content = (
-    <article className={cn("group rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card transition active:scale-[0.99]", priorityCardClass(priorityTone))}>
+    <article className={cn("card-hover-lift group rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card transition active:scale-[0.99]", priorityCardClass(priorityTone))}>
       <div className="flex items-start gap-2.5">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-avatar-bg)] text-xs font-bold text-[var(--color-avatar-text)]">
-          {initials}
-        </div>
+        <Avatar name={name} />
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
@@ -426,7 +455,7 @@ export function GroupCard({
         ? "text-[var(--color-badge-atencao-text)]"
         : "text-[var(--color-metric-presenca)]";
   const content = (
-    <article className={cn("rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card transition active:scale-[0.99]", priorityCardClass(priorityTone))}>
+    <article className={cn("card-hover-lift rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card transition active:scale-[0.99]", priorityCardClass(priorityTone))}>
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="font-semibold text-[var(--color-text-primary)]">{name}</p>
@@ -448,7 +477,7 @@ export function GroupCard({
             </span>
           ) : null}
         </span>
-        {href ? <span className="font-semibold text-[var(--color-brand)]">Abrir célula →</span> : null}
+        {href ? <span className="font-semibold text-[var(--color-brand)]">Ver célula →</span> : null}
       </div>
     </article>
   );

@@ -14,7 +14,7 @@ import type { SignalBadgeTone } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 import { cn } from "@/lib/cn";
-import { initials } from "@/lib/text";
+import { avatarColorForName, initials } from "@/lib/text";
 
 const SECTION_LIMIT = 4;
 const SUPERVISOR_SECTION_LIMIT = 4;
@@ -168,7 +168,7 @@ function CompactGroupLink({ group }: { group: TeamGroup }) {
   return (
     <Link
       href={`/celulas/${group.id}`}
-      className={cn("team-cell-link", shouldShowGroupBadge(group) && `team-cell-link-${tone}`)}
+      className={cn("team-cell-link card-hover-lift", shouldShowGroupBadge(group) && `team-cell-link-${tone}`)}
     >
       <span className="min-w-0">
         <span className="block truncate text-sm font-semibold text-[var(--color-text-primary)]">{group.name}</span>
@@ -193,7 +193,7 @@ function InactiveGroupLink({ group }: { group: { id: string; name: string; meeti
   return (
     <Link
       href={`/celulas/${group.id}/editar`}
-      className="team-cell-link team-cell-link-neutral"
+      className="team-cell-link team-cell-link-neutral card-hover-lift"
     >
       <span className="min-w-0">
         <span className="block truncate text-sm font-semibold text-[var(--color-text-primary)]">{group.name}</span>
@@ -218,7 +218,10 @@ function SupervisorCard({ supervisor }: { supervisor: SupervisorTeam }) {
   return (
     <section className={cn("team-supervisor-card", priorityCardClass(badgeTone !== "neutral" ? badgeTone : undefined))}>
       <div className="flex items-start gap-2.5">
-        <div className="team-avatar">
+        <div
+          className="team-avatar"
+          style={{ backgroundColor: avatarColorForName(supervisor.name).bg, color: avatarColorForName(supervisor.name).text }}
+        >
           {initials(supervisor.name)}
         </div>
         <div className="min-w-0 flex-1">

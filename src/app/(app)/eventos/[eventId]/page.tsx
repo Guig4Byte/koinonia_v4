@@ -357,7 +357,7 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
             ) : null}
             {event.group && !showCheckInForm ? (
               <Link href={`/celulas/${event.group.id}`} className="mt-3 inline-flex text-sm font-semibold text-[var(--color-brand)]">
-                Abrir célula →
+                Ver célula →
               </Link>
             ) : null}
           </div>

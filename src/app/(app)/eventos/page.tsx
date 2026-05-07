@@ -202,7 +202,7 @@ function EventList({ events, user, now, limit = EVENT_LIST_LIMIT }: { events: Ev
 
 function ConsultationCard({ href, title, description }: { href: string; title: string; description: string }) {
   return (
-    <Link href={href} className="block rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
+    <Link href={href} className="card-hover-lift block rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
       <p className="font-semibold text-[var(--color-text-primary)]">{title}</p>
       <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">{description}</p>
       <p className="mt-3 text-sm font-semibold text-[var(--color-brand)]">Consultar →</p>

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { LogOut } from "lucide-react";
 import { BottomNav, type NavItem } from "@/components/bottom-nav";
+import { TextSizeToggle } from "@/components/text-size-toggle";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { UserRole } from "@/generated/prisma/client";
 
@@ -35,7 +36,10 @@ export function AppShell({
             <p className="mt-1 text-xs font-semibold text-[var(--color-text-on-header)]">{roleLabels[role]}</p>
           </div>
 
-          <ThemeToggle className="header-action-button" />
+          <div className="flex items-center gap-2">
+            <TextSizeToggle className="header-action-button" />
+            <ThemeToggle className="header-action-button" />
+          </div>
         </div>
 
         <div className="app-header-greeting mt-5 flex items-end justify-between gap-4">

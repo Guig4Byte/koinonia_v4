@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
-import { EmptyState, PulseCard, SectionTitle } from "@/components/cards";
+import { EmptyState, PastoralSectionTitle, PulseCard } from "@/components/cards";
 import { InCareSection, PastoralSignalSection } from "@/components/pastoral-list-cards";
 import { Badge } from "@/components/ui/badge";
 import { getLeaderDashboard } from "@/features/dashboard/queries";
@@ -142,16 +142,16 @@ export default async function LeaderPage() {
         </>
       ) : (
         <>
-          <SectionTitle>Quem precisa de cuidado</SectionTitle>
+          <PastoralSectionTitle>Quem precisa de cuidado</PastoralSectionTitle>
           <EmptyState>
             Nenhum membro da sua célula pede atenção agora. Para consultar a lista completa, abra Membros.
           </EmptyState>
         </>
       )}
 
-      <SectionTitle detail="A presença completa fica na tela do encontro.">Encontro da célula</SectionTitle>
+      <PastoralSectionTitle detail="A presença completa fica na tela do encontro.">Encontro da célula</PastoralSectionTitle>
       {currentEvent ? (
-        <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
+        <section className="card-hover-lift rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <p className="font-semibold text-[var(--color-text-primary)]">{currentEvent.group?.name ?? "Célula"}</p>

@@ -18,7 +18,7 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { formatBrasiliaMonthName, startOfBrasiliaMonth, startOfNextBrasiliaMonth, startOfPreviousBrasiliaMonth } from "@/lib/brasilia-time";
-import { initials } from "@/lib/text";
+import { avatarColorForName, initials } from "@/lib/text";
 
 const attendanceLabels: Record<AttendanceStatus, string> = {
   PRESENT: "Presente",
@@ -217,9 +217,12 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
     >
       <BackLink href={backHref}>{backLabel}</BackLink>
 
-      <section className={`rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card ${priorityCardClass(personBadge.tone)}`}>
+      <section className={`card-hover-lift rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card ${priorityCardClass(personBadge.tone)}`}>
         <div className="flex items-start gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--color-avatar-bg)] text-sm font-bold text-[var(--color-avatar-text)]">
+          <div
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-bold"
+            style={{ backgroundColor: avatarColorForName(person.fullName).bg, color: avatarColorForName(person.fullName).text }}
+          >
             {initials(person.fullName)}
           </div>
           <div className="min-w-0 flex-1">
@@ -330,7 +333,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           const canEscalatePastor = canEscalateSignalToPastor(user, signal);
 
           return (
-            <article key={signal.id} className={`rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card ${priorityCardClass(signalTone)}`}> 
+            <article key={signal.id} className={`card-hover-lift rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card ${priorityCardClass(signalTone)}`}> 
               <div className="min-w-0">
                   <p className="font-semibold text-[var(--color-text-primary)]">{signalDetailForViewer(signal, user)}</p>
                   <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
@@ -405,7 +408,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
                 {primarySupervisionName ? ` · Supervisão: ${primarySupervisionName}` : ""}
               </>
             }
-            actionLabel="Abrir célula"
+            actionLabel="Ver célula"
           />
         </>
       ) : null}

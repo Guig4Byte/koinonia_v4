@@ -45,7 +45,7 @@ function pastoralSignalCards<TSignal extends PastoralSignalCardItem>({
   viewer,
   contextForSignal = defaultSignalContext,
   reasonForSignal = (signal, currentViewer) => signalDetailForViewer(signal, currentViewer),
-  ctaLabelForSignal = (signal, currentViewer) => isSupportRequest(signal, currentViewer) ? "Abrir apoio" : "Abrir pessoa",
+  ctaLabelForSignal = (signal, currentViewer) => isSupportRequest(signal, currentViewer) ? "Abrir apoio" : "Acompanhar",
 }: {
   signals: TSignal[];
   viewer: PastoralViewer;
@@ -135,6 +135,7 @@ function inCarePersonCards<TPerson extends InCarePersonCardItem>({
       context={contextForPerson(person)}
       badgeLabel="Em cuidado"
       badgeTone="care"
+      ctaLabel="Acompanhar"
     />
   ));
 }
