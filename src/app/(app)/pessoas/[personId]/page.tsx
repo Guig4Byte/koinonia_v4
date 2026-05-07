@@ -328,7 +328,9 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
               ) : null}
             </>
           ) : (
-            <EmptyState compact>Ainda não há presença registrada neste mês.</EmptyState>
+            <div className="mt-3">
+              <EmptyState compact>Ainda não há presença registrada neste mês.</EmptyState>
+            </div>
           )}
         </div>
       </section>
