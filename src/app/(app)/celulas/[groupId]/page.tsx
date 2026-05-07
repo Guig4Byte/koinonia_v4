@@ -2,19 +2,18 @@ import Link from "next/link";
 import { CalendarCheck2, UsersRound } from "lucide-react";
 import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
-import { GroupResponsibilityRole, PersonStatus, SignalSeverity, SignalStatus, UserRole } from "../../../../generated/prisma/client";
+import { GroupResponsibilityRole, PersonStatus, SignalStatus, UserRole } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole, homeHrefForRole, secondaryNavHrefForRole } from "@/features/navigation/app-nav";
-import { BackLink, ContextSummary, EmptyState, InfoCard, PersonMiniCard, SectionTitle } from "@/components/cards";
-import { Badge, type BadgeTone } from "@/components/ui/badge";
+import { BackLink, ContextSummary, EmptyState, InfoCard, PersonMiniCard, PulseCard, SectionTitle } from "@/components/cards";
+import { type BadgeTone } from "@/components/ui/badge";
 import { ProgressiveList } from "@/components/progressive-list";
 import { isPresenceRecordedEvent, summarizeEventPresence, summarizeEventsPresence, summarizePresenceTrend } from "@/features/events/presence-summary";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { canManageGroups, canViewGroup, isGroupLeader } from "@/features/permissions/permissions";
-import { getPastoralSignalsByPerson } from "@/features/signals/attention";
 import { escalationStatusDetailForViewer } from "@/features/signals/escalation";
-import { groupAttentionLabel, signalReasonForViewer, type SignalBadge, type SignalBadgeTone } from "@/features/signals/display";
+import { signalReasonForViewer, type SignalBadgeTone } from "@/features/signals/display";
 import { getPastoralSectionSignalsByPerson, isSupportRequest, isUrgentOrPastoralCase } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { cn } from "@/lib/cn";
@@ -144,6 +143,74 @@ function memberMatchesFilter(member: MemberDisplay, filter: MembersFilter) {
   return true;
 }
 
+type GroupPastoralPulse = {
+  title: string;
+  subtitle: string;
+  tone: "attention" | "ok";
+};
+
+function groupPastoralPulse({
+  urgentOrPastoralCount,
+  supportCount,
+  localAttentionCount,
+  inCareCount,
+}: {
+  urgentOrPastoralCount: number;
+  supportCount: number;
+  localAttentionCount: number;
+  inCareCount: number;
+}): GroupPastoralPulse {
+  if (urgentOrPastoralCount > 0) {
+    return {
+      title: urgentOrPastoralCount === 1
+        ? "Há um cuidado sensível nesta célula."
+        : "Há cuidados sensíveis nesta célula.",
+      subtitle: urgentOrPastoralCount === 1
+        ? "Uma pessoa pede olhar pastoral mais próximo."
+        : `${urgentOrPastoralCount} pessoas pedem olhar pastoral mais próximo.`,
+      tone: "attention",
+    };
+  }
+
+  if (supportCount > 0) {
+    return {
+      title: supportCount === 1
+        ? "A liderança pediu apoio nesta célula."
+        : "Há pedidos de apoio nesta célula.",
+      subtitle: "Veja o contexto e caminhe junto com quem está cuidando.",
+      tone: "attention",
+    };
+  }
+
+  if (localAttentionCount > 0) {
+    return {
+      title: localAttentionCount === 1
+        ? "Uma pessoa pede acompanhamento mais próximo."
+        : "Há pessoas para acompanhar de perto.",
+      subtitle: localAttentionCount === 1
+        ? "Esse cuidado segue com a liderança da célula."
+        : "Veja os sinais da célula e mantenha o cuidado próximo.",
+      tone: "attention",
+    };
+  }
+
+  if (inCareCount > 0) {
+    return {
+      title: inCareCount === 1
+        ? "Uma pessoa segue em cuidado nesta célula."
+        : "Há pessoas em cuidado nesta célula.",
+      subtitle: "Elas já receberam cuidado e seguem no radar com leveza.",
+      tone: "ok",
+    };
+  }
+
+  return {
+    title: "A célula está sem sinais abertos neste momento.",
+    subtitle: "Continue acompanhando o ritmo de presença e cuidado.",
+    tone: "ok",
+  };
+}
+
 export default async function GroupDetailPage({ params, searchParams }: GroupDetailPageProps) {
   const user = await getCurrentUser();
   const { groupId } = await params;
@@ -193,12 +260,18 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
   const backHref = isPastorView || isSupervisorView ? secondaryNavHref : homeHref;
   const backLabel = isPastorView ? "Voltar para equipe" : isSupervisorView ? "Voltar para células" : "Voltar para visão";
   const attentionPeople = getPastoralSectionSignalsByPerson(group.signals, user);
-  const pastoralAttentionPeople = getPastoralSignalsByPerson(group.signals);
   const attentionSignalByPersonId = new Map(attentionPeople.map((signal) => [signal.personId, signal]));
   const supportRequests = attentionPeople.filter((signal) => isSupportRequest(signal, user));
-  const urgentAttentionPeople = attentionPeople.filter((signal) => signal.severity === SignalSeverity.URGENT);
+  const urgentOrPastoralSignals = attentionPeople.filter(isUrgentOrPastoralCase);
+  const localAttentionCount = attentionPeople.length - urgentOrPastoralSignals.length - supportRequests.length;
   const inCareCount = group.memberships.filter((membership) => membership.person.status === PersonStatus.COOLING_AWAY).length;
-  const hasRiskSignal = attentionPeople.some(isUrgentOrPastoralCase);
+  const hasRiskSignal = urgentOrPastoralSignals.length > 0;
+  const pastoralPulse = groupPastoralPulse({
+    urgentOrPastoralCount: urgentOrPastoralSignals.length,
+    supportCount: supportRequests.length,
+    localAttentionCount,
+    inCareCount,
+  });
   const navIndicator = hasRiskSignal ? "risk" : attentionPeople.length > 0 ? "attention" : inCareCount > 0 ? "care" : undefined;
   const recordedPresenceEvents = group.events.filter((event) => event.startsAt <= referenceDate && isPresenceRecordedEvent(event));
   const recentPresenceEvents = recordedPresenceEvents.slice(0, 4);
@@ -213,37 +286,6 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
   const canRegisterPendingEvent = user.role === UserRole.LEADER && isGroupLeader(user, group);
   const pendingEventStatusLabel = canRegisterPendingEvent ? "Presença pendente" : "Aguardando registro";
   const pendingEventActionLabel = canRegisterPendingEvent ? "Registrar presença" : "Abrir encontro";
-  const headerBadge: SignalBadge = (() => {
-    if (urgentAttentionPeople.length > 0) {
-      return { tone: "risk", label: groupAttentionLabel(urgentAttentionPeople.length, "urgente", "urgentes") };
-    }
-
-    if (isPastorView && pastoralAttentionPeople.length > 0) {
-      return { tone: "risk", label: groupAttentionLabel(pastoralAttentionPeople.length, "caso pastoral", "casos pastorais") };
-    }
-
-    if (!isPastorView && supportRequests.length > 0) {
-      const supportLabel = user.role === UserRole.LEADER
-        ? groupAttentionLabel(supportRequests.length, "apoio solicitado", "apoios solicitados")
-        : groupAttentionLabel(supportRequests.length, "pedido de apoio", "pedidos de apoio");
-
-      return { tone: "support", label: supportLabel };
-    }
-
-    if (attentionPeople.length > 0) {
-      return {
-        tone: "warn",
-        label: isPastorView ? groupAttentionLabel(attentionPeople.length, "atenção local", "atenções locais") : groupAttentionLabel(attentionPeople.length, "pessoa em atenção", "pessoas em atenção"),
-      };
-    }
-
-    if (inCareCount > 0) {
-      return { tone: "care", label: groupAttentionLabel(inCareCount, "em cuidado", "em cuidado") };
-    }
-
-    return { tone: "ok", label: "Estável" };
-  })();
-
   const members: MemberDisplay[] = group.memberships
     .map((membership) => {
       const attentionSignal = attentionSignalByPersonId.get(membership.personId);
@@ -316,22 +358,27 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
         ) : null}
 
         <section className="group-detail-hero">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">Célula</p>
-              <h2 className="mt-1 text-[1.45rem] font-extrabold leading-tight tracking-[-0.02em] text-[var(--color-text-primary)]">{group.name}</h2>
-              <p className="mt-2 text-[13px] leading-relaxed text-[var(--color-text-secondary)]">
-                Liderança: {leadershipName}
-                {supervisionName ? ` · Supervisão: ${supervisionName}` : ""}
-              </p>
-            </div>
-            <Badge tone={headerBadge.tone}>{headerBadge.label}</Badge>
+          <div className="min-w-0">
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">Célula</p>
+            <h2 className="mt-1 text-[1.45rem] font-extrabold leading-tight tracking-[-0.02em] text-[var(--color-text-primary)]">{group.name}</h2>
+            <p className="mt-2 text-[13px] leading-relaxed text-[var(--color-text-secondary)]">
+              Liderança: {leadershipName}
+              {supervisionName ? ` · Supervisão: ${supervisionName}` : ""}
+            </p>
           </div>
           <p className="group-detail-hero-chip mt-3">
             {groupMeetingText(group.meetingDayOfWeek, group.meetingTime)}
             {group.locationName ? ` · ${group.locationName}` : ""}
           </p>
         </section>
+
+        <div className="group-detail-pulse">
+          <PulseCard
+            title={pastoralPulse.title}
+            subtitle={pastoralPulse.subtitle}
+            tone={pastoralPulse.tone}
+          />
+        </div>
 
         <div className="group-detail-summary">
           <ContextSummary
