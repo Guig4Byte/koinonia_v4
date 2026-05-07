@@ -264,7 +264,9 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           <div className="min-w-0">
             <p className="text-sm font-semibold text-[var(--color-text-primary)]">Presença no mês</p>
             <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-              Ritmo registrado em {monthLabel}. Ajuda a perceber se vale se aproximar.
+              {monthPresence.hasPresenceData
+                ? `Ritmo registrado em ${monthLabel}. Ajuda a perceber se vale se aproximar.`
+                : `Ainda sem presença registrada em ${monthLabel}.`}
             </p>
             {monthPresenceTrend ? (
               <p className={`mt-1 text-xs leading-relaxed ${presenceTrendToneClass(monthPresenceTrend.direction, monthPresenceTone)}`}>
@@ -288,51 +290,43 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           </div>
         </div>
 
-        <div className="mt-3 border-t border-[var(--color-border-divider)] pt-3">
-          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">Encontros do mês</p>
-            {monthPresence.hasPresenceData ? (
+        {recentMonthAttendances.length > 0 ? (
+          <div className="mt-3 border-t border-[var(--color-border-divider)] pt-3">
+            <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">Encontros do mês</p>
               <p className="shrink-0 text-xs text-[var(--color-text-secondary)]">
                 {monthPresenceCountLabel(monthPresence.presentCount, monthPresence.accountableCount)}
               </p>
+            </div>
+
+            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {recentMonthAttendances.map((attendance) => (
+                <Link
+                  key={attendance.id}
+                  href={`/eventos/${attendance.event.id}`}
+                  className="flex min-h-12 items-center justify-between gap-3 rounded-2xl bg-[var(--surface-alt)] px-3 py-2 transition active:scale-[0.99]"
+                >
+                  <span className="min-w-0">
+                    <span className="block text-sm font-semibold text-[var(--color-text-primary)]">
+                      {formatShortDate(attendance.event.startsAt)} · {formatTime(attendance.event.startsAt)}
+                    </span>
+                    <span className="mt-0.5 block truncate text-xs text-[var(--color-text-secondary)]">
+                      {attendance.event.group?.name ?? "Encontro"}
+                    </span>
+                  </span>
+                  <Badge tone={attendanceTone(attendance.status)} className="px-2 py-0.5 text-[11px]">
+                    {attendanceLabels[attendance.status]}
+                  </Badge>
+                </Link>
+              ))}
+            </div>
+            {hiddenMonthAttendancesCount > 0 ? (
+              <p className="mt-3 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+                Mais {hiddenMonthAttendancesCount} {hiddenMonthAttendancesCount === 1 ? "encontro deste mês entra" : "encontros deste mês entram"} no cálculo.
+              </p>
             ) : null}
           </div>
-
-          {recentMonthAttendances.length > 0 ? (
-            <>
-              <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {recentMonthAttendances.map((attendance) => (
-                  <Link
-                    key={attendance.id}
-                    href={`/eventos/${attendance.event.id}`}
-                    className="flex min-h-12 items-center justify-between gap-3 rounded-2xl bg-[var(--surface-alt)] px-3 py-2 transition active:scale-[0.99]"
-                  >
-                    <span className="min-w-0">
-                      <span className="block text-sm font-semibold text-[var(--color-text-primary)]">
-                        {formatShortDate(attendance.event.startsAt)} · {formatTime(attendance.event.startsAt)}
-                      </span>
-                      <span className="mt-0.5 block truncate text-xs text-[var(--color-text-secondary)]">
-                        {attendance.event.group?.name ?? "Encontro"}
-                      </span>
-                    </span>
-                    <Badge tone={attendanceTone(attendance.status)} className="px-2 py-0.5 text-[11px]">
-                      {attendanceLabels[attendance.status]}
-                    </Badge>
-                  </Link>
-                ))}
-              </div>
-              {hiddenMonthAttendancesCount > 0 ? (
-                <p className="mt-3 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-                  Mais {hiddenMonthAttendancesCount} {hiddenMonthAttendancesCount === 1 ? "encontro deste mês entra" : "encontros deste mês entram"} no cálculo.
-                </p>
-              ) : null}
-            </>
-          ) : (
-            <div className="mt-3">
-              <EmptyState compact>Ainda não há presença registrada neste mês.</EmptyState>
-            </div>
-          )}
-        </div>
+        ) : null}
       </section>
 
       <SectionTitle>{openSignalsCount > 0 ? "Por que merece atenção" : "Situação atual"}</SectionTitle>
