@@ -29,13 +29,13 @@ src/app
   Rotas, páginas, login/logout, server actions e API handlers.
 
 src/components
-  Componentes reutilizáveis de UI. Devem ser majoritariamente burros.
+  Componentes reutilizáveis de UI. Devem ser majoritariamente burros. Componentes client-side ficam aqui quando dependem de estado, navegação ou interação.
 
 src/features
-  Regras de domínio por feature.
+  Regras de domínio por feature. Helpers de apresentação que protegem linguagem/status pastoral também ficam aqui quando são específicos do domínio.
 
 src/lib
-  Infraestrutura: Prisma, autenticação, sessão, formatação e utilitários.
+  Infraestrutura: Prisma, autenticação, sessão, respostas de API, helpers genéricos de texto/query e utilitários compartilhados.
 
 prisma
   Schema, client gerado, seed e scripts de manutenção.
@@ -210,9 +210,15 @@ Regras:
 - Grupo inativo não deve liberar visibilidade, encontro, check-in ou histórico padrão.
 - Sinais sem grupo podem continuar visíveis quando estiverem dentro do escopo institucional.
 
-## Backfill de responsabilidades
+## Exibição e backfill de responsabilidades
 
-Fonte:
+A exibição de liderança/supervisão compartilhada usa:
+
+```txt
+src/features/groups/responsibility-display.ts
+```
+
+O backfill de vínculos legados usa:
 
 ```txt
 src/features/groups/responsibilities-backfill.ts
@@ -263,11 +269,14 @@ Chamadas atuais ocorrem nas telas que dependem de encontros, como `/eventos` e `
 
 ## Ações do encontro
 
-Fonte:
+Fontes:
 
 ```txt
 src/app/api/events/[eventId]/route.ts
 src/components/event-details-actions.tsx
+src/features/events/event-display.ts
+src/features/events/brasilia-date-time.ts
+src/features/events/time-options.ts
 ```
 
 `PATCH /api/events/[eventId]` aceita:
@@ -290,17 +299,20 @@ Regras de backend:
 - remarcação preserva `scheduleStartsAt` e marca `generatedFromSchedule = false`;
 - duplicata de `groupId + startsAt + type` é bloqueada.
 
-No client, remarcação usa data `dd/mm/aaaa` e horário `hh:mm` no Horário de Brasília (`UTC-3`) para evitar o seletor nativo de `datetime-local`.
+No client, remarcação usa data `dd/mm/aaaa` e horário `hh:mm` no Horário de Brasília (`UTC-3`) para evitar o seletor nativo de `datetime-local`. A lógica de parse, formatação, calendário e opções de horário fica em `src/features/events/brasilia-date-time.ts` e `src/features/events/time-options.ts`; não duplicar esses helpers dentro de componentes.
+
+`src/features/events/event-display.ts` centraliza local efetivo e rótulos de encontro fechado sem presença. Esse arquivo é usado por páginas e componentes client-side, então não deve importar Prisma Client diretamente.
 
 ## Presença
 
-Fonte principal:
+Fontes principais:
 
 ```txt
 src/features/events/presence-summary.ts
+src/features/events/presence-display.ts
 ```
 
-Helpers:
+Helpers de resumo:
 
 ```ts
 isPresenceRecordedEvent()
@@ -309,13 +321,20 @@ summarizeEventPresence()
 summarizeEventsPresence()
 ```
 
+Helper de apresentação:
+
+```ts
+presenceTone()
+```
+
 Regras:
 
 - `AttendanceStatus.VISITOR` não entra no denominador;
 - `hasPresenceData` indica se existe dado pastoral válido;
 - UI deve mostrar `—` ou `Sem registro` quando `hasPresenceData` for falso;
 - percentual não deve indicar risco sem dado real;
-- eventos concluídos sem marcação válida continuam sendo ausência de dado, não `0%`.
+- eventos concluídos sem marcação válida continuam sendo ausência de dado, não `0%`;
+- use `presenceTone()` para tom visual de presença, mantendo limiares explícitos quando a superfície usa thresholds diferentes.
 
 ## Check-in
 
@@ -367,6 +386,8 @@ personEffectiveBadgeForViewer()
 isUrgentOrPastoralCase()
 isSupportRequest()
 isInCarePerson()
+signalSeverityRank()
+compareSignalsBySeverityAndRecency()
 ```
 
 Regras:
@@ -375,7 +396,8 @@ Regras:
 - evento futuro, cancelado, não realizado, pendente ou sem marcação explícita não vira falta presumida;
 - listas de atenção agregam por pessoa;
 - seleção pastoral prioriza caso pastoral/urgente, depois pedido de apoio, depois atenção local, depois severidade/recência;
-- status efetivo da pessoa usa sinal primário visível antes de `Person.status`.
+- status efetivo da pessoa usa sinal primário visível antes de `Person.status`;
+- ranking de severidade/recência fica em `src/features/signals/ranking.ts` para evitar ordenações divergentes entre atenção e seções.
 
 ## Contato e cuidado
 
@@ -398,6 +420,8 @@ Regras:
 `Ligar` e `WhatsApp` são atalhos externos de aproximação. O registro persistido de contato confirmado usa `MARKED_CARED` e aparece como `Contato feito`, sem classificar o canal.
 
 `Já houve contato?` só chama a rota depois de confirmação explícita. O detalhe da pessoa mostra poucos itens em `Cuidado recente` e revela o restante com `Ver histórico`.
+
+Componentes client-side que chamam APIs devem preferir `src/lib/use-api-action.ts` para manter o padrão de `useTransition`, leitura de erro e `router.refresh()`. Rotas de API devem preferir `src/lib/api-response.ts` para respostas JSON simples sem mudar o contrato de payload.
 
 ### Apoio e encaminhamento
 
@@ -434,6 +458,34 @@ Regras:
 - evitar duplicar pessoa em seções da mesma tela;
 - `supportRequests` representa pessoas/casos relevantes, não fila bruta de sinais;
 - métricas de presença consideram apenas encontros com dado válido.
+
+## Componentes e helpers compartilhados
+
+Componentes reutilizáveis devem preservar linguagem pastoral e evitar duplicar regras de domínio em páginas.
+
+Fontes principais:
+
+```txt
+src/components/structure-search.tsx
+src/components/cells-structure-search.tsx
+src/components/team-structure-search.tsx
+src/components/member-priority-list.tsx
+src/components/cards.tsx
+src/components/pastoral-list-cards.tsx
+src/components/progressive-list.tsx
+src/features/people/member-filters.ts
+src/lib/search-params.ts
+src/lib/text.ts
+```
+
+Regras:
+
+- `StructureSearch` centraliza busca e chips de filtro das superfícies estruturais; wrappers por tela mantêm labels e filtros específicos.
+- `MemberPriorityList` centraliza a lista pastoral de membros, separando pessoas no radar e ativos sem reimplementar `ProgressiveList + PersonMiniCard` em páginas.
+- `member-filters.ts` guarda filtros oficiais de membros e diferenças explícitas por superfície, como limite de prioridade em `Atenção` e recorte de `Em cuidado`.
+- `firstParam()` deve ser usado para leitura simples de `searchParams` em páginas server-side.
+- `normalizeSearchText()` deve ser usado para busca local sem acento/case-insensitive.
+- Cards devem calcular apresentação visual localmente ou por helpers compartilhados; páginas não devem duplicar iniciais, tons de presença ou composição básica de card.
 
 ## Cadastro mínimo de célula
 
@@ -477,9 +529,9 @@ Regras:
 | `/eventos/[eventId]` | detalhe/resumo/registro do encontro |
 | `/api/search` | busca de pessoa |
 
-## Tema
+## Tema e tamanho do texto
 
-Fontes:
+Fontes de tema:
 
 ```txt
 src/features/theme/theme.ts
@@ -488,13 +540,26 @@ src/components/theme-toggle.tsx
 src/app/globals.css
 ```
 
+Fontes de tamanho do texto:
+
+```txt
+src/features/text-size/text-size.ts
+src/components/text-size-init.tsx
+src/components/text-size-toggle.tsx
+src/app/globals.css
+```
+
 Regras:
 
 - tema é armazenado no `localStorage` como `koinonia-theme`;
-- valores válidos: `light`, `parchment`, `dark`;
+- valores válidos de tema: `light`, `parchment`, `dark`;
 - `ThemeInit` aplica o tema antes da renderização principal;
 - `ThemeToggle` aparece no app autenticado e na tela de login;
-- tema não deve ser persistido no banco nesta fase.
+- tamanho do texto é armazenado no `localStorage` como `koinonia-text-size`;
+- valores válidos de tamanho do texto: `normal`, `large`, `extra-large`;
+- `TextSizeInit` aplica o tamanho antes da renderização principal;
+- `TextSizeToggle` alterna entre `Normal`, `Grande` e `Muito grande`;
+- tema e tamanho do texto são preferências locais do aparelho e não devem ser persistidos no banco nesta fase.
 
 ## Seed de desenvolvimento
 

@@ -280,9 +280,9 @@ A busca atual é busca de pessoa.
 - Resultado usa status efetivo, não apenas status persistido.
 - Não prometa busca ampla de evento/célula enquanto a API não suportar.
 
-## Tema
+## Tema e tamanho do texto
 
-O tema é preferência visual local do aparelho.
+Tema e tamanho do texto são preferências visuais locais do aparelho.
 
 Temas atuais:
 
@@ -290,7 +290,13 @@ Temas atuais:
 - `Pergaminho`;
 - `Escuro`.
 
-Tema não muda permissão, escopo ou dado pastoral.
+Tamanhos de texto atuais:
+
+- `Normal`;
+- `Grande`;
+- `Muito grande`.
+
+Tema e tamanho do texto não mudam permissão, escopo ou dado pastoral.
 
 ## Cadastros e importação
 

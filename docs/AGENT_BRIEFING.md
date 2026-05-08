@@ -121,13 +121,14 @@ A anotação de apoio/encaminhamento deve ser breve, opcional e aparecer no cuid
 
 ## Presença e ausência de dado
 
-Use `src/features/events/presence-summary.ts`.
+Use `src/features/events/presence-summary.ts` para cálculo pastoral e `src/features/events/presence-display.ts` para tom visual.
 
 - Visitantes não entram no denominador.
 - Evento sem marcação válida de membros não deve mostrar `0%`.
 - Pessoa sem marcação explícita fica `Pendente`, nunca falta presumida.
 - `Sem registro` é ausência real de dado, não risco automático.
 - `Marcar todos como presentes` é atalho do líder e deve confirmar antes de sobrescrever ausências/justificativas.
+- Quando precisar mostrar local/status de encontro, prefira `src/features/events/event-display.ts` para evitar divergência entre lista, detalhe e ações.
 
 ## Regras que não devem quebrar
 
@@ -172,18 +173,31 @@ Não implementar sem decisão explícita:
 - Permissões/escopo: `src/features/permissions/permissions.ts`.
 - Navegação por papel: `src/features/navigation/app-nav.ts`.
 - Responsabilidades/backfill: `src/features/groups/responsibilities-backfill.ts`, `prisma/backfill-group-responsibilities.ts`.
+- Exibição de liderança/supervisão: `src/features/groups/responsibility-display.ts`.
 - Geração de encontros: `src/features/events/schedule.ts`.
 - Cadastro mínimo de célula: `src/app/(app)/celulas/actions.ts`, `src/app/(app)/celulas/nova/page.tsx`, `src/app/(app)/celulas/[groupId]/editar/page.tsx`, `src/components/group-form.tsx`, `src/features/groups/group-form.ts`.
 - Presença: `src/features/events/presence-summary.ts`.
+- Tom visual de presença: `src/features/events/presence-display.ts`.
+- Local/status visual de encontro: `src/features/events/event-display.ts`.
+- Data/hora de encontro no Horário de Brasília: `src/features/events/brasilia-date-time.ts`, `src/features/events/time-options.ts`, `src/lib/brasilia-time.ts`.
 - Seleção de encontro relevante: `src/features/events/relevant-event.ts`.
 - Ações de encontro: `src/app/api/events/[eventId]/route.ts`, `src/components/event-details-actions.tsx`.
+- Check-in: `src/components/check-in-list.tsx`, `src/features/check-in/check-in-validation.ts`, `src/features/check-in/visitor-validation.ts`.
 - Regras de sinais: `src/features/signals`.
+- Ranking/ordenação de sinais: `src/features/signals/ranking.ts`.
 - Status visual de sinais: `src/features/signals/display.ts`.
 - Seções pastorais: `src/features/signals/sections.ts`.
 - Status de pessoa: `src/features/people/status-display.ts`.
+- Filtros de membros: `src/features/people/member-filters.ts`, `src/components/member-priority-list.tsx`.
+- Busca/filtros de estrutura: `src/components/structure-search.tsx`, `src/components/cells-structure-search.tsx`, `src/components/team-structure-search.tsx`.
+- Cards/listas pastorais: `src/components/cards.tsx`, `src/components/pastoral-list-cards.tsx`, `src/components/progressive-list.tsx`.
 - Queries de dashboard: `src/features/dashboard/queries.ts`.
 - Validação de cuidado: `src/features/care/care-validation.ts`.
+- Respostas de API: `src/lib/api-response.ts`.
+- Ações client-side com `fetch`: `src/lib/use-api-action.ts`.
+- Helpers de query/texto: `src/lib/search-params.ts`, `src/lib/text.ts`.
 - Tema: `src/features/theme/theme.ts`, `src/components/theme-init.tsx`, `src/components/theme-toggle.tsx`.
+- Tamanho do texto: `src/features/text-size/text-size.ts`, `src/components/text-size-init.tsx`, `src/components/text-size-toggle.tsx`.
 
 ## Checklist antes de responder ou codar
 
@@ -198,3 +212,4 @@ Não implementar sem decisão explícita:
 9. As permissões usam helpers existentes?
 10. A UI continua mobile-first e sem burocracia?
 11. O patch promete apenas o que o código entrega?
+12. Helpers compartilhados continuam seguros para client/server? Não importe Prisma Client em arquivo usado por componente `use client`.

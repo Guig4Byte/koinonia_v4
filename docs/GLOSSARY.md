@@ -236,6 +236,18 @@ Rótulos oficiais:
 
 Tema não é configuração pastoral, não muda escopo e não precisa de tela administrativa.
 
+### Tamanho do texto
+
+Preferência visual local do aparelho para leitura mais confortável.
+
+Rótulos oficiais:
+
+- `Normal`;
+- `Grande`;
+- `Muito grande`.
+
+Tamanho do texto não é configuração pastoral, não muda escopo e não precisa de tela administrativa.
+
 ## Rótulos e tons oficiais
 
 | Rótulo | Quando usar | Tom |

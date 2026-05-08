@@ -188,17 +188,23 @@ Essa célula pediu apoio da supervisão.
 Encaminhado ao cuidado pastoral.
 ```
 
-## Tema
+## Tema e tamanho do texto
 
-Tema é escolha visual leve. Deve funcionar no login e continuar no app.
+Tema e tamanho do texto são escolhas visuais leves. Tema deve funcionar no login e continuar no app. Tamanho do texto deve ajudar a leitura no app sem virar configuração administrativa.
 
-Use os rótulos:
+Use os rótulos de tema:
 
 - `Claro`;
 - `Pergaminho`;
 - `Escuro`.
 
-Não transforme tema em uma página de configuração no MVP.
+Use os rótulos de tamanho do texto:
+
+- `Normal`;
+- `Grande`;
+- `Muito grande`.
+
+Não transforme tema ou tamanho do texto em página de configuração no MVP.
 
 ## O que evitar no mobile
 
