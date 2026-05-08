@@ -2,9 +2,9 @@
 
 import { ArrowLeft, LifeBuoy, NotebookPen, SendHorizontal, type LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useId, useState, useTransition } from "react";
+import { useId, useState } from "react";
 import { cn } from "@/lib/cn";
-import { readApiMessage } from "@/lib/json";
+import { useApiAction } from "@/lib/use-api-action";
 
 type SupportAction = "REQUEST_SUPERVISOR" | "ESCALATE_PASTOR";
 type FlowStage = "idle" | "request-supervisor" | "escalate-pastor";
@@ -63,38 +63,35 @@ export function SignalSupportActions({
 }: SignalSupportActionsProps) {
   const router = useRouter();
   const noteId = useId();
-  const [isPending, startTransition] = useTransition();
   const [stage, setStage] = useState<FlowStage>("idle");
   const [note, setNote] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const { isPending, errorMessage, clearError, runApiAction } = useApiAction();
   const label = assignmentMessage ?? null;
 
   function resetFlow() {
     setStage("idle");
     setNote("");
-    setErrorMessage("");
+    clearError();
   }
 
   function send(action: SupportAction, noteValue?: string) {
-    setErrorMessage("");
+    const trimmedNote = noteValue?.trim();
 
-    startTransition(async () => {
-      const response = await fetch(`/api/signals/${signalId}/support`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, note: noteValue?.trim() || undefined }),
-      });
-
-      const body = await readApiMessage(response);
-
-      if (!response.ok) {
-        setErrorMessage(body?.error ?? "Não foi possível pedir apoio agora.");
-        return;
-      }
-
-      resetFlow();
-      router.refresh();
-    });
+    runApiAction(
+      () =>
+        fetch(`/api/signals/${signalId}/support`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action, note: trimmedNote || undefined }),
+        }),
+      {
+        fallbackErrorMessage: "Não foi possível pedir apoio agora.",
+        onSuccess: () => {
+          resetFlow();
+          router.refresh();
+        },
+      },
+    );
   }
 
   const buttonClass =

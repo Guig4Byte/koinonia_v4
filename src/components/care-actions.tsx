@@ -2,9 +2,9 @@
 
 import { ArrowLeft, CheckCircle2, MessageCircleMore, NotebookPen, Phone } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useState } from "react";
 import { cn } from "@/lib/cn";
-import { readApiMessage } from "@/lib/json";
+import { useApiAction } from "@/lib/use-api-action";
 
 type FlowStage = "idle" | "confirm" | "confirm-existing" | "ask-note" | "note" | "done";
 
@@ -14,12 +14,11 @@ function digitsOnly(value?: string | null) {
 
 export function CareActions({ personId, phone }: { personId?: string; phone?: string | null }) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
   const [stage, setStage] = useState<FlowStage>("idle");
   const [note, setNote] = useState("");
   const [savedMessage, setSavedMessage] = useState("");
   const [resolvedMessage, setResolvedMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const { isPending, errorMessage, clearError, runApiAction } = useApiAction();
   const digits = digitsOnly(phone);
   const hasPhone = digits.length >= 10;
 
@@ -34,39 +33,36 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
   function resetFlow() {
     setStage("idle");
     setNote("");
-    setErrorMessage("");
+    clearError();
   }
 
   function registerContact(noteValue?: string) {
     if (!personId) return;
 
-    setErrorMessage("");
+    const trimmedNote = noteValue?.trim();
 
-    startTransition(async () => {
-      const response = await fetch(`/api/care/${personId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          kind: "MARKED_CARED",
-          note: noteValue?.trim() || undefined,
-          resolveOpenSignals: true,
+    runApiAction(
+      () =>
+        fetch(`/api/care/${personId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            kind: "MARKED_CARED",
+            note: trimmedNote || undefined,
+            resolveOpenSignals: true,
+          }),
         }),
-      });
-
-      const responseBody = await readApiMessage(response);
-
-      if (!response.ok) {
-        setErrorMessage(responseBody?.error ?? "Não foi possível registrar o cuidado agora.");
-        return;
-      }
-
-      setSavedMessage(noteValue?.trim() ? "Contato feito com anotação." : "Contato feito.");
-      setResolvedMessage(responseBody?.message ?? "A atenção ficou em dia sem criar acompanhamento formal.");
-      setErrorMessage("");
-      setStage("done");
-      setNote("");
-        router.refresh();
-    });
+      {
+        fallbackErrorMessage: "Não foi possível registrar o cuidado agora.",
+        onSuccess: (responseBody) => {
+          setSavedMessage(trimmedNote ? "Contato feito com anotação." : "Contato feito.");
+          setResolvedMessage(responseBody?.message ?? "A atenção ficou em dia sem criar acompanhamento formal.");
+          setStage("done");
+          setNote("");
+          router.refresh();
+        },
+      },
+    );
   }
 
   const buttonBase =
@@ -113,7 +109,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
                   return;
                 }
 
-                setErrorMessage("");
+                clearError();
                 setStage("confirm");
               }}
             >
@@ -138,7 +134,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
                   return;
                 }
 
-                setErrorMessage("");
+                clearError();
                 setStage("confirm");
               }}
             >
@@ -152,8 +148,8 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
               type="button"
               disabled={isPending}
               onClick={() => {
-                setErrorMessage("");
-                            setStage("confirm-existing");
+                clearError();
+                setStage("confirm-existing");
               }}
               className={cn(secondaryButton, isPending && disabled)}
             >

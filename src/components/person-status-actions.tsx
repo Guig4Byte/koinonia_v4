@@ -2,35 +2,30 @@
 
 import { CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/cn";
-import { readApiMessage } from "@/lib/json";
+import { useApiAction } from "@/lib/use-api-action";
 
 export function PersonStatusActions({ personId }: { personId: string }) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
   const [isConfirming, setIsConfirming] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const { isPending, errorMessage, runApiAction } = useApiAction();
 
   function markActive() {
-    setErrorMessage("");
-
-    startTransition(async () => {
-      const response = await fetch(`/api/people/${personId}/mark-active`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      const body = await readApiMessage(response);
-
-      if (!response.ok) {
-        setErrorMessage(body?.error ?? "Não foi possível marcar como ativo agora.");
-        return;
-      }
-
-      setIsConfirming(false);
-      router.refresh();
-    });
+    runApiAction(
+      () =>
+        fetch(`/api/people/${personId}/mark-active`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        }),
+      {
+        fallbackErrorMessage: "Não foi possível marcar como ativo agora.",
+        onSuccess: () => {
+          setIsConfirming(false);
+          router.refresh();
+        },
+      },
+    );
   }
 
   const buttonBase =
