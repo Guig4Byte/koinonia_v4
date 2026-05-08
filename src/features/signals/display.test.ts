@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SignalSeverity, SignalSource, UserRole } from "../../generated/prisma/client";
+import { SignalSeverity, SignalSource, UserRole } from "@/generated/prisma/client";
 import {
   signalBadgeForViewer,
   signalDescriptionForViewer,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { UserRole } from "../generated/prisma/client";
+import { UserRole } from "@/generated/prisma/client";
 import { buildPastoralPulseMessage } from "./pastoral-pulse";
 
 describe("pastoral pulse", () => {

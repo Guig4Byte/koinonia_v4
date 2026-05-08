@@ -1,4 +1,4 @@
-import { UserRole } from "../generated/prisma/client";
+import { UserRole } from "@/generated/prisma/client";
 import type { PastoralPulseMessage, PastoralPulseScope, PastoralPulseSubject } from "./pastoral-pulse";
 import { groupPrefix, isPastorRole } from "./pastoral-pulse-message-utils";
 

@@ -1,4 +1,4 @@
-import { UserRole } from "../generated/prisma/client";
+import { UserRole } from "@/generated/prisma/client";
 import type { PastoralPulseSubject } from "./pastoral-pulse";
 
 export function isPastorRole(role: UserRole): boolean {

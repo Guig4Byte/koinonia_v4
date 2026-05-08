@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SignalSeverity, UserRole } from "../../generated/prisma/client";
+import { SignalSeverity, UserRole } from "@/generated/prisma/client";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson, isPastoralSignal } from "./attention";
 
 function signal(personId: string, severity: SignalSeverity, detectedAt: string, role?: UserRole) {

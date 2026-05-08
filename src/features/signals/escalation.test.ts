@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { GroupResponsibilityRole, SignalSeverity, UserRole } from "../../generated/prisma/client";
+import { GroupResponsibilityRole, SignalSeverity, UserRole } from "@/generated/prisma/client";
 import { canEscalateSignalToPastor, canRequestSupervisorSupport, escalationStatusChipForViewer, escalationStatusDetailForViewer, escalationStatusLabel, escalationStatusLabelForViewer, isPastoralEscalation, shouldShowEscalationStatusForViewer } from "./escalation";
 
 describe("signal escalation helpers", () => {

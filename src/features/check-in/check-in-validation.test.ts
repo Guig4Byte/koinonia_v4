@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AttendanceStatus } from "../../generated/prisma/client";
+import { AttendanceStatus } from "@/generated/prisma/client";
 import { validateMemberCheckInPayload } from "./check-in-validation";
 
 const activeMembers = ["person-1", "person-2"];

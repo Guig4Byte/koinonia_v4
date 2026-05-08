@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { GroupResponsibilityRole, UserRole } from "../../generated/prisma/client";
+import { GroupResponsibilityRole, UserRole } from "@/generated/prisma/client";
 import {
   canCheckInEvent,
   canManageEventDetails,

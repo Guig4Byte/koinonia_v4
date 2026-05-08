@@ -1,4 +1,4 @@
-import { SignalSeverity } from "../../generated/prisma/client";
+import { SignalSeverity } from "@/generated/prisma/client";
 import { isPastoralEscalation, type SignalAssigneeLike } from "./escalation";
 import { compareSignalsBySeverityAndRecency } from "./ranking";
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { PersonStatus, SignalSeverity, UserRole } from "../../generated/prisma/client";
+import { PersonStatus, SignalSeverity, UserRole } from "@/generated/prisma/client";
 import { personEffectiveBadgeForViewer, personStatusDisplay } from "./status-display";
 
 describe("person status display", () => {

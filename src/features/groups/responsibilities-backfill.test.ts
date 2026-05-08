@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { GroupResponsibilityRole } from "../../generated/prisma/client";
+import { GroupResponsibilityRole } from "@/generated/prisma/client";
 import {
   buildLegacyResponsibilityBackfillCandidates,
   legacyResponsibilityCandidatesForGroup,

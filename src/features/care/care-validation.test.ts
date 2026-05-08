@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CareKind } from "../../generated/prisma/client";
+import { CareKind } from "@/generated/prisma/client";
 import { parseCarePayload, resolvedAttentionMessage } from "./care-validation";
 
 describe("care validation", () => {

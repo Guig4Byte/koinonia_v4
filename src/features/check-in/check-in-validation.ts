@@ -1,4 +1,4 @@
-import { AttendanceStatus } from "../../generated/prisma/client";
+import { AttendanceStatus } from "@/generated/prisma/client";
 
 export type MemberCheckInAttendance = {
   personId: string;

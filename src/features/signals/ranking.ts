@@ -1,4 +1,4 @@
-import { SignalSeverity } from "../../generated/prisma/client";
+import { SignalSeverity } from "@/generated/prisma/client";
 
 export type SignalSeverityLike = SignalSeverity | string;
 

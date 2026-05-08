@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AttendanceStatus } from "../../generated/prisma/client";
+import { AttendanceStatus } from "@/generated/prisma/client";
 import { summarizeEventPresence, summarizeEventsPresence, summarizePresenceTrend } from "./presence-summary";
 
 function event(status: string, attendances: AttendanceStatus[]) {

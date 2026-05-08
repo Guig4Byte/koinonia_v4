@@ -1,4 +1,4 @@
-import { PersonStatus, SignalSeverity, UserRole } from "../../generated/prisma/client";
+import { PersonStatus, SignalSeverity, UserRole } from "@/generated/prisma/client";
 import { isAssignedToPastoralRole, isAssignedToSupervisor } from "./escalation";
 import { compareSignalsBySeverityAndRecency } from "./ranking";
 

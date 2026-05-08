@@ -1,4 +1,4 @@
-import { SignalSeverity, SignalSource, UserRole } from "../../generated/prisma/client";
+import { SignalSeverity, SignalSource, UserRole } from "@/generated/prisma/client";
 import {
   escalationStatusLabelForViewer,
   isAssignedToPastoralRole,

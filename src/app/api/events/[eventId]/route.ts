@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { EventStatus } from "../../../../generated/prisma/client";
+import { EventStatus } from "@/generated/prisma/client";
 import { canManageEventDetails } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { apiError, apiOk } from "@/lib/api-response";

@@ -1,4 +1,4 @@
-import { PersonStatus } from "../../generated/prisma/client";
+import { PersonStatus } from "@/generated/prisma/client";
 import { signalBadgeForViewer, type SignalBadge, type SignalDisplayLike, type SignalDisplayViewerLike } from "../signals/display";
 
 export type PersonStatusTone = "neutral" | "ok" | "warn" | "risk" | "info" | "care";

@@ -1,4 +1,4 @@
-import { GroupResponsibilityRole } from "../../generated/prisma/client";
+import { GroupResponsibilityRole } from "@/generated/prisma/client";
 
 export type LegacyGroupResponsibilitySource = {
   id: string;

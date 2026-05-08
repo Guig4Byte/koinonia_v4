@@ -1,5 +1,5 @@
 import type { NavIndicatorTone, NavItem } from "@/components/bottom-nav";
-import { UserRole } from "../../generated/prisma/client";
+import { UserRole } from "@/generated/prisma/client";
 
 type UserWithRole = { role: UserRole };
 

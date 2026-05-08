@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { UserRole } from "../../generated/prisma/client";
+import { UserRole } from "@/generated/prisma/client";
 import { appNavForRole, homeHrefForRole, secondaryNavForRole } from "./app-nav";
 
 describe("app navigation", () => {

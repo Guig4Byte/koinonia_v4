@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { PersonStatus, SignalSeverity, UserRole } from "../../generated/prisma/client";
+import { PersonStatus, SignalSeverity, UserRole } from "@/generated/prisma/client";
 import { getPastoralSectionSignalsByPerson, sortSignalsForPastoralViewer, splitPastoralSections } from "./sections";
 
 const baseDate = new Date("2026-01-10T12:00:00.000Z");

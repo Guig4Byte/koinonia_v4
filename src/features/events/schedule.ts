@@ -1,4 +1,4 @@
-import { EventStatus, EventType, GroupKind } from "../../generated/prisma/client";
+import { EventStatus, EventType, GroupKind } from "@/generated/prisma/client";
 import { getVisibleGroupWhere, type PermissionUser } from "../permissions/permissions";
 import { prisma } from "../../lib/prisma";
 import { addBrasiliaDays, dateFromBrasiliaParts, getBrasiliaDateParts, startOfBrasiliaDay } from "../../lib/brasilia-time";

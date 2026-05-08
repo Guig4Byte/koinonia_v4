@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { CareKind } from "../../generated/prisma/client";
+import { CareKind } from "@/generated/prisma/client";
 
 const contactShortcutKinds = new Set<CareKind>([
   CareKind.CALL,
