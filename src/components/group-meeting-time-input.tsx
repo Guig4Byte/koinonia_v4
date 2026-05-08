@@ -2,16 +2,15 @@
 
 import { Clock3 } from "lucide-react";
 import { useState } from "react";
+import { CELL_MEETING_TIME_OPTIONS } from "@/features/events/time-options";
 import { cn } from "@/lib/cn";
-
-const TIME_OPTIONS = ["18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00"];
 
 export function GroupMeetingTimeInput({ defaultValue }: { defaultValue?: string | null }) {
   const [meetingTime, setMeetingTime] = useState(defaultValue ?? "");
   const [isOpen, setIsOpen] = useState(false);
-  const timeOptions = meetingTime && !TIME_OPTIONS.includes(meetingTime)
-    ? [meetingTime, ...TIME_OPTIONS]
-    : TIME_OPTIONS;
+  const timeOptions = meetingTime && !CELL_MEETING_TIME_OPTIONS.includes(meetingTime)
+    ? [meetingTime, ...CELL_MEETING_TIME_OPTIONS]
+    : CELL_MEETING_TIME_OPTIONS;
 
   function selectTime(time: string) {
     setMeetingTime(time);

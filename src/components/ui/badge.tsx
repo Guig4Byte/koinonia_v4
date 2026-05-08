@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
-export const badgeTones = ["neutral", "ok", "warn", "risk", "info", "care", "support"] as const;
+const badgeTones = ["neutral", "ok", "warn", "risk", "info", "care", "support"] as const;
 
 export type BadgeTone = (typeof badgeTones)[number];
 

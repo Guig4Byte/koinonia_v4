@@ -4,7 +4,7 @@ import { BackLink, InfoCard } from "@/components/cards";
 import { GroupMeetingTimeInput } from "@/components/group-meeting-time-input";
 import { GROUP_LOCATION_MAX_LENGTH, GROUP_NAME_MAX_LENGTH, WEEKDAY_OPTIONS, groupFormErrorMessage, type GroupFormValues } from "@/features/groups/group-form";
 
-export type GroupFormInitialValues = GroupFormValues;
+type GroupFormInitialValues = GroupFormValues;
 
 function FormSectionTitle({ children }: { children: string }) {
   return (

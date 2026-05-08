@@ -5,15 +5,10 @@ import { getPastoralSectionSignalsByPerson } from "@/features/signals/sections";
 import type { Prisma } from "@/generated/prisma/client";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
+import { normalizeSearchText } from "@/lib/text";
 
 const SEARCH_RESULT_LIMIT = 8;
 
-function normalizeSearch(value: string) {
-  return value
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase();
-}
 
 export async function GET(request: NextRequest) {
   const user = await getCurrentUser();
@@ -23,7 +18,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ people: [] });
   }
 
-  const normalizedQuery = normalizeSearch(q);
+  const normalizedQuery = normalizeSearchText(q);
   const includeVisibleContext = {
     memberships: { where: getVisibleMembershipWhere(user), include: { group: true }, take: 1 },
     signals: {
@@ -58,7 +53,7 @@ export async function GET(request: NextRequest) {
 
     matchingPeople = [
       ...directMatches,
-      ...accentFallbackMatches.filter((person) => normalizeSearch(person.fullName).includes(normalizedQuery)),
+      ...accentFallbackMatches.filter((person) => normalizeSearchText(person.fullName).includes(normalizedQuery)),
     ].slice(0, SEARCH_RESULT_LIMIT);
   }
 

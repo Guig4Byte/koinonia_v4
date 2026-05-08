@@ -8,8 +8,10 @@ import { appNavForRole, homeHrefForRole, secondaryNavHrefForRole } from "@/featu
 import { BackLink, ContextSummary, EmptyState, InfoCard, PersonMiniCard, PulseCard, SectionTitle } from "@/components/cards";
 import { type BadgeTone } from "@/components/ui/badge";
 import { ProgressiveList } from "@/components/progressive-list";
+import { presenceTone } from "@/features/events/presence-display";
 import { isPresenceRecordedEvent, summarizeEventPresence, summarizeEventsPresence, summarizePresenceTrend } from "@/features/events/presence-summary";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
+import { responsibilityNames } from "@/features/groups/responsibility-display";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { canManageGroups, canViewGroup, isGroupLeader } from "@/features/permissions/permissions";
 import { escalationStatusDetailForViewer } from "@/features/signals/escalation";
@@ -21,6 +23,7 @@ import { cn } from "@/lib/cn";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { initials } from "@/lib/text";
+import { firstParam } from "@/lib/search-params";
 
 const dayLabels: Record<number, string> = {
   0: "Domingo",
@@ -64,22 +67,6 @@ function groupMeetingText(day?: number | null, time?: string | null) {
   return `${dayLabels[day] ?? "Dia informado"}${time ? ` · ${time}` : ""}`;
 }
 
-function responsibilityNames(
-  responsibilities: Array<{ role: GroupResponsibilityRole; user: { name: string } }>,
-  role: GroupResponsibilityRole,
-  fallback = "não informada",
-) {
-  const names = responsibilities
-    .filter((responsibility) => responsibility.role === role)
-    .map((responsibility) => responsibility.user.name);
-
-  return names.length > 0 ? names.join(" e ") : fallback;
-}
-
-function firstParam(value: string | string[] | undefined) {
-  if (Array.isArray(value)) return value[0] ?? "";
-  return value ?? "";
-}
 
 function readMembersFilter(value: string): MembersFilter {
   return MEMBERS_FILTERS.some((filter) => filter.value === value) ? value as MembersFilter : "todos";
@@ -90,19 +77,6 @@ function membersFilterHref(groupId: string, filter: MembersFilter) {
   return `/celulas/${groupId}?membros=${filter}#membros`;
 }
 
-function metricToneForPresence(hasPresenceData: boolean, presenceRate: number) {
-  if (!hasPresenceData) return "neutral" as const;
-  if (presenceRate < 50) return "risk" as const;
-  if (presenceRate < 70) return "warn" as const;
-  return "ok" as const;
-}
-
-function badgeToneForPresence(hasPresenceData: boolean, presenceRate: number): BadgeTone {
-  if (!hasPresenceData) return "neutral";
-  if (presenceRate < 50) return "risk";
-  if (presenceRate < 70) return "warn";
-  return "ok";
-}
 
 function encounterToneVars(tone: BadgeTone): CSSProperties {
   if (tone === "risk") {
@@ -369,7 +343,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
                 detail: hasRecentPresence
                   ? "Média dos últimos encontros registrados."
                   : "Ainda sem presença recente registrada.",
-                tone: metricToneForPresence(hasRecentPresence, presence.presenceRate),
+                tone: presenceTone(hasRecentPresence, presence.presenceRate),
                 trend: presenceTrend,
               },
               {
@@ -532,7 +506,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
             >
               {completedEvents.map((event) => {
               const metrics = summarizeEventPresence(event);
-              const presenceBadgeTone = badgeToneForPresence(metrics.hasPresenceData, metrics.presenceRate);
+              const presenceBadgeTone = presenceTone(metrics.hasPresenceData, metrics.presenceRate);
               const presenceLabel = metrics.hasPresenceData ? `${metrics.presenceRate}%` : "Sem registro";
               const presenceProgress = metrics.hasPresenceData ? metrics.presenceRate : 0;
 

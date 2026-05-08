@@ -2,7 +2,6 @@ export const BRASILIA_UTC_OFFSET_HOURS = 3;
 export const BRASILIA_UTC_OFFSET_MS = BRASILIA_UTC_OFFSET_HOURS * 60 * 60 * 1000;
 
 const SHORT_MONTHS_PT_BR = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
-const LONG_MONTHS_PT_BR = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
 
 function pad2(value: number) {
   return String(value).padStart(2, "0");
@@ -102,24 +101,4 @@ export function formatBrasiliaShortDate(date: Date, referenceDate = new Date()) 
 export function formatBrasiliaTime(date: Date) {
   const parts = getBrasiliaDateParts(date);
   return `${pad2(parts.hours)}:${pad2(parts.minutes)}`;
-}
-
-export function formatBrasiliaMonthName(date: Date) {
-  const parts = getBrasiliaDateParts(date);
-  return LONG_MONTHS_PT_BR[parts.month - 1];
-}
-
-export function startOfBrasiliaMonth(date: Date) {
-  const parts = getBrasiliaDateParts(date);
-  return dateFromBrasiliaParts(parts.year, parts.month, 1);
-}
-
-export function startOfNextBrasiliaMonth(date: Date) {
-  const parts = getBrasiliaDateParts(date);
-  return dateFromBrasiliaParts(parts.year, parts.month + 1, 1);
-}
-
-export function startOfPreviousBrasiliaMonth(date: Date) {
-  const parts = getBrasiliaDateParts(date);
-  return dateFromBrasiliaParts(parts.year, parts.month - 1, 1);
 }

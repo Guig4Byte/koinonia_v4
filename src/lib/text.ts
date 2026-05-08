@@ -31,3 +31,11 @@ export function avatarColorForName(name: string): { bg: string; text: string } {
   const index = Math.abs(hash) % AVATAR_PALETTE.length;
   return AVATAR_PALETTE[index];
 }
+
+export function normalizeSearchText(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
+}

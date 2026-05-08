@@ -14,6 +14,7 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { cn } from "@/lib/cn";
 import { prisma } from "@/lib/prisma";
 import { initials } from "@/lib/text";
+import { firstParam } from "@/lib/search-params";
 
 type MembersFilter = "todos" | "atencao" | "em-cuidado" | "ativos";
 
@@ -41,10 +42,6 @@ const MEMBERS_FILTERS: Array<{ value: MembersFilter; label: string }> = [
   { value: "ativos", label: "Ativos" },
 ];
 
-function firstParam(value: string | string[] | undefined) {
-  if (Array.isArray(value)) return value[0] ?? "";
-  return value ?? "";
-}
 
 function readMembersFilter(value: string): MembersFilter {
   return MEMBERS_FILTERS.some((filter) => filter.value === value) ? value as MembersFilter : "todos";

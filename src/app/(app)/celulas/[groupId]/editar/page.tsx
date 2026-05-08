@@ -7,11 +7,8 @@ import { canManageGroups } from "@/features/permissions/permissions";
 import { GroupKind } from "@/generated/prisma/client";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
+import { firstParam } from "@/lib/search-params";
 
-function firstParam(value: string | string[] | undefined) {
-  if (Array.isArray(value)) return value[0] ?? "";
-  return value ?? "";
-}
 
 type EditCellPageProps = {
   params: Promise<{ groupId: string }>;

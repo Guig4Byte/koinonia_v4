@@ -3,7 +3,7 @@ import { ArrowLeft, CheckCircle2, AlertCircle, Info, Heart } from "lucide-react"
 import { Children, type ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/cn";
-import { avatarColorForName } from "@/lib/text";
+import { avatarColorForName, initials } from "@/lib/text";
 import type { SignalBadgeTone } from "@/features/signals/display";
 import type { PresenceTrend } from "@/features/events/presence-summary";
 
@@ -282,15 +282,6 @@ function Avatar({ name, compact = false }: { name: string; compact?: boolean }) 
   );
 }
 
-function initials(name: string): string {
-  return name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part.at(0) ?? "")
-    .join("")
-    .toUpperCase();
-}
 
 export function PersonMiniCard(props: {
   href: string;

@@ -18,11 +18,6 @@ async function markPersonInAttention(personId: string) {
   });
 }
 
-export type AttendanceSnapshot = {
-  personId: string;
-  fullName: string;
-  statusesNewestFirst: ReturnType<typeof getRecordedStatusesNewestFirst>;
-};
 
 export async function recalculateAttendanceSignalsForGroup(groupId: string) {
   const group = await prisma.smallGroup.findUnique({

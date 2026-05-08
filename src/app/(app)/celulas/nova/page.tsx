@@ -5,11 +5,8 @@ import { createCellAction } from "@/app/(app)/celulas/actions";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { canManageGroups } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { firstParam } from "@/lib/search-params";
 
-function firstParam(value: string | string[] | undefined) {
-  if (Array.isArray(value)) return value[0] ?? "";
-  return value ?? "";
-}
 
 type NewCellPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;

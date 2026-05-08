@@ -115,7 +115,7 @@ export function CheckInList({
   const [isPending, startTransition] = useTransition();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [visitorName, setVisitorName] = useState("");
-  const [savedVisitors, setSavedVisitors] = useState<VisitorRecord[]>(initialVisitors);
+  const [savedVisitors] = useState<VisitorRecord[]>(initialVisitors);
   const fallbackSavedVisitorCount = Math.max(initialVisitorCount, savedVisitors.length);
   const [visitors, setVisitors] = useState<VisitorDraft[]>([]);
   const [items, setItems] = useState<CheckInItem[]>(

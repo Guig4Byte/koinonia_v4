@@ -4,6 +4,8 @@ import { CalendarDays, Clock3 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { GhostButton } from "@/components/ui/button";
+import { isClosedWithoutPresenceStatus } from "@/features/events/event-display";
+import { CELL_MEETING_TIME_OPTIONS } from "@/features/events/time-options";
 import { cn } from "@/lib/cn";
 import { readJsonResponse, isRecord } from "@/lib/json";
 
@@ -34,8 +36,6 @@ const MONTH_NAMES = [
   "dezembro",
 ];
 const WEEKDAY_LABELS = ["D", "S", "T", "Q", "Q", "S", "S"];
-const TIME_OPTIONS = ["18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00"];
-
 function padDatePart(part: number) {
   return String(part).padStart(2, "0");
 }
@@ -164,7 +164,7 @@ export function EventDetailsActions({
   });
   const [message, setMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const isClosedWithoutPresence = status === "CANCELLED" || status === "NO_MEETING";
+  const isClosedWithoutPresence = isClosedWithoutPresenceStatus(status);
   const canReschedule = !hasPresenceData && !isClosedWithoutPresence;
   const locationActionLabel = hasPresenceData ? "Ajustar local" : "Salvar local";
   const cancelActionLabel = isFutureEvent ? "Cancelar encontro" : "Não houve encontro";
@@ -258,9 +258,9 @@ export function EventDetailsActions({
   }
 
   const selectedDateParts = parseBrasiliaDateValue(localDate);
-  const timeOptions = localTime && !TIME_OPTIONS.includes(localTime)
-    ? [localTime, ...TIME_OPTIONS]
-    : TIME_OPTIONS;
+  const timeOptions = localTime && !CELL_MEETING_TIME_OPTIONS.includes(localTime)
+    ? [localTime, ...CELL_MEETING_TIME_OPTIONS]
+    : CELL_MEETING_TIME_OPTIONS;
 
   function updateLocalDate(value: string) {
     setLocalDate(value);

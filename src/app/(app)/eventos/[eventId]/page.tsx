@@ -1,18 +1,21 @@
 import Link from "next/link";
 import { isAfter } from "date-fns";
 import { notFound } from "next/navigation";
-import { AttendanceStatus, EventStatus } from "../../../../generated/prisma/client";
+import { AttendanceStatus } from "../../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { CheckInList } from "@/components/check-in-list";
 import { EventDetailsActions } from "@/components/event-details-actions";
 import { BackLink, ContextSummary, InfoCard, SectionTitle } from "@/components/cards";
 import { Badge } from "@/components/ui/badge";
+import { eventEffectiveLocation, isClosedWithoutPresenceStatus, closedWithoutPresenceLabel } from "@/features/events/event-display";
+import { presenceTone } from "@/features/events/presence-display";
 import { summarizeEventPresence } from "@/features/events/presence-summary";
 import { canCheckInEvent, canManageEventDetails, canViewEvent } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { firstParam } from "@/lib/search-params";
 
 const attendanceLabels: Record<AttendanceStatus, string> = {
   PRESENT: "Presente",
@@ -48,30 +51,11 @@ function justifiedCountLabel(count: number) {
   return count === 1 ? "1 justificou" : `${count} justificaram`;
 }
 
-function presenceSummaryTone(hasPresenceData: boolean, presenceRate: number): "ok" | "warn" | "risk" | "neutral" {
-  if (!hasPresenceData) return "neutral";
-  if (presenceRate < 50) return "risk";
-  if (presenceRate < 70) return "warn";
-  return "ok";
-}
 
 function sortMembersByName<T extends { fullName: string }>(members: T[]) {
   return [...members].sort((left, right) => left.fullName.localeCompare(right.fullName, "pt-BR"));
 }
 
-function eventLocation(event: { locationName?: string | null; group?: { locationName?: string | null } | null }) {
-  return event.locationName ?? event.group?.locationName ?? null;
-}
-
-function isClosedWithoutPresenceStatus(status: EventStatus) {
-  return status === EventStatus.CANCELLED || status === EventStatus.NO_MEETING;
-}
-
-function closedWithoutPresenceLabel(status: EventStatus) {
-  if (status === EventStatus.CANCELLED) return "Cancelado";
-  if (status === EventStatus.NO_MEETING) return "Não houve encontro";
-  return "Sobre o encontro";
-}
 
 function AttendanceMemberRow({ member }: { member: ReadOnlyMember }) {
   return (
@@ -252,8 +236,8 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
   const user = await getCurrentUser();
   const { eventId } = await params;
   const queryParams = searchParams ? await searchParams : {};
-  const mode = Array.isArray(queryParams.modo) ? queryParams.modo[0] : queryParams.modo;
-  const presenceSaved = Array.isArray(queryParams.presenca) ? queryParams.presenca[0] : queryParams.presenca;
+  const mode = firstParam(queryParams.modo);
+  const presenceSaved = firstParam(queryParams.presenca);
   const savedMessage = presenceSaved === "atualizada"
     ? "Presença atualizada. O resumo do encontro já reflete os ajustes feitos."
     : presenceSaved === "registrada"
@@ -335,7 +319,7 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
           ? "Presença pendente"
           : "Aguardando registro";
   const eventStatusTone = isCancelledEvent ? "neutral" : completed ? "ok" : isFutureEvent ? "info" : "warn";
-  const locationName = eventLocation(event);
+  const locationName = eventEffectiveLocation(event);
 
   return (
     <AppShell
@@ -381,7 +365,7 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
                 label: "Presença",
                 detail: hasPresenceData ? "Ritmo do encontro registrado." : "Ainda sem presença registrada.",
                 value: hasPresenceData ? `${presence.presenceRate}%` : "—",
-                tone: presenceSummaryTone(hasPresenceData, presence.presenceRate),
+                tone: presenceTone(hasPresenceData, presence.presenceRate),
               },
               {
                 label: "Visitantes",

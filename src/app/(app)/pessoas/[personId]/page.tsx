@@ -14,7 +14,9 @@ import { personEffectiveBadgeForViewer } from "@/features/people/status-display"
 import { canEscalateSignalToPastor, canRequestSupervisorSupport, escalationStatusChipForViewer } from "@/features/signals/escalation";
 import { signalBadgeForViewer, signalDescriptionForViewer, signalDetailForViewer } from "@/features/signals/display";
 import { isUrgentOrPastoralCase, sortSignalsForPastoralViewer } from "@/features/signals/sections";
+import { presenceTone } from "@/features/events/presence-display";
 import { summarizePresenceFromAttendances, summarizePresenceTrend } from "@/features/events/presence-summary";
+import { responsibilityNames } from "@/features/groups/responsibility-display";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -45,12 +47,6 @@ function attendanceTone(status?: AttendanceStatus | null): "ok" | "warn" | "risk
   return "info";
 }
 
-function presenceTone(hasPresenceData: boolean, presenceRate: number): "ok" | "warn" | "risk" | "neutral" {
-  if (!hasPresenceData) return "neutral";
-  if (presenceRate < 50) return "risk";
-  if (presenceRate < 70) return "warn";
-  return "ok";
-}
 
 function presenceToneClass(tone: "ok" | "warn" | "risk" | "neutral") {
   if (tone === "risk") return "text-[var(--color-metric-atencoes)]";
@@ -95,17 +91,6 @@ function recentPresenceTrendLabel(
   return "A presença caiu em relação aos encontros anteriores. Vale se aproximar com cuidado.";
 }
 
-function responsibilityNames(
-  responsibilities: Array<{ role: GroupResponsibilityRole; user: { name: string } }>,
-  role: GroupResponsibilityRole,
-  fallback = "",
-) {
-  const names = responsibilities
-    .filter((responsibility) => responsibility.role === role)
-    .map((responsibility) => responsibility.user.name);
-
-  return names.length > 0 ? names.join(" e ") : fallback;
-}
 
 export default async function PersonDetailPage({ params }: { params: Promise<{ personId: string }> }) {
   const user = await getCurrentUser();

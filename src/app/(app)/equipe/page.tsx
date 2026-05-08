@@ -14,7 +14,8 @@ import type { SignalBadgeTone } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 import { cn } from "@/lib/cn";
-import { avatarColorForName, initials } from "@/lib/text";
+import { avatarColorForName, initials, normalizeSearchText } from "@/lib/text";
+import { firstParam } from "@/lib/search-params";
 
 const SECTION_LIMIT = 4;
 const SUPERVISOR_SECTION_LIMIT = 4;
@@ -36,18 +37,7 @@ type TeamPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
-function firstParam(value: string | string[] | undefined) {
-  if (Array.isArray(value)) return value[0] ?? "";
-  return value ?? "";
-}
 
-function normalizeSearch(value: string) {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim()
-    .toLowerCase();
-}
 
 function readTeamFilter(value: string): TeamFilter {
   return TEAM_FILTERS.some((filter) => filter.value === value) ? value as TeamFilter : "todos";
@@ -56,14 +46,14 @@ function readTeamFilter(value: string): TeamFilter {
 function groupMatchesQuery(group: TeamGroup, normalizedQuery: string) {
   if (!normalizedQuery) return true;
 
-  const haystack = normalizeSearch(`${group.name} ${group.leadershipName}`);
+  const haystack = normalizeSearchText(`${group.name} ${group.leadershipName}`);
   return haystack.includes(normalizedQuery);
 }
 
 function supervisorMatchesQuery(supervisor: SupervisorTeam, normalizedQuery: string) {
   if (!normalizedQuery) return true;
 
-  const haystack = normalizeSearch(`${supervisor.name} ${supervisor.email}`);
+  const haystack = normalizeSearchText(`${supervisor.name} ${supervisor.email}`);
   return haystack.includes(normalizedQuery);
 }
 
@@ -214,13 +204,14 @@ function InactiveGroupLink({ group }: { group: { id: string; name: string; meeti
 function SupervisorCard({ supervisor }: { supervisor: SupervisorTeam }) {
   const hasGroups = supervisor.groups.length > 0;
   const badgeTone = supervisorBadgeTone(supervisor);
+  const avatarColors = avatarColorForName(supervisor.name);
 
   return (
     <section className={cn("team-supervisor-card", priorityCardClass(badgeTone !== "neutral" ? badgeTone : undefined))}>
       <div className="flex items-start gap-2.5">
         <div
           className="team-avatar"
-          style={{ backgroundColor: avatarColorForName(supervisor.name).bg, color: avatarColorForName(supervisor.name).text }}
+          style={{ backgroundColor: avatarColors.bg, color: avatarColors.text }}
         >
           {initials(supervisor.name)}
         </div>
@@ -283,7 +274,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
 
   const params = searchParams ? await searchParams : {};
   const query = firstParam(params.q).trim();
-  const normalizedQuery = normalizeSearch(query);
+  const normalizedQuery = normalizeSearchText(query);
   const activeFilter = readTeamFilter(firstParam(params.filtro));
   const savedParam = firstParam(params.salvo);
   const team = await getPastorTeamOverview(user);
@@ -297,7 +288,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
   const filteredSupervisors = filterSupervisors(team.supervisors, normalizedQuery, activeFilter);
   const filteredUnassignedGroups = filterGroups(team.unassignedGroups, normalizedQuery, activeFilter);
   const filteredInactiveGroups = activeFilter === "todos"
-    ? inactiveGroups.filter((group) => !normalizedQuery || normalizeSearch(`${group.name} ${group.locationName ?? ""}`).includes(normalizedQuery))
+    ? inactiveGroups.filter((group) => !normalizedQuery || normalizeSearchText(`${group.name} ${group.locationName ?? ""}`).includes(normalizedQuery))
     : [];
   const supervisorList = renderSupervisorCards(filteredSupervisors);
   const unassignedGroupList = filteredUnassignedGroups.map((group) => (

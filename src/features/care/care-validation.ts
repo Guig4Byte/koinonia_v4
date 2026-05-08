@@ -17,13 +17,12 @@ const noteSchema = z.preprocess(
   z.string().max(500, "A anotação deve ter no máximo 500 caracteres.").optional(),
 ).transform((value) => (value && value.length > 0 ? value : undefined));
 
-export const carePayloadSchema = z.object({
+const carePayloadSchema = z.object({
   kind: careKindSchema,
   note: noteSchema,
   resolveOpenSignals: z.boolean().default(true),
 });
 
-export type CarePayload = z.infer<typeof carePayloadSchema>;
 
 export function parseCarePayload(input: unknown) {
   return carePayloadSchema.safeParse(input);

@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { isAfter } from "date-fns";
-import { EventStatus } from "../../../generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { BackLink, EmptyState, SectionTitle, priorityCardClass } from "@/components/cards";
 import { ProgressiveList } from "@/components/progressive-list";
 import { Badge } from "@/components/ui/badge";
+import { eventEffectiveLocation, isClosedWithoutPresenceStatus, closedWithoutPresenceLabel as closedStatusLabel } from "@/features/events/event-display";
 import { summarizeEventPresence } from "@/features/events/presence-summary";
 import { ensureUpcomingCellMeetingsForUser } from "@/features/events/schedule";
 import { canCheckInEvent, getVisibleEventWhere, type PermissionUser } from "@/features/permissions/permissions";
@@ -13,7 +13,9 @@ import { cn } from "@/lib/cn";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { normalizeSearchText } from "@/lib/text";
 import { addBrasiliaDays, endOfBrasiliaWeek, isTodayInBrasilia, startOfBrasiliaDay, startOfBrasiliaWeek } from "@/lib/brasilia-time";
+import { firstParam } from "@/lib/search-params";
 
 const EVENT_LIST_LIMIT = 4;
 
@@ -44,17 +46,7 @@ async function getEventsForUser(user: PermissionUser, referenceDate: Date) {
 }
 type EventWithRelations = Awaited<ReturnType<typeof getEventsForUser>>[number];
 
-function firstParam(value: string | string[] | undefined) {
-  return Array.isArray(value) ? value[0] : value;
-}
 
-function normalizeEventText(value: string) {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim()
-    .toLowerCase();
-}
 
 function eventMeta(event: EventWithRelations) {
   const dateTime = `${formatShortDate(event.startsAt)}, ${formatTime(event.startsAt)}`;
@@ -62,30 +54,18 @@ function eventMeta(event: EventWithRelations) {
 
   if (!groupName) return `Encontro geral · ${dateTime}`;
 
-  const normalizedTitle = normalizeEventText(event.title);
-  const normalizedGroup = normalizeEventText(groupName);
+  const normalizedTitle = normalizeSearchText(event.title);
+  const normalizedGroup = normalizeSearchText(groupName);
   const titleAlreadyIdentifiesGroup = normalizedTitle === normalizedGroup || normalizedTitle.includes(normalizedGroup);
 
   return titleAlreadyIdentifiesGroup ? dateTime : `${groupName} · ${dateTime}`;
 }
 
-function eventLocation(event: EventWithRelations) {
-  return event.locationName ?? event.group?.locationName ?? null;
-}
 
 function hasRecordedPresence(event: EventWithRelations) {
   return summarizeEventPresence(event).hasPresenceData;
 }
 
-function isClosedWithoutPresence(event: EventWithRelations) {
-  return event.status === EventStatus.CANCELLED || event.status === EventStatus.NO_MEETING;
-}
-
-function closedWithoutPresenceLabel(event: EventWithRelations) {
-  if (event.status === EventStatus.CANCELLED) return "Cancelado";
-  if (event.status === EventStatus.NO_MEETING) return "Não houve encontro";
-  return "Ver encontro";
-}
 
 function isWithinPeriod(date: Date, start: Date, end: Date) {
   const time = date.getTime();
@@ -119,13 +99,13 @@ function periodLabel(period: EventPeriod) {
 function EventCard({ event, user, now }: { event: EventWithRelations; user: PermissionUser; now: Date }) {
   const metrics = summarizeEventPresence(event);
   const recordedPresence = metrics.hasPresenceData;
-  const isCancelledEvent = isClosedWithoutPresence(event);
+  const isCancelledEvent = isClosedWithoutPresenceStatus(event.status);
   const isFutureEvent = isAfter(event.startsAt, now);
   const isPendingEvent = !isCancelledEvent && !recordedPresence && !isFutureEvent;
   const canEditPresence = !isCancelledEvent && canCheckInEvent(user, event);
   const canRegisterPresence = canEditPresence && !recordedPresence;
   const label = isCancelledEvent
-    ? closedWithoutPresenceLabel(event)
+    ? closedStatusLabel(event.status, "Ver encontro")
     : recordedPresence
       ? "Presença registrada"
       : isFutureEvent
@@ -139,7 +119,7 @@ function EventCard({ event, user, now }: { event: EventWithRelations; user: Perm
     : recordedPresence
       ? "Ver resumo"
       : "Ver encontro";
-  const locationName = eventLocation(event);
+  const locationName = eventEffectiveLocation(event);
 
   return (
     <article className={cn(
@@ -255,12 +235,9 @@ function EventsConsultationView({
     .filter((event) => {
       const recordedPresence = hasRecordedPresence(event);
       if (mode === "historico") return recordedPresence;
-      return !isClosedWithoutPresence(event) && !recordedPresence && !isAfter(event.startsAt, now);
+      return !isClosedWithoutPresenceStatus(event.status) && !recordedPresence && !isAfter(event.startsAt, now);
     })
-    .sort((a, b) => {
-      if (mode === "historico") return b.startsAt.getTime() - a.startsAt.getTime();
-      return b.startsAt.getTime() - a.startsAt.getTime();
-    });
+    .sort((a, b) => b.startsAt.getTime() - a.startsAt.getTime());
 
   const title = mode === "historico" ? "Histórico de presença" : "Sem presença registrada";
   const description = mode === "historico"
@@ -304,7 +281,7 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
     .filter((event) => {
       if (isTodayInBrasilia(event.startsAt, now) || !isWithinPeriod(event.startsAt, weekStart, weekEnd)) return false;
 
-      return !isClosedWithoutPresence(event) && isAfter(event.startsAt, now) && !hasRecordedPresence(event);
+      return !isClosedWithoutPresenceStatus(event.status) && isAfter(event.startsAt, now) && !hasRecordedPresence(event);
     })
     .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
 

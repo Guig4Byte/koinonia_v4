@@ -1,5 +1,6 @@
 import { GroupResponsibilityRole, MembershipRole, PersonStatus, SignalSeverity, SignalStatus, UserRole } from "../../generated/prisma/client";
 import { summarizeEventsPresence, summarizePresenceTrend, isPresenceRecordedEvent } from "@/features/events/presence-summary";
+import { responsibilityNames } from "@/features/groups/responsibility-display";
 import { canUsePastorDashboard, getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson } from "@/features/signals/attention";
 import { getPastoralSectionSignalsByPerson, isSupportRequest } from "@/features/signals/sections";
@@ -19,18 +20,6 @@ const activeGroupResponsibilityInclude = {
   orderBy: { createdAt: "asc" as const },
 };
 
-function namesForResponsibilities(
-  responsibilities: Array<{ role: GroupResponsibilityRole; user: { name: string } }>,
-  role: GroupResponsibilityRole,
-  fallback = "não informada",
-) {
-  const names = responsibilities
-    .filter((responsibility) => responsibility.role === role)
-    .map((responsibility) => responsibility.user.name);
-
-  if (names.length === 0) return fallback;
-  return names.join(" e ");
-}
 
 export async function getPastorDashboard(user: PermissionUser) {
   if (!canUsePastorDashboard(user)) {
@@ -110,8 +99,8 @@ export async function getPastorDashboard(user: PermissionUser) {
     return {
       id: group.id,
       name: group.name,
-      leaderName: namesForResponsibilities(group.responsibilities, GroupResponsibilityRole.LEADER, group.leader?.name ?? "Sem liderança"),
-      supervisorName: namesForResponsibilities(group.responsibilities, GroupResponsibilityRole.SUPERVISOR, group.supervisor?.name ?? "Sem supervisão"),
+      leaderName: responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, group.leader?.name ?? "Sem liderança"),
+      supervisorName: responsibilityNames(group.responsibilities, GroupResponsibilityRole.SUPERVISOR, group.supervisor?.name ?? "Sem supervisão"),
       presenceRate: groupPresence.presenceRate,
       hasPresenceData: groupPresence.hasPresenceData,
       recordedEventsCount: recordedEvents.length,
@@ -225,7 +214,7 @@ export async function getPastorTeamOverview(user: PermissionUser) {
     return {
       id: group.id,
       name: group.name,
-      leadershipName: namesForResponsibilities(group.responsibilities, GroupResponsibilityRole.LEADER, group.leader?.name ?? "não informada"),
+      leadershipName: responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, group.leader?.name ?? "não informada"),
       membersCount: group.memberships.length,
       presenceRate: presence.presenceRate,
       hasPresenceData: presence.hasPresenceData,
@@ -347,14 +336,16 @@ async function getGroupScopedDashboard(user: PermissionUser) {
     const groupPresence = summarizeEventsPresence(recentGroupEvents);
     const previousGroupPresence = summarizeEventsPresence(previousGroupEvents);
 
+    const groupAttentionSignals = getPastoralSectionSignalsByPerson(group.signals, user);
+
     return {
       ...group,
       presenceRate: groupPresence.presenceRate,
       hasPresenceData: groupPresence.hasPresenceData,
       presenceTrend: summarizePresenceTrend(groupPresence, previousGroupPresence),
       recordedEventsCount: recordedGroupEvents.length,
-      attentionCount: getPastoralSectionSignalsByPerson(group.signals, user).length,
-      supportRequestsCount: getPastoralSectionSignalsByPerson(group.signals, user).filter((signal) => isSupportRequest(signal, user)).length,
+      attentionCount: groupAttentionSignals.length,
+      supportRequestsCount: groupAttentionSignals.filter((signal) => isSupportRequest(signal, user)).length,
       inCareCount: group.memberships.filter((membership) => membership.person.status === PersonStatus.COOLING_AWAY).length,
     };
   });

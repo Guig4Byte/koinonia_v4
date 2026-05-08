@@ -7,10 +7,13 @@ import { ContextSummary, EmptyState, GroupCard, InfoCard, SectionTitle } from "@
 import { ProgressiveList } from "@/components/progressive-list";
 import { CellsStructureSearch } from "@/components/cells-structure-search";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
+import { responsibilityNames } from "@/features/groups/responsibility-display";
 import { canManageGroups, canUseSupervisorDashboard } from "@/features/permissions/permissions";
 import { groupAttentionLabel, type SignalBadge } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { normalizeSearchText } from "@/lib/text";
 import { GroupResponsibilityRole, SignalSeverity, UserRole } from "@/generated/prisma/client";
+import { firstParam } from "@/lib/search-params";
 
 const SECTION_LIMIT = 4;
 const LOW_PRESENCE_THRESHOLD = 70;
@@ -32,37 +35,15 @@ const CELLS_FILTERS: Array<{ value: CellsFilter; label: string }> = [
   { value: "sem-presenca", label: "Sem presença recente" },
 ];
 
-function firstParam(value: string | string[] | undefined) {
-  if (Array.isArray(value)) return value[0] ?? "";
-  return value ?? "";
-}
 
-function normalizeSearch(value: string) {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim()
-    .toLowerCase();
-}
 
 function readCellsFilter(value: string): CellsFilter {
   return CELLS_FILTERS.some((filter) => filter.value === value) ? value as CellsFilter : "todos";
 }
 
-function responsibilityNames(
-  responsibilities: Array<{ role: GroupResponsibilityRole; user: { name: string } }>,
-  role: GroupResponsibilityRole,
-  fallback = "",
-) {
-  const names = responsibilities
-    .filter((responsibility) => responsibility.role === role)
-    .map((responsibility) => responsibility.user.name);
-
-  return names.length > 0 ? names.join(" e ") : fallback;
-}
 
 function groupSearchText(group: SupervisorGroup) {
-  return normalizeSearch(`${group.name} ${responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, group.leader?.name ?? "")}`);
+  return normalizeSearchText(`${group.name} ${responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, group.leader?.name ?? "")}`);
 }
 
 function urgentCount(group: SupervisorGroup) {
@@ -251,7 +232,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
 
   const params = searchParams ? await searchParams : {};
   const query = firstParam(params.q).trim();
-  const normalizedQuery = normalizeSearch(query);
+  const normalizedQuery = normalizeSearchText(query);
   const activeFilter = readCellsFilter(firstParam(params.filtro));
   const dashboard = await getSupervisorDashboard(user);
   const groups = filterGroups(dashboard.groups, normalizedQuery, activeFilter);
