@@ -4,129 +4,28 @@ import { CalendarDays, Clock3 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { GhostButton } from "@/components/ui/button";
+import {
+  calendarDays,
+  formatBrasiliaDate,
+  MONTH_NAMES_PT_BR,
+  parseBrasiliaDateTime,
+  parseBrasiliaDateValue,
+  shiftCalendarMonth,
+  toBrasiliaDateTimeParts,
+  WEEKDAY_LABELS_PT_BR,
+} from "@/features/events/brasilia-date-time";
+import type { CalendarMonth } from "@/features/events/brasilia-date-time";
 import { isClosedWithoutPresenceStatus } from "@/features/events/event-display";
-import { CELL_MEETING_TIME_OPTIONS } from "@/features/events/time-options";
+import { timeOptionsWithCurrent } from "@/features/events/time-options";
 import { cn } from "@/lib/cn";
 import { readJsonResponse, isRecord } from "@/lib/json";
 
 type EventActionStatus = "SCHEDULED" | "CHECKIN_OPEN" | "COMPLETED" | "CANCELLED" | "NO_MEETING";
 type OpenPicker = "date" | "time" | null;
-type DateParts = { year: number; month: number; day: number };
-type CalendarMonth = { year: number; monthIndex: number };
 
 function responseError(payload: unknown) {
   if (isRecord(payload) && typeof payload.error === "string") return payload.error;
   return "Não foi possível salvar o encontro.";
-}
-
-const BRASILIA_UTC_OFFSET_HOURS = 3;
-const BRASILIA_UTC_OFFSET_MS = BRASILIA_UTC_OFFSET_HOURS * 60 * 60 * 1000;
-const MONTH_NAMES = [
-  "janeiro",
-  "fevereiro",
-  "março",
-  "abril",
-  "maio",
-  "junho",
-  "julho",
-  "agosto",
-  "setembro",
-  "outubro",
-  "novembro",
-  "dezembro",
-];
-const WEEKDAY_LABELS = ["D", "S", "T", "Q", "Q", "S", "S"];
-function padDatePart(part: number) {
-  return String(part).padStart(2, "0");
-}
-
-function formatBrasiliaDate({ year, month, day }: DateParts) {
-  return `${padDatePart(day)}/${padDatePart(month)}/${year}`;
-}
-
-function parseBrasiliaDateValue(dateValue: string): DateParts | null {
-  const rawDate = dateValue.trim();
-  const isoDateMatch = rawDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  const brDateMatch = rawDate.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-
-  if (!isoDateMatch && !brDateMatch) return null;
-
-  const year = Number(isoDateMatch?.[1] ?? brDateMatch?.[3]);
-  const month = Number(isoDateMatch?.[2] ?? brDateMatch?.[2]);
-  const day = Number(isoDateMatch?.[3] ?? brDateMatch?.[1]);
-
-  if (month < 1 || month > 12 || day < 1 || day > 31) return null;
-
-  const parsed = new Date(Date.UTC(year, month - 1, day));
-  if (
-    parsed.getUTCFullYear() !== year ||
-    parsed.getUTCMonth() !== month - 1 ||
-    parsed.getUTCDate() !== day
-  ) {
-    return null;
-  }
-
-  return { year, month, day };
-}
-
-function shiftCalendarMonth(month: CalendarMonth, amount: number): CalendarMonth {
-  const next = new Date(Date.UTC(month.year, month.monthIndex + amount, 1));
-  return { year: next.getUTCFullYear(), monthIndex: next.getUTCMonth() };
-}
-
-function calendarDays(month: CalendarMonth) {
-  const firstWeekday = new Date(Date.UTC(month.year, month.monthIndex, 1)).getUTCDay();
-  const daysInMonth = new Date(Date.UTC(month.year, month.monthIndex + 1, 0)).getUTCDate();
-
-  return [
-    ...Array.from({ length: firstWeekday }, () => null),
-    ...Array.from({ length: daysInMonth }, (_, index) => index + 1),
-  ];
-}
-
-function toBrasiliaDateTimeParts(value: string) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return { date: "", time: "" };
-
-  const brasiliaTime = new Date(date.getTime() - BRASILIA_UTC_OFFSET_MS);
-
-  return {
-    date: formatBrasiliaDate({
-      year: brasiliaTime.getUTCFullYear(),
-      month: brasiliaTime.getUTCMonth() + 1,
-      day: brasiliaTime.getUTCDate(),
-    }),
-    time: [padDatePart(brasiliaTime.getUTCHours()), padDatePart(brasiliaTime.getUTCMinutes())].join(":"),
-  };
-}
-
-function parseBrasiliaDateTime(dateValue: string, timeValue: string) {
-  const dateParts = parseBrasiliaDateValue(dateValue);
-  const timeMatch = timeValue.trim().match(/^(\d{2}):(\d{2})$/);
-
-  if (!dateParts || !timeMatch) return null;
-
-  const { year, month, day } = dateParts;
-  const hour = Number(timeMatch[1]);
-  const minute = Number(timeMatch[2]);
-
-  if (hour > 23 || minute > 59) return null;
-
-  const utcTime = Date.UTC(year, month - 1, day, hour + BRASILIA_UTC_OFFSET_HOURS, minute);
-  const parsed = new Date(utcTime);
-  const brasiliaCheck = new Date(parsed.getTime() - BRASILIA_UTC_OFFSET_MS);
-
-  if (
-    brasiliaCheck.getUTCFullYear() !== year ||
-    brasiliaCheck.getUTCMonth() !== month - 1 ||
-    brasiliaCheck.getUTCDate() !== day ||
-    brasiliaCheck.getUTCHours() !== hour ||
-    brasiliaCheck.getUTCMinutes() !== minute
-  ) {
-    return null;
-  }
-
-  return parsed.toISOString();
 }
 
 export function EventDetailsActions({
@@ -258,9 +157,7 @@ export function EventDetailsActions({
   }
 
   const selectedDateParts = parseBrasiliaDateValue(localDate);
-  const timeOptions = localTime && !CELL_MEETING_TIME_OPTIONS.includes(localTime)
-    ? [localTime, ...CELL_MEETING_TIME_OPTIONS]
-    : CELL_MEETING_TIME_OPTIONS;
+  const timeOptions = timeOptionsWithCurrent(localTime);
 
   function updateLocalDate(value: string) {
     setLocalDate(value);
@@ -347,13 +244,13 @@ export function EventDetailsActions({
                       <button type="button" onClick={() => setCalendarMonth((current) => shiftCalendarMonth(current, -1))} aria-label="Mês anterior">
                         ‹
                       </button>
-                      <span>{MONTH_NAMES[calendarMonth.monthIndex]} {calendarMonth.year}</span>
+                      <span>{MONTH_NAMES_PT_BR[calendarMonth.monthIndex]} {calendarMonth.year}</span>
                       <button type="button" onClick={() => setCalendarMonth((current) => shiftCalendarMonth(current, 1))} aria-label="Próximo mês">
                         ›
                       </button>
                     </div>
                     <div className="event-calendar-weekdays">
-                      {WEEKDAY_LABELS.map((label, index) => (
+                      {WEEKDAY_LABELS_PT_BR.map((label, index) => (
                         <span key={`${label}-${index}`}>{label}</span>
                       ))}
                     </div>
