@@ -6,28 +6,15 @@ import { SectionTitle } from "@/components/cards";
 import { MemberPriorityList } from "@/components/member-priority-list";
 import { SearchBox } from "@/components/search-box";
 import { getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "@/features/permissions/permissions";
-import { memberCardTone, memberMatchesFilter, readMembersFilter } from "@/features/people/member-filters";
-import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
-import { signalDetailForViewer, type SignalBadgeTone } from "@/features/signals/display";
-import { isSupportRequest, isUrgentOrPastoralCase, splitPastoralSections } from "@/features/signals/sections";
+import { readMembersFilter } from "@/features/people/member-filters";
+import { buildPeoplePageView } from "@/features/people/people-page-view";
+import { splitPastoralSections } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/search-params";
 
 type PeoplePageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
-};
-
-type MemberDisplay = {
-  id: string;
-  name: string;
-  context: string;
-  subtitle?: string;
-  badgeLabel: string;
-  badgeTone: SignalBadgeTone;
-  cardTone?: SignalBadgeTone | "muted";
-  status: PersonStatus;
-  priorityRank: number;
 };
 
 export default async function PeoplePage({ searchParams }: PeoplePageProps) {
@@ -102,76 +89,29 @@ export default async function PeoplePage({ searchParams }: PeoplePageProps) {
     ...pastoralSections.supportRequests,
     ...pastoralSections.localAttention,
   ];
-  const navIndicator = attentionPeople.length > 0
-    ? "attention"
-    : pastoralSections.inCarePeople.length > 0
-      ? "care"
-      : undefined;
-  const attentionSignalByPersonId = new Map(attentionPeople.map((signal) => [signal.personId, signal]));
-  const inCarePersonIds = new Set(pastoralSections.inCarePeople.map((person) => person.id));
-
-  const members: MemberDisplay[] = visibleMembers
-    .map((person) => {
-      const attentionSignal = attentionSignalByPersonId.get(person.id);
-      const badge = personEffectiveBadgeForViewer(person, attentionSignal, user);
-      const groupName = person.memberships[0]?.group.name ?? "Sua célula";
-      const subtitle = attentionSignal
-        ? signalDetailForViewer(attentionSignal, user)
-        : inCarePersonIds.has(person.id)
-          ? "Já recebeu cuidado e segue no radar."
-          : undefined;
-      const priorityRank = (() => {
-        if (attentionSignal && isUrgentOrPastoralCase(attentionSignal)) return 1;
-        if (attentionSignal && isSupportRequest(attentionSignal, user)) return 2;
-        if (attentionSignal) return 3;
-        if (inCarePersonIds.has(person.id) || person.status === PersonStatus.COOLING_AWAY) return 4;
-        return 5;
-      })();
-
-      return {
-        id: person.id,
-        name: person.fullName,
-        context: groupName,
-        subtitle,
-        badgeLabel: badge.label,
-        badgeTone: badge.tone,
-        cardTone: memberCardTone(badge.tone),
-        status: person.status,
-        priorityRank,
-      };
-    })
-    .sort((left, right) => {
-      const priorityDifference = left.priorityRank - right.priorityRank;
-      if (priorityDifference !== 0) return priorityDifference;
-      return left.name.localeCompare(right.name, "pt-BR");
-    });
-
-  const visibleMembersForFilter = members.filter((member) => memberMatchesFilter(member, activeMembersFilter, {
-    attentionMaxPriorityRank: 3,
-    inCarePriorityRank: 4,
-  }));
-  const priorityMembers = members.filter((member) => member.priorityRank <= 4);
-  const activeMembers = members.filter((member) => member.priorityRank >= 5);
-  const regularMembers = activeMembersFilter === "todos" ? activeMembers : visibleMembersForFilter;
-  const membersSectionDetail = activeMembersFilter === "todos"
-    ? `${members.length} ${members.length === 1 ? "membro" : "membros"}${priorityMembers.length > 0 ? ` · ${priorityMembers.length} no radar` : ""}`
-    : `${visibleMembersForFilter.length} ${visibleMembersForFilter.length === 1 ? "pessoa neste recorte" : "pessoas neste recorte"}`;
+  const peopleView = buildPeoplePageView({
+    people: visibleMembers,
+    attentionSignals: attentionPeople,
+    inCarePeople: pastoralSections.inCarePeople,
+    activeFilter: activeMembersFilter,
+    viewer: user,
+  });
 
   return (
     <AppShell
       userName={user.name}
       role={user.role}
-      nav={appNavForRole(user, { active: "secondary", indicator: navIndicator })}
+      nav={appNavForRole(user, { active: "secondary", indicator: peopleView.navIndicator })}
     >
       <SearchBox placeholder="Buscar membro..." />
 
       <section id="membros" className="scroll-mt-6">
-        <SectionTitle detail={membersSectionDetail}>Membros da célula</SectionTitle>
+        <SectionTitle detail={peopleView.membersSectionDetail}>Membros da célula</SectionTitle>
         <MemberPriorityList
           basePath="/pessoas"
           activeFilter={activeMembersFilter}
-          priorityMembers={priorityMembers}
-          regularMembers={regularMembers}
+          priorityMembers={peopleView.priorityMembers}
+          regularMembers={peopleView.regularMembers}
           keyForMember={(member) => member.id}
           hrefForMember={(member) => `/pessoas/${member.id}`}
           priorityContextForMember={(member) => member.subtitle ?? member.context}
