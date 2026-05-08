@@ -1,4 +1,6 @@
 import { PersonStatus, SignalSeverity, UserRole } from "../../generated/prisma/client";
+import { isAssignedToPastoralRole, isAssignedToSupervisor } from "./escalation";
+import { compareSignalsBySeverityAndRecency } from "./ranking";
 
 export type PastoralSectionKey = "urgent" | "support" | "attention" | "care";
 
@@ -47,18 +49,8 @@ const sectionRank: Record<Exclude<PastoralSectionKey, "care">, number> = {
   attention: 3,
 };
 
-const severityRank: Record<string, number> = {
-  [SignalSeverity.URGENT]: 3,
-  [SignalSeverity.ATTENTION]: 2,
-  [SignalSeverity.INFO]: 1,
-};
-
 export function isUrgentOrPastoralCase(signal: SectionSignalLike): boolean {
-  return (
-    signal.severity === SignalSeverity.URGENT ||
-    signal.assignedTo?.role === UserRole.PASTOR ||
-    signal.assignedTo?.role === UserRole.ADMIN
-  );
+  return signal.severity === SignalSeverity.URGENT || isAssignedToPastoralRole(signal);
 }
 
 export function isSupportRequest(signal: SectionSignalLike, viewer: SectionViewerLike): boolean {
@@ -68,7 +60,7 @@ export function isSupportRequest(signal: SectionSignalLike, viewer: SectionViewe
     return signal.assignedToId === viewer.id;
   }
 
-  return signal.assignedTo?.role === UserRole.SUPERVISOR;
+  return isAssignedToSupervisor(signal);
 }
 
 export function isInCarePerson(person: SectionPersonLike): boolean {
@@ -82,12 +74,7 @@ function signalSectionKey(signal: SectionSignalLike, viewer: SectionViewerLike):
 }
 
 function compareSignalsWithinSection(left: SectionSignalLike, right: SectionSignalLike): number {
-  const severityDifference = (severityRank[right.severity] ?? 0) - (severityRank[left.severity] ?? 0);
-  if (severityDifference !== 0) return severityDifference;
-
-  const leftTime = left.detectedAt?.getTime() ?? 0;
-  const rightTime = right.detectedAt?.getTime() ?? 0;
-  return rightTime - leftTime;
+  return compareSignalsBySeverityAndRecency(left, right);
 }
 
 function compareSignalsForPastoralSection(

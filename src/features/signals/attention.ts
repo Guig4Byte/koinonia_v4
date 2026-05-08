@@ -1,5 +1,6 @@
 import { SignalSeverity } from "../../generated/prisma/client";
 import { isPastoralEscalation, type SignalAssigneeLike } from "./escalation";
+import { compareSignalsBySeverityAndRecency } from "./ranking";
 
 export type AttentionSignalLike = {
   personId: string;
@@ -9,17 +10,8 @@ export type AttentionSignalLike = {
   assignedTo?: SignalAssigneeLike | null;
 };
 
-const severityRank: Record<SignalSeverity, number> = {
-  URGENT: 3,
-  ATTENTION: 2,
-  INFO: 1,
-};
-
 export function compareAttentionSignals(left: AttentionSignalLike, right: AttentionSignalLike) {
-  const severityDifference = severityRank[right.severity] - severityRank[left.severity];
-  if (severityDifference !== 0) return severityDifference;
-
-  return right.detectedAt.getTime() - left.detectedAt.getTime();
+  return compareSignalsBySeverityAndRecency(left, right);
 }
 
 export function isPastoralSignal(signal: AttentionSignalLike) {
