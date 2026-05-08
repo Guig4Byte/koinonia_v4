@@ -7,6 +7,7 @@ import { EmptyState, PersonMiniCard, SectionTitle } from "@/components/cards";
 import { ProgressiveList } from "@/components/progressive-list";
 import { SearchBox } from "@/components/search-box";
 import { getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "@/features/permissions/permissions";
+import { memberCardTone, memberMatchesFilter, membersFilterHref, MEMBERS_FILTERS, readMembersFilter } from "@/features/people/member-filters";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { signalDetailForViewer, type SignalBadgeTone } from "@/features/signals/display";
 import { isSupportRequest, isUrgentOrPastoralCase, splitPastoralSections } from "@/features/signals/sections";
@@ -15,8 +16,6 @@ import { cn } from "@/lib/cn";
 import { prisma } from "@/lib/prisma";
 import { initials } from "@/lib/text";
 import { firstParam } from "@/lib/search-params";
-
-type MembersFilter = "todos" | "atencao" | "em-cuidado" | "ativos";
 
 type PeoplePageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -34,35 +33,6 @@ type MemberDisplay = {
   status: PersonStatus;
   priorityRank: number;
 };
-
-const MEMBERS_FILTERS: Array<{ value: MembersFilter; label: string }> = [
-  { value: "todos", label: "Todos" },
-  { value: "atencao", label: "Atenção" },
-  { value: "em-cuidado", label: "Em cuidado" },
-  { value: "ativos", label: "Ativos" },
-];
-
-
-function readMembersFilter(value: string): MembersFilter {
-  return MEMBERS_FILTERS.some((filter) => filter.value === value) ? value as MembersFilter : "todos";
-}
-
-function membersFilterHref(filter: MembersFilter) {
-  if (filter === "todos") return "/pessoas#membros";
-  return `/pessoas?membros=${filter}#membros`;
-}
-
-function memberCardTone(badgeTone: SignalBadgeTone): MemberDisplay["cardTone"] {
-  if (badgeTone === "risk" || badgeTone === "support" || badgeTone === "warn" || badgeTone === "care") return badgeTone;
-  return undefined;
-}
-
-function memberMatchesFilter(member: MemberDisplay, filter: MembersFilter) {
-  if (filter === "atencao") return member.priorityRank <= 3;
-  if (filter === "em-cuidado") return member.status === PersonStatus.COOLING_AWAY && member.priorityRank === 4;
-  if (filter === "ativos") return member.status === PersonStatus.ACTIVE && member.priorityRank >= 5;
-  return true;
-}
 
 export default async function PeoplePage({ searchParams }: PeoplePageProps) {
   const user = await getCurrentUser();
@@ -181,7 +151,10 @@ export default async function PeoplePage({ searchParams }: PeoplePageProps) {
       return left.name.localeCompare(right.name, "pt-BR");
     });
 
-  const visibleMembersForFilter = members.filter((member) => memberMatchesFilter(member, activeMembersFilter));
+  const visibleMembersForFilter = members.filter((member) => memberMatchesFilter(member, activeMembersFilter, {
+    attentionMaxPriorityRank: 3,
+    inCarePriorityRank: 4,
+  }));
   const priorityMembers = members.filter((member) => member.priorityRank <= 4);
   const activeMembers = members.filter((member) => member.priorityRank >= 5);
   const regularMembers = activeMembersFilter === "todos" ? activeMembers : visibleMembersForFilter;
@@ -206,7 +179,7 @@ export default async function PeoplePage({ searchParams }: PeoplePageProps) {
             return (
               <Link
                 key={option.value}
-                href={membersFilterHref(option.value)}
+                href={membersFilterHref("/pessoas", option.value)}
                 aria-current={active ? "page" : undefined}
                 className={cn("team-filter-chip", active && "team-filter-chip-active")}
               >

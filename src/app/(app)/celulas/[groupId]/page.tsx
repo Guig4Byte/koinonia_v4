@@ -12,6 +12,7 @@ import { presenceTone } from "@/features/events/presence-display";
 import { isPresenceRecordedEvent, summarizeEventPresence, summarizeEventsPresence, summarizePresenceTrend } from "@/features/events/presence-summary";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
 import { responsibilityNames } from "@/features/groups/responsibility-display";
+import { memberCardTone, memberMatchesFilter, membersFilterHref, MEMBERS_FILTERS, readMembersFilter } from "@/features/people/member-filters";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { canManageGroups, canViewGroup, isGroupLeader } from "@/features/permissions/permissions";
 import { escalationStatusDetailForViewer } from "@/features/signals/escalation";
@@ -35,8 +36,6 @@ const dayLabels: Record<number, string> = {
   6: "Sábado",
 };
 
-type MembersFilter = "todos" | "atencao" | "em-cuidado" | "ativos";
-
 type GroupDetailPageProps = {
   params: Promise<{ groupId: string }>;
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -55,27 +54,11 @@ type MemberDisplay = {
   status: PersonStatus;
 };
 
-const MEMBERS_FILTERS: Array<{ value: MembersFilter; label: string }> = [
-  { value: "todos", label: "Todos" },
-  { value: "atencao", label: "Atenção" },
-  { value: "em-cuidado", label: "Em cuidado" },
-  { value: "ativos", label: "Ativos" },
-];
-
 function groupMeetingText(day?: number | null, time?: string | null) {
   if (day === null || day === undefined) return time ? `Horário: ${time}` : "Encontro sem horário fixo informado.";
   return `${dayLabels[day] ?? "Dia informado"}${time ? ` · ${time}` : ""}`;
 }
 
-
-function readMembersFilter(value: string): MembersFilter {
-  return MEMBERS_FILTERS.some((filter) => filter.value === value) ? value as MembersFilter : "todos";
-}
-
-function membersFilterHref(groupId: string, filter: MembersFilter) {
-  if (filter === "todos") return `/celulas/${groupId}#membros`;
-  return `/celulas/${groupId}?membros=${filter}#membros`;
-}
 
 
 function encounterToneVars(tone: BadgeTone): CSSProperties {
@@ -104,18 +87,6 @@ function encounterToneVars(tone: BadgeTone): CSSProperties {
     "--encounter-tone": "var(--color-text-secondary)",
     "--encounter-tone-soft": "var(--surface-alt)",
   } as CSSProperties;
-}
-
-function memberCardTone(badgeTone: BadgeTone): MemberDisplay["cardTone"] {
-  if (badgeTone === "risk" || badgeTone === "support" || badgeTone === "warn" || badgeTone === "care") return badgeTone;
-  return undefined;
-}
-
-function memberMatchesFilter(member: MemberDisplay, filter: MembersFilter) {
-  if (filter === "atencao") return member.priorityRank <= 4;
-  if (filter === "em-cuidado") return member.status === PersonStatus.COOLING_AWAY;
-  if (filter === "ativos") return member.status === PersonStatus.ACTIVE && member.priorityRank >= 5;
-  return true;
 }
 
 function groupPastoralPulse({
@@ -266,7 +237,9 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
       if (priorityDifference !== 0) return priorityDifference;
       return left.name.localeCompare(right.name, "pt-BR");
     });
-  const visibleMembers = members.filter((member) => memberMatchesFilter(member, activeMembersFilter));
+  const visibleMembers = members.filter((member) => memberMatchesFilter(member, activeMembersFilter, {
+    attentionMaxPriorityRank: 4,
+  }));
   const priorityMembers = members.filter((member) => member.priorityRank <= 4);
   const activeMembers = members.filter((member) => member.priorityRank >= 5);
   const regularMembers = activeMembersFilter === "todos" ? activeMembers : visibleMembers;
@@ -388,7 +361,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
               return (
                 <Link
                   key={option.value}
-                  href={membersFilterHref(group.id, option.value)}
+                  href={membersFilterHref(`/celulas/${group.id}`, option.value)}
                   aria-current={active ? "page" : undefined}
                   className={cn("team-filter-chip", active && "team-filter-chip-active")}
                 >
