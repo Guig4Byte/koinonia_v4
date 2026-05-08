@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { z } from "zod";
 import { EventStatus } from "../../../../generated/prisma/client";
 import { canManageEventDetails } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { apiError, apiOk } from "@/lib/api-response";
 import { readJsonBody } from "@/lib/json";
 import { prisma } from "@/lib/prisma";
 
@@ -25,7 +26,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ e
   const parsedBody = payloadSchema.safeParse(json);
 
   if (!parsedBody.success) {
-    return NextResponse.json({ error: "Dados do encontro inválidos" }, { status: 400 });
+    return apiError("Dados do encontro inválidos", 400);
   }
 
   const body = parsedBody.data;
@@ -39,40 +40,40 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ e
   });
 
   if (!event || event.churchId !== user.churchId) {
-    return NextResponse.json({ error: "Encontro não encontrado" }, { status: 404 });
+    return apiError("Encontro não encontrado", 404);
   }
 
   if (!event.groupId || !canManageEventDetails(user, event)) {
-    return NextResponse.json({ error: "Você não pode alterar este encontro" }, { status: 403 });
+    return apiError("Você não pode alterar este encontro", 403);
   }
 
   let nextStartsAt = event.startsAt;
 
   if (body.startsAt !== undefined) {
     if (event._count.attendances > 0) {
-      return NextResponse.json({ error: "Este encontro já tem presença registrada e não pode ser remarcado" }, { status: 400 });
+      return apiError("Este encontro já tem presença registrada e não pode ser remarcado", 400);
     }
 
     nextStartsAt = new Date(body.startsAt);
     if (Number.isNaN(nextStartsAt.getTime())) {
-      return NextResponse.json({ error: "Data e horário do encontro inválidos" }, { status: 400 });
+      return apiError("Data e horário do encontro inválidos", 400);
     }
   }
 
   const closesMeeting = body.status === EventStatus.CANCELLED || body.status === EventStatus.NO_MEETING;
 
   if (closesMeeting && event._count.attendances > 0) {
-    return NextResponse.json({ error: "Este encontro já tem presença registrada e não pode ser cancelado" }, { status: 400 });
+    return apiError("Este encontro já tem presença registrada e não pode ser cancelado", 400);
   }
 
   const now = new Date();
 
   if (body.status === EventStatus.CANCELLED && nextStartsAt <= now) {
-    return NextResponse.json({ error: "Encontro já iniciado deve ser marcado como não realizado" }, { status: 400 });
+    return apiError("Encontro já iniciado deve ser marcado como não realizado", 400);
   }
 
   if (body.status === EventStatus.NO_MEETING && nextStartsAt > now) {
-    return NextResponse.json({ error: "Encontro futuro deve ser cancelado" }, { status: 400 });
+    return apiError("Encontro futuro deve ser cancelado", 400);
   }
 
   const data: { locationName?: string | null; startsAt?: Date; status?: EventStatus; generatedFromSchedule?: boolean; scheduleStartsAt?: Date } = {};
@@ -93,7 +94,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ e
     });
 
     if (duplicatedEvent) {
-      return NextResponse.json({ error: "Já existe um encontro desta célula neste dia e horário" }, { status: 409 });
+      return apiError("Já existe um encontro desta célula neste dia e horário", 409);
     }
 
     data.startsAt = nextStartsAt;
@@ -112,5 +113,5 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ e
     select: { id: true, locationName: true, startsAt: true, status: true, scheduleStartsAt: true },
   });
 
-  return NextResponse.json({ ok: true, event: updated });
+  return apiOk({ event: updated });
 }

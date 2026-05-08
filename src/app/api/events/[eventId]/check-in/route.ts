@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { z } from "zod";
 import { validateMemberCheckInPayload } from "@/features/check-in/check-in-validation";
 import { validateNewVisitors } from "@/features/check-in/visitor-validation";
@@ -6,6 +6,7 @@ import { AttendanceStatus, SignalStatus } from "../../../../../generated/prisma/
 import { canCheckInEvent } from "@/features/permissions/permissions";
 import { recalculateAttendanceSignalsForGroup } from "@/features/signals/rules";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { apiError, apiOk } from "@/lib/api-response";
 import { readJsonBody } from "@/lib/json";
 import { prisma } from "@/lib/prisma";
 
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ev
   const parsedBody = payloadSchema.safeParse(json);
 
   if (!parsedBody.success) {
-    return NextResponse.json({ error: "Dados de presença inválidos" }, { status: 400 });
+    return apiError("Dados de presença inválidos", 400);
   }
 
   const body = parsedBody.data;
@@ -48,15 +49,15 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ev
   });
 
   if (!event || event.churchId !== user.churchId) {
-    return NextResponse.json({ error: "Evento não encontrado" }, { status: 404 });
+    return apiError("Evento não encontrado", 404);
   }
 
   if (!canCheckInEvent(user, event)) {
-    return NextResponse.json({ error: "Somente o líder da célula pode registrar este check-in" }, { status: 403 });
+    return apiError("Somente o líder da célula pode registrar este check-in", 403);
   }
 
   if (!event.groupId) {
-    return NextResponse.json({ error: "Este evento não está vinculado a uma célula" }, { status: 400 });
+    return apiError("Este evento não está vinculado a uma célula", 400);
   }
 
   const groupId = event.groupId;
@@ -74,7 +75,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ev
   );
 
   if (!visitorValidation.ok) {
-    return NextResponse.json({ error: visitorValidation.error }, { status: 400 });
+    return apiError(visitorValidation.error, 400);
   }
 
   const memberships = await prisma.groupMembership.findMany({
@@ -88,7 +89,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ev
   );
 
   if (!validation.ok) {
-    return NextResponse.json({ error: validation.error }, { status: 400 });
+    return apiError(validation.error, 400);
   }
 
   await prisma.$transaction(async (tx) => {
@@ -139,5 +140,5 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ev
     select: { personId: true },
   });
 
-  return NextResponse.json({ ok: true, openSignalPeopleCount: openSignalPeople.length });
+  return apiOk({ openSignalPeopleCount: openSignalPeople.length });
 }

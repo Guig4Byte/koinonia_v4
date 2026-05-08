@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
 import { PersonStatus } from "@/generated/prisma/client";
 import { canRegisterCare, getOpenSignalInActiveGroupWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { apiError, apiOk } from "@/lib/api-response";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(_request: Request, context: { params: Promise<{ personId: string }> }) {
@@ -14,11 +14,11 @@ export async function POST(_request: Request, context: { params: Promise<{ perso
   });
 
   if (!person || person.churchId !== user.churchId) {
-    return NextResponse.json({ error: "Pessoa não encontrada" }, { status: 404 });
+    return apiError("Pessoa não encontrada", 404);
   }
 
   if (!canRegisterCare(user, person)) {
-    return NextResponse.json({ error: "Sem permissão para atualizar esta pessoa" }, { status: 403 });
+    return apiError("Sem permissão para atualizar esta pessoa", 403);
   }
 
   const visibleOpenSignalWhere = getVisibleOpenSignalWhere(user);
@@ -36,7 +36,7 @@ export async function POST(_request: Request, context: { params: Promise<{ perso
       ? "Ainda há motivo de atenção aberto para esta pessoa. Registre o cuidado antes de marcar como ativo."
       : "Ainda há motivo de atenção aberto fora do seu recorte atual. Peça apoio antes de marcar como ativo.";
 
-    return NextResponse.json({ error }, { status: 409 });
+    return apiError(error, 409);
   }
 
   await prisma.person.updateMany({
@@ -44,5 +44,5 @@ export async function POST(_request: Request, context: { params: Promise<{ perso
     data: { status: PersonStatus.ACTIVE },
   });
 
-  return NextResponse.json({ ok: true, status: PersonStatus.ACTIVE });
+  return apiOk({ status: PersonStatus.ACTIVE });
 }

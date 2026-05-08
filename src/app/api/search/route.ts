@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "@/features/permissions/permissions";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { getPastoralSectionSignalsByPerson } from "@/features/signals/sections";
 import type { Prisma } from "@/generated/prisma/client";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { apiJson } from "@/lib/api-response";
 import { prisma } from "@/lib/prisma";
 import { normalizeSearchText } from "@/lib/text";
 
@@ -15,7 +16,7 @@ export async function GET(request: NextRequest) {
   const q = request.nextUrl.searchParams.get("q")?.trim() ?? "";
 
   if (q.length < 2) {
-    return NextResponse.json({ people: [] });
+    return apiJson({ people: [] });
   }
 
   const normalizedQuery = normalizeSearchText(q);
@@ -57,7 +58,7 @@ export async function GET(request: NextRequest) {
     ].slice(0, SEARCH_RESULT_LIMIT);
   }
 
-  return NextResponse.json({
+  return apiJson({
     people: matchingPeople.map((person) => {
       const primarySignal = getPastoralSectionSignalsByPerson(person.signals, user)[0];
       const badge = personEffectiveBadgeForViewer(person, primarySignal, user);

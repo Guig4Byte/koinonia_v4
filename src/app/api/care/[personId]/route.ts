@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { PersonStatus, SignalStatus } from "@/generated/prisma/client";
 import { parseCarePayload, resolvedAttentionMessage } from "@/features/care/care-validation";
 import {
@@ -8,6 +8,7 @@ import {
   hasWholeChurchScope,
 } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { apiError, apiOk } from "@/lib/api-response";
 import { readJsonBody } from "@/lib/json";
 import { prisma } from "@/lib/prisma";
 
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pe
   const parsedBody = parseCarePayload(await readJsonBody(request));
 
   if (!parsedBody.success) {
-    return NextResponse.json({ error: "Dados de cuidado inválidos" }, { status: 400 });
+    return apiError("Dados de cuidado inválidos", 400);
   }
 
   const body = parsedBody.data;
@@ -28,18 +29,18 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pe
   });
 
   if (!person || person.churchId !== user.churchId) {
-    return NextResponse.json({ error: "Pessoa não encontrada" }, { status: 404 });
+    return apiError("Pessoa não encontrada", 404);
   }
 
   if (!canRegisterCare(user, person)) {
-    return NextResponse.json({ error: "Sem permissão para registrar cuidado" }, { status: 403 });
+    return apiError("Sem permissão para registrar cuidado", 403);
   }
 
   const visibleGroupIds = getVisibleGroupIdsForPerson(user, person);
   const visibleGroupId = visibleGroupIds[0];
 
   if (!hasWholeChurchScope(user) && visibleGroupIds.length === 0) {
-    return NextResponse.json({ error: "Sem célula visível para registrar este cuidado" }, { status: 403 });
+    return apiError("Sem célula visível para registrar este cuidado", 403);
   }
 
   const result = await prisma.$transaction(async (tx) => {
@@ -90,8 +91,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pe
     return { careTouchId: careTouch.id, resolvedSignalsCount, personStatusChangedToCare };
   });
 
-  return NextResponse.json({
-    ok: true,
+  return apiOk({
     careTouchId: result.careTouchId,
     resolvedSignalsCount: result.resolvedSignalsCount,
     personStatusChangedToCare: result.personStatusChangedToCare,

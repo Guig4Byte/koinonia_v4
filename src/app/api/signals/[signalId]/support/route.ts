@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { CareKind, GroupResponsibilityRole, SignalStatus, UserRole } from "@/generated/prisma/client";
 import { canViewGroup } from "@/features/permissions/permissions";
 import { canEscalateSignalToPastor, canRequestSupervisorSupport } from "@/features/signals/escalation";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { apiError, apiOk } from "@/lib/api-response";
 import { isRecord, readJsonBody } from "@/lib/json";
 import { prisma } from "@/lib/prisma";
 
@@ -51,7 +52,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
   const payload = parseSupportPayload(await readJsonBody(request));
 
   if (!payload) {
-    return NextResponse.json({ error: "Pedido de apoio inválido" }, { status: 400 });
+    return apiError("Pedido de apoio inválido", 400);
   }
 
   const { action, note } = payload;
@@ -73,16 +74,16 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
   });
 
   if (!signal || signal.churchId !== user.churchId || signal.status !== SignalStatus.OPEN) {
-    return NextResponse.json({ error: "Sinal não encontrado" }, { status: 404 });
+    return apiError("Sinal não encontrado", 404);
   }
 
   if (!canViewGroup(user, signal.group)) {
-    return NextResponse.json({ error: "Sem permissão para este cuidado" }, { status: 403 });
+    return apiError("Sem permissão para este cuidado", 403);
   }
 
   if (action === "REQUEST_SUPERVISOR") {
     if (!canRequestSupervisorSupport(user, signal)) {
-      return NextResponse.json({ error: "Apenas o líder da célula pode pedir apoio à supervisão" }, { status: 403 });
+      return apiError("Apenas o líder da célula pode pedir apoio à supervisão", 403);
     }
 
     const supervisorUserId =
@@ -90,7 +91,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
       ?? signal.group?.supervisorUserId;
 
     if (!supervisorUserId) {
-      return NextResponse.json({ error: "Esta célula ainda não tem supervisor definido" }, { status: 400 });
+      return apiError("Esta célula ainda não tem supervisor definido", 400);
     }
 
     const updated = await prisma.$transaction(async (tx) => {
@@ -114,8 +115,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
       return updatedSignal;
     });
 
-    return NextResponse.json({
-      ok: true,
+    return apiOk({
       assignedToId: updated.assignedToId,
       assignedToName: updated.assignedTo?.name,
       message: "Apoio solicitado à supervisão.",
@@ -123,13 +123,13 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
   }
 
   if (!canEscalateSignalToPastor(user, signal)) {
-    return NextResponse.json({ error: "Apenas liderança ou supervisão da célula pode encaminhar este caso ao pastor" }, { status: 403 });
+    return apiError("Apenas liderança ou supervisão da célula pode encaminhar este caso ao pastor", 403);
   }
 
   const pastoralAssignee = await findPastoralAssignee(user.churchId);
 
   if (!pastoralAssignee) {
-    return NextResponse.json({ error: "Nenhum pastor/admin disponível para encaminhamento pastoral" }, { status: 400 });
+    return apiError("Nenhum pastor/admin disponível para encaminhamento pastoral", 400);
   }
 
   const updated = await prisma.$transaction(async (tx) => {
@@ -153,8 +153,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
     return updatedSignal;
   });
 
-  return NextResponse.json({
-    ok: true,
+  return apiOk({
     assignedToId: updated.assignedToId,
     assignedToName: updated.assignedTo?.name,
     message: "Encaminhado ao pastor.",
