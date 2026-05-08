@@ -11,14 +11,13 @@ import { CareTouchHistory, type CareTouchHistoryItem } from "@/components/care-t
 import { Badge } from "@/components/ui/badge";
 import { canRegisterCare, canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
-import { canEscalateSignalToPastor, canRequestSupervisorSupport, escalationStatusDetailForViewer } from "@/features/signals/escalation";
+import { canEscalateSignalToPastor, canRequestSupervisorSupport, escalationStatusChipForViewer } from "@/features/signals/escalation";
 import { signalBadgeForViewer, signalDescriptionForViewer, signalDetailForViewer } from "@/features/signals/display";
 import { isUrgentOrPastoralCase, sortSignalsForPastoralViewer } from "@/features/signals/sections";
 import { summarizePresenceFromAttendances, summarizePresenceTrend } from "@/features/events/presence-summary";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
-import { formatBrasiliaMonthName, startOfBrasiliaMonth, startOfNextBrasiliaMonth, startOfPreviousBrasiliaMonth } from "@/lib/brasilia-time";
 import { avatarColorForName, initials } from "@/lib/text";
 
 const attendanceLabels: Record<AttendanceStatus, string> = {
@@ -66,7 +65,7 @@ function presenceTrendToneClass(direction: "up" | "down", currentTone: "ok" | "w
   return "text-[var(--color-metric-atencoes)]";
 }
 
-function monthPresenceCountLabel(presentCount: number, encountersCount: number) {
+function recentPresenceCountLabel(presentCount: number, encountersCount: number) {
   if (encountersCount === 1) {
     return presentCount === 1 ? "Presente no único encontro" : "Faltou no único encontro";
   }
@@ -87,13 +86,13 @@ function monthPresenceCountLabel(presentCount: number, encountersCount: number) 
   return `${presentCount} vezes presente em ${encountersCount} encontros`;
 }
 
-function monthPresenceTrendLabel(
+function recentPresenceTrendLabel(
   trend: { direction: "up" | "down"; delta: number },
   currentTone: "ok" | "warn" | "risk" | "neutral",
 ) {
-  if (trend.direction === "up") return "Presença mais constante que no mês anterior.";
-  if (currentTone === "ok") return "Ainda há boa presença, mesmo com queda em relação ao mês anterior.";
-  return "A presença caiu em relação ao mês anterior. Vale se aproximar com cuidado.";
+  if (trend.direction === "up") return "Presença mais constante que nos encontros anteriores.";
+  if (currentTone === "ok") return "Ainda há boa presença, mesmo com queda nos encontros recentes.";
+  return "A presença caiu em relação aos encontros anteriores. Vale se aproximar com cuidado.";
 }
 
 function responsibilityNames(
@@ -129,16 +128,12 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const visibleEventWhere = getVisibleEventWhere(user);
   const visibleCareTouchWhere = getVisibleCareTouchWhere(user, person.id);
   const referenceDate = new Date();
-  const monthStart = startOfBrasiliaMonth(referenceDate);
-  const nextMonthStart = startOfNextBrasiliaMonth(referenceDate);
-  const previousMonthStart = startOfPreviousBrasiliaMonth(referenceDate);
-  const monthLabel = formatBrasiliaMonthName(referenceDate);
   const recordedEventWhere = {
     ...visibleEventWhere,
     startsAt: { lte: referenceDate },
   };
 
-  const [signals, attendances, monthAttendances, previousMonthAttendances, careTouches] = await Promise.all([
+  const [signals, attendances, careTouches] = await Promise.all([
     prisma.careSignal.findMany({
       where: { ...visibleOpenSignalWhere, personId: person.id },
       include: { assignedTo: true, group: { include: { leader: true, supervisor: true, responsibilities: { where: { activeUntil: null }, include: { user: true }, orderBy: { createdAt: "asc" } } } } },
@@ -148,31 +143,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       where: { personId: person.id, event: recordedEventWhere },
       include: { event: { include: { group: { include: { responsibilities: { where: { activeUntil: null }, include: { user: true }, orderBy: { createdAt: "asc" } } } } } } },
       orderBy: [{ event: { startsAt: "desc" } }, { markedAt: "desc" }],
-      take: 8,
-    }),
-    prisma.attendance.findMany({
-      where: {
-        personId: person.id,
-        status: { not: AttendanceStatus.VISITOR },
-        event: {
-          ...recordedEventWhere,
-          startsAt: { gte: monthStart, lt: nextMonthStart, lte: referenceDate },
-        },
-      },
-      include: { event: { include: { group: { include: { responsibilities: { where: { activeUntil: null }, include: { user: true }, orderBy: { createdAt: "asc" } } } } } } },
-      orderBy: [{ event: { startsAt: "desc" } }, { markedAt: "desc" }],
-    }),
-    prisma.attendance.findMany({
-      where: {
-        personId: person.id,
-        status: { not: AttendanceStatus.VISITOR },
-        event: {
-          ...recordedEventWhere,
-          startsAt: { gte: previousMonthStart, lt: monthStart },
-        },
-      },
-      include: { event: { include: { group: { include: { responsibilities: { where: { activeUntil: null }, include: { user: true }, orderBy: { createdAt: "asc" } } } } } } },
-      orderBy: [{ event: { startsAt: "desc" } }, { markedAt: "desc" }],
+      take: 12,
     }),
     prisma.careTouch.findMany({
       where: visibleCareTouchWhere,
@@ -189,7 +160,6 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const primarySupervisionName = primaryGroup
     ? responsibilityNames(primaryGroup.responsibilities, GroupResponsibilityRole.SUPERVISOR, primaryGroup.supervisor?.name ?? "")
     : "";
-  const latestAttendance = attendances[0];
   const homeHref = homeHrefForRole(user.role);
   const openSignalsCount = signals.length;
   const hasCareTouch = careTouches.length > 0;
@@ -204,12 +174,15 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const pastoralOrderedSignals = sortSignalsForPastoralViewer(signals, user);
   const primarySignal = pastoralOrderedSignals[0];
   const personBadge = personEffectiveBadgeForViewer(person, primarySignal, user);
-  const monthPresence = summarizePresenceFromAttendances(monthAttendances);
-  const previousMonthPresence = summarizePresenceFromAttendances(previousMonthAttendances);
-  const monthPresenceTrend = summarizePresenceTrend(monthPresence, previousMonthPresence);
-  const monthPresenceTone = presenceTone(monthPresence.hasPresenceData, monthPresence.presenceRate);
-  const recentMonthAttendances = monthAttendances.slice(0, 4);
-  const hiddenMonthAttendancesCount = Math.max(monthAttendances.length - recentMonthAttendances.length, 0);
+  const accountableRecentAttendances = attendances.filter((attendance) => attendance.status !== AttendanceStatus.VISITOR);
+  const recentPresenceAttendances = accountableRecentAttendances.slice(0, 4);
+  const previousRecentPresenceAttendances = accountableRecentAttendances.slice(4, 8);
+  const recentPresence = summarizePresenceFromAttendances(recentPresenceAttendances);
+  const previousRecentPresence = summarizePresenceFromAttendances(previousRecentPresenceAttendances);
+  const recentPresenceTrend = summarizePresenceTrend(recentPresence, previousRecentPresence);
+  const recentPresenceTone = presenceTone(recentPresence.hasPresenceData, recentPresence.presenceRate);
+  const hiddenRecentAttendancesCount = Math.max(accountableRecentAttendances.length - recentPresenceAttendances.length, 0);
+  const hasPartialTrendHistory = previousRecentPresence.accountableCount > 0 && previousRecentPresence.accountableCount < 3;
   const careTouchHistoryItems: CareTouchHistoryItem[] = careTouches.map((touch) => ({
     id: touch.id,
     title: careKindLabels[touch.kind],
@@ -217,6 +190,23 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
     happenedAtLabel: `${formatShortDate(touch.happenedAt)}, ${formatTime(touch.happenedAt)}`,
     note: touch.note,
   }));
+  const pastoralEscalationActorByGroupId = new Map<string, string>();
+  let pastoralEscalationActorWithoutGroup: string | undefined;
+
+  for (const touch of careTouches) {
+    if (touch.kind !== CareKind.ESCALATED_TO_PASTOR) continue;
+
+    const actorName = touch.actor?.name;
+    if (!actorName) continue;
+
+    if (touch.groupId) {
+      if (!pastoralEscalationActorByGroupId.has(touch.groupId)) {
+        pastoralEscalationActorByGroupId.set(touch.groupId, actorName);
+      }
+    } else if (!pastoralEscalationActorWithoutGroup) {
+      pastoralEscalationActorWithoutGroup = actorName;
+    }
+  }
 
   return (
     <AppShell
@@ -262,45 +252,45 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
         <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-[var(--color-text-primary)]">Presença no mês</p>
+            <p className="text-sm font-semibold text-[var(--color-text-primary)]">Presença recente</p>
             <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-              {monthPresence.hasPresenceData
-                ? `Ritmo registrado em ${monthLabel}. Ajuda a perceber se vale se aproximar.`
-                : `Ainda sem presença registrada em ${monthLabel}.`}
+              {recentPresence.hasPresenceData
+                ? "Ritmo dos últimos encontros registrados. Ajuda a perceber se vale se aproximar."
+                : "Ainda sem presença registrada em encontros recentes."}
             </p>
-            {monthPresenceTrend ? (
-              <p className={`mt-1 text-xs leading-relaxed ${presenceTrendToneClass(monthPresenceTrend.direction, monthPresenceTone)}`}>
-                {monthPresenceTrendLabel(monthPresenceTrend, monthPresenceTone)}
+            {recentPresenceTrend ? (
+              <p className={`mt-1 text-xs leading-relaxed ${presenceTrendToneClass(recentPresenceTrend.direction, recentPresenceTone)}`}>
+                {recentPresenceTrendLabel(recentPresenceTrend, recentPresenceTone)}
               </p>
             ) : null}
           </div>
           <div className="shrink-0 text-right">
-            <p className={`text-[21px] font-bold leading-none tracking-[-0.02em] ${presenceToneClass(monthPresenceTone)}`}>
-              {monthPresence.hasPresenceData ? `${monthPresence.presenceRate}%` : "—"}
+            <p className={`text-[21px] font-bold leading-none tracking-[-0.02em] ${presenceToneClass(recentPresenceTone)}`}>
+              {recentPresence.hasPresenceData ? `${recentPresence.presenceRate}%` : "—"}
             </p>
-            {monthPresenceTrend ? (
+            {recentPresenceTrend ? (
               <p
-                className={`mt-1 text-[13px] font-bold leading-none ${presenceTrendToneClass(monthPresenceTrend.direction, monthPresenceTone)}`}
-                aria-label={`${monthPresenceTrend.direction === "up" ? "subiu" : "caiu"} ${monthPresenceTrend.delta} pontos em relação ao mês anterior`}
-                title={`${monthPresenceTrend.direction === "up" ? "Subiu" : "Caiu"} ${monthPresenceTrend.delta} pontos em relação ao mês anterior`}
+                className={`mt-1 text-[13px] font-bold leading-none ${presenceTrendToneClass(recentPresenceTrend.direction, recentPresenceTone)}`}
+                aria-label={`${recentPresenceTrend.direction === "up" ? "subiu" : "caiu"} ${recentPresenceTrend.delta} pontos em relação aos encontros anteriores`}
+                title={`${recentPresenceTrend.direction === "up" ? "Subiu" : "Caiu"} ${recentPresenceTrend.delta} pontos em relação aos encontros anteriores`}
               >
-                {monthPresenceTrend.direction === "up" ? "↑" : "↓"} {monthPresenceTrend.delta} pts
+                {recentPresenceTrend.direction === "up" ? "↑" : "↓"} {recentPresenceTrend.delta} pts
               </p>
             ) : null}
           </div>
         </div>
 
-        {recentMonthAttendances.length > 0 ? (
+        {recentPresenceAttendances.length > 0 ? (
           <div className="mt-3 border-t border-[var(--color-border-divider)] pt-3">
             <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">Encontros do mês</p>
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">Últimos encontros</p>
               <p className="shrink-0 text-xs text-[var(--color-text-secondary)]">
-                {monthPresenceCountLabel(monthPresence.presentCount, monthPresence.accountableCount)}
+                {recentPresenceCountLabel(recentPresence.presentCount, recentPresence.accountableCount)}
               </p>
             </div>
 
             <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-              {recentMonthAttendances.map((attendance) => (
+              {recentPresenceAttendances.map((attendance) => (
                 <Link
                   key={attendance.id}
                   href={`/eventos/${attendance.event.id}`}
@@ -320,9 +310,17 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
                 </Link>
               ))}
             </div>
-            {hiddenMonthAttendancesCount > 0 ? (
+            {recentPresenceTrend ? (
               <p className="mt-3 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-                Mais {hiddenMonthAttendancesCount} {hiddenMonthAttendancesCount === 1 ? "encontro deste mês entra" : "encontros deste mês entram"} no cálculo.
+                Tendência comparada com os {previousRecentPresence.accountableCount} encontros anteriores.
+              </p>
+            ) : hasPartialTrendHistory ? (
+              <p className="mt-3 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+                Ainda sem histórico suficiente para comparar tendência.
+              </p>
+            ) : hiddenRecentAttendancesCount > 0 ? (
+              <p className="mt-3 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+                Mais {hiddenRecentAttendancesCount} {hiddenRecentAttendancesCount === 1 ? "encontro recente fica" : "encontros recentes ficam"} fora da lista resumida.
               </p>
             ) : null}
           </div>
@@ -332,16 +330,20 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       <SectionTitle>{openSignalsCount > 0 ? "Por que merece atenção" : "Situação atual"}</SectionTitle>
       <div className="space-y-3">
         {pastoralOrderedSignals.map((signal) => {
-          const signalTone = signalBadgeForViewer(signal, user).tone;
-          const signalDescription = signalDescriptionForViewer(signal, user, { includeEvidence: true });
-          const assignmentMessage = escalationStatusDetailForViewer(signal, user);
+          const pastoralEscalationActorName = signal.groupId
+            ? pastoralEscalationActorByGroupId.get(signal.groupId)
+            : pastoralEscalationActorWithoutGroup;
+          const signalForDisplay = { ...signal, pastoralEscalationActorName };
+          const signalTone = signalBadgeForViewer(signalForDisplay, user).tone;
+          const signalDescription = signalDescriptionForViewer(signalForDisplay, user, { useDetailedDescription: true });
+          const assignmentMessage = escalationStatusChipForViewer(signalForDisplay, user);
           const canRequestSupervisor = canRequestSupervisorSupport(user, signal);
           const canEscalatePastor = canEscalateSignalToPastor(user, signal);
 
           return (
             <article key={signal.id} className={`card-hover-lift rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card ${priorityCardClass(signalTone)}`}>
               <div className="min-w-0">
-                <p className="font-semibold text-[var(--color-text-primary)]">{signalDetailForViewer(signal, user)}</p>
+                <p className="font-semibold text-[var(--color-text-primary)]">{signalDetailForViewer(signalForDisplay, user)}</p>
                 <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
                   {signal.group?.name ?? primaryGroup?.name ?? "Sem célula"} · {formatShortDate(signal.detectedAt)}, {formatTime(signal.detectedAt)}
                 </p>
@@ -371,20 +373,6 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
         <CareTouchHistory items={careTouchHistoryItems} />
       ) : (
         <EmptyState>Nenhum cuidado registrado ainda. Use “Já houve contato?” quando houver um contato real para guardar.</EmptyState>
-      )}
-
-      <SectionTitle>Último encontro</SectionTitle>
-      {latestAttendance ? (
-        <DetailLinkCard
-          href={`/eventos/${latestAttendance.event.id}`}
-          title={latestAttendance.event.title}
-          meta={`${latestAttendance.event.group?.name ?? "Encontro"} · ${formatShortDate(latestAttendance.event.startsAt)}, ${formatTime(latestAttendance.event.startsAt)}`}
-          badgeLabel={attendanceLabels[latestAttendance.status]}
-          badgeTone={attendanceTone(latestAttendance.status)}
-          actionLabel="Abrir encontro"
-        />
-      ) : (
-        <EmptyState>Ainda não há presença registrada para esta pessoa.</EmptyState>
       )}
 
       {primaryGroup ? (

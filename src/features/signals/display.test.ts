@@ -52,9 +52,15 @@ describe("signal display helpers", () => {
       assignedTo: { role: UserRole.PASTOR },
     };
 
-    expect(signalDetailForViewer(supportSignal, { role: UserRole.SUPERVISOR })).toBe("Pedido de apoio da célula.");
+    expect(signalDetailForViewer(supportSignal, { role: UserRole.SUPERVISOR })).toBe("Pedido de apoio recebido.");
     expect(signalDetailForViewer(supportSignal, { role: UserRole.LEADER })).toBe("Apoio solicitado à supervisão.");
-    expect(signalDetailForViewer(pastoralSignal, { role: UserRole.PASTOR })).toBe("Encaminhado ao cuidado pastoral.");
+    expect(signalDetailForViewer(pastoralSignal, { role: UserRole.PASTOR })).toBe("Cuidado pastoral solicitado.");
+    expect(signalDescriptionForViewer({ ...pastoralSignal, pastoralEscalationActorName: "Ana Martins" }, { role: UserRole.PASTOR })).toBe(
+      "Ana Martins compartilhou este cuidado para um olhar mais próximo. Um contato pode ajudar a entender melhor o momento.",
+    );
+    expect(signalDescriptionForViewer(pastoralSignal, { role: UserRole.PASTOR })).toBe(
+      "Há um contexto que pede um olhar mais próximo. Um contato pode ajudar a entender melhor o momento.",
+    );
     expect(signalDetailForViewer(pastoralSignal, { role: UserRole.LEADER })).toBe("Encaminhado ao pastor.");
   });
 
@@ -94,6 +100,28 @@ describe("signal display helpers", () => {
     );
   });
 
+  it("can show a more pastoral attendance description in detail views", () => {
+    const signal = {
+      source: SignalSource.ATTENDANCE,
+      severity: SignalSeverity.URGENT,
+    };
+
+    expect(signalDescriptionForViewer(signal, { role: UserRole.LEADER }, { useDetailedDescription: true })).toBe(
+      "Parece que houve ausências recorrentes sem justificativa registrada. Talvez valha uma aproximação simples, com calma e proximidade.",
+    );
+  });
+
+  it("can show a more pastoral recent absence description in detail views", () => {
+    const signal = {
+      source: SignalSource.ATTENDANCE,
+      severity: SignalSeverity.ATTENTION,
+    };
+
+    expect(signalDescriptionForViewer(signal, { role: UserRole.LEADER }, { useDetailedDescription: true })).toBe(
+      "Parece que houve ausências sem justificativa registrada. Talvez valha uma aproximação simples, sem tom de cobrança.",
+    );
+  });
+
   it("adds attendance evidence dates when explicitly requested", () => {
     const signal = {
       source: SignalSource.ATTENDANCE,
@@ -102,7 +130,7 @@ describe("signal display helpers", () => {
     };
 
     expect(signalDescriptionForViewer(signal, { role: UserRole.LEADER }, { includeEvidence: true })).toBe(
-      "Parece que houve ausências recorrentes sem justificativa registrada. Pode ser um bom momento para cuidar mais de perto, com calma e proximidade.\nAusente nos últimos 3 encontros registrados: 16 abr, 23 abr e 30 abr.",
+      "Parece que houve ausências recorrentes sem justificativa registrada. Talvez valha uma aproximação simples, com calma e proximidade.\nAusente nos últimos 3 encontros registrados: 16 abr, 23 abr e 30 abr.",
     );
   });
 });

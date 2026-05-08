@@ -133,6 +133,23 @@ export function escalationStatusDetailForViewer(signal: EscalationSignalLike, vi
   return null;
 }
 
+
+export function escalationStatusChipForViewer(signal: EscalationSignalLike, viewer: EscalationViewerLike): string | null {
+  if (!shouldShowEscalationStatusForViewer(signal, viewer)) return null;
+
+  if (isAssignedToSupervisor(signal)) {
+    return viewer.role === UserRole.SUPERVISOR ? "Pedido de apoio" : "Apoio solicitado";
+  }
+
+  if (isAssignedToPastoralRole(signal)) {
+    return viewer.role === UserRole.PASTOR || viewer.role === UserRole.ADMIN
+      ? "Cuidado pastoral"
+      : "Encaminhado";
+  }
+
+  return null;
+}
+
 export function canRequestSupervisorSupport(viewer: EscalationViewerLike, signal: EscalationScopedSignalLike): boolean {
   return Boolean(
     viewer.role === UserRole.LEADER
@@ -144,9 +161,10 @@ export function canRequestSupervisorSupport(viewer: EscalationViewerLike, signal
 }
 
 export function canEscalateSignalToPastor(viewer: EscalationViewerLike, signal: EscalationScopedSignalLike): boolean {
-  return Boolean(
-    viewer.role === UserRole.SUPERVISOR
-    && isSignalGroupSupervisor(viewer, signal.group)
-    && !isAssignedToPastoralRole(signal),
+  const isAllowedViewer = (
+    (viewer.role === UserRole.LEADER && isSignalGroupLeader(viewer, signal.group))
+    || (viewer.role === UserRole.SUPERVISOR && isSignalGroupSupervisor(viewer, signal.group))
   );
+
+  return Boolean(isAllowedViewer && !isAssignedToPastoralRole(signal));
 }

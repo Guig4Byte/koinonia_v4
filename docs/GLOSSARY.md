@@ -145,15 +145,18 @@ Rótulos possíveis:
 
 - `Urgente`;
 - `Caso pastoral`;
+- `Cuidado pastoral`;
 - `Encaminhado`;
 - `Encaminhado ao pastor`;
 - `Encaminhado ao cuidado pastoral`.
 
 Mensagens recomendadas:
 
-- pastor/admin: `Encaminhado ao cuidado pastoral.`
+- pastor/admin: `Cuidado pastoral solicitado.`
 - líder/supervisor: `Encaminhado ao pastor.`
 - urgente: `Caso que pede atenção imediata.`
+
+Para pastor/admin, use selo curto como `Cuidado pastoral` quando precisar destacar visualmente o estado sem repetir a frase de encaminhamento.
 
 Evite mensagens com nome do destinatário, como `Roberto recebeu este caso`.
 
@@ -173,7 +176,7 @@ Fluxo direto permitido em gravidade/sensibilidade:
 Líder -> Pastor
 ```
 
-Escalonamento não transfere toda responsabilidade, não cria SLA e não vira task manager.
+Escalonamento não transfere toda responsabilidade, não cria SLA e não vira task manager. Para o líder, pedir apoio à supervisão é o caminho comum; encaminhar direto ao pastor fica para gravidade ou sensibilidade.
 
 Ao pedir apoio ou encaminhar, use contexto breve e opcional. Bons rótulos: `Quer deixar um contexto breve?`, `Contexto opcional`, `Pedir apoio` e `Encaminhar`. Evite exigir anotação para concluir a ação.
 
@@ -245,7 +248,8 @@ Tema não é configuração pastoral, não muda escopo e não precisa de tela ad
 | `Apoio solicitado` | líder vendo pedido enviado à supervisão | apoio |
 | `Pedido de apoio` | supervisor vendo pedido recebido | apoio |
 | `Urgente` | severidade real `URGENT` | vermelho |
-| `Caso pastoral` | pastor vendo sinal encaminhado a pastor/admin | vermelho |
+| `Caso pastoral` | pastor vendo sinal encaminhado a pastor/admin em listas | vermelho |
+| `Cuidado pastoral` | pastor/admin vendo selo de cuidado pastoral solicitado | vermelho/care |
 | `Encaminhado` | líder/supervisor vendo envio ao pastor | vermelho |
 | `Em cuidado` | pessoa que recebeu cuidado e deve continuar no radar | care |
 | `Contato feito` | contato/cuidado registrado sem classificar o canal | care |

@@ -105,6 +105,7 @@ O MVP usa `CareSignal.assignedToId`, sem entidade de tarefa.
 - `assignedToId` para supervisor = pedido de apoio.
 - `assignedToId` para pastor/admin = encaminhamento pastoral.
 - `severity = URGENT` = caso pastoral por gravidade.
+- Líder pode encaminhar direto ao pastor em gravidade/sensibilidade, mas o caminho comum segue sendo pedir apoio à supervisão.
 - Pedir apoio ou encaminhar pode registrar contexto opcional em `CareTouch`, sem resolver o sinal.
 
 Mensagens devem ser contextuais ao perfil que está vendo. Não use frases como `Ana recebeu...` ou `Roberto recebeu...`.

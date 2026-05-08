@@ -410,6 +410,7 @@ Rota:
 Regras:
 
 - líder pode pedir apoio à supervisão quando lidera a célula do sinal;
+- líder pode encaminhar direto ao pastor quando lidera a célula do sinal e houver gravidade ou sensibilidade;
 - supervisor pode encaminhar ao pastor quando supervisiona a célula do sinal;
 - a ação atualiza `CareSignal.assignedToId`;
 - a ação cria um `CareTouch` com `REQUESTED_SUPPORT` ou `ESCALATED_TO_PASTOR`;

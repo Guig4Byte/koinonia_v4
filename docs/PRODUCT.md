@@ -85,7 +85,7 @@ Pastor interpreta.
 
 ### Líder
 
-Pode ver a própria célula, registrar e ajustar presença dos encontros da própria célula, adicionar visitantes, ver membros ativos, ver pessoas em atenção, pedir apoio da supervisão, registrar contato/cuidado e ajustar detalhes operacionais de encontros da própria célula.
+Pode ver a própria célula, registrar e ajustar presença dos encontros da própria célula, adicionar visitantes, ver membros ativos, ver pessoas em atenção, pedir apoio da supervisão, encaminhar direto ao pastor quando houver gravidade ou sensibilidade, registrar contato/cuidado e ajustar detalhes operacionais de encontros da própria célula.
 
 Não deve registrar check-in de outra célula, registrar check-in futuro, operar visão macro ou substituir supervisor/pastor.
 
@@ -261,6 +261,7 @@ Regras:
 - Quando confirmado, o histórico mostra `Contato feito`, com anotação opcional.
 - `Salvar sem anotação` é válido.
 - Pedir apoio ou encaminhar pode pedir uma anotação breve e opcional.
+- Para líder, pedir apoio à supervisão é o caminho comum; encaminhar direto ao pastor fica para gravidade ou sensibilidade.
 - Essa anotação entra no cuidado recente da pessoa, mas não resolve o sinal por si só.
 - `Cuidado recente` mostra poucos registros inicialmente e permite `Ver histórico` quando houver mais.
 - Cuidado resolve sinais ativos dentro do escopo do usuário.

@@ -15,22 +15,45 @@ type SignalSupportActionsProps = {
   canEscalatePastor?: boolean;
 };
 
-const actionCopy: Record<Exclude<FlowStage, "idle">, { action: SupportAction; title: string; detail: string; label: string; icon: LucideIcon }> = {
-  "request-supervisor": {
-    action: "REQUEST_SUPERVISOR",
-    title: "Pedir apoio à supervisão?",
-    detail: "A liderança continua acompanhando, mas a supervisão também verá este cuidado.",
-    label: "Pedir apoio",
-    icon: LifeBuoy,
-  },
-  "escalate-pastor": {
+type ActionCopy = { action: SupportAction; title: string; detail: string; label: string; icon: LucideIcon };
+
+function actionCopyForStage(stage: Exclude<FlowStage, "idle">, options: { canRequestSupervisor: boolean }): ActionCopy {
+  if (stage === "request-supervisor") {
+    return {
+      action: "REQUEST_SUPERVISOR",
+      title: "Pedir apoio à supervisão?",
+      detail: "A liderança continua acompanhando, mas a supervisão também verá este cuidado.",
+      label: "Pedir apoio",
+      icon: LifeBuoy,
+    };
+  }
+
+  return {
     action: "ESCALATE_PASTOR",
     title: "Encaminhar ao pastor?",
-    detail: "Use quando este cuidado pede um olhar pastoral mais próximo.",
+    detail: options.canRequestSupervisor
+      ? "Use quando este cuidado pedir um olhar pastoral mais próximo ou envolver algo sensível. O caminho comum continua sendo pedir apoio à supervisão."
+      : "Use quando este cuidado pedir um olhar pastoral mais próximo ou envolver algo sensível.",
     label: "Encaminhar",
     icon: SendHorizontal,
-  },
-};
+  };
+}
+
+function supportGuidance(canRequestSupervisor: boolean, canEscalatePastor: boolean) {
+  if (canRequestSupervisor && canEscalatePastor) {
+    return "Pedir apoio à supervisão é o caminho comum. Encaminhe ao pastor quando o cuidado pedir um olhar pastoral mais próximo ou envolver algo sensível.";
+  }
+
+  if (canRequestSupervisor) {
+    return "O apoio à supervisão ajuda quando o próximo gesto pede outra liderança. A responsabilidade local continua simples.";
+  }
+
+  if (canEscalatePastor) {
+    return "O encaminhamento ao pastor fica para cuidados que pedem um olhar pastoral mais próximo ou envolvem algo sensível.";
+  }
+
+  return null;
+}
 
 export function SignalSupportActions({
   signalId,
@@ -81,14 +104,15 @@ export function SignalSupportActions({
 
   if (!label && !canRequestSupervisor && !canEscalatePastor) return null;
 
-  const currentActionCopy = stage === "idle" ? null : actionCopy[stage];
+  const currentActionCopy = stage === "idle" ? null : actionCopyForStage(stage, { canRequestSupervisor });
   const CurrentIcon = currentActionCopy?.icon ?? NotebookPen;
+  const guidance = supportGuidance(canRequestSupervisor, canEscalatePastor);
 
   return (
     <div className="mt-3 space-y-2 border-t border-[var(--color-border-divider)] pt-3">
-      {canRequestSupervisor || canEscalatePastor ? (
+      {guidance ? (
         <p className="text-xs leading-relaxed text-[var(--color-text-secondary)]">
-          Use apoio quando o próximo gesto precisa de outra liderança. A responsabilidade local continua simples.
+          {guidance}
         </p>
       ) : null}
       {label ? (

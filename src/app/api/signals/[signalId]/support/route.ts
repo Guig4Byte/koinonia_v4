@@ -123,7 +123,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
   }
 
   if (!canEscalateSignalToPastor(user, signal)) {
-    return NextResponse.json({ error: "Apenas a supervisão da célula pode encaminhar este caso ao pastor" }, { status: 403 });
+    return NextResponse.json({ error: "Apenas liderança ou supervisão da célula pode encaminhar este caso ao pastor" }, { status: 403 });
   }
 
   const pastoralAssignee = await findPastoralAssignee(user.churchId);

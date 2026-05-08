@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { GroupResponsibilityRole, SignalSeverity, UserRole } from "../../generated/prisma/client";
-import { canEscalateSignalToPastor, canRequestSupervisorSupport, escalationStatusDetailForViewer, escalationStatusLabel, escalationStatusLabelForViewer, isPastoralEscalation, shouldShowEscalationStatusForViewer } from "./escalation";
+import { canEscalateSignalToPastor, canRequestSupervisorSupport, escalationStatusChipForViewer, escalationStatusDetailForViewer, escalationStatusLabel, escalationStatusLabelForViewer, isPastoralEscalation, shouldShowEscalationStatusForViewer } from "./escalation";
 
 describe("signal escalation helpers", () => {
   it("treats urgent signals as pastoral even without assignment", () => {
@@ -47,6 +47,14 @@ describe("signal escalation helpers", () => {
     expect(escalationStatusDetailForViewer(supervisorRequest, { role: UserRole.SUPERVISOR })).toBe("Essa célula pediu apoio da supervisão.");
   });
 
+
+  it("uses a pastoral state chip for pastor viewers", () => {
+    const pastoralRequest = { severity: SignalSeverity.ATTENTION, assignedTo: { role: UserRole.PASTOR } };
+
+    expect(escalationStatusChipForViewer(pastoralRequest, { role: UserRole.PASTOR })).toBe("Cuidado pastoral");
+    expect(escalationStatusChipForViewer(pastoralRequest, { role: UserRole.LEADER })).toBe("Encaminhado");
+  });
+
   it("uses neutral detail messages for pastoral assignments", () => {
     const pastoralRequest = { severity: SignalSeverity.ATTENTION, assignedTo: { name: "Roberto", role: UserRole.PASTOR } };
 
@@ -68,6 +76,13 @@ describe("signal escalation action eligibility", () => {
       { id: "leader-1", role: UserRole.LEADER },
       { severity: SignalSeverity.ATTENTION, assignedTo: { role: UserRole.SUPERVISOR }, group: { responsibilities: [{ userId: "leader-1", role: GroupResponsibilityRole.LEADER }, { userId: "supervisor-1", role: GroupResponsibilityRole.SUPERVISOR }] } },
     )).toBe(false);
+  });
+
+  it("allows the cell leader to escalate directly to pastor as a sensitive exception", () => {
+    expect(canEscalateSignalToPastor(
+      { id: "leader-1", role: UserRole.LEADER },
+      { severity: SignalSeverity.ATTENTION, group: { responsibilities: [{ userId: "leader-1", role: GroupResponsibilityRole.LEADER }] } },
+    )).toBe(true);
   });
 
   it("allows the cell supervisor to escalate to pastor once", () => {

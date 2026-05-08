@@ -29,6 +29,7 @@ export type SignalDetailLike = SignalDisplayLike & {
   reason?: string | null;
   evidence?: string | null;
   source?: SignalSource | null;
+  pastoralEscalationActorName?: string | null;
 };
 
 export type SignalPastoralMessage = {
@@ -90,7 +91,7 @@ export function signalReasonForViewer(reason: string, viewer: { role: UserRole }
 function supportPastoralMessage(viewer: SignalDisplayViewerLike): SignalPastoralMessage {
   if (viewer.role === UserRole.SUPERVISOR) {
     return {
-      title: "Pedido de apoio da célula.",
+      title: "Pedido de apoio recebido.",
       description: "A liderança pediu ajuda para acompanhar este cuidado com mais proximidade.",
     };
   }
@@ -121,31 +122,45 @@ function withAttendanceEvidence(description: string, signal: SignalDetailLike, i
   return evidence ? `${description}\n${evidence}` : description;
 }
 
-function pastoralEscalationMessage(viewer: SignalDisplayViewerLike): SignalPastoralMessage {
+function pastoralEscalationMessage(
+  signal: SignalDetailLike,
+  viewer: SignalDisplayViewerLike,
+): SignalPastoralMessage {
   if (isPastoralViewer(viewer)) {
+    const actorName = signal.pastoralEscalationActorName?.trim();
+
     return {
-      title: "Encaminhado ao cuidado pastoral.",
-      description: "Este cuidado pede um olhar pastoral mais próximo.",
+      title: "Cuidado pastoral solicitado.",
+      description: actorName
+        ? `${actorName} compartilhou este cuidado para um olhar mais próximo. Um contato pode ajudar a entender melhor o momento.`
+        : "Há um contexto que pede um olhar mais próximo. Um contato pode ajudar a entender melhor o momento.",
     };
   }
 
   return {
     title: "Encaminhado ao pastor.",
-    description: "Esse cuidado foi compartilhado para acompanhamento pastoral.",
+    description: viewer.role === UserRole.LEADER
+      ? "Você compartilhou este cuidado para um olhar pastoral mais próximo."
+      : "Esse cuidado foi compartilhado para acompanhamento pastoral.",
   };
 }
 
-function urgentPastoralMessage(signal: SignalDetailLike, viewer: SignalDisplayViewerLike, includeEvidence: boolean): SignalPastoralMessage {
+function urgentPastoralMessage(
+  signal: SignalDetailLike,
+  viewer: SignalDisplayViewerLike,
+  includeEvidence: boolean,
+  useDetailedDescription: boolean,
+): SignalPastoralMessage {
   if (isAttendanceSignal(signal)) {
     const compactDescription = "Parece que houve ausências recorrentes sem justificativa registrada.";
     const detailDescription = isPastoralViewer(viewer)
       ? "Parece que houve ausências recorrentes sem justificativa registrada. A presença recente pede um olhar pastoral mais próximo, com calma e contexto."
-      : "Parece que houve ausências recorrentes sem justificativa registrada. Pode ser um bom momento para cuidar mais de perto, com calma e proximidade.";
+      : "Parece que houve ausências recorrentes sem justificativa registrada. Talvez valha uma aproximação simples, com calma e proximidade.";
 
     return {
       title: "Ausência recorrente percebida.",
       description: withAttendanceEvidence(
-        includeEvidence ? detailDescription : compactDescription,
+        useDetailedDescription ? detailDescription : compactDescription,
         signal,
         includeEvidence,
       ),
@@ -160,7 +175,12 @@ function urgentPastoralMessage(signal: SignalDetailLike, viewer: SignalDisplayVi
   };
 }
 
-function attentionPastoralMessage(signal: SignalDetailLike, viewer: SignalDisplayViewerLike, includeEvidence: boolean): SignalPastoralMessage {
+function attentionPastoralMessage(
+  signal: SignalDetailLike,
+  viewer: SignalDisplayViewerLike,
+  includeEvidence: boolean,
+  useDetailedDescription: boolean,
+): SignalPastoralMessage {
   if (isAttendanceSignal(signal)) {
     const compactDescription = "Parece que houve ausências sem justificativa registrada.";
     const detailDescription = viewer.role === UserRole.LEADER
@@ -170,7 +190,7 @@ function attentionPastoralMessage(signal: SignalDetailLike, viewer: SignalDispla
     return {
       title: "Ausência recente percebida.",
       description: withAttendanceEvidence(
-        includeEvidence ? detailDescription : compactDescription,
+        useDetailedDescription ? detailDescription : compactDescription,
         signal,
         includeEvidence,
       ),
@@ -207,23 +227,24 @@ function informationalPastoralMessage(): SignalPastoralMessage {
 export function signalPastoralMessageForViewer(
   signal: SignalDetailLike,
   viewer: SignalDisplayViewerLike,
-  options: { includeEvidence?: boolean } = {},
+  options: { includeEvidence?: boolean; useDetailedDescription?: boolean } = {},
 ): SignalPastoralMessage {
   const includeEvidence = options.includeEvidence ?? false;
+  const useDetailedDescription = options.useDetailedDescription ?? includeEvidence;
   if (shouldShowEscalationStatusForViewer(signal, viewer)) {
     if (isAssignedToSupervisor(signal)) return supportPastoralMessage(viewer);
-    if (isAssignedToPastoralRole(signal)) return pastoralEscalationMessage(viewer);
+    if (isAssignedToPastoralRole(signal)) return pastoralEscalationMessage(signal, viewer);
   }
 
   if (signal.severity === SignalSeverity.URGENT) {
-    return urgentPastoralMessage(signal, viewer, includeEvidence);
+    return urgentPastoralMessage(signal, viewer, includeEvidence, useDetailedDescription);
   }
 
   if (signal.severity === SignalSeverity.INFO) {
     return informationalPastoralMessage();
   }
 
-  return attentionPastoralMessage(signal, viewer, includeEvidence);
+  return attentionPastoralMessage(signal, viewer, includeEvidence, useDetailedDescription);
 }
 
 export function signalDetailForViewer(signal: SignalDetailLike, viewer: SignalDisplayViewerLike): string {
@@ -233,7 +254,7 @@ export function signalDetailForViewer(signal: SignalDetailLike, viewer: SignalDi
 export function signalDescriptionForViewer(
   signal: SignalDetailLike,
   viewer: SignalDisplayViewerLike,
-  options: { includeEvidence?: boolean } = {},
+  options: { includeEvidence?: boolean; useDetailedDescription?: boolean } = {},
 ): string | undefined {
   return signalPastoralMessageForViewer(signal, viewer, options).description;
 }
