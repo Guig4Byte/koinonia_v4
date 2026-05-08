@@ -13,7 +13,7 @@ import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/even
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { canManageGroups, canViewGroup, isGroupLeader } from "@/features/permissions/permissions";
 import { escalationStatusDetailForViewer } from "@/features/signals/escalation";
-import { signalReasonForViewer, type SignalBadgeTone } from "@/features/signals/display";
+import { signalDetailForViewer, type SignalBadgeTone } from "@/features/signals/display";
 import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features/pastoral-pulse";
 import { getPastoralSectionSignalsByPerson, isSupportRequest, isUrgentOrPastoralCase } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -262,7 +262,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
       const attentionSignal = attentionSignalByPersonId.get(membership.personId);
       const memberBadge = personEffectiveBadgeForViewer(membership.person, attentionSignal, user);
       const escalationSubtitle = attentionSignal ? escalationStatusDetailForViewer(attentionSignal, user) : null;
-      const signalSubtitle = attentionSignal ? escalationSubtitle ?? signalReasonForViewer(attentionSignal.reason, user) : undefined;
+      const signalSubtitle = attentionSignal ? escalationSubtitle ?? signalDetailForViewer(attentionSignal, user) : undefined;
       const subtitle = signalSubtitle
         ?? (membership.person.status === PersonStatus.COOLING_AWAY ? "Em cuidado" : undefined);
       const priorityRank = (() => {

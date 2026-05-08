@@ -81,7 +81,7 @@ function mixedCareMessage(role: UserRole, scope: PastoralPulseScope, urgentOrPas
 
     return {
       title: "Há cuidados com prioridades diferentes nesta célula.",
-      subtitle: "Olhe primeiro os sinais mais sensíveis e acompanhe os demais com calma.",
+      subtitle: "Os sinais mais sensíveis aparecem primeiro; os demais seguem no radar com calma.",
       tone: "attention",
     };
   }
@@ -90,7 +90,7 @@ function mixedCareMessage(role: UserRole, scope: PastoralPulseScope, urgentOrPas
     return {
       title: "Há cuidados em momentos diferentes.",
       subtitle: urgentOrPastoral > 0
-        ? "Comece pelos sinais mais sensíveis e caminhe junto com a liderança."
+        ? "Os sinais mais sensíveis ajudam a orientar o acompanhamento junto da liderança."
         : "Alguns pedem apoio da supervisão, outros seguem como atenção local.",
       tone: "attention",
     };
@@ -99,7 +99,7 @@ function mixedCareMessage(role: UserRole, scope: PastoralPulseScope, urgentOrPas
   return {
     title: "Há cuidados com prioridades diferentes.",
     subtitle: urgentOrPastoral > 0
-      ? "Olhe primeiro os sinais mais sensíveis e mantenha os demais no radar."
+      ? "Os sinais mais sensíveis aparecem primeiro; os demais seguem no radar."
       : "Alguns pedem uma aproximação simples, outros seguem em cuidado.",
     tone: "attention",
   };
@@ -133,7 +133,7 @@ function urgentMessage(
         title: urgentOrPastoral === 1
           ? "Há um cuidado que pede proximidade."
           : `${urgentOrPastoral} cuidados pedem proximidade nesta célula.`,
-        subtitle: "Olhe os sinais com calma e peça apoio se precisar.",
+        subtitle: "Os sinais ajudam a perceber onde o cuidado pode pedir mais proximidade.",
         tone: "attention",
       };
     }
@@ -144,7 +144,7 @@ function urgentMessage(
         : "Há cuidados sensíveis nesta célula.",
       subtitle: isPastorRole(role)
         ? "Algumas pessoas podem precisar de um olhar pastoral mais próximo."
-        : "Acompanhe a liderança e veja onde o cuidado precisa de apoio.",
+        : "A liderança segue perto; o cuidado pode pedir apoio em alguns pontos.",
       tone: "attention",
     };
   }
@@ -175,7 +175,7 @@ function urgentMessage(
 
   return {
     title: `${urgentOrPastoral} irmãos pedem cuidado mais próximo.`,
-    subtitle: "Há sinais sensíveis aqui. Abra as pessoas e acompanhe cada cuidado com calma.",
+    subtitle: "Há sinais sensíveis aqui. Cada pessoa pode ser acolhida com calma e proximidade.",
     tone: "attention",
   };
 }
@@ -215,7 +215,7 @@ function supportMessage(
   if (role === UserRole.SUPERVISOR) {
     if (support === 1 && subject?.personName) {
       return {
-        title: `${subject.personName} precisa de apoio da supervisão.`,
+        title: `${subject.personName} tem um pedido de apoio da supervisão.`,
         subtitle: `${groupPrefix(subject)}apoie a liderança com calma, sem assumir a operação da célula.`,
         tone: "attention",
       };
@@ -288,7 +288,7 @@ function attentionMessage(
 
     return {
       title: `${attention} irmãos pedem atenção nas células.`,
-      subtitle: "Acompanhe com calma e veja onde a liderança pode precisar de apoio.",
+      subtitle: "Acompanhe com calma e perceba onde a liderança pode pedir apoio.",
       tone: "attention",
     };
   }
@@ -390,7 +390,7 @@ function groupPresenceMessage(role: UserRole, counts: Required<Pick<PastoralPuls
         ? "Há um encontro aguardando presença."
         : "Há presença aguardando registro nesta célula.",
       subtitle: role === UserRole.LEADER
-        ? "Registre quando puder para manter a leitura pastoral em dia."
+        ? "Quando a presença for registrada, a leitura pastoral fica mais clara."
         : "Quando a liderança registrar, a leitura da célula fica mais clara.",
       tone: "calm",
     };
@@ -415,7 +415,7 @@ function groupPresenceMessage(role: UserRole, counts: Required<Pick<PastoralPuls
         ? "Acompanhe o contexto da célula antes de orientar próximos passos."
         : role === UserRole.LEADER
           ? "Vale olhar quem faltou e se aproximar sem tom de cobrança."
-          : "Veja se a liderança precisa de apoio para retomar vínculos.",
+          : "Pode ser um sinal para perceber se a liderança quer apoio para retomar vínculos.",
       tone: "attention",
     };
   }

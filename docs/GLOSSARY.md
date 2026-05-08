@@ -111,6 +111,8 @@ Sinal não é tarefa.
 
 Sinal não é ticket, SLA, cobrança ou fila burocrática.
 
+Mensagens de sinal devem ajudar a interpretar o cuidado sem ordenar uma ação. Prefira frases como `talvez valha`, `pode ser um bom momento`, `pede proximidade` e `com calma`. Em sinais de presença, use `sem justificativa registrada` para deixar claro que o sistema fala do dado marcado, não da realidade completa da pessoa. Quando houver encontros que sustentam o sinal, mostre uma evidência curta como `Ausente em: 23 abr e 30 abr.`. Evite `comece por`, `você precisa`, `deve fazer` e diagnósticos como `está se afastando`.
+
 ### Atenção
 
 Forma visível de apresentar um sinal para alguém agir.

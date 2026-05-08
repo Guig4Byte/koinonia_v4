@@ -58,7 +58,7 @@ export default async function PastorPage() {
 
       <PastoralSignalSection
         title="Irmãos que precisam de um olhar especial"
-        detail="Urgentes ou encaminhados ao pastor aparecem antes das métricas."
+        detail="Urgentes ou encaminhados ao pastor aparecem com mais destaque."
         emptyMessage="Nada grave ou encaminhado chegou para o pastor agora."
         signals={urgentOrPastoralCases}
         viewer={user}

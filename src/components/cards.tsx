@@ -382,7 +382,7 @@ export function PersonSignalCard(props: {
             </div>
             <Badge tone={resolvedBadgeTone} className="px-2 py-0.5 text-[11px]">{resolvedBadgeLabel}</Badge>
           </div>
-          {reason ? <p className="mt-2 border-t border-[var(--color-border-divider)] pt-2 text-[13px] leading-relaxed text-[var(--color-text-primary)]">{reason}</p> : null}
+          {reason ? <p className="mt-2 whitespace-pre-line border-t border-[var(--color-border-divider)] pt-2 text-[13px] leading-relaxed text-[var(--color-text-primary)]">{reason}</p> : null}
           {cardHref ? (
             <p className="mt-2 text-[13px] font-semibold text-[var(--color-brand)]">
               {ctaLabel} <span className="inline-block transition group-active:translate-x-0.5">→</span>

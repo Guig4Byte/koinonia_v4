@@ -231,7 +231,7 @@ A métrica deve dar contexto pastoral, não ranking.
 
 ## Seções pastorais
 
-As telas principais organizam pessoas por intenção pastoral.
+As telas principais organizam pessoas por intenção pastoral. Mensagens de sinal devem ser explicativas e pastorais: elas informam o que foi percebido e sugerem proximidade com leveza, sem ordenar o próximo passo nem diagnosticar a pessoa. Em sinais de presença, a mensagem pode citar os encontros que sustentam a atenção, usando linguagem objetiva e humilde como `sem justificativa registrada`.
 
 | Seção | Quando aparece | Propósito |
 | --- | --- | --- |

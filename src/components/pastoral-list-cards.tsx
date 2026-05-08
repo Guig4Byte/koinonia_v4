@@ -1,5 +1,5 @@
 import { PastoralListSection, PersonMiniCard, PersonSignalCard } from "@/components/cards";
-import { signalBadgeForViewer, signalDetailForViewer } from "@/features/signals/display";
+import { signalBadgeForViewer, signalDescriptionForViewer } from "@/features/signals/display";
 import { isSupportRequest } from "@/features/signals/sections";
 import { initials } from "@/lib/text";
 import { SignalSeverity, UserRole } from "@/generated/prisma/client";
@@ -44,7 +44,7 @@ function pastoralSignalCards<TSignal extends PastoralSignalCardItem>({
   signals,
   viewer,
   contextForSignal = defaultSignalContext,
-  reasonForSignal = (signal, currentViewer) => signalDetailForViewer(signal, currentViewer),
+  reasonForSignal = (signal, currentViewer) => signalDescriptionForViewer(signal, currentViewer),
   ctaLabelForSignal = (signal, currentViewer) => isSupportRequest(signal, currentViewer) ? "Abrir apoio" : "Acompanhar",
 }: {
   signals: TSignal[];

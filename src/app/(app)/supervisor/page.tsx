@@ -67,7 +67,7 @@ export default async function SupervisorPage() {
 
       <PastoralSignalSection
         title="Irmãos que precisam de um olhar especial"
-        detail="Urgentes ou encaminhados ao pastor aparecem antes dos demais."
+        detail="Urgentes ou encaminhados ao pastor aparecem com mais destaque."
         emptyMessage="Nenhum caso urgente ou encaminhado agora."
         signals={urgentSignals}
         viewer={user}
@@ -76,7 +76,7 @@ export default async function SupervisorPage() {
 
       <PastoralSignalSection
         title="Pedidos de apoio"
-        detail="Pedidos trazidos pelos líderes aparecem primeiro, para você apoiar sem virar operador da célula."
+        detail="Pedidos trazidos pelos líderes aparecem separados, para apoiar sem virar operador da célula."
         emptyMessage="Nenhum líder pediu apoio agora."
         signals={supportSignals}
         viewer={user}

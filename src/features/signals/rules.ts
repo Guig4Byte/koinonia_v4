@@ -2,7 +2,9 @@ import { EventStatus, MembershipRole, PersonStatus, SignalSource, SignalStatus }
 import { prisma } from "@/lib/prisma";
 import {
   countConsecutiveAbsences,
+  describeAttendanceEvidence,
   describeAttendanceSignal,
+  getConsecutiveAbsenceDatesNewestFirst,
   getRecordedStatusesNewestFirst,
   shouldKeepAttendanceSignalResolved,
 } from "./rules-core";
@@ -48,8 +50,11 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string) {
   for (const membership of group.memberships) {
     const statuses = getRecordedStatusesNewestFirst(group.events, membership.personId);
     const absences = countConsecutiveAbsences(statuses);
-    const signal = describeAttendanceSignal(absences);
-    const latestEvidenceAt = group.events.find((event) => event.attendances.some((item) => item.personId === membership.personId))?.startsAt ?? null;
+    const absenceDates = getConsecutiveAbsenceDatesNewestFirst(group.events, membership.personId);
+    const signal = describeAttendanceSignal(absences, describeAttendanceEvidence(absenceDates));
+    const latestEvidenceAt = absenceDates[0]
+      ?? group.events.find((event) => event.attendances.some((item) => item.personId === membership.personId))?.startsAt
+      ?? null;
 
     const existing = await prisma.careSignal.findFirst({
       where: {

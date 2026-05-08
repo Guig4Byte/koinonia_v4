@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { canRegisterCare, canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { canEscalateSignalToPastor, canRequestSupervisorSupport, escalationStatusDetailForViewer } from "@/features/signals/escalation";
-import { signalBadgeForViewer, signalDetailForViewer } from "@/features/signals/display";
+import { signalBadgeForViewer, signalDescriptionForViewer, signalDetailForViewer } from "@/features/signals/display";
 import { isUrgentOrPastoralCase, sortSignalsForPastoralViewer } from "@/features/signals/sections";
 import { summarizePresenceFromAttendances, summarizePresenceTrend } from "@/features/events/presence-summary";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -333,19 +333,20 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       <div className="space-y-3">
         {pastoralOrderedSignals.map((signal) => {
           const signalTone = signalBadgeForViewer(signal, user).tone;
+          const signalDescription = signalDescriptionForViewer(signal, user, { includeEvidence: true });
           const assignmentMessage = escalationStatusDetailForViewer(signal, user);
           const canRequestSupervisor = canRequestSupervisorSupport(user, signal);
           const canEscalatePastor = canEscalateSignalToPastor(user, signal);
 
           return (
-            <article key={signal.id} className={`card-hover-lift rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card ${priorityCardClass(signalTone)}`}> 
+            <article key={signal.id} className={`card-hover-lift rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card ${priorityCardClass(signalTone)}`}>
               <div className="min-w-0">
-                  <p className="font-semibold text-[var(--color-text-primary)]">{signalDetailForViewer(signal, user)}</p>
-                  <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
-                    {signal.group?.name ?? primaryGroup?.name ?? "Sem célula"} · {formatShortDate(signal.detectedAt)}, {formatTime(signal.detectedAt)}
-                  </p>
+                <p className="font-semibold text-[var(--color-text-primary)]">{signalDetailForViewer(signal, user)}</p>
+                <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
+                  {signal.group?.name ?? primaryGroup?.name ?? "Sem célula"} · {formatShortDate(signal.detectedAt)}, {formatTime(signal.detectedAt)}
+                </p>
               </div>
-              {signal.evidence ? <p className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">{signal.evidence}</p> : null}
+              {signalDescription ? <p className="mt-3 whitespace-pre-line border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">{signalDescription}</p> : null}
               <SignalSupportActions
                 signalId={signal.id}
                 assignmentMessage={assignmentMessage}

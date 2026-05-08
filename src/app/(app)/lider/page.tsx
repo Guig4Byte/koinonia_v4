@@ -106,12 +106,11 @@ export default async function LeaderPage() {
           {urgentSignals.length > 0 ? (
             <PastoralSignalSection
               title="Irmãos que precisam de um olhar especial"
-              detail="Abra a pessoa e faça o próximo gesto simples."
+              detail="Abra a pessoa para entender o contexto com calma."
               emptyMessage="Nenhuma pessoa urgente ou encaminhada agora."
               signals={urgentSignals}
               viewer={user}
               contextForSignal={(signal, viewer) => signalDetailForViewer(signal, viewer)}
-              reasonForSignal={() => undefined}
             />
           ) : null}
 
@@ -123,19 +122,17 @@ export default async function LeaderPage() {
               signals={supportSignals}
               viewer={user}
               contextForSignal={(signal, viewer) => signalDetailForViewer(signal, viewer)}
-              reasonForSignal={() => undefined}
             />
           ) : null}
 
           {attentionSignals.length > 0 ? (
             <PastoralSignalSection
               title="Acompanhar de perto"
-              detail="Atenções locais que merecem contato simples."
+              detail="Atenções locais que pedem proximidade."
               emptyMessage="Nenhum membro da sua célula está em atenção agora."
               signals={attentionSignals}
               viewer={user}
               contextForSignal={(signal, viewer) => signalDetailForViewer(signal, viewer)}
-              reasonForSignal={() => undefined}
             />
           ) : null}
 
