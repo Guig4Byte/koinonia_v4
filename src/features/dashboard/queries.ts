@@ -7,6 +7,9 @@ import { getPastoralSectionSignalsByPerson, isSupportRequest } from "@/features/
 import { prisma } from "@/lib/prisma";
 import { addBrasiliaDays, endOfBrasiliaWeek, startOfBrasiliaDay, startOfBrasiliaWeek } from "@/lib/brasilia-time";
 
+const LOW_PRESENCE_THRESHOLD = 70;
+const PT_BR_LOCALE = "pt-BR";
+
 const pastoralSignalWhere = {
   OR: [
     { severity: SignalSeverity.URGENT },
@@ -20,6 +23,93 @@ const activeGroupResponsibilityInclude = {
   orderBy: { createdAt: "asc" as const },
 };
 
+type PresenceThresholdSummary = {
+  hasPresenceData: boolean;
+  presenceRate: number;
+};
+
+type PastoralPriorityItem = {
+  name: string;
+  pastoralPriorityScore: number;
+};
+
+type SupervisorPriorityItem = {
+  name: string;
+  highestPriorityScore: number;
+  groupsNeedingAttentionCount: number;
+};
+
+function sumBy<T>(items: T[], selector: (item: T) => number) {
+  return items.reduce((total, item) => total + selector(item), 0);
+}
+
+function compareByName<T extends { name: string }>(left: T, right: T) {
+  return left.name.localeCompare(right.name, PT_BR_LOCALE);
+}
+
+function comparePastoralPriorityThenName<T extends PastoralPriorityItem>(left: T, right: T) {
+  const scoreDifference = right.pastoralPriorityScore - left.pastoralPriorityScore;
+  if (scoreDifference !== 0) return scoreDifference;
+
+  return compareByName(left, right);
+}
+
+function compareSupervisorPriority(left: SupervisorPriorityItem, right: SupervisorPriorityItem) {
+  const scoreDifference = right.highestPriorityScore - left.highestPriorityScore;
+  if (scoreDifference !== 0) return scoreDifference;
+
+  const attentionDifference = right.groupsNeedingAttentionCount - left.groupsNeedingAttentionCount;
+  if (attentionDifference !== 0) return attentionDifference;
+
+  return compareByName(left, right);
+}
+
+function hasLowPresence(presence: PresenceThresholdSummary) {
+  return presence.hasPresenceData && presence.presenceRate < LOW_PRESENCE_THRESHOLD;
+}
+
+function countGroupsWithoutPresence<T extends { hasPresenceData: boolean }>(groups: T[]) {
+  return groups.filter((group) => !group.hasPresenceData).length;
+}
+
+function countLowPresenceGroups<T extends PresenceThresholdSummary>(groups: T[]) {
+  return groups.filter(hasLowPresence).length;
+}
+
+function pastoralPriorityScoreForGroup({
+  urgentCount,
+  pastoralCasesCount,
+  hasLowPresence: lowPresence,
+  presenceRate,
+}: {
+  urgentCount: number;
+  pastoralCasesCount: number;
+  hasLowPresence: boolean;
+  presenceRate: number;
+}) {
+  return urgentCount * 1000
+    + Math.max(pastoralCasesCount - urgentCount, 0) * 700
+    + (lowPresence ? 100 + (LOW_PRESENCE_THRESHOLD - presenceRate) : 0);
+}
+
+function teamGroupStatusLabel({
+  urgentCount,
+  pastoralCasesCount,
+  hasNoPresenceData,
+  hasLowPresence: lowPresence,
+}: {
+  urgentCount: number;
+  pastoralCasesCount: number;
+  hasNoPresenceData: boolean;
+  hasLowPresence: boolean;
+}) {
+  if (urgentCount > 0) return `${urgentCount} ${urgentCount === 1 ? "urgente" : "urgentes"}`;
+  if (pastoralCasesCount > 0) return `${pastoralCasesCount} ${pastoralCasesCount === 1 ? "caso pastoral" : "casos pastorais"}`;
+  if (hasNoPresenceData) return "Sem presença recente";
+  if (lowPresence) return "Presença baixa";
+
+  return "Estável";
+}
 
 export async function getPastorDashboard(user: PermissionUser) {
   if (!canUsePastorDashboard(user)) {
@@ -95,6 +185,8 @@ export async function getPastorDashboard(user: PermissionUser) {
   const groupsWithPresence = groups.map((group) => {
     const groupPresence = summarizeEventsPresence(group.events);
     const recordedEvents = group.events.filter(isPresenceRecordedEvent);
+    const primarySignals = getPrimarySignalsByPerson(group.signals);
+    const pastoralSignals = getPastoralSignalsByPerson(group.signals);
 
     return {
       id: group.id,
@@ -104,8 +196,8 @@ export async function getPastorDashboard(user: PermissionUser) {
       presenceRate: groupPresence.presenceRate,
       hasPresenceData: groupPresence.hasPresenceData,
       recordedEventsCount: recordedEvents.length,
-      attentionCount: getPrimarySignalsByPerson(group.signals).length,
-      pastoralCasesCount: getPastoralSignalsByPerson(group.signals).length,
+      attentionCount: primarySignals.length,
+      pastoralCasesCount: pastoralSignals.length,
     };
   });
 
@@ -133,7 +225,6 @@ export async function getPastorTeamOverview(user: PermissionUser) {
   }
 
   const churchId = user.churchId;
-  const LOW_PRESENCE_THRESHOLD = 70;
 
   const groupInclude = {
     leader: true,
@@ -195,21 +286,20 @@ export async function getPastorTeamOverview(user: PermissionUser) {
     const attentionCount = primarySignals.length;
     const localAttentionCount = Math.max(attentionCount - pastoralCasesCount - supportRequestsCount, 0);
     const inCareCount = group.memberships.filter((membership) => membership.person.status === PersonStatus.COOLING_AWAY).length;
-    const hasLowPresence = presence.hasPresenceData && presence.presenceRate < LOW_PRESENCE_THRESHOLD;
+    const hasLowPresenceValue = hasLowPresence(presence);
     const hasNoPresenceData = !presence.hasPresenceData;
-    const pastoralPriorityScore =
-      urgentCount * 1000
-      + Math.max(pastoralCasesCount - urgentCount, 0) * 700
-      + (hasLowPresence ? 100 + (LOW_PRESENCE_THRESHOLD - presence.presenceRate) : 0);
-    const statusLabel = urgentCount > 0
-      ? `${urgentCount} ${urgentCount === 1 ? "urgente" : "urgentes"}`
-      : pastoralCasesCount > 0
-        ? `${pastoralCasesCount} ${pastoralCasesCount === 1 ? "caso pastoral" : "casos pastorais"}`
-        : hasNoPresenceData
-          ? "Sem presença recente"
-          : hasLowPresence
-            ? "Presença baixa"
-            : "Estável";
+    const pastoralPriorityScore = pastoralPriorityScoreForGroup({
+      urgentCount,
+      pastoralCasesCount,
+      hasLowPresence: hasLowPresenceValue,
+      presenceRate: presence.presenceRate,
+    });
+    const statusLabel = teamGroupStatusLabel({
+      urgentCount,
+      pastoralCasesCount,
+      hasNoPresenceData,
+      hasLowPresence: hasLowPresenceValue,
+    });
 
     return {
       id: group.id,
@@ -218,7 +308,7 @@ export async function getPastorTeamOverview(user: PermissionUser) {
       membersCount: group.memberships.length,
       presenceRate: presence.presenceRate,
       hasPresenceData: presence.hasPresenceData,
-      hasLowPresence,
+      hasLowPresence: hasLowPresenceValue,
       hasNoPresenceData,
       attentionCount,
       pastoralCasesCount,
@@ -229,13 +319,6 @@ export async function getPastorTeamOverview(user: PermissionUser) {
       pastoralPriorityScore,
       statusLabel,
     };
-  };
-
-  const compareTeamGroups = (left: ReturnType<typeof toTeamGroup>, right: ReturnType<typeof toTeamGroup>) => {
-    const scoreDifference = right.pastoralPriorityScore - left.pastoralPriorityScore;
-    if (scoreDifference !== 0) return scoreDifference;
-
-    return left.name.localeCompare(right.name, "pt-BR");
   };
 
   const supervisorTeams = supervisors.map((supervisor) => {
@@ -249,14 +332,14 @@ export async function getPastorTeamOverview(user: PermissionUser) {
       groupsById.set(group.id, group);
     });
 
-    const groups = Array.from(groupsById.values()).map(toTeamGroup).sort(compareTeamGroups);
+    const groups = Array.from(groupsById.values()).map(toTeamGroup).sort(comparePastoralPriorityThenName);
     const highestPriorityScore = groups[0]?.pastoralPriorityScore ?? 0;
     const groupsNeedingAttentionCount = groups.filter((group) => group.pastoralPriorityScore > 0).length;
-    const pastoralCasesCount = groups.reduce((total, group) => total + group.pastoralCasesCount, 0);
-    const urgentCount = groups.reduce((total, group) => total + group.urgentCount, 0);
-    const attentionCount = groups.reduce((total, group) => total + group.attentionCount, 0);
-    const groupsWithoutPresenceCount = groups.filter((group) => !group.hasPresenceData).length;
-    const lowPresenceGroupsCount = groups.filter((group) => group.hasPresenceData && group.presenceRate < LOW_PRESENCE_THRESHOLD).length;
+    const pastoralCasesCount = sumBy(groups, (group) => group.pastoralCasesCount);
+    const urgentCount = sumBy(groups, (group) => group.urgentCount);
+    const attentionCount = sumBy(groups, (group) => group.attentionCount);
+    const groupsWithoutPresenceCount = countGroupsWithoutPresence(groups);
+    const lowPresenceGroupsCount = countLowPresenceGroups(groups);
 
     return {
       id: supervisor.id,
@@ -271,21 +354,13 @@ export async function getPastorTeamOverview(user: PermissionUser) {
       groupsWithoutPresenceCount,
       lowPresenceGroupsCount,
     };
-  }).sort((left, right) => {
-    const scoreDifference = right.highestPriorityScore - left.highestPriorityScore;
-    if (scoreDifference !== 0) return scoreDifference;
-
-    const attentionDifference = right.groupsNeedingAttentionCount - left.groupsNeedingAttentionCount;
-    if (attentionDifference !== 0) return attentionDifference;
-
-    return left.name.localeCompare(right.name, "pt-BR");
-  });
-  const unassignedGroups = groupsWithoutSupervisor.map(toTeamGroup).sort(compareTeamGroups);
+  }).sort(compareSupervisorPriority);
+  const unassignedGroups = groupsWithoutSupervisor.map(toTeamGroup).sort(comparePastoralPriorityThenName);
   const allGroups = [...supervisorTeams.flatMap((supervisor) => supervisor.groups), ...unassignedGroups];
-  const priorityGroups = allGroups.filter((group) => group.pastoralPriorityScore > 0).sort(compareTeamGroups);
+  const priorityGroups = allGroups.filter((group) => group.pastoralPriorityScore > 0).sort(comparePastoralPriorityThenName);
   const readingPendingGroups = allGroups
     .filter((group) => group.hasNoPresenceData)
-    .sort(compareTeamGroups);
+    .sort(comparePastoralPriorityThenName);
 
   return {
     supervisors: supervisorTeams,
@@ -295,13 +370,13 @@ export async function getPastorTeamOverview(user: PermissionUser) {
     summary: {
       supervisorsCount: supervisors.length,
       groupsCount: allGroups.length,
-      pastoralCasesCount: allGroups.reduce((total, group) => total + group.pastoralCasesCount, 0),
-      urgentCount: allGroups.reduce((total, group) => total + group.urgentCount, 0),
-      attentionCount: allGroups.reduce((total, group) => total + group.attentionCount, 0),
+      pastoralCasesCount: sumBy(allGroups, (group) => group.pastoralCasesCount),
+      urgentCount: sumBy(allGroups, (group) => group.urgentCount),
+      attentionCount: sumBy(allGroups, (group) => group.attentionCount),
       groupsNeedingAttentionCount: priorityGroups.length,
       groupsWithPastoralCasesCount: allGroups.filter((group) => group.pastoralCasesCount > 0).length,
-      groupsWithoutPresenceCount: allGroups.filter((group) => !group.hasPresenceData).length,
-      lowPresenceGroupsCount: allGroups.filter((group) => group.hasPresenceData && group.presenceRate < LOW_PRESENCE_THRESHOLD).length,
+      groupsWithoutPresenceCount: countGroupsWithoutPresence(allGroups),
+      lowPresenceGroupsCount: countLowPresenceGroups(allGroups),
       groupsWithoutSupervisorCount: unassignedGroups.length,
     },
   };
@@ -335,7 +410,6 @@ async function getGroupScopedDashboard(user: PermissionUser) {
     const previousGroupEvents = recordedGroupEvents.slice(4, 8);
     const groupPresence = summarizeEventsPresence(recentGroupEvents);
     const previousGroupPresence = summarizeEventsPresence(previousGroupEvents);
-
     const groupAttentionSignals = getPastoralSectionSignalsByPerson(group.signals, user);
 
     return {
@@ -371,4 +445,3 @@ export function getSupervisorDashboard(user: PermissionUser) {
 export function getLeaderDashboard(user: PermissionUser) {
   return getGroupScopedDashboard(user);
 }
-
