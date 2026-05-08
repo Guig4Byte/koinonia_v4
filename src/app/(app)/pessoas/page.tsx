@@ -1,18 +1,16 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { MembershipRole, PersonStatus, UserRole } from "@/generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
-import { EmptyState, PersonMiniCard, SectionTitle } from "@/components/cards";
-import { ProgressiveList } from "@/components/progressive-list";
+import { SectionTitle } from "@/components/cards";
+import { MemberPriorityList } from "@/components/member-priority-list";
 import { SearchBox } from "@/components/search-box";
 import { getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "@/features/permissions/permissions";
-import { memberCardTone, memberMatchesFilter, membersFilterHref, MEMBERS_FILTERS, readMembersFilter } from "@/features/people/member-filters";
+import { memberCardTone, memberMatchesFilter, readMembersFilter } from "@/features/people/member-filters";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { signalDetailForViewer, type SignalBadgeTone } from "@/features/signals/display";
 import { isSupportRequest, isUrgentOrPastoralCase, splitPastoralSections } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
-import { cn } from "@/lib/cn";
 import { prisma } from "@/lib/prisma";
 import { initials } from "@/lib/text";
 import { firstParam } from "@/lib/search-params";
@@ -172,118 +170,20 @@ export default async function PeoplePage({ searchParams }: PeoplePageProps) {
 
       <section id="membros" className="scroll-mt-6">
         <SectionTitle detail={membersSectionDetail}>Membros da célula</SectionTitle>
-        <div className="group-member-filter-row mb-3">
-          {MEMBERS_FILTERS.map((option) => {
-            const active = option.value === activeMembersFilter;
-
-            return (
-              <Link
-                key={option.value}
-                href={membersFilterHref("/pessoas", option.value)}
-                aria-current={active ? "page" : undefined}
-                className={cn("team-filter-chip", active && "team-filter-chip-active")}
-              >
-                {option.label}
-              </Link>
-            );
-          })}
-        </div>
-
-        {activeMembersFilter === "todos" ? (
-          <div className="group-detail-list">
-            {priorityMembers.length > 0 ? (
-              <div className="space-y-2">
-                <div>
-                  <p className="text-sm font-semibold text-[var(--color-text-primary)]">Quem merece proximidade</p>
-                  <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-                    {priorityMembers.length} {priorityMembers.length === 1 ? "pessoa no radar" : "pessoas no radar"}
-                  </p>
-                </div>
-                <ProgressiveList
-                  initialCount={4}
-                  step={4}
-                  moreLabel="Ver mais pessoas no radar"
-                  lessLabel="Mostrar menos pessoas no radar"
-                >
-                  {priorityMembers.map((member) => (
-                    <PersonMiniCard
-                      key={member.id}
-                      href={`/pessoas/${member.id}`}
-                      initials={member.initials}
-                      name={member.name}
-                      context={member.subtitle ?? member.context}
-                      badgeLabel={member.badgeLabel}
-                      badgeTone={member.badgeTone}
-                      cardTone={member.cardTone}
-                    />
-                  ))}
-                </ProgressiveList>
-              </div>
-            ) : null}
-
-            {regularMembers.length > 0 ? (
-              <div className={cn("space-y-2", priorityMembers.length > 0 && "pt-1")}>
-                {priorityMembers.length > 0 ? (
-                  <div>
-                    <p className="text-sm font-semibold text-[var(--color-text-primary)]">Ativos</p>
-                    <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-                      {regularMembers.length} {regularMembers.length === 1 ? "membro sem sinal aberto" : "membros sem sinal aberto"}
-                    </p>
-                  </div>
-                ) : null}
-                <ProgressiveList
-                  initialCount={6}
-                  step={6}
-                  moreLabel="Ver mais membros"
-                  lessLabel="Mostrar menos membros"
-                >
-                  {regularMembers.map((member) => (
-                    <PersonMiniCard
-                      key={member.id}
-                      href={`/pessoas/${member.id}`}
-                      initials={member.initials}
-                      name={member.name}
-                      badgeLabel={member.badgeLabel}
-                      badgeTone={member.badgeTone}
-                      cardTone="muted"
-                      compact
-                    />
-                  ))}
-                </ProgressiveList>
-              </div>
-            ) : null}
-
-            {priorityMembers.length === 0 && regularMembers.length === 0 ? (
-              <EmptyState compact>Nenhum membro encontrado nesse recorte.</EmptyState>
-            ) : null}
-          </div>
-        ) : (
-          <div className="group-detail-list">
-            <ProgressiveList
-              initialCount={6}
-              step={6}
-              moreLabel="Ver mais membros"
-              lessLabel="Mostrar menos membros"
-            >
-              {regularMembers.map((member) => (
-                <PersonMiniCard
-                  key={member.id}
-                  href={`/pessoas/${member.id}`}
-                  initials={member.initials}
-                  name={member.name}
-                  context={member.priorityRank >= 5 ? undefined : member.subtitle ?? member.context}
-                  badgeLabel={member.badgeLabel}
-                  badgeTone={member.badgeTone}
-                  cardTone={member.priorityRank >= 5 ? "muted" : member.cardTone}
-                  compact={member.priorityRank >= 5}
-                />
-              ))}
-            </ProgressiveList>
-            {regularMembers.length === 0 ? (
-              <EmptyState compact>Nenhum membro encontrado nesse recorte.</EmptyState>
-            ) : null}
-          </div>
-        )}
+        <MemberPriorityList
+          basePath="/pessoas"
+          activeFilter={activeMembersFilter}
+          priorityMembers={priorityMembers}
+          regularMembers={regularMembers}
+          keyForMember={(member) => member.id}
+          hrefForMember={(member) => `/pessoas/${member.id}`}
+          priorityContextForMember={(member) => member.subtitle ?? member.context}
+          filteredContextForMember={(member) => member.priorityRank >= 5 ? undefined : member.subtitle ?? member.context}
+          priorityMoreLabel="Ver mais pessoas no radar"
+          priorityLessLabel="Mostrar menos pessoas no radar"
+          regularInitialCount={6}
+          regularStep={6}
+        />
       </section>
     </AppShell>
   );
