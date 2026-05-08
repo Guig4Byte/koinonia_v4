@@ -1,8 +1,9 @@
-export type SignalSupportAction = "REQUEST_SUPERVISOR" | "ESCALATE_PASTOR";
+import type { SignalSupportAction } from "./support-payload";
+
+export { SIGNAL_SUPPORT_NOTE_MAX_LENGTH, signalSupportRequestPayload, type SignalSupportAction } from "./support-payload";
 export type SignalSupportFlowStage = "idle" | "request-supervisor" | "escalate-pastor";
 export type SignalSupportFormStage = Exclude<SignalSupportFlowStage, "idle">;
 
-export const SIGNAL_SUPPORT_NOTE_MAX_LENGTH = 500;
 export const SIGNAL_SUPPORT_NOTE_PLACEHOLDER = "Ex.: Tentei contato, mas ainda não consegui falar.";
 
 export type SignalSupportActionCopy = {
@@ -63,11 +64,3 @@ export function shouldShowSignalSupportActions(options: {
   return Boolean(options.assignmentMessage || options.canRequestSupervisor || options.canEscalatePastor);
 }
 
-export function signalSupportRequestPayload(action: SignalSupportAction, note: string) {
-  const trimmedNote = note.trim();
-
-  return {
-    action,
-    note: trimmedNote || undefined,
-  };
-}

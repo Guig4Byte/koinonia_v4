@@ -3,41 +3,10 @@ import { CareKind, GroupResponsibilityRole, SignalStatus, UserRole } from "@/gen
 import { canViewGroup } from "@/features/permissions/permissions";
 import { canEscalateSignalToPastor, canRequestSupervisorSupport } from "@/features/signals/escalation";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { parseSignalSupportPayload } from "@/features/signals/support-payload";
 import { apiError, apiOk } from "@/lib/api-response";
-import { isRecord, readJsonBody } from "@/lib/json";
+import { readJsonBody } from "@/lib/json";
 import { prisma } from "@/lib/prisma";
-
-const supportActions = ["REQUEST_SUPERVISOR", "ESCALATE_PASTOR"] as const;
-type SupportAction = (typeof supportActions)[number];
-
-type ParsedSupportPayload = {
-  action: SupportAction;
-  note?: string;
-};
-
-const supportActionValues = new Set<string>(supportActions);
-
-function isSupportAction(value: unknown): value is SupportAction {
-  return typeof value === "string" && supportActionValues.has(value);
-}
-
-function parseSupportPayload(input: unknown): ParsedSupportPayload | null {
-  if (!isRecord(input)) return null;
-
-  const action = input.action;
-  if (!isSupportAction(action)) return null;
-
-  const rawNote = input.note;
-  if (rawNote !== undefined && typeof rawNote !== "string") return null;
-
-  const note = rawNote?.trim();
-  if (note && note.length > 500) return null;
-
-  return {
-    action,
-    note: note && note.length > 0 ? note : undefined,
-  };
-}
 
 async function findPastoralAssignee(churchId: string) {
   return prisma.user.findFirst({
@@ -49,7 +18,7 @@ async function findPastoralAssignee(churchId: string) {
 export async function PATCH(request: NextRequest, context: { params: Promise<{ signalId: string }> }) {
   const user = await getCurrentUser();
   const { signalId } = await context.params;
-  const payload = parseSupportPayload(await readJsonBody(request));
+  const payload = parseSignalSupportPayload(await readJsonBody(request));
 
   if (!payload) {
     return apiError("Pedido de apoio inválido", 400);
