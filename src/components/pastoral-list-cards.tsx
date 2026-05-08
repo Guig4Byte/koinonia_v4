@@ -1,7 +1,6 @@
 import { PastoralListSection, PersonMiniCard, PersonSignalCard } from "@/components/cards";
 import { signalBadgeForViewer, signalDescriptionForViewer } from "@/features/signals/display";
 import { isSupportRequest } from "@/features/signals/sections";
-import { initials } from "@/lib/text";
 import { SignalSeverity, UserRole } from "@/generated/prisma/client";
 
 export const PASTORAL_SECTION_LIMIT = 4;
@@ -59,7 +58,6 @@ function pastoralSignalCards<TSignal extends PastoralSignalCardItem>({
     return (
       <PersonSignalCard
         key={signal.id}
-        initials={initials(signal.person.fullName)}
         name={signal.person.fullName}
         detailHref={`/pessoas/${signal.person.id}`}
         context={contextForSignal(signal, viewer)}
@@ -130,7 +128,6 @@ function inCarePersonCards<TPerson extends InCarePersonCardItem>({
     <PersonMiniCard
       key={person.id}
       href={`/pessoas/${person.id}`}
-      initials={initials(person.fullName)}
       name={person.fullName}
       context={contextForPerson(person)}
       badgeLabel="Em cuidado"

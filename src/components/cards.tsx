@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/cn";
 import { avatarColorForName, initials } from "@/lib/text";
 import type { SignalBadgeTone } from "@/features/signals/display";
+import { presenceTone, type PresenceTone } from "@/features/events/presence-display";
 import type { PresenceTrend } from "@/features/events/presence-summary";
 
 type CardPriorityTone = SignalBadgeTone | "stable" | "muted";
@@ -17,6 +18,63 @@ export function priorityCardClass(tone?: CardPriorityTone): string {
   if (tone === "stable") return "priority-card priority-card-stable";
   if (tone === "muted") return "priority-card priority-card-muted";
   return "";
+}
+
+function metricTextClass(tone: PresenceTone): string {
+  if (tone === "ok") return "text-[var(--color-metric-presenca)]";
+  if (tone === "warn") return "text-[var(--color-badge-atencao-text)]";
+  if (tone === "risk") return "text-[var(--color-metric-atencoes)]";
+  return "text-[var(--color-text-secondary)]";
+}
+
+function trendTextClass(trend: PresenceTrend, tone: PresenceTone): string {
+  if (trend.direction === "up") return "text-[var(--color-metric-presenca)]";
+  if (tone === "ok") return "text-[var(--color-badge-atencao-text)]";
+  return "text-[var(--color-metric-atencoes)]";
+}
+
+function presenceTrendLabel(trend: PresenceTrend, capitalized = false): string {
+  const direction = trend.direction === "up"
+    ? capitalized ? "Subiu" : "subiu"
+    : capitalized ? "Caiu" : "caiu";
+
+  return `${direction} ${trend.delta} pontos em relação ao período anterior`;
+}
+
+function PresenceTrendDelta({
+  trend,
+  tone,
+  className,
+}: {
+  trend: PresenceTrend;
+  tone: PresenceTone;
+  className?: string;
+}) {
+  return (
+    <span
+      className={cn("font-bold", trendTextClass(trend, tone), className)}
+      aria-label={presenceTrendLabel(trend)}
+      title={presenceTrendLabel(trend, true)}
+    >
+      {trend.direction === "up" ? "↑" : "↓"} {trend.delta} pts
+    </span>
+  );
+}
+
+function signalCardPriorityTone(resolvedBadgeTone: SignalBadgeTone, severity: "ok" | "warn" | "risk" | "info"): CardPriorityTone | undefined {
+  if (resolvedBadgeTone !== "neutral" && resolvedBadgeTone !== "ok" && resolvedBadgeTone !== "info") {
+    return resolvedBadgeTone;
+  }
+
+  if (severity === "risk") return "risk";
+  if (severity === "warn") return "warn";
+  return undefined;
+}
+
+function groupAttentionLabel(count: number, kind: "default" | "local" | "pastoral") {
+  if (kind === "pastoral") return `${count} ${count === 1 ? "caso pastoral" : "casos pastorais"}`;
+  if (kind === "local") return `${count} ${count === 1 ? "atenção local" : "atenções locais"}`;
+  return `${count} ${count === 1 ? "pessoa em atenção" : "pessoas em atenção"}`;
 }
 
 export function PulseCard({
@@ -57,15 +115,10 @@ export function ContextSummary({
   surface?: "card" | "inset";
 }) {
   const toneClass = {
-    ok: "text-[var(--color-metric-presenca)]",
-    warn: "text-[var(--color-badge-atencao-text)]",
-    risk: "text-[var(--color-metric-atencoes)]",
+    ok: metricTextClass("ok"),
+    warn: metricTextClass("warn"),
+    risk: metricTextClass("risk"),
     neutral: "text-[var(--color-text-primary)]",
-  };
-  const trendToneClass = (trend: PresenceTrend, tone: "ok" | "warn" | "risk" | "neutral") => {
-    if (trend.direction === "up") return "text-[var(--color-metric-presenca)]";
-    if (tone === "ok") return "text-[var(--color-badge-atencao-text)]";
-    return "text-[var(--color-metric-atencoes)]";
   };
   const detailClass = detailTone === "strong" ? "context-summary-detail-strong" : undefined;
   const surfaceClass = surface === "inset"
@@ -83,25 +136,21 @@ export function ContextSummary({
             </div>
             <div className="shrink-0 text-right">
               <p className={cn("context-summary-value font-bold tracking-[-0.02em]", toneClass[item.tone ?? "neutral"])}>
-              {item.value}
+                {item.value}
               {item.trend && trendLayout === "inline" ? (
-                <span
-                  className={cn("ml-1 align-middle text-xs font-bold", trendToneClass(item.trend, item.tone ?? "neutral"))}
-                  aria-label={`${item.trend.direction === "up" ? "subiu" : "caiu"} ${item.trend.delta} pontos em relação ao período anterior`}
-                  title={`${item.trend.direction === "up" ? "Subiu" : "Caiu"} ${item.trend.delta} pontos em relação ao período anterior`}
-                >
-                  {item.trend.direction === "up" ? "↑" : "↓"} {item.trend.delta} pts
-                </span>
+                <PresenceTrendDelta
+                  trend={item.trend}
+                  tone={item.tone ?? "neutral"}
+                  className="ml-1 align-middle text-xs"
+                />
               ) : null}
               </p>
               {item.trend && trendLayout === "stacked" ? (
-                <p
-                  className={cn("mt-1 text-[13px] font-bold leading-none", trendToneClass(item.trend, item.tone ?? "neutral"))}
-                  aria-label={`${item.trend.direction === "up" ? "subiu" : "caiu"} ${item.trend.delta} pontos em relação ao período anterior`}
-                  title={`${item.trend.direction === "up" ? "Subiu" : "Caiu"} ${item.trend.delta} pontos em relação ao período anterior`}
-                >
-                  {item.trend.direction === "up" ? "↑" : "↓"} {item.trend.delta} pts
-                </p>
+                <PresenceTrendDelta
+                  trend={item.trend}
+                  tone={item.tone ?? "neutral"}
+                  className="mt-1 block text-[13px] leading-none"
+                />
               ) : null}
             </div>
           </div>
@@ -166,7 +215,6 @@ export function PastoralListSection({
     </section>
   );
 }
-
 
 export function BackLink({
   href,
@@ -282,10 +330,8 @@ function Avatar({ name, compact = false }: { name: string; compact?: boolean }) 
   );
 }
 
-
 export function PersonMiniCard(props: {
   href: string;
-  initials: string;
   name: string;
   context?: string;
   badgeLabel?: string;
@@ -332,7 +378,6 @@ export function PersonMiniCard(props: {
 }
 
 export function PersonSignalCard(props: {
-  initials: string;
   name: string;
   context: string;
   reason?: string;
@@ -357,9 +402,7 @@ export function PersonSignalCard(props: {
   const resolvedBadgeTone = badgeTone ?? (severity === "risk" ? "risk" : severity === "ok" ? "ok" : severity === "info" ? "info" : "warn");
   const resolvedBadgeLabel = badgeLabel ?? (severity === "risk" ? "Urgente" : "Em atenção");
   const cardHref = detailHref ?? href;
-  const priorityTone = resolvedBadgeTone === "neutral" || resolvedBadgeTone === "ok" || resolvedBadgeTone === "info"
-    ? severity === "risk" ? "risk" : severity === "warn" ? "warn" : undefined
-    : resolvedBadgeTone;
+  const priorityTone = signalCardPriorityTone(resolvedBadgeTone, severity);
 
   const content = (
     <article className={cn("card-hover-lift group rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card transition active:scale-[0.99]", priorityCardClass(priorityTone))}>
@@ -420,13 +463,9 @@ export function GroupCard({
   cardTone?: CardPriorityTone;
   presenceTrend?: PresenceTrend | null;
 }) {
-  const tone = !hasPresenceData ? "neutral" : presenceRate < 50 ? "risk" : presenceRate < 70 ? "warn" : "ok";
-  const hasLowPresence = hasPresenceData && presenceRate < 70;
-  const attentionLabel = attentionLabelKind === "pastoral"
-    ? `${attentionCount} ${attentionCount === 1 ? "caso pastoral" : "casos pastorais"}`
-    : attentionLabelKind === "local"
-      ? `${attentionCount} ${attentionCount === 1 ? "atenção local" : "atenções locais"}`
-      : `${attentionCount} ${attentionCount === 1 ? "pessoa em atenção" : "pessoas em atenção"}`;
+  const tone = presenceTone(hasPresenceData, presenceRate);
+  const hasLowPresence = tone === "risk" || tone === "warn";
+  const attentionLabel = groupAttentionLabel(attentionCount, attentionLabelKind);
   const fallbackBadgeTone: SignalBadgeTone = attentionCount > 0
     ? attentionLabelKind === "pastoral" ? "risk" : "warn"
     : !hasPresenceData ? "neutral" : tone === "risk" ? "risk" : hasLowPresence ? "warn" : "ok";
@@ -438,13 +477,7 @@ export function GroupCard({
   const priorityTone = cardTone ?? (resolvedBadgeTone === "neutral" || resolvedBadgeTone === "ok" || resolvedBadgeTone === "info" ? undefined : resolvedBadgeTone);
   const presenceText = hasPresenceData ? `${presenceRate}%` : "—";
   const presenceLabel = !hasPresenceData ? "Registro de presença" : presenceRate < 50 ? "Presença baixa" : "Presença recente";
-  const presenceToneClass = !hasPresenceData
-    ? "text-[var(--color-text-secondary)]"
-    : tone === "risk"
-      ? "text-[var(--color-metric-atencoes)]"
-      : tone === "warn"
-        ? "text-[var(--color-badge-atencao-text)]"
-        : "text-[var(--color-metric-presenca)]";
+  const presenceToneClass = metricTextClass(tone);
   const content = (
     <article className={cn("card-hover-lift rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card transition active:scale-[0.99]", priorityCardClass(priorityTone))}>
       <div className="flex items-start justify-between gap-3">
@@ -459,13 +492,7 @@ export function GroupCard({
           {presenceLabel}:{" "}
           <strong className={cn("font-bold", presenceToneClass)}>{presenceText}</strong>
           {presenceTrend ? (
-            <span
-              className={cn("ml-1 font-bold", presenceTrend.direction === "up" ? "text-[var(--color-metric-presenca)]" : tone === "ok" ? "text-[var(--color-badge-atencao-text)]" : "text-[var(--color-metric-atencoes)]")}
-              aria-label={`${presenceTrend.direction === "up" ? "subiu" : "caiu"} ${presenceTrend.delta} pontos em relação ao período anterior`}
-              title={`${presenceTrend.direction === "up" ? "Subiu" : "Caiu"} ${presenceTrend.delta} pontos em relação ao período anterior`}
-            >
-              {presenceTrend.direction === "up" ? "↑" : "↓"} {presenceTrend.delta} pts
-            </span>
+            <PresenceTrendDelta trend={presenceTrend} tone={tone} className="ml-1" />
           ) : null}
         </span>
         {href ? <span className="font-semibold text-[var(--color-brand)]">Ver célula →</span> : null}

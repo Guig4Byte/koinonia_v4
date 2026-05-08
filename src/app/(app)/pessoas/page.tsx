@@ -12,7 +12,6 @@ import { signalDetailForViewer, type SignalBadgeTone } from "@/features/signals/
 import { isSupportRequest, isUrgentOrPastoralCase, splitPastoralSections } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
-import { initials } from "@/lib/text";
 import { firstParam } from "@/lib/search-params";
 
 type PeoplePageProps = {
@@ -22,7 +21,6 @@ type PeoplePageProps = {
 type MemberDisplay = {
   id: string;
   name: string;
-  initials: string;
   context: string;
   subtitle?: string;
   badgeLabel: string;
@@ -133,7 +131,6 @@ export default async function PeoplePage({ searchParams }: PeoplePageProps) {
       return {
         id: person.id,
         name: person.fullName,
-        initials: initials(person.fullName),
         context: groupName,
         subtitle,
         badgeLabel: badge.label,

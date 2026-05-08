@@ -24,7 +24,6 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { cn } from "@/lib/cn";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
-import { initials } from "@/lib/text";
 import { firstParam } from "@/lib/search-params";
 
 const dayLabels: Record<number, string> = {
@@ -46,7 +45,6 @@ type MemberDisplay = {
   membershipId: string;
   personId: string;
   name: string;
-  initials: string;
   subtitle?: string;
   badgeLabel: string;
   badgeTone: BadgeTone;
@@ -224,7 +222,6 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
         membershipId: membership.id,
         personId: membership.personId,
         name: membership.person.fullName,
-        initials: initials(membership.person.fullName),
         subtitle,
         badgeLabel: memberBadge.label,
         badgeTone: memberBadge.tone,

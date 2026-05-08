@@ -8,7 +8,6 @@ import { cn } from "@/lib/cn";
 export type MemberPriorityCardTone = BadgeTone | "stable" | "muted";
 
 export type MemberPriorityListItem = {
-  initials: string;
   name: string;
   badgeLabel?: string;
   badgeTone?: BadgeTone;
@@ -90,7 +89,6 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
                   <PersonMiniCard
                     key={keyForMember(member)}
                     href={hrefForMember(member)}
-                    initials={member.initials}
                     name={member.name}
                     context={priorityContextForMember?.(member)}
                     badgeLabel={member.badgeLabel}
@@ -122,7 +120,6 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
                   <PersonMiniCard
                     key={keyForMember(member)}
                     href={hrefForMember(member)}
-                    initials={member.initials}
                     name={member.name}
                     badgeLabel={member.badgeLabel}
                     badgeTone={member.badgeTone}
@@ -150,7 +147,6 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
               <PersonMiniCard
                 key={keyForMember(member)}
                 href={hrefForMember(member)}
-                initials={member.initials}
                 name={member.name}
                 context={filteredContextForMember?.(member)}
                 badgeLabel={member.badgeLabel}
