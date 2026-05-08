@@ -1,0 +1,126 @@
+import { describe, expect, it } from "vitest";
+import {
+  buildTeamPageLists,
+  groupBadgeTone,
+  inactiveGroupScheduleText,
+  readTeamFilter,
+  supervisorSummary,
+  teamNavIndicator,
+  teamSavedMessage,
+  type InactiveTeamGroup,
+  type SupervisorTeam,
+  type TeamGroup,
+  type TeamOverview,
+} from "./team-view";
+
+function teamGroup(overrides: Partial<TeamGroup> = {}): TeamGroup {
+  return {
+    id: "group-1",
+    name: "Célula Central",
+    leadershipName: "Bruno",
+    membersCount: 8,
+    presenceRate: 90,
+    hasPresenceData: true,
+    hasLowPresence: false,
+    hasNoPresenceData: false,
+    attentionCount: 0,
+    pastoralCasesCount: 0,
+    supportRequestsCount: 0,
+    localAttentionCount: 0,
+    urgentCount: 0,
+    inCareCount: 0,
+    pastoralPriorityScore: 0,
+    statusLabel: "Estável",
+    ...overrides,
+  };
+}
+
+function supervisor(overrides: Partial<SupervisorTeam> = {}): SupervisorTeam {
+  return {
+    id: "sup-1",
+    name: "Ana",
+    email: "ana@igreja.com",
+    groups: [],
+    highestPriorityScore: 0,
+    groupsNeedingAttentionCount: 0,
+    pastoralCasesCount: 0,
+    urgentCount: 0,
+    attentionCount: 0,
+    groupsWithoutPresenceCount: 0,
+    lowPresenceGroupsCount: 0,
+    ...overrides,
+  };
+}
+
+function teamOverview(overrides: Partial<TeamOverview> = {}): TeamOverview {
+  return {
+    supervisors: [],
+    unassignedGroups: [],
+    priorityGroups: [],
+    readingPendingGroups: [],
+    summary: {
+      supervisorsCount: 0,
+      groupsCount: 0,
+      pastoralCasesCount: 0,
+      urgentCount: 0,
+      attentionCount: 0,
+      groupsNeedingAttentionCount: 0,
+      groupsWithPastoralCasesCount: 0,
+      groupsWithoutPresenceCount: 0,
+      lowPresenceGroupsCount: 0,
+      groupsWithoutSupervisorCount: 0,
+    },
+    ...overrides,
+  };
+}
+
+const inactiveGroup: InactiveTeamGroup = {
+  id: "inactive-1",
+  name: "Célula Pausada",
+  meetingDayOfWeek: 2,
+  meetingTime: "20:00",
+  locationName: "Casa da Maria",
+};
+
+describe("team-view", () => {
+  it("normaliza filtros inválidos para todos", () => {
+    expect(readTeamFilter("sem-presenca")).toBe("sem-presenca");
+    expect(readTeamFilter("qualquer-coisa")).toBe("todos");
+  });
+
+  it("filtra supervisores mantendo supervisor sem grupo apenas na visão padrão", () => {
+    const attentionGroup = teamGroup({ pastoralPriorityScore: 10, statusLabel: "Atenção local" });
+    const emptySupervisor = supervisor({ id: "sup-empty", name: "Pedro", groups: [] });
+    const activeSupervisor = supervisor({ groups: [attentionGroup] });
+    const team = teamOverview({ supervisors: [emptySupervisor, activeSupervisor] });
+
+    expect(buildTeamPageLists({ team, inactiveGroups: [], normalizedQuery: "", activeFilter: "todos" }).filteredSupervisors).toHaveLength(2);
+    expect(buildTeamPageLists({ team, inactiveGroups: [], normalizedQuery: "", activeFilter: "atencao" }).filteredSupervisors).toHaveLength(1);
+  });
+
+  it("inclui inativas apenas no filtro padrão", () => {
+    const team = teamOverview();
+
+    expect(buildTeamPageLists({ team, inactiveGroups: [inactiveGroup], normalizedQuery: "pausada", activeFilter: "todos" }).filteredInactiveGroups).toHaveLength(1);
+    expect(buildTeamPageLists({ team, inactiveGroups: [inactiveGroup], normalizedQuery: "pausada", activeFilter: "sem-presenca" }).filteredInactiveGroups).toHaveLength(0);
+  });
+
+  it("resume supervisor priorizando urgência e casos pastorais", () => {
+    expect(supervisorSummary(supervisor({ groups: [teamGroup()], urgentCount: 1 }))).toBe("1 célula acompanhada · 1 urgente.");
+    expect(supervisorSummary(supervisor({ groups: [teamGroup(), teamGroup({ id: "group-2" })], pastoralCasesCount: 2 }))).toBe("2 células acompanhadas · 2 casos pastorais.");
+  });
+
+  it("resolve tom do grupo por risco, ausência de dado e baixa presença", () => {
+    expect(groupBadgeTone(teamGroup({ urgentCount: 1 }))).toBe("risk");
+    expect(groupBadgeTone(teamGroup({ hasPresenceData: false }))).toBe("neutral");
+    expect(groupBadgeTone(teamGroup({ presenceRate: 60 }))).toBe("warn");
+    expect(groupBadgeTone(teamGroup({ presenceRate: 80 }))).toBe("ok");
+  });
+
+  it("monta textos auxiliares da página", () => {
+    expect(inactiveGroupScheduleText(inactiveGroup)).toBe("Terça · 20:00");
+    expect(teamSavedMessage("celula-criada")).toBe("Célula criada.");
+    expect(teamSavedMessage("outro")).toBeNull();
+    expect(teamNavIndicator(teamOverview({ summary: { ...teamOverview().summary, pastoralCasesCount: 1 } }).summary)).toBe("risk");
+  });
+});

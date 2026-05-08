@@ -1,14 +1,7 @@
 "use client";
 
 import { StructureSearch } from "@/components/structure-search";
-
-type TeamFilter = "todos" | "atencao" | "sem-presenca";
-
-const TEAM_FILTERS: Array<{ value: TeamFilter; label: string }> = [
-  { value: "todos", label: "Todos" },
-  { value: "atencao", label: "Pedem atenção" },
-  { value: "sem-presenca", label: "Sem presença recente" },
-];
+import { TEAM_FILTERS, type TeamFilter } from "@/features/team/team-view";
 
 type TeamStructureSearchProps = {
   query: string;
