@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Plus } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
-import { ContextSummary, EmptyState, InfoCard, SectionTitle } from "@/components/cards";
+import { ContextSummary, EmptyState, InfoCard, SectionTitle } from "@/components/base-cards";
 import { ProgressiveList } from "@/components/progressive-list";
 import { TeamStructureSearch } from "@/components/team-structure-search";
 import { InactiveTeamGroupLink, TeamGroupLink, TeamSupervisorCard } from "@/components/team-structure-cards";

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { EmptyState, PersonMiniCard } from "@/components/cards";
+import { EmptyState } from "@/components/base-cards";
+import { PersonMiniCard } from "@/components/person-cards";
 import type { BadgeTone } from "@/components/ui/badge";
 import { ProgressiveList } from "@/components/progressive-list";
 import { MEMBERS_FILTERS, membersFilterHref, type MembersFilter } from "@/features/people/member-filters";

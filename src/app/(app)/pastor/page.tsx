@@ -1,6 +1,6 @@
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
-import { ContextSummary, PulseCard, SectionTitle } from "@/components/cards";
+import { ContextSummary, PulseCard, SectionTitle } from "@/components/base-cards";
 import { InCareSection, PastoralSignalSection } from "@/components/pastoral-list-cards";
 import { SearchBox } from "@/components/search-box";
 import { getPastorDashboard } from "@/features/dashboard/queries";

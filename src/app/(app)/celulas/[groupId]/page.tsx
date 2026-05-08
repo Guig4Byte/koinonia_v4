@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { GroupResponsibilityRole, PersonStatus, SignalStatus, UserRole } from "@/generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
-import { BackLink, ContextSummary, InfoCard, PulseCard, SectionTitle } from "@/components/cards";
+import { BackLink, ContextSummary, InfoCard, PulseCard, SectionTitle } from "@/components/base-cards";
 import { GroupPendingEventCard } from "@/components/group-pending-event-card";
 import { GroupRegisteredEncountersList } from "@/components/group-registered-encounters-list";
 import { MemberPriorityList } from "@/components/member-priority-list";

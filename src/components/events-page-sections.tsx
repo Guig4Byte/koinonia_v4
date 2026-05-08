@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { BackLink, EmptyState, SectionTitle, priorityCardClass } from "@/components/cards";
+import { BackLink, EmptyState, SectionTitle } from "@/components/base-cards";
+import { priorityCardClass } from "@/components/card-priority";
 import { ProgressiveList } from "@/components/progressive-list";
 import { Badge } from "@/components/ui/badge";
 import {

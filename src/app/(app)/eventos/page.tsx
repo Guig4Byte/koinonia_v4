@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/app-shell";
-import { EmptyState, SectionTitle } from "@/components/cards";
+import { EmptyState, SectionTitle } from "@/components/base-cards";
 import { EventConsultationCards, EventList, EventsConsultationView } from "@/components/events-page-sections";
 import { buildEventsHomeSections, readEventConsultationMode, readEventPeriod } from "@/features/events/events-page-view";
 import { ensureUpcomingCellMeetingsForUser } from "@/features/events/schedule";

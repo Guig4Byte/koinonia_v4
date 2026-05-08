@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { CellsPageSections } from "@/components/cells-page-sections";
 import { CellsStructureSearch } from "@/components/cells-structure-search";
-import { ContextSummary, EmptyState, InfoCard, SectionTitle } from "@/components/cards";
+import { ContextSummary, EmptyState, InfoCard, SectionTitle } from "@/components/base-cards";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { CELLS_SECTION_ID, readCellsFilter } from "@/features/groups/cells-page-filters";
 import { buildCellsPageView } from "@/features/groups/cells-page-view";

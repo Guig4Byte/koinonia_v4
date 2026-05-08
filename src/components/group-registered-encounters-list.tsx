@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CalendarCheck2, UsersRound } from "lucide-react";
 import type { CSSProperties } from "react";
-import { EmptyState, SectionTitle } from "@/components/cards";
+import { EmptyState, SectionTitle } from "@/components/base-cards";
 import { AttendanceStatus } from "@/generated/prisma/client";
 import { ProgressiveList } from "@/components/progressive-list";
 import { type BadgeTone } from "@/components/ui/badge";

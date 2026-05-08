@@ -1,4 +1,4 @@
-import { GroupCard } from "@/components/cards";
+import { GroupCard } from "@/components/group-card";
 import { ProgressiveList } from "@/components/progressive-list";
 import {
   CELLS_PAGE_SECTION_LIMIT,

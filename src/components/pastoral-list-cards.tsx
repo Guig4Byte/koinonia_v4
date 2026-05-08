@@ -1,4 +1,5 @@
-import { PastoralListSection, PersonMiniCard, PersonSignalCard } from "@/components/cards";
+import { PastoralListSection } from "@/components/pastoral-section";
+import { PersonMiniCard, PersonSignalCard } from "@/components/person-cards";
 import { signalBadgeForViewer, signalDescriptionForViewer } from "@/features/signals/display";
 import { isSupportRequest } from "@/features/signals/sections";
 import { SignalSeverity, UserRole } from "@/generated/prisma/client";

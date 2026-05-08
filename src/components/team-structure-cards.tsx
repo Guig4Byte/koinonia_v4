@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { ProgressiveList } from "@/components/progressive-list";
-import { EmptyState, priorityCardClass } from "@/components/cards";
+import { EmptyState } from "@/components/base-cards";
+import { priorityCardClass } from "@/components/card-priority";
 import {
   compactGroupSubtitle,
   GROUPS_PER_SUPERVISOR_LIMIT,

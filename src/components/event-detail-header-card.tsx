@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { ContextSummary } from "@/components/cards";
+import { ContextSummary } from "@/components/base-cards";
 import type { BadgeTone } from "@/components/ui/badge";
 import type { PresenceTone } from "@/features/events/presence-display";
 import { formatShortDate, formatTime } from "@/lib/format";

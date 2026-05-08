@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
-import { EmptyState, PastoralSectionTitle, PulseCard } from "@/components/cards";
+import { EmptyState, PulseCard } from "@/components/base-cards";
+import { PastoralSectionTitle } from "@/components/pastoral-section";
 import { LeaderCurrentEventCard } from "@/components/leader-current-event-card";
 import { InCareSection, PastoralSignalSection } from "@/components/pastoral-list-cards";
 import { ensureUpcomingCellMeetingsForUser } from "@/features/events/schedule";

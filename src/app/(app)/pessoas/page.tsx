@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { MembershipRole, PersonStatus, UserRole } from "@/generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
-import { SectionTitle } from "@/components/cards";
+import { SectionTitle } from "@/components/base-cards";
 import { MemberPriorityList } from "@/components/member-priority-list";
 import { SearchBox } from "@/components/search-box";
 import { getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "@/features/permissions/permissions";

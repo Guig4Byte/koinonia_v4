@@ -8,7 +8,7 @@ import { CheckInList } from "@/components/check-in-list";
 import { EventDetailsActions } from "@/components/event-details-actions";
 import { EventDetailHeaderCard } from "@/components/event-detail-header-card";
 import { EventReadOnlySummary } from "@/components/event-read-only-summary";
-import { BackLink, InfoCard, SectionTitle } from "@/components/cards";
+import { BackLink, InfoCard, SectionTitle } from "@/components/base-cards";
 import { eventEffectiveLocation, isClosedWithoutPresenceStatus, closedWithoutPresenceLabel } from "@/features/events/event-display";
 import { presenceTone } from "@/features/events/presence-display";
 import { summarizeEventPresence } from "@/features/events/presence-summary";
