@@ -133,3 +133,40 @@ export function shouldKeepAttendanceSignalResolved(
 
   return resolvedAttendanceSignalKind(resolvedSignal) === signal.kind;
 }
+
+
+export type OpenAttendanceSignalSnapshot = {
+  id: string;
+} | null | undefined;
+
+export type AttendanceSignalSyncPlan =
+  | { action: "none" }
+  | { action: "keep-open-signal" }
+  | { action: "update-open-signal"; signal: DescribedAttendanceSignal; lastEvidenceAt: Date }
+  | { action: "create-open-signal"; signal: DescribedAttendanceSignal; lastEvidenceAt: Date };
+
+export function planAttendanceSignalSync(input: {
+  signal: DescribedAttendanceSignal | null;
+  latestEvidenceAt: Date | null;
+  existingOpenSignal?: OpenAttendanceSignalSnapshot;
+  lastResolvedAttendanceSignal?: ResolvedAttendanceSignalSnapshot | null;
+  fallbackDate: Date;
+}): AttendanceSignalSyncPlan {
+  const existingOpenSignal = input.existingOpenSignal ?? null;
+
+  if (!input.signal) {
+    return existingOpenSignal ? { action: "keep-open-signal" } : { action: "none" };
+  }
+
+  const lastEvidenceAt = input.latestEvidenceAt ?? input.fallbackDate;
+
+  if (existingOpenSignal) {
+    return { action: "update-open-signal", signal: input.signal, lastEvidenceAt };
+  }
+
+  if (shouldKeepAttendanceSignalResolved(input.signal, input.latestEvidenceAt, input.lastResolvedAttendanceSignal)) {
+    return { action: "none" };
+  }
+
+  return { action: "create-open-signal", signal: input.signal, lastEvidenceAt };
+}

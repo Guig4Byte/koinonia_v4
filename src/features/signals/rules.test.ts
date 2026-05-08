@@ -6,6 +6,7 @@ import {
   describeAttendanceSignal,
   getConsecutiveAbsenceDatesNewestFirst,
   getRecordedStatusesNewestFirst,
+  planAttendanceSignalSync,
   shouldKeepAttendanceSignalResolved,
 } from "./rules-core";
 
@@ -110,4 +111,83 @@ describe("attendance signal rules", () => {
       }),
     ).toBe(false);
   });
+
+  it("plans no database write when there is no attendance signal", () => {
+    expect(
+      planAttendanceSignalSync({
+        signal: null,
+        latestEvidenceAt: null,
+        existingOpenSignal: null,
+        fallbackDate: new Date("2026-04-30T20:00:00.000Z"),
+      }),
+    ).toEqual({ action: "none" });
+  });
+
+  it("keeps an existing open attendance signal visible when the current attendance no longer creates a new signal", () => {
+    expect(
+      planAttendanceSignalSync({
+        signal: null,
+        latestEvidenceAt: new Date("2026-04-30T20:00:00.000Z"),
+        existingOpenSignal: { id: "signal-1" },
+        fallbackDate: new Date("2026-04-30T20:00:00.000Z"),
+      }),
+    ).toEqual({ action: "keep-open-signal" });
+  });
+
+  it("plans an update when an open attendance signal already exists", () => {
+    const latestEvidenceAt = new Date("2026-04-30T20:00:00.000Z");
+    const signal = describeAttendanceSignal(2);
+
+    expect(signal).not.toBeNull();
+    expect(
+      planAttendanceSignalSync({
+        signal,
+        latestEvidenceAt,
+        existingOpenSignal: { id: "signal-1" },
+        fallbackDate: new Date("2026-05-01T20:00:00.000Z"),
+      }),
+    ).toEqual({ action: "update-open-signal", signal, lastEvidenceAt: latestEvidenceAt });
+  });
+
+  it("does not plan a new signal when the same attendance evidence was already cared for", () => {
+    const signal = describeAttendanceSignal(3);
+
+    expect(signal).not.toBeNull();
+    expect(
+      planAttendanceSignalSync({
+        signal,
+        latestEvidenceAt: new Date("2026-04-30T20:00:00.000Z"),
+        existingOpenSignal: null,
+        lastResolvedAttendanceSignal: {
+          severity: signal!.severity,
+          reason: signal!.reason,
+          evidence: signal!.evidence,
+          resolvedAt: new Date("2026-05-01T10:00:00.000Z"),
+        },
+        fallbackDate: new Date("2026-05-01T20:00:00.000Z"),
+      }),
+    ).toEqual({ action: "none" });
+  });
+
+  it("plans a new signal when attendance evidence is newer than the last care", () => {
+    const signal = describeAttendanceSignal(3);
+    const latestEvidenceAt = new Date("2026-05-02T20:00:00.000Z");
+
+    expect(signal).not.toBeNull();
+    expect(
+      planAttendanceSignalSync({
+        signal,
+        latestEvidenceAt,
+        existingOpenSignal: null,
+        lastResolvedAttendanceSignal: {
+          severity: signal!.severity,
+          reason: signal!.reason,
+          evidence: signal!.evidence,
+          resolvedAt: new Date("2026-05-01T10:00:00.000Z"),
+        },
+        fallbackDate: new Date("2026-05-03T20:00:00.000Z"),
+      }),
+    ).toEqual({ action: "create-open-signal", signal, lastEvidenceAt: latestEvidenceAt });
+  });
+
 });

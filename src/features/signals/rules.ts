@@ -1,4 +1,4 @@
-import { EventStatus, MembershipRole, PersonStatus, SignalSource, SignalStatus } from "@/generated/prisma/client";
+import { EventStatus, EventType, MembershipRole, PersonStatus, SignalSource, SignalStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import {
   countConsecutiveAbsences,
@@ -6,21 +6,23 @@ import {
   describeAttendanceSignal,
   getConsecutiveAbsenceDatesNewestFirst,
   getRecordedStatusesNewestFirst,
-  shouldKeepAttendanceSignalResolved,
+  planAttendanceSignalSync,
 } from "./rules-core";
 
 const attentionStatuses = [PersonStatus.ACTIVE, PersonStatus.NEW, PersonStatus.NEEDS_ATTENTION, PersonStatus.COOLING_AWAY];
 
-async function markPersonInAttention(personId: string) {
-  await prisma.person.updateMany({
+type AttendanceSignalDatabase = Pick<typeof prisma, "smallGroup" | "careSignal" | "person">;
+
+async function markPersonInAttention(db: AttendanceSignalDatabase, personId: string) {
+  await db.person.updateMany({
     where: { id: personId, status: { in: attentionStatuses } },
     data: { status: PersonStatus.NEEDS_ATTENTION },
   });
 }
 
-
-export async function recalculateAttendanceSignalsForGroup(groupId: string) {
-  const group = await prisma.smallGroup.findUnique({
+export async function recalculateAttendanceSignalsForGroup(groupId: string, db: AttendanceSignalDatabase = prisma) {
+  const now = new Date();
+  const group = await db.smallGroup.findUnique({
     where: { id: groupId },
     include: {
       memberships: {
@@ -29,8 +31,8 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string) {
       },
       events: {
         where: {
-          type: "CELL_MEETING",
-          startsAt: { lte: new Date() },
+          type: EventType.CELL_MEETING,
+          startsAt: { lte: now },
           OR: [{ status: EventStatus.COMPLETED }, { attendances: { some: {} } }],
         },
         orderBy: { startsAt: "desc" },
@@ -51,7 +53,7 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string) {
       ?? group.events.find((event) => event.attendances.some((item) => item.personId === membership.personId))?.startsAt
       ?? null;
 
-    const existing = await prisma.careSignal.findFirst({
+    const existingOpenSignal = await db.careSignal.findFirst({
       where: {
         churchId: group.churchId,
         groupId: group.id,
@@ -59,60 +61,69 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string) {
         source: SignalSource.ATTENDANCE,
         status: SignalStatus.OPEN,
       },
+      select: { id: true },
     });
 
-    if (!signal) {
-      if (existing) {
-        await markPersonInAttention(membership.personId);
-      }
+    const lastResolvedAttendanceSignal = signal && !existingOpenSignal
+      ? await db.careSignal.findFirst({
+          where: {
+            churchId: group.churchId,
+            groupId: group.id,
+            personId: membership.personId,
+            source: SignalSource.ATTENDANCE,
+            status: SignalStatus.RESOLVED,
+          },
+          orderBy: { resolvedAt: "desc" },
+          select: { severity: true, reason: true, evidence: true, resolvedAt: true },
+        })
+      : null;
 
+    const plan = planAttendanceSignalSync({
+      signal,
+      latestEvidenceAt,
+      existingOpenSignal,
+      lastResolvedAttendanceSignal,
+      fallbackDate: now,
+    });
+
+    if (plan.action === "none") continue;
+
+    if (plan.action === "keep-open-signal") {
+      await markPersonInAttention(db, membership.personId);
       continue;
     }
 
-    if (existing) {
-      await prisma.careSignal.update({
-        where: { id: existing.id },
+    if (plan.action === "update-open-signal") {
+      if (!existingOpenSignal) continue;
+
+      await db.careSignal.update({
+        where: { id: existingOpenSignal.id },
         data: {
-          severity: signal.severity,
-          reason: signal.reason,
-          evidence: signal.evidence,
-          lastEvidenceAt: latestEvidenceAt ?? new Date(),
+          severity: plan.signal.severity,
+          reason: plan.signal.reason,
+          evidence: plan.signal.evidence,
+          lastEvidenceAt: plan.lastEvidenceAt,
         },
       });
 
-      await markPersonInAttention(membership.personId);
-    } else {
-      const lastResolvedAttendanceSignal = await prisma.careSignal.findFirst({
-        where: {
-          churchId: group.churchId,
-          groupId: group.id,
-          personId: membership.personId,
-          source: SignalSource.ATTENDANCE,
-          status: SignalStatus.RESOLVED,
-        },
-        orderBy: { resolvedAt: "desc" },
-        select: { severity: true, reason: true, evidence: true, resolvedAt: true },
-      });
-
-      if (shouldKeepAttendanceSignalResolved(signal, latestEvidenceAt, lastResolvedAttendanceSignal)) {
-        continue;
-      }
-
-      await prisma.careSignal.create({
-        data: {
-          churchId: group.churchId,
-          groupId: group.id,
-          personId: membership.personId,
-          assignedToId: null,
-          source: SignalSource.ATTENDANCE,
-          severity: signal.severity,
-          reason: signal.reason,
-          evidence: signal.evidence,
-          lastEvidenceAt: latestEvidenceAt ?? new Date(),
-        },
-      });
-
-      await markPersonInAttention(membership.personId);
+      await markPersonInAttention(db, membership.personId);
+      continue;
     }
+
+    await db.careSignal.create({
+      data: {
+        churchId: group.churchId,
+        groupId: group.id,
+        personId: membership.personId,
+        assignedToId: null,
+        source: SignalSource.ATTENDANCE,
+        severity: plan.signal.severity,
+        reason: plan.signal.reason,
+        evidence: plan.signal.evidence,
+        lastEvidenceAt: plan.lastEvidenceAt,
+      },
+    });
+
+    await markPersonInAttention(db, membership.personId);
   }
 }

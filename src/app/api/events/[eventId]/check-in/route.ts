@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { validateMemberCheckInPayload } from "@/features/check-in/check-in-validation";
 import { validateNewVisitors } from "@/features/check-in/visitor-validation";
-import { AttendanceStatus, SignalStatus } from "../../../../../generated/prisma/client";
+import { AttendanceStatus, EventStatus, MembershipRole, PersonStatus, SignalStatus } from "@/generated/prisma/client";
 import { canCheckInEvent } from "@/features/permissions/permissions";
 import { recalculateAttendanceSignalsForGroup } from "@/features/signals/rules";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ev
   }
 
   const memberships = await prisma.groupMembership.findMany({
-    where: { groupId, leftAt: null, role: { not: "VISITOR" } },
+    where: { groupId, leftAt: null, role: { not: MembershipRole.VISITOR } },
     select: { personId: true },
   });
 
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ev
           churchId: user.churchId,
           fullName: visitor.fullName,
           phone: visitor.phone,
-          status: "VISITOR",
+          status: PersonStatus.VISITOR,
           shortNote: "Visitante registrado no check-in.",
         },
       });
@@ -116,7 +116,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ev
         data: {
           groupId,
           personId: person.id,
-          role: "VISITOR",
+          role: MembershipRole.VISITOR,
         },
       });
 
@@ -129,10 +129,9 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ev
       });
     }
 
-    await tx.event.update({ where: { id: eventId }, data: { status: "COMPLETED" } });
+    await tx.event.update({ where: { id: eventId }, data: { status: EventStatus.COMPLETED } });
+    await recalculateAttendanceSignalsForGroup(groupId, tx);
   });
-
-  await recalculateAttendanceSignalsForGroup(groupId);
 
   const openSignalPeople = await prisma.careSignal.findMany({
     where: { churchId: user.churchId, groupId, status: SignalStatus.OPEN },
