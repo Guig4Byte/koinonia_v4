@@ -5,8 +5,7 @@ import { InCareSection, PastoralSignalSection } from "@/components/pastoral-list
 import { SearchBox } from "@/components/search-box";
 import { getPastorDashboard } from "@/features/dashboard/queries";
 import { canUsePastorDashboard } from "@/features/permissions/permissions";
-import { splitPastoralSections } from "@/features/signals/sections";
-import { buildPastoralPulseMessage } from "@/features/pastoral-pulse";
+import { buildPastorPageView } from "@/features/pastoral-home/pastor-page-view";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { redirect } from "next/navigation";
 
@@ -18,49 +17,26 @@ export default async function PastorPage() {
   }
 
   const dashboard = await getPastorDashboard(user);
-  const hasWeekPresence = dashboard.hasPresenceData;
-  const pastoralSections = splitPastoralSections({
-    signals: dashboard.attentionPeople,
-    inCarePeople: dashboard.inCarePeople,
-    viewer: user,
-  });
-  const urgentOrPastoralCases = pastoralSections.urgentOrPastoralCases;
-  const inCarePeople = pastoralSections.inCarePeople;
-  const pastoralCasesCount = urgentOrPastoralCases.length;
-  const primaryPastoralCase = urgentOrPastoralCases[0];
-  const primaryInCarePerson = inCarePeople[0];
-  const navIndicator = pastoralCasesCount > 0 ? "risk" : inCarePeople.length > 0 ? "care" : undefined;
-  const pastoralPulse = buildPastoralPulseMessage({
-    viewerRole: user.role,
-    scope: "pastorDashboard",
-    counts: {
-      urgentOrPastoral: pastoralCasesCount,
-      inCare: pastoralCasesCount > 0 ? 0 : inCarePeople.length,
-    },
-    subjects: {
-      urgentOrPastoral: primaryPastoralCase ? { personName: primaryPastoralCase.person.fullName, groupName: primaryPastoralCase.group?.name } : null,
-      inCare: primaryInCarePerson ? { personName: primaryInCarePerson.fullName } : null,
-    },
-  });
+  const view = buildPastorPageView({ dashboard, user });
 
   return (
     <AppShell
       userName={user.name}
       role={user.role}
-      nav={appNavForRole(user, { active: "home", indicator: navIndicator })}
+      nav={appNavForRole(user, { active: "home", indicator: view.navIndicator })}
     >
       <SearchBox placeholder="Buscar qualquer pessoa..." />
       <PulseCard
-        title={pastoralPulse.title}
-        subtitle={pastoralPulse.subtitle}
-        tone={pastoralPulse.tone}
+        title={view.pastoralPulse.title}
+        subtitle={view.pastoralPulse.subtitle}
+        tone={view.pastoralPulse.tone}
       />
 
       <PastoralSignalSection
         title="Irmãos que precisam de um olhar especial"
         detail="Urgentes ou encaminhados ao pastor aparecem com mais destaque."
         emptyMessage="Nada grave ou encaminhado chegou para o pastor agora."
-        signals={urgentOrPastoralCases}
+        signals={view.urgentOrPastoralCases}
         viewer={user}
       />
 
@@ -68,20 +44,11 @@ export default async function PastorPage() {
         title="Acolhidos em cuidado pastoral"
         detail="Pessoas que receberam cuidado pastoral e seguem no radar."
         emptyMessage="Nenhuma pessoa em cuidado pastoral para destacar agora."
-        people={inCarePeople}
+        people={view.inCarePeople}
       />
 
       <SectionTitle>Presença geral</SectionTitle>
-      <ContextSummary
-        items={[
-          {
-            label: "Presença da semana",
-            value: hasWeekPresence ? `${dashboard.presenceRate}%` : "—",
-            detail: hasWeekPresence ? "Média dos encontros registrados nesta semana." : "Nenhum encontro registrado nesta semana.",
-            tone: !hasWeekPresence ? "neutral" : dashboard.presenceRate < 65 ? "risk" : dashboard.presenceRate < 75 ? "warn" : "ok",
-          },
-        ]}
-      />
+      <ContextSummary items={view.presenceSummary} />
     </AppShell>
   );
 }

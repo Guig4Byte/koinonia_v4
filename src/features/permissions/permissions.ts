@@ -1,11 +1,19 @@
-import { EventStatus, GroupResponsibilityRole, SignalStatus, UserRole, type Prisma } from "@/generated/prisma/client";
+import { EventStatus, GroupResponsibilityRole, UserRole } from "@/generated/prisma/client";
 import { hasGroupResponsibilityScope, type ResponsibleGroupLike } from "@/features/groups/responsibility-scope";
+import { hasWholeChurchScope } from "./permission-query";
+import type { PermissionUser } from "./permission-query";
 
-export type PermissionUser = {
-  id: string;
-  churchId: string;
-  role: UserRole;
-};
+export type { PermissionUser } from "./permission-query";
+export {
+  getOpenSignalInActiveGroupWhere,
+  getVisibleCareTouchWhere,
+  getVisibleEventWhere,
+  getVisibleGroupWhere,
+  getVisibleMembershipWhere,
+  getVisibleOpenSignalWhere,
+  getVisiblePersonWhere,
+  hasWholeChurchScope,
+} from "./permission-query";
 
 type ScopedGroup = ResponsibleGroupLike & {
   id?: string;
@@ -46,36 +54,6 @@ export function isGroupLeader(user: PermissionUser, group: ScopedGroup | null | 
 
 export function isGroupSupervisor(user: PermissionUser, group: ScopedGroup | null | undefined) {
   return hasGroupResponsibilityScope(group, user, GroupResponsibilityRole.SUPERVISOR);
-}
-
-function legacyGroupResponsibilityWhere(user: PermissionUser, role: GroupResponsibilityRole): Prisma.SmallGroupWhereInput {
-  return role === GroupResponsibilityRole.LEADER
-    ? { leaderUserId: user.id }
-    : { supervisorUserId: user.id };
-}
-
-function scopedGroupWhere(user: PermissionUser, role: GroupResponsibilityRole): Prisma.SmallGroupWhereInput {
-  return {
-    churchId: user.churchId,
-    isActive: true,
-    OR: [
-      {
-        responsibilities: {
-          some: {
-            churchId: user.churchId,
-            userId: user.id,
-            role,
-            activeUntil: null,
-          },
-        },
-      },
-      legacyGroupResponsibilityWhere(user, role),
-    ],
-  };
-}
-
-export function hasWholeChurchScope(user: PermissionUser) {
-  return user.role === UserRole.ADMIN || user.role === UserRole.PASTOR;
 }
 
 export function canUsePastorDashboard(user: PermissionUser) {
@@ -151,118 +129,4 @@ export function getVisibleGroupIdsForPerson(user: PermissionUser, person: Scoped
 
 export function getPrimaryVisibleGroupIdForPerson(user: PermissionUser, person: ScopedPerson | null | undefined) {
   return getVisibleGroupIdsForPerson(user, person)[0];
-}
-
-export function getVisibleGroupWhere(user: PermissionUser): Prisma.SmallGroupWhereInput {
-  if (hasWholeChurchScope(user)) {
-    return { churchId: user.churchId, isActive: true };
-  }
-
-  if (user.role === UserRole.SUPERVISOR) {
-    return scopedGroupWhere(user, GroupResponsibilityRole.SUPERVISOR);
-  }
-
-  return scopedGroupWhere(user, GroupResponsibilityRole.LEADER);
-}
-
-export function getVisibleEventWhere(user: PermissionUser): Prisma.EventWhereInput {
-  if (hasWholeChurchScope(user)) {
-    return { churchId: user.churchId, group: { is: { churchId: user.churchId, isActive: true } } };
-  }
-
-  if (user.role === UserRole.SUPERVISOR) {
-    return { churchId: user.churchId, group: { is: scopedGroupWhere(user, GroupResponsibilityRole.SUPERVISOR) } };
-  }
-
-  return { churchId: user.churchId, group: { is: scopedGroupWhere(user, GroupResponsibilityRole.LEADER) } };
-}
-
-export function getVisibleMembershipWhere(user: PermissionUser): Prisma.GroupMembershipWhereInput {
-  if (hasWholeChurchScope(user)) {
-    return { leftAt: null, group: { is: { churchId: user.churchId, isActive: true } } };
-  }
-
-  if (user.role === UserRole.SUPERVISOR) {
-    return {
-      leftAt: null,
-      group: { is: scopedGroupWhere(user, GroupResponsibilityRole.SUPERVISOR) },
-    };
-  }
-
-  return {
-    leftAt: null,
-    group: { is: scopedGroupWhere(user, GroupResponsibilityRole.LEADER) },
-  };
-}
-
-export function getVisiblePersonWhere(user: PermissionUser): Prisma.PersonWhereInput {
-  if (hasWholeChurchScope(user)) {
-    return { churchId: user.churchId };
-  }
-
-  if (user.role === UserRole.SUPERVISOR) {
-    return {
-      churchId: user.churchId,
-      memberships: { some: { leftAt: null, group: { is: scopedGroupWhere(user, GroupResponsibilityRole.SUPERVISOR) } } },
-    };
-  }
-
-  return {
-    churchId: user.churchId,
-    memberships: { some: { leftAt: null, group: { is: scopedGroupWhere(user, GroupResponsibilityRole.LEADER) } } },
-  };
-}
-
-export function getOpenSignalInActiveGroupWhere(churchId: string): Prisma.CareSignalWhereInput {
-  return {
-    churchId,
-    status: SignalStatus.OPEN,
-    OR: [
-      { groupId: null },
-      { group: { is: { churchId, isActive: true } } },
-    ],
-  };
-}
-
-export function getVisibleOpenSignalWhere(user: PermissionUser): Prisma.CareSignalWhereInput {
-  if (hasWholeChurchScope(user)) {
-    return getOpenSignalInActiveGroupWhere(user.churchId);
-  }
-
-  if (user.role === UserRole.SUPERVISOR) {
-    return {
-      churchId: user.churchId,
-      status: SignalStatus.OPEN,
-      group: { is: scopedGroupWhere(user, GroupResponsibilityRole.SUPERVISOR) },
-    };
-  }
-
-  return {
-    churchId: user.churchId,
-    status: SignalStatus.OPEN,
-    group: { is: scopedGroupWhere(user, GroupResponsibilityRole.LEADER) },
-  };
-}
-
-export function getVisibleCareTouchWhere(user: PermissionUser, personId?: string): Prisma.CareTouchWhereInput {
-  const base: Prisma.CareTouchWhereInput = {
-    churchId: user.churchId,
-    ...(personId ? { personId } : {}),
-  };
-
-  if (hasWholeChurchScope(user)) {
-    return base;
-  }
-
-  if (user.role === UserRole.SUPERVISOR) {
-    return {
-      ...base,
-      group: { is: scopedGroupWhere(user, GroupResponsibilityRole.SUPERVISOR) },
-    };
-  }
-
-  return {
-    ...base,
-    group: { is: scopedGroupWhere(user, GroupResponsibilityRole.LEADER) },
-  };
 }
