@@ -1,4 +1,4 @@
-import { EventStatus, MembershipRole, PersonStatus, SignalSource, SignalStatus } from "../../generated/prisma/client";
+import { EventStatus, MembershipRole, PersonStatus, SignalSource, SignalStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import {
   countConsecutiveAbsences,
@@ -91,7 +91,7 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string) {
           status: SignalStatus.RESOLVED,
         },
         orderBy: { resolvedAt: "desc" },
-        select: { reason: true, evidence: true, resolvedAt: true },
+        select: { severity: true, reason: true, evidence: true, resolvedAt: true },
       });
 
       if (shouldKeepAttendanceSignalResolved(signal, latestEvidenceAt, lastResolvedAttendanceSignal)) {

@@ -7,16 +7,23 @@ import { ContextSummary, EmptyState, GroupCard, InfoCard, SectionTitle } from "@
 import { ProgressiveList } from "@/components/progressive-list";
 import { CellsStructureSearch } from "@/components/cells-structure-search";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
+import {
+  groupNeedsPastoralAttention,
+  groupPastoralEscalatedCount,
+  groupPastoralPriorityScore,
+  groupRiskCount,
+  groupUrgentCount,
+  hasLowPresence,
+} from "@/features/groups/group-pastoral-priority";
 import { responsibilityNames } from "@/features/groups/responsibility-display";
 import { canManageGroups, canUseSupervisorDashboard } from "@/features/permissions/permissions";
 import { groupAttentionLabel, type SignalBadge } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { normalizeSearchText } from "@/lib/text";
-import { GroupResponsibilityRole, SignalSeverity, UserRole } from "@/generated/prisma/client";
+import { GroupResponsibilityRole, UserRole } from "@/generated/prisma/client";
 import { firstParam } from "@/lib/search-params";
 
 const SECTION_LIMIT = 4;
-const LOW_PRESENCE_THRESHOLD = 70;
 const CELLS_SECTION_ID = "celulas-supervisionadas";
 
 type CellsFilter = "todos" | "atencao" | "sem-presenca";
@@ -46,28 +53,9 @@ function groupSearchText(group: SupervisorGroup) {
   return normalizeSearchText(`${group.name} ${responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, group.leader?.name ?? "")}`);
 }
 
-function urgentCount(group: SupervisorGroup) {
-  return group.signals.filter((signal) => signal.severity === SignalSeverity.URGENT).length;
-}
-
-function pastoralEscalatedCount(group: SupervisorGroup) {
-  return group.signals.filter((signal) => signal.assignedTo?.role === UserRole.PASTOR || signal.assignedTo?.role === UserRole.ADMIN).length;
-}
-
-function riskCount(group: SupervisorGroup) {
-  return group.signals.filter((signal) => signal.severity === SignalSeverity.URGENT || signal.assignedTo?.role === UserRole.PASTOR || signal.assignedTo?.role === UserRole.ADMIN).length;
-}
-
-function hasLowPresence(group: SupervisorGroup) {
-  return group.hasPresenceData && group.presenceRate < LOW_PRESENCE_THRESHOLD;
-}
-
-function groupNeedsAttention(group: SupervisorGroup) {
-  return riskCount(group) > 0 || group.supportRequestsCount > 0 || group.attentionCount > 0 || hasLowPresence(group);
-}
 
 function groupSectionKey(group: SupervisorGroup): GroupSectionKey {
-  if (riskCount(group) > 0 || group.supportRequestsCount > 0 || group.attentionCount > 0 || group.inCareCount > 0) {
+  if (groupRiskCount(group) > 0 || group.supportRequestsCount > 0 || group.attentionCount > 0 || group.inCareCount > 0) {
     return "care";
   }
 
@@ -94,15 +82,7 @@ const GROUP_SECTIONS: Array<{ key: GroupSectionKey; title: string }> = [
 ];
 
 function groupPriorityScore(group: SupervisorGroup) {
-  const urgent = urgentCount(group);
-  const escalated = pastoralEscalatedCount(group);
-  const support = group.supportRequestsCount;
-  const localAttention = Math.max(group.attentionCount - riskCount(group) - support, 0);
-  const inCare = group.inCareCount;
-  const lowPresenceScore = hasLowPresence(group) ? LOW_PRESENCE_THRESHOLD - group.presenceRate : 0;
-  const noPresenceScore = group.hasPresenceData ? 0 : 25;
-
-  return urgent * 1200 + escalated * 1000 + support * 700 + localAttention * 400 + inCare * 200 + lowPresenceScore + noPresenceScore;
+  return groupPastoralPriorityScore(group);
 }
 
 function compareGroups(left: SupervisorGroup, right: SupervisorGroup) {
@@ -113,7 +93,7 @@ function compareGroups(left: SupervisorGroup, right: SupervisorGroup) {
 }
 
 function groupMatchesFilter(group: SupervisorGroup, filter: CellsFilter) {
-  if (filter === "atencao") return groupNeedsAttention(group);
+  if (filter === "atencao") return groupNeedsPastoralAttention(group);
   if (filter === "sem-presenca") return !group.hasPresenceData;
   return true;
 }
@@ -126,8 +106,8 @@ function filterGroups(groups: SupervisorGroup[], normalizedQuery: string, filter
 }
 
 function groupBadge(group: SupervisorGroup): SignalBadge | null {
-  const urgent = urgentCount(group);
-  const escalated = pastoralEscalatedCount(group);
+  const urgent = groupUrgentCount(group);
+  const escalated = groupPastoralEscalatedCount(group);
 
   if (urgent > 0) {
     return { label: groupAttentionLabel(urgent, "urgente", "urgentes"), tone: "risk" };
@@ -237,9 +217,9 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
   const dashboard = await getSupervisorDashboard(user);
   const groups = filterGroups(dashboard.groups, normalizedQuery, activeFilter);
   const groupSections = renderGroupSections(groups);
-  const groupsNeedingAttentionCount = dashboard.groups.filter(groupNeedsAttention).length;
+  const groupsNeedingAttentionCount = dashboard.groups.filter(groupNeedsPastoralAttention).length;
   const groupsWithoutPresenceCount = dashboard.groups.filter((group) => !group.hasPresenceData).length;
-  const hasRisk = dashboard.groups.some((group) => riskCount(group) > 0);
+  const hasRisk = dashboard.groups.some((group) => groupRiskCount(group) > 0);
   const hasCare = dashboard.groups.some((group) => group.inCareCount > 0);
   const navIndicator = hasRisk ? "risk" : groupsNeedingAttentionCount > 0 ? "attention" : hasCare ? "care" : undefined;
   const isFiltered = Boolean(query) || activeFilter !== "todos";

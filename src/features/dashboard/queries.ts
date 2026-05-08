@@ -1,5 +1,10 @@
-import { GroupResponsibilityRole, MembershipRole, PersonStatus, SignalSeverity, SignalStatus, UserRole } from "../../generated/prisma/client";
+import { GroupResponsibilityRole, MembershipRole, PersonStatus, SignalSeverity, SignalStatus, UserRole } from "@/generated/prisma/client";
 import { summarizeEventsPresence, summarizePresenceTrend, isPresenceRecordedEvent } from "@/features/events/presence-summary";
+import {
+  hasLowPresence,
+  teamGroupPastoralPriorityScore,
+  teamGroupStatusLabel,
+} from "@/features/groups/group-pastoral-priority";
 import { responsibilityNames } from "@/features/groups/responsibility-display";
 import { canUsePastorDashboard, getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson } from "@/features/signals/attention";
@@ -7,7 +12,6 @@ import { getPastoralSectionSignalsByPerson, isSupportRequest } from "@/features/
 import { prisma } from "@/lib/prisma";
 import { addBrasiliaDays, endOfBrasiliaWeek, startOfBrasiliaDay, startOfBrasiliaWeek } from "@/lib/brasilia-time";
 
-const LOW_PRESENCE_THRESHOLD = 70;
 const PT_BR_LOCALE = "pt-BR";
 
 const pastoralSignalWhere = {
@@ -64,51 +68,12 @@ function compareSupervisorPriority(left: SupervisorPriorityItem, right: Supervis
   return compareByName(left, right);
 }
 
-function hasLowPresence(presence: PresenceThresholdSummary) {
-  return presence.hasPresenceData && presence.presenceRate < LOW_PRESENCE_THRESHOLD;
-}
-
 function countGroupsWithoutPresence<T extends { hasPresenceData: boolean }>(groups: T[]) {
   return groups.filter((group) => !group.hasPresenceData).length;
 }
 
 function countLowPresenceGroups<T extends PresenceThresholdSummary>(groups: T[]) {
   return groups.filter(hasLowPresence).length;
-}
-
-function pastoralPriorityScoreForGroup({
-  urgentCount,
-  pastoralCasesCount,
-  hasLowPresence: lowPresence,
-  presenceRate,
-}: {
-  urgentCount: number;
-  pastoralCasesCount: number;
-  hasLowPresence: boolean;
-  presenceRate: number;
-}) {
-  return urgentCount * 1000
-    + Math.max(pastoralCasesCount - urgentCount, 0) * 700
-    + (lowPresence ? 100 + (LOW_PRESENCE_THRESHOLD - presenceRate) : 0);
-}
-
-function teamGroupStatusLabel({
-  urgentCount,
-  pastoralCasesCount,
-  hasNoPresenceData,
-  hasLowPresence: lowPresence,
-}: {
-  urgentCount: number;
-  pastoralCasesCount: number;
-  hasNoPresenceData: boolean;
-  hasLowPresence: boolean;
-}) {
-  if (urgentCount > 0) return `${urgentCount} ${urgentCount === 1 ? "urgente" : "urgentes"}`;
-  if (pastoralCasesCount > 0) return `${pastoralCasesCount} ${pastoralCasesCount === 1 ? "caso pastoral" : "casos pastorais"}`;
-  if (hasNoPresenceData) return "Sem presença recente";
-  if (lowPresence) return "Presença baixa";
-
-  return "Estável";
 }
 
 export async function getPastorDashboard(user: PermissionUser) {
@@ -288,10 +253,10 @@ export async function getPastorTeamOverview(user: PermissionUser) {
     const inCareCount = group.memberships.filter((membership) => membership.person.status === PersonStatus.COOLING_AWAY).length;
     const hasLowPresenceValue = hasLowPresence(presence);
     const hasNoPresenceData = !presence.hasPresenceData;
-    const pastoralPriorityScore = pastoralPriorityScoreForGroup({
+    const pastoralPriorityScore = teamGroupPastoralPriorityScore({
       urgentCount,
       pastoralCasesCount,
-      hasLowPresence: hasLowPresenceValue,
+      hasPresenceData: presence.hasPresenceData,
       presenceRate: presence.presenceRate,
     });
     const statusLabel = teamGroupStatusLabel({

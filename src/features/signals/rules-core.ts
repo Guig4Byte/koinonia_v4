@@ -1,5 +1,5 @@
-import { AttendanceStatus, SignalSeverity } from "../../generated/prisma/client";
-import { formatBrasiliaShortDate } from "../../lib/brasilia-time";
+import { AttendanceStatus, SignalSeverity } from "@/generated/prisma/client";
+import { formatBrasiliaShortDate } from "@/lib/brasilia-time";
 
 export type AttendanceEventSnapshot = {
   attendances: Array<{ personId: string; status: AttendanceStatus }>;
@@ -61,9 +61,18 @@ export function describeAttendanceEvidence(absenceDatesNewestFirst: Date[]) {
   return `Ausente em: ${dateList}.`;
 }
 
+export type AttendanceSignalKind = "attendance-attention" | "attendance-urgent";
+
+function attendanceSignalKindFromSeverity(severity: SignalSeverity | string | null | undefined): AttendanceSignalKind | null {
+  if (severity === SignalSeverity.URGENT) return "attendance-urgent";
+  if (severity === SignalSeverity.ATTENTION) return "attendance-attention";
+  return null;
+}
+
 export function describeAttendanceSignal(absences: number, evidence?: string | null) {
   if (absences >= 3) {
     return {
+      kind: "attendance-urgent" as const,
       severity: SignalSeverity.URGENT,
       reason: "Ausência recorrente percebida.",
       evidence: evidence ?? "Presença recente pede cuidado mais próximo.",
@@ -72,6 +81,7 @@ export function describeAttendanceSignal(absences: number, evidence?: string | n
 
   if (absences >= 2) {
     return {
+      kind: "attendance-attention" as const,
       severity: SignalSeverity.ATTENTION,
       reason: "Ausência recente percebida.",
       evidence: evidence ?? "Presença recente pede atenção.",
@@ -84,15 +94,18 @@ export function describeAttendanceSignal(absences: number, evidence?: string | n
 export type DescribedAttendanceSignal = NonNullable<ReturnType<typeof describeAttendanceSignal>>;
 
 export type ResolvedAttendanceSignalSnapshot = {
+  kind?: AttendanceSignalKind | null;
+  severity?: SignalSeverity | string | null;
   reason: string | null;
   evidence: string | null;
   resolvedAt: Date | null;
 };
 
-
-function attendanceSignalKey(reason: string | null | undefined, evidence: string | null | undefined): string {
+function legacyAttendanceSignalKind(reason: string | null | undefined, evidence: string | null | undefined): AttendanceSignalKind | null {
   const text = `${reason ?? ""} ${evidence ?? ""}`.toLowerCase();
 
+  // Compatibility only: resolved signals persisted before this helper had a structural kind.
+  // New comparisons should use `kind` or `severity`, not UI/copy text.
   if (text.includes("3 faltas") || text.includes("afastamento") || text.includes("recorrente") || text.includes("cuidado mais próximo")) {
     return "attendance-urgent";
   }
@@ -101,7 +114,13 @@ function attendanceSignalKey(reason: string | null | undefined, evidence: string
     return "attendance-attention";
   }
 
-  return `${reason ?? ""}|${evidence ?? ""}`;
+  return null;
+}
+
+function resolvedAttendanceSignalKind(resolvedSignal: ResolvedAttendanceSignalSnapshot): AttendanceSignalKind | null {
+  return resolvedSignal.kind
+    ?? attendanceSignalKindFromSeverity(resolvedSignal.severity)
+    ?? legacyAttendanceSignalKind(resolvedSignal.reason, resolvedSignal.evidence);
 }
 
 export function shouldKeepAttendanceSignalResolved(
@@ -112,5 +131,5 @@ export function shouldKeepAttendanceSignalResolved(
   if (!latestEvidenceAt || !resolvedSignal?.resolvedAt) return false;
   if (latestEvidenceAt.getTime() > resolvedSignal.resolvedAt.getTime()) return false;
 
-  return attendanceSignalKey(resolvedSignal.reason, resolvedSignal.evidence) === attendanceSignalKey(signal.reason, signal.evidence);
+  return resolvedAttendanceSignalKind(resolvedSignal) === signal.kind;
 }

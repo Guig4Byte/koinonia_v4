@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AttendanceStatus, SignalSeverity } from "../../generated/prisma/client";
+import { AttendanceStatus, SignalSeverity } from "@/generated/prisma/client";
 import {
   countConsecutiveAbsences,
   describeAttendanceEvidence,
@@ -17,11 +17,17 @@ describe("attendance signal rules", () => {
   });
 
   it("creates a gentle attention signal after two absences", () => {
-    expect(describeAttendanceSignal(2)?.severity).toBe(SignalSeverity.ATTENTION);
+    expect(describeAttendanceSignal(2)).toMatchObject({
+      kind: "attendance-attention",
+      severity: SignalSeverity.ATTENTION,
+    });
   });
 
   it("creates an urgent signal after three absences", () => {
-    expect(describeAttendanceSignal(3)?.severity).toBe(SignalSeverity.URGENT);
+    expect(describeAttendanceSignal(3)).toMatchObject({
+      kind: "attendance-urgent",
+      severity: SignalSeverity.URGENT,
+    });
   });
 
   it("uses only attendance records that actually exist for the person", () => {
@@ -71,8 +77,9 @@ describe("attendance signal rules", () => {
     expect(signal).not.toBeNull();
     expect(
       shouldKeepAttendanceSignalResolved(signal!, new Date("2026-04-20T20:00:00.000Z"), {
-        reason: signal!.reason,
-        evidence: signal!.evidence,
+        severity: signal!.severity,
+        reason: "Copy alterada depois do cuidado.",
+        evidence: "Texto de evidência alterado sem mudar a regra.",
         resolvedAt: new Date("2026-04-21T10:00:00.000Z"),
       }),
     ).toBe(true);
