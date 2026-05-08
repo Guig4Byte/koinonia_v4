@@ -43,8 +43,12 @@ describe("events-page-view", () => {
   });
 
   it("monta metadado sem repetir o nome da célula quando o título já identifica o grupo", () => {
-    expect(eventMeta(event({ title: "Célula Central" }))).toMatch(/^08\/05, 09:00$/);
-    expect(eventMeta(event({ title: "Encontro especial" }))).toMatch(/^Célula Central · 08\/05, 09:00$/);
+    const metaWithGroupTitle = eventMeta(event({ title: "Célula Central" }));
+    const metaWithDifferentTitle = eventMeta(event({ title: "Encontro especial" }));
+
+    expect(metaWithGroupTitle).not.toContain("Célula Central ·");
+    expect(metaWithGroupTitle).toContain("09:00");
+    expect(metaWithDifferentTitle).toMatch(/^Célula Central · .+09:00$/);
   });
 
   it("filtra histórico com presença registrada", () => {

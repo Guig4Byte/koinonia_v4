@@ -1,14 +1,7 @@
 "use client";
 
 import { StructureSearch } from "@/components/structure-search";
-
-type CellsFilter = "todos" | "atencao" | "sem-presenca";
-
-const CELLS_FILTERS: Array<{ value: CellsFilter; label: string }> = [
-  { value: "todos", label: "Todas" },
-  { value: "atencao", label: "Pedem cuidado próximo" },
-  { value: "sem-presenca", label: "Sem presença recente" },
-];
+import { CELLS_FILTERS, type CellsFilter } from "@/features/groups/cells-page-filters";
 
 type CellsStructureSearchProps = {
   query: string;
