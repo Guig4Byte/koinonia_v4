@@ -196,6 +196,33 @@ const monthlyPresenceEventSlots = [
 ] as const;
 const currentWeekEventIndex = completedEventDays.length;
 
+
+const seedSignalText = {
+  attendanceAttention: {
+    reason: "Presença recente pede atenção.",
+    evidence:
+      "A ausência em encontros recentes pode ser um bom motivo para uma aproximação simples.",
+  },
+  attendanceUrgent: {
+    reason: "Presença recente pede cuidado mais próximo.",
+    evidence:
+      "A ausência recorrente merece uma aproximação com calma e proximidade.",
+  },
+  supportRequested: {
+    reason: "Apoio solicitado à supervisão.",
+    evidence:
+      "A liderança pediu ajuda para acompanhar este cuidado com mais proximidade.",
+  },
+  pastoralForwarded: {
+    reason: "Encaminhado ao cuidado pastoral.",
+    evidence: "Este cuidado foi encaminhado para um olhar pastoral mais próximo.",
+  },
+  localCare: {
+    reason: "Cuidado percebido pela liderança.",
+    evidence: "Há um contexto que vale acompanhar com calma.",
+  },
+} as const;
+
 const P = AttendanceStatus.PRESENT;
 const A = AttendanceStatus.ABSENT;
 const J = AttendanceStatus.JUSTIFIED;
@@ -885,8 +912,9 @@ async function main() {
       source: SignalSource.ATTENDANCE,
       severity: SignalSeverity.URGENT,
       status: SignalStatus.RESOLVED,
-      reason: "4 faltas seguidas. Pode estar se afastando.",
-      evidence: "Presença recente indica afastamento.",
+      reason: seedSignalText.attendanceUrgent.reason,
+      evidence:
+        "Este cuidado já foi registrado e não deve reabrir sem uma nova ausência posterior.",
       resolvedAt: daysFromNow(-2, 18),
       lastEvidenceAt: daysFromNow(-7, 20),
     },
@@ -899,8 +927,9 @@ async function main() {
     assignedToId: ana.id,
     severity: SignalSeverity.ATTENTION,
     source: SignalSource.MANUAL,
-    reason: "Apoio solicitado à supervisão após tentativa de contato.",
-    evidence: "João está desempregado e ainda não respondeu esta semana.",
+    reason: seedSignalText.supportRequested.reason,
+    evidence:
+      "A liderança tentou contato e pediu ajuda para acompanhar com calma.",
   });
 
   await createCareTouch({
@@ -909,7 +938,7 @@ async function main() {
     personIndex: 1,
     actorId: bruno.id,
     kind: CareKind.REQUESTED_SUPPORT,
-    note: "Tentei contato por WhatsApp e ligação, mas ainda não consegui conversar com calma.",
+    note: "Tentei contato, mas ainda não consegui conversar com calma.",
     days: -1,
     hour: 13,
   });
@@ -920,9 +949,9 @@ async function main() {
     personIndex: 0,
     assignedToId: null,
     severity: SignalSeverity.ATTENTION,
-    source: SignalSource.NO_CONTACT,
-    reason: "Sem contato recente depois de justificar ausência.",
-    evidence: "Bom para validar atenção local que não sobe para o pastor.",
+    source: SignalSource.ATTENDANCE,
+    reason: seedSignalText.attendanceAttention.reason,
+    evidence: seedSignalText.attendanceAttention.evidence,
   });
 
   // Cenário de regressão: múltiplos sinais na mesma pessoa devem agregar por pessoa
@@ -938,9 +967,10 @@ async function main() {
     personIndex: 1,
     assignedToId: null,
     severity: SignalSeverity.ATTENTION,
-    source: SignalSource.NO_CONTACT,
-    reason: "Sem contato recente após ausência simples.",
-    evidence: "Sinal mais antigo e menos grave para validar agregação.",
+    source: SignalSource.MANUAL,
+    reason: seedSignalText.localCare.reason,
+    evidence:
+      "A liderança percebeu que vale acompanhar com calma antes de decidir o próximo passo.",
   });
 
   await prisma.careSignal.create({
@@ -950,9 +980,9 @@ async function main() {
       groupId: graca.id,
       source: SignalSource.ATTENDANCE,
       severity: SignalSeverity.URGENT,
-      reason: "Queda rápida de presença com preocupação pastoral.",
+      reason: seedSignalText.attendanceUrgent.reason,
       evidence:
-        "Sinal urgente deve ser o primário mesmo havendo outro sinal aberto.",
+        "A ausência recorrente pede cuidado mais próximo, mesmo havendo outro contexto aberto.",
       detectedAt: daysFromNow(-1, 12),
       lastEvidenceAt: daysFromNow(-1, 12),
     },
@@ -966,8 +996,9 @@ async function main() {
     assignedToId: ana.id,
     severity: SignalSeverity.ATTENTION,
     source: SignalSource.MANUAL,
-    reason: "Apoio solicitado à supervisão para acolhimento.",
-    evidence: "Segundo pedido no escopo da supervisora Ana.",
+    reason: seedSignalText.supportRequested.reason,
+    evidence:
+      "A liderança pediu apoio para acolher a pessoa com mais proximidade.",
   });
 
   await createSignal({
@@ -977,9 +1008,9 @@ async function main() {
     assignedToId: ana.id,
     severity: SignalSeverity.URGENT,
     source: SignalSource.ATTENDANCE,
-    reason: "Ausências recorrentes e pouca resposta ao líder.",
+    reason: seedSignalText.attendanceUrgent.reason,
     evidence:
-      "Urgente aparece ao pastor por gravidade, mesmo atribuído à supervisão.",
+      "A ausência recorrente e a dificuldade de contato pedem cuidado mais próximo.",
   });
 
   await createSignal({
@@ -989,9 +1020,9 @@ async function main() {
     assignedToId: marcos.id,
     severity: SignalSeverity.ATTENTION,
     source: SignalSource.MANUAL,
-    reason: "Apoio solicitado para retomar contato.",
+    reason: seedSignalText.supportRequested.reason,
     evidence:
-      "Pedido fica no escopo do supervisor Marcos, não vira caso pastoral por padrão.",
+      "A liderança pediu apoio para retomar contato com calma nesta semana.",
   });
 
   await createSignal({
@@ -1001,9 +1032,9 @@ async function main() {
     assignedToId: null,
     severity: SignalSeverity.URGENT,
     source: SignalSource.ATTENDANCE,
-    reason: "Faltas consecutivas com histórico de esfriamento.",
+    reason: seedSignalText.attendanceUrgent.reason,
     evidence:
-      "Caso urgente para validar radar pastoral sem escalonamento explícito.",
+      "A ausência recorrente pede uma aproximação com cuidado e proximidade.",
   });
 
   await createSignal({
@@ -1013,9 +1044,9 @@ async function main() {
     assignedToId: pastor.id,
     severity: SignalSeverity.ATTENTION,
     source: SignalSource.MANUAL,
-    reason: "Supervisor encaminhou para cuidado pastoral.",
+    reason: seedSignalText.pastoralForwarded.reason,
     evidence:
-      "Não é urgente automático, mas aparece ao pastor por encaminhamento explícito.",
+      "A supervisão percebeu que este cuidado merece um olhar pastoral mais próximo.",
   });
 
   await createCareTouch({
@@ -1039,9 +1070,9 @@ async function main() {
       source: SignalSource.MANUAL,
       severity: SignalSeverity.ATTENTION,
       status: SignalStatus.RESOLVED,
-      reason: "Caso encaminhado e acolhido em cuidado pastoral.",
+      reason: seedSignalText.pastoralForwarded.reason,
       evidence:
-        "Pastor conversou com a família e combinou acompanhamento simples.",
+        "O cuidado foi acolhido e a família seguirá acompanhada com simplicidade.",
       detectedAt: daysFromNow(-5, 18),
       lastEvidenceAt: daysFromNow(-5, 18),
       resolvedAt: daysFromNow(-1, 18),
@@ -1103,7 +1134,7 @@ async function main() {
       phone: nextSeedPhone(),
       status: PersonStatus.NEEDS_ATTENTION,
       shortNote:
-        "Cenário de regressão: não deve aparecer em listas padrão por estar em grupo inativo.",
+        "Pessoa vinculada a uma célula arquivada para validar isolamento de dados inativos.",
     },
   });
 
@@ -1122,9 +1153,9 @@ async function main() {
       groupId: inactiveGroup.id,
       source: SignalSource.MANUAL,
       severity: SignalSeverity.URGENT,
-      reason: "Sinal de regressão em célula inativa.",
+      reason: seedSignalText.attendanceUrgent.reason,
       evidence:
-        "Não deve aparecer para pastor, supervisor ou líder nas superfícies padrão.",
+        "Este cenário fica em uma célula inativa e não deve aparecer nas superfícies padrão.",
     },
   });
 
@@ -1195,7 +1226,7 @@ async function main() {
     `Outros usuários da seed: ${marcos.email} / ${helena.email} / ${paulo.email} / ${carla.email} / ${diego.email} / ${fernanda.email} / ${gabriel.email} / ${juliana.email} / ${lucas.email}`,
   );
   console.log(
-    "Cenários de regressão: histórico de presença nas células com registro, 4 encontros no mês atual para a Célula Semente, faltas consecutivas, faltas intercaladas, justificativas, urgente sem atribuição, apoio à supervisão, múltiplos sinais, encaminhamento pastoral, cuidado pastoral realizado, histórico compacto de cuidado com e sem anotação, sinal resolvido, célula sem registro, célula sem supervisor, evento sem presença e célula inativa.",
+    "Cenários de regressão: histórico de presença nas células com registro, 4 encontros no mês atual para a Célula Semente, faltas consecutivas, faltas intercaladas, justificativas, urgente sem atribuição, apoio à supervisão, múltiplos sinais, encaminhamento pastoral, cuidado pastoral realizado, histórico compacto de cuidado com e sem anotação, sinal resolvido, célula sem registro, célula sem supervisor, evento sem presença e célula inativa. Os textos visíveis dos sinais foram padronizados por família pastoral para não sugerir regras automáticas que não existem.",
   );
   console.log("Senha local da seed: koinonia123");
 }

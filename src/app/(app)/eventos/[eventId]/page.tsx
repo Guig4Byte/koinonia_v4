@@ -253,6 +253,12 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
   const { eventId } = await params;
   const queryParams = searchParams ? await searchParams : {};
   const mode = Array.isArray(queryParams.modo) ? queryParams.modo[0] : queryParams.modo;
+  const presenceSaved = Array.isArray(queryParams.presenca) ? queryParams.presenca[0] : queryParams.presenca;
+  const savedMessage = presenceSaved === "atualizada"
+    ? "Presença atualizada. O resumo do encontro já reflete os ajustes feitos."
+    : presenceSaved === "registrada"
+      ? "Presença registrada. O resumo do encontro já está disponível."
+      : null;
 
   const event = await prisma.event.findUnique({
     where: { id: eventId },
@@ -342,6 +348,8 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
         {showCheckInForm && completed ? "Voltar ao resumo" : "Encontros"}
       </BackLink>
 
+      {savedMessage ? <InfoCard tone="success">{savedMessage}</InfoCard> : null}
+
       <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -401,8 +409,6 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
             initialVisitors={visitorRows}
             submitLabel={checkInSubmitLabel}
             mode={completed ? "adjust" : "register"}
-            attentionHref={event.groupId ? `/celulas/${event.groupId}` : "/pessoas"}
-            attentionLabel="Ver atenção da célula"
             cancelHref={checkInCancelHref}
             cancelLabel={completed ? "Cancelar" : "Voltar"}
             saveBarOffset="page"

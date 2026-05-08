@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Plus, UserRoundCheck } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Plus } from "lucide-react";
 import { useMemo, useState, useTransition } from "react";
 import { Button, GhostButton } from "@/components/ui/button";
 import { findDuplicateVisitorName } from "@/features/check-in/visitor-validation";
@@ -37,14 +38,12 @@ type CheckInItem = {
 
 type CheckInResponse = {
   error?: string;
-  openSignalPeopleCount?: number;
 };
 
 function isCheckInResponse(value: unknown): value is CheckInResponse {
   return (
     isRecord(value)
     && (value.error === undefined || typeof value.error === "string")
-    && (value.openSignalPeopleCount === undefined || typeof value.openSignalPeopleCount === "number")
   );
 }
 
@@ -98,8 +97,6 @@ export function CheckInList({
   initialVisitorCount = 0,
   submitLabel = "Salvar presença",
   mode = "register",
-  attentionHref = "/pessoas",
-  attentionLabel = "Ver pessoas em atenção",
   cancelHref,
   cancelLabel = "Cancelar",
   saveBarOffset = "nav",
@@ -110,15 +107,12 @@ export function CheckInList({
   initialVisitorCount?: number;
   submitLabel?: string;
   mode?: CheckInMode;
-  attentionHref?: string;
-  attentionLabel?: string;
   cancelHref?: string;
   cancelLabel?: string;
   saveBarOffset?: "nav" | "page";
 }) {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [saved, setSaved] = useState(false);
-  const [savedAttentionCount, setSavedAttentionCount] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [visitorName, setVisitorName] = useState("");
   const [savedVisitors, setSavedVisitors] = useState<VisitorRecord[]>(initialVisitors);
@@ -160,21 +154,17 @@ export function CheckInList({
       visitorTotal,
       presenceRate,
       hasPresenceData,
-      attentionCount: counts.absent,
     };
   }, [fallbackSavedVisitorCount, items, visitors.length]);
 
-  const canSave = summary.pending === 0 && !isPending && !saved;
+  const canSave = summary.pending === 0 && !isPending;
   const allMembersPresent = summary.totalMembers > 0 && summary.present === summary.totalMembers;
-  const hasSavedAttention = savedAttentionCount !== null ? savedAttentionCount > 0 : summary.attentionCount > 0;
   const helperText =
     mode === "adjust"
       ? "Corrija apenas o que mudou neste encontro."
       : "Marque quem veio. Só isso já ajuda a lembrar quem pode precisar de cuidado.";
 
   function clearTransientState() {
-    setSaved(false);
-    setSavedAttentionCount(null);
     setErrorMessage(null);
   }
 
@@ -226,11 +216,9 @@ export function CheckInList({
   function save() {
     if (summary.pending > 0) {
       setErrorMessage("Ainda falta marcar algumas pessoas antes de salvar a presença.");
-      setSaved(false);
       return;
     }
 
-    if (saved) return;
 
     startTransition(async () => {
       setErrorMessage(null);
@@ -252,10 +240,8 @@ export function CheckInList({
         return;
       }
 
-      setSavedAttentionCount(responseBody?.openSignalPeopleCount ?? null);
-      setSaved(true);
-      setSavedVisitors((current) => [...current, ...visitors]);
-      setVisitors([]);
+      const confirmation = mode === "adjust" ? "atualizada" : "registrada";
+      router.replace(`/eventos/${eventId}?presenca=${confirmation}`);
     });
   }
 
@@ -307,28 +293,6 @@ export function CheckInList({
           </div>
         ) : null}
 
-        {saved ? (
-          <div aria-live="polite" className="mt-4 rounded-2xl bg-[var(--metric-card-bg)] p-3 text-sm text-[var(--color-text-primary)]">
-            <div className="flex items-center gap-2 font-semibold">
-              <UserRoundCheck className="h-4 w-4 text-[var(--color-metric-presenca)]" />
-              Presença salva.
-            </div>
-            <p className="mt-1 text-[var(--color-text-secondary)]">
-              {savedAttentionCount !== null
-                ? savedAttentionCount > 0
-                  ? `${savedAttentionCount} ${savedAttentionCount === 1 ? "pessoa continua" : "pessoas continuam"} no radar da célula.`
-                  : "Ninguém ficou em atenção por este encontro."
-                : summary.attentionCount > 0
-                  ? `${summary.attentionCount} ${summary.attentionCount === 1 ? "pessoa pode precisar" : "pessoas podem precisar"} de um gesto de cuidado.`
-                  : "Ninguém pediu atenção neste encontro."}
-            </p>
-            {hasSavedAttention ? (
-              <Link href={attentionHref} className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)]">
-                {attentionLabel}
-              </Link>
-            ) : null}
-          </div>
-        ) : null}
       </div>
 
       <div className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
@@ -425,16 +389,14 @@ export function CheckInList({
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
             <p className="text-sm font-semibold text-[var(--color-text-primary)]">
-              {summary.pending > 0 ? `Faltam ${summary.pending}` : saved ? "Presença salva" : "Pronto para salvar"}
+              {summary.pending > 0 ? `Faltam ${summary.pending}` : "Pronto para salvar"}
             </p>
             <p className="mt-0.5 text-xs text-[var(--color-text-secondary)]">
               {summary.pending > 0
                 ? "Marque todos para salvar."
-                : saved
-                  ? "Altere alguma marcação para salvar de novo."
-                  : mode === "adjust"
-                    ? "Revise e salve as mudanças."
-                    : "Depois, acompanhe quem precisar."}
+                : mode === "adjust"
+                  ? "Revise e salve as mudanças."
+                  : "Depois, acompanhe quem precisar."}
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-2">
@@ -447,7 +409,7 @@ export function CheckInList({
               </Link>
             ) : null}
             <Button disabled={!canSave} onClick={save} className="min-w-28">
-              {isPending ? "Salvando..." : saved ? "Presença salva" : submitLabel}
+              {isPending ? "Salvando..." : submitLabel}
             </Button>
           </div>
         </div>
