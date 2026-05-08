@@ -1,32 +1,28 @@
 "use client";
 
-import { CalendarDays, Clock3 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { GhostButton } from "@/components/ui/button";
+import { EventActionFeedback } from "@/components/event-action-feedback";
+import { EventCloseAction } from "@/components/event-close-action";
+import { EventLocationAction } from "@/components/event-location-action";
+import { EventRescheduleAction } from "@/components/event-reschedule-action";
 import {
-  calendarDays,
   formatBrasiliaDate,
-  MONTH_NAMES_PT_BR,
   parseBrasiliaDateTime,
   parseBrasiliaDateValue,
-  shiftCalendarMonth,
   toBrasiliaDateTimeParts,
-  WEEKDAY_LABELS_PT_BR,
 } from "@/features/events/brasilia-date-time";
 import type { CalendarMonth } from "@/features/events/brasilia-date-time";
-import { isClosedWithoutPresenceStatus } from "@/features/events/event-display";
+import {
+  closeEventActionCopy,
+  eventActionResponseError,
+  eventActionsAvailability,
+  eventLocationActionLabel,
+  initialEventCalendarMonth,
+} from "@/features/events/event-actions-view";
+import type { EventActionStatus, EventPatchPayload, OpenEventPicker } from "@/features/events/event-actions-view";
 import { timeOptionsWithCurrent } from "@/features/events/time-options";
-import { cn } from "@/lib/cn";
-import { readJsonResponse, isRecord } from "@/lib/json";
-
-type EventActionStatus = "SCHEDULED" | "CHECKIN_OPEN" | "COMPLETED" | "CANCELLED" | "NO_MEETING";
-type OpenPicker = "date" | "time" | null;
-
-function responseError(payload: unknown) {
-  if (isRecord(payload) && typeof payload.error === "string") return payload.error;
-  return "Não foi possível salvar o encontro.";
-}
+import { readJsonResponse } from "@/lib/json";
 
 export function EventDetailsActions({
   eventId,
@@ -51,33 +47,16 @@ export function EventDetailsActions({
   const initialStartsAt = toBrasiliaDateTimeParts(startsAt);
   const [localDate, setLocalDate] = useState(initialStartsAt.date);
   const [localTime, setLocalTime] = useState(initialStartsAt.time);
-  const [openPicker, setOpenPicker] = useState<OpenPicker>(null);
-  const [calendarMonth, setCalendarMonth] = useState<CalendarMonth>(() => {
-    const initialDateParts = parseBrasiliaDateValue(initialStartsAt.date);
-    const fallbackDate = new Date();
-
-    return {
-      year: initialDateParts?.year ?? fallbackDate.getFullYear(),
-      monthIndex: initialDateParts ? initialDateParts.month - 1 : fallbackDate.getMonth(),
-    };
-  });
+  const [openPicker, setOpenPicker] = useState<OpenEventPicker>(null);
+  const [calendarMonth, setCalendarMonth] = useState<CalendarMonth>(() => initialEventCalendarMonth(initialStartsAt.date));
   const [message, setMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const isClosedWithoutPresence = isClosedWithoutPresenceStatus(status);
-  const canReschedule = !hasPresenceData && !isClosedWithoutPresence;
-  const locationActionLabel = hasPresenceData ? "Ajustar local" : "Salvar local";
-  const cancelActionLabel = isFutureEvent ? "Cancelar encontro" : "Não houve encontro";
-  const cancelConfirmationMessage = isFutureEvent
-    ? "Cancelar este encontro? Use quando a célula já sabe que não vai se reunir nesta data."
-    : "Marcar este encontro como não realizado? Use quando a célula não se reuniu nesta data.";
-  const cancelledHelperText = isFutureEvent
-    ? "Este encontro foi cancelado. Ele não aparece como presença pendente."
-    : "Este encontro foi marcado como não realizado. Ele não entra como presença atrasada.";
 
-  async function patchEvent(
-    payload: { locationName?: string; startsAt?: string; status?: "SCHEDULED" | "CANCELLED" | "NO_MEETING" },
-    successMessage: string,
-  ) {
+  const { canReschedule, isClosedWithoutPresence } = eventActionsAvailability(status, hasPresenceData);
+  const selectedDateParts = parseBrasiliaDateValue(localDate);
+  const timeOptions = timeOptionsWithCurrent(localTime);
+
+  async function patchEvent(payload: EventPatchPayload, successMessage: string) {
     setMessage(null);
     setErrorMessage(null);
 
@@ -90,7 +69,7 @@ export function EventDetailsActions({
     const body = await readJsonResponse(response);
 
     if (!response.ok) {
-      setErrorMessage(responseError(body));
+      setErrorMessage(eventActionResponseError(body));
       return;
     }
 
@@ -139,14 +118,12 @@ export function EventDetailsActions({
   }
 
   function markAsCancelled() {
-    const confirmed = window.confirm(cancelConfirmationMessage);
+    const copy = closeEventActionCopy(isFutureEvent);
+    const confirmed = window.confirm(copy.confirmationMessage);
     if (!confirmed) return;
 
     startTransition(() => {
-      void patchEvent(
-        { status: isFutureEvent ? "CANCELLED" : "NO_MEETING" },
-        isFutureEvent ? "Encontro cancelado." : "Encontro marcado como não realizado.",
-      );
+      void patchEvent({ status: copy.status }, copy.successMessage);
     });
   }
 
@@ -155,9 +132,6 @@ export function EventDetailsActions({
       void patchEvent({ status: "SCHEDULED" }, "Encontro reaberto.");
     });
   }
-
-  const selectedDateParts = parseBrasiliaDateValue(localDate);
-  const timeOptions = timeOptionsWithCurrent(localTime);
 
   function updateLocalDate(value: string) {
     setLocalDate(value);
@@ -191,180 +165,44 @@ export function EventDetailsActions({
         Ajuste só o que mudou nesta semana. Estas alterações valem apenas para este encontro.
       </p>
 
-      <label className="mt-4 block text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]" htmlFor="event-location-name">
-        Local deste encontro
-      </label>
-      <div className="mt-2 flex flex-col gap-2">
-        <input
-          id="event-location-name"
-          value={localLocationName}
-          onChange={(event) => setLocalLocationName(event.target.value)}
-          placeholder={defaultLocationName ? `Padrão: ${defaultLocationName}` : "Ex.: Casa da família Souza"}
-          className="min-h-11 rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] px-3 text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-brand)]"
-          maxLength={160}
-          required
-        />
-        <GhostButton type="button" onClick={saveLocation} disabled={isPending} className="w-full rounded-xl">
-          {locationActionLabel}
-        </GhostButton>
-      </div>
+      <EventLocationAction
+        value={localLocationName}
+        defaultLocationName={defaultLocationName}
+        actionLabel={eventLocationActionLabel(hasPresenceData)}
+        disabled={isPending}
+        onChange={setLocalLocationName}
+        onSave={saveLocation}
+      />
 
       {canReschedule ? (
-        <div className="mt-4 rounded-2xl border border-[var(--color-border-divider)] bg-[var(--surface-alt)] p-3">
-          <p className="text-sm font-semibold text-[var(--color-text-primary)]">Remarcar encontro</p>
-          <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-            Use quando a célula vai se reunir em outro dia ou horário. O local informado acima será salvo junto.
-          </p>
-          <div className="event-reschedule-fields mt-3">
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]" htmlFor="event-start-date">
-                Nova data
-              </label>
-              <div className="event-picker-field">
-                <input
-                  id="event-start-date"
-                  value={localDate}
-                  onChange={(event) => updateLocalDate(event.target.value)}
-                  inputMode="numeric"
-                  placeholder="dd/mm/aaaa"
-                  className="event-picker-input min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-brand)]"
-                />
-                <button
-                  type="button"
-                  className="event-picker-trigger"
-                  aria-label="Escolher data"
-                  aria-expanded={openPicker === "date"}
-                  onClick={() => setOpenPicker(openPicker === "date" ? null : "date")}
-                >
-                  <CalendarDays className="h-4 w-4" aria-hidden="true" />
-                </button>
-                {openPicker === "date" ? (
-                  <div className="event-picker-popover event-calendar-popover">
-                    <div className="event-calendar-header">
-                      <button type="button" onClick={() => setCalendarMonth((current) => shiftCalendarMonth(current, -1))} aria-label="Mês anterior">
-                        ‹
-                      </button>
-                      <span>{MONTH_NAMES_PT_BR[calendarMonth.monthIndex]} {calendarMonth.year}</span>
-                      <button type="button" onClick={() => setCalendarMonth((current) => shiftCalendarMonth(current, 1))} aria-label="Próximo mês">
-                        ›
-                      </button>
-                    </div>
-                    <div className="event-calendar-weekdays">
-                      {WEEKDAY_LABELS_PT_BR.map((label, index) => (
-                        <span key={`${label}-${index}`}>{label}</span>
-                      ))}
-                    </div>
-                    <div className="event-calendar-grid">
-                      {calendarDays(calendarMonth).map((day, index) => {
-                        const selected = Boolean(
-                          day &&
-                          selectedDateParts?.year === calendarMonth.year &&
-                          selectedDateParts.month === calendarMonth.monthIndex + 1 &&
-                          selectedDateParts.day === day,
-                        );
-
-                        return day ? (
-                          <button
-                            key={`${calendarMonth.year}-${calendarMonth.monthIndex}-${day}`}
-                            type="button"
-                            className={cn("event-calendar-day", selected && "event-calendar-day-selected")}
-                            onClick={() => selectCalendarDay(day)}
-                          >
-                            {day}
-                          </button>
-                        ) : (
-                          <span key={`empty-${index}`} className="event-calendar-empty" aria-hidden="true" />
-                        );
-                      })}
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]" htmlFor="event-start-time">
-                Novo horário
-              </label>
-              <div className="event-picker-field">
-                <input
-                  id="event-start-time"
-                  value={localTime}
-                  onChange={(event) => setLocalTime(event.target.value)}
-                  inputMode="numeric"
-                  placeholder="HH:mm"
-                  maxLength={5}
-                  className="event-picker-input min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-brand)]"
-                />
-                <button
-                  type="button"
-                  className="event-picker-trigger"
-                  aria-label="Escolher horário"
-                  aria-expanded={openPicker === "time"}
-                  onClick={() => setOpenPicker(openPicker === "time" ? null : "time")}
-                >
-                  <Clock3 className="h-4 w-4" aria-hidden="true" />
-                </button>
-                {openPicker === "time" ? (
-                  <div className="event-picker-popover event-time-popover">
-                    {timeOptions.map((time) => (
-                      <button
-                        key={time}
-                        type="button"
-                        className={cn("event-time-option", localTime === time && "event-time-option-selected")}
-                        onClick={() => selectTime(time)}
-                      >
-                        {time}
-                      </button>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          </div>
-          <p className="mt-2 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-            Data e horário seguem Brasília (UTC-3), em formato 24h.
-          </p>
-          <GhostButton type="button" onClick={rescheduleMeeting} disabled={isPending} className="mt-3 w-full rounded-xl">
-            Remarcar encontro
-          </GhostButton>
-        </div>
+        <EventRescheduleAction
+          localDate={localDate}
+          localTime={localTime}
+          openPicker={openPicker}
+          calendarMonth={calendarMonth}
+          selectedDateParts={selectedDateParts}
+          timeOptions={timeOptions}
+          disabled={isPending}
+          onDateChange={updateLocalDate}
+          onTimeChange={setLocalTime}
+          onOpenPickerChange={setOpenPicker}
+          onCalendarMonthChange={setCalendarMonth}
+          onCalendarDaySelect={selectCalendarDay}
+          onTimeSelect={selectTime}
+          onReschedule={rescheduleMeeting}
+        />
       ) : null}
 
-      {hasPresenceData ? (
-        <p className="mt-4 rounded-2xl border border-[var(--color-border-divider)] bg-[var(--surface-alt)] p-3 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-          Este encontro já tem presença registrada. O local ainda pode ser ajustado, mas o encontro não pode ser cancelado ou remarcado.
-        </p>
-      ) : isClosedWithoutPresence ? (
-        <div className="mt-4 rounded-2xl border border-[var(--color-border-divider)] bg-[var(--surface-alt)] p-3">
-          <p className="text-sm font-semibold text-[var(--color-text-primary)]">Aconteceu nesta semana?</p>
-          <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">{cancelledHelperText}</p>
-          <GhostButton type="button" onClick={reopenMeeting} disabled={isPending} className="mt-3 w-full rounded-xl">
-            Marcar que houve encontro
-          </GhostButton>
-        </div>
-      ) : (
-        <div className="mt-4 rounded-2xl border border-[var(--color-border-divider)] bg-[var(--surface-alt)] p-3">
-          <p className="text-sm font-semibold text-[var(--color-text-primary)]">
-            {isFutureEvent ? "Este encontro vai acontecer?" : "Aconteceu nesta semana?"}
-          </p>
-          <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-            {isFutureEvent
-              ? "Use esta opção quando a célula já sabe que não vai se reunir nesta data."
-              : "Use esta opção quando a célula não se reuniu. Isso evita tratar o encontro como presença atrasada."}
-          </p>
-          <GhostButton
-            type="button"
-            onClick={markAsCancelled}
-            disabled={isPending}
-            className="mt-3 w-full rounded-xl"
-          >
-            {cancelActionLabel}
-          </GhostButton>
-        </div>
-      )}
+      <EventCloseAction
+        hasPresenceData={hasPresenceData}
+        isClosedWithoutPresence={isClosedWithoutPresence}
+        isFutureEvent={isFutureEvent}
+        disabled={isPending}
+        onClose={markAsCancelled}
+        onReopen={reopenMeeting}
+      />
 
-      {message ? <p className="mt-3 text-sm font-semibold text-[var(--color-metric-presenca)]">{message}</p> : null}
-      {errorMessage ? <p className="mt-3 text-sm font-semibold text-[var(--color-badge-risco-text)]">{errorMessage}</p> : null}
+      <EventActionFeedback message={message} errorMessage={errorMessage} />
     </section>
   );
 }
