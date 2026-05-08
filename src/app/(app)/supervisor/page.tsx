@@ -6,6 +6,7 @@ import { SearchBox } from "@/components/search-box";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { canUseSupervisorDashboard } from "@/features/permissions/permissions";
 import { signalDetailForViewer } from "@/features/signals/display";
+import { buildPastoralPulseMessage } from "@/features/pastoral-pulse";
 import { splitPastoralSections } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { redirect } from "next/navigation";
@@ -27,36 +28,29 @@ export default async function SupervisorPage() {
   });
   const urgentSignals = pastoralSections.urgentOrPastoralCases;
   const supportSignals = pastoralSections.supportRequests;
-  const firstUrgentSignal = urgentSignals[0];
-  const firstSupportRequest = supportSignals[0];
-  const firstSignal = dashboard.attentionPeople[0];
-  const urgentSignalsCount = urgentSignals.length;
-  const supportRequestsCount = supportSignals.length;
   const attentionSignals = pastoralSections.localAttention;
   const inCarePeople = pastoralSections.inCarePeople;
+  const firstUrgentSignal = urgentSignals[0];
+  const firstSupportRequest = supportSignals[0];
+  const firstAttentionSignal = attentionSignals[0];
+  const firstInCarePerson = inCarePeople[0];
   const navIndicator = urgentSignals.length > 0 ? "risk" : dashboard.attentionPeople.length > 0 ? "attention" : inCarePeople.length > 0 ? "care" : undefined;
-  const pulseTitle = firstUrgentSignal
-    ? urgentSignalsCount === 1
-      ? `${firstUrgentSignal.person.fullName} pede cuidado mais próximo.`
-      : `${urgentSignalsCount} irmãos pedem cuidado mais próximo.`
-    : firstSupportRequest
-      ? supportRequestsCount === 1
-        ? `${firstSupportRequest.person.fullName} precisa de apoio da supervisão.`
-        : `${supportRequestsCount} pedidos de apoio chegaram à supervisão.`
-      : firstSignal
-        ? `${firstSignal.person.fullName} merece um olhar mais próximo.`
-        : "Suas células estão estáveis agora.";
-  const pulseSubtitle = firstUrgentSignal
-    ? urgentSignalsCount === 1
-      ? `${firstUrgentSignal.group.name}: vale uma aproximação com calma e proximidade.`
-      : "Há sinais diferentes aqui. Olhe com calma e acompanhe cada cuidado com proximidade."
-    : firstSupportRequest
-      ? supportRequestsCount === 1
-        ? `${firstSupportRequest.group.name}: apoie a liderança com calma, sem assumir a operação da célula.`
-        : "Veja o contexto de cada célula e apoie a liderança com calma, sem assumir a operação do encontro."
-      : firstSignal
-        ? `${firstSignal.group.name}: ${signalDetailForViewer(firstSignal, user)}`
-        : "Continue perto dos líderes e das células, sem transformar acompanhamento em cobrança.";
+  const pastoralPulse = buildPastoralPulseMessage({
+    viewerRole: user.role,
+    scope: "supervisorDashboard",
+    counts: {
+      urgentOrPastoral: urgentSignals.length,
+      support: supportSignals.length,
+      attention: attentionSignals.length,
+      inCare: inCarePeople.length,
+    },
+    subjects: {
+      urgentOrPastoral: firstUrgentSignal ? { personName: firstUrgentSignal.person.fullName, groupName: firstUrgentSignal.group.name, detail: signalDetailForViewer(firstUrgentSignal, user) } : null,
+      support: firstSupportRequest ? { personName: firstSupportRequest.person.fullName, groupName: firstSupportRequest.group.name, detail: signalDetailForViewer(firstSupportRequest, user) } : null,
+      attention: firstAttentionSignal ? { personName: firstAttentionSignal.person.fullName, groupName: firstAttentionSignal.group.name, detail: signalDetailForViewer(firstAttentionSignal, user) } : null,
+      inCare: firstInCarePerson ? { personName: firstInCarePerson.fullName, groupName: firstInCarePerson.groupName } : null,
+    },
+  });
 
   return (
     <AppShell
@@ -66,9 +60,9 @@ export default async function SupervisorPage() {
     >
       <SearchBox placeholder="Buscar pessoa..." />
       <PulseCard
-        title={pulseTitle}
-        subtitle={pulseSubtitle}
-        tone={firstUrgentSignal || firstSupportRequest || firstSignal ? "attention" : "ok"}
+        title={pastoralPulse.title}
+        subtitle={pastoralPulse.subtitle}
+        tone={pastoralPulse.tone}
       />
 
       <PastoralSignalSection

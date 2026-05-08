@@ -6,6 +6,7 @@ import { SearchBox } from "@/components/search-box";
 import { getPastorDashboard } from "@/features/dashboard/queries";
 import { canUsePastorDashboard } from "@/features/permissions/permissions";
 import { splitPastoralSections } from "@/features/signals/sections";
+import { buildPastoralPulseMessage } from "@/features/pastoral-pulse";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { redirect } from "next/navigation";
 
@@ -26,11 +27,21 @@ export default async function PastorPage() {
   const urgentOrPastoralCases = pastoralSections.urgentOrPastoralCases;
   const inCarePeople = pastoralSections.inCarePeople;
   const pastoralCasesCount = urgentOrPastoralCases.length;
+  const primaryPastoralCase = urgentOrPastoralCases[0];
+  const primaryInCarePerson = inCarePeople[0];
   const navIndicator = pastoralCasesCount > 0 ? "risk" : inCarePeople.length > 0 ? "care" : undefined;
-
-  const phrase = pastoralCasesCount > 0
-    ? `${pastoralCasesCount} ${pastoralCasesCount === 1 ? "caso pastoral pede" : "casos pastorais pedem"} olhar mais próximo.`
-    : "Nenhum caso pastoral urgente ou encaminhado agora.";
+  const pastoralPulse = buildPastoralPulseMessage({
+    viewerRole: user.role,
+    scope: "pastorDashboard",
+    counts: {
+      urgentOrPastoral: pastoralCasesCount,
+      inCare: pastoralCasesCount > 0 ? 0 : inCarePeople.length,
+    },
+    subjects: {
+      urgentOrPastoral: primaryPastoralCase ? { personName: primaryPastoralCase.person.fullName, groupName: primaryPastoralCase.group?.name } : null,
+      inCare: primaryInCarePerson ? { personName: primaryInCarePerson.fullName } : null,
+    },
+  });
 
   return (
     <AppShell
@@ -40,9 +51,9 @@ export default async function PastorPage() {
     >
       <SearchBox placeholder="Buscar qualquer pessoa..." />
       <PulseCard
-        title={phrase}
-        subtitle="A atenção local segue com líderes e supervisores."
-        tone={pastoralCasesCount > 0 ? "attention" : "ok"}
+        title={pastoralPulse.title}
+        subtitle={pastoralPulse.subtitle}
+        tone={pastoralPulse.tone}
       />
 
       <PastoralSignalSection

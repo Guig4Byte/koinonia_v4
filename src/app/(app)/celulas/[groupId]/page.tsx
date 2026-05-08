@@ -14,6 +14,7 @@ import { personEffectiveBadgeForViewer } from "@/features/people/status-display"
 import { canManageGroups, canViewGroup, isGroupLeader } from "@/features/permissions/permissions";
 import { escalationStatusDetailForViewer } from "@/features/signals/escalation";
 import { signalReasonForViewer, type SignalBadgeTone } from "@/features/signals/display";
+import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features/pastoral-pulse";
 import { getPastoralSectionSignalsByPerson, isSupportRequest, isUrgentOrPastoralCase } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { cn } from "@/lib/cn";
@@ -143,12 +144,6 @@ function memberMatchesFilter(member: MemberDisplay, filter: MembersFilter) {
   return true;
 }
 
-type GroupPastoralPulse = {
-  title: string;
-  subtitle: string;
-  tone: "calm" | "attention" | "ok";
-};
-
 function groupPastoralPulse({
   role,
   urgentOrPastoralCount,
@@ -167,144 +162,20 @@ function groupPastoralPulse({
   hasRecentPresence: boolean;
   presenceRate: number;
   hasPendingEvent: boolean;
-}): GroupPastoralPulse {
-  const isLeaderView = role === UserRole.LEADER;
-  const isSupervisorView = role === UserRole.SUPERVISOR;
-  const isPastorView = role === UserRole.PASTOR || role === UserRole.ADMIN;
-
-  if (urgentOrPastoralCount > 0) {
-    if (isLeaderView) {
-      return {
-        title: urgentOrPastoralCount === 1
-          ? "Há um cuidado que pede proximidade."
-          : "Há cuidados que pedem proximidade.",
-        subtitle: "Olhe os sinais com calma e peça apoio se precisar.",
-        tone: "attention",
-      };
-    }
-
-    return {
-      title: urgentOrPastoralCount === 1
-        ? "Há um cuidado sensível nesta célula."
-        : "Há cuidados sensíveis nesta célula.",
-      subtitle: isPastorView
-        ? "Algumas pessoas podem precisar de um olhar pastoral mais próximo."
-        : "Acompanhe a liderança e veja onde o cuidado precisa de apoio.",
-      tone: "attention",
-    };
-  }
-
-  if (supportCount > 0) {
-    if (isLeaderView) {
-      return {
-        title: "Apoio solicitado à supervisão.",
-        subtitle: "Você continua perto da célula, com a supervisão caminhando junto.",
-        tone: "attention",
-      };
-    }
-
-    if (isSupervisorView) {
-      return {
-        title: supportCount === 1
-          ? "Esta célula pediu apoio da supervisão."
-          : "Há pedidos de apoio nesta célula.",
-        subtitle: "Veja o contexto e caminhe junto com a liderança.",
-        tone: "attention",
-      };
-    }
-
-    return {
-      title: "Há apoio em andamento nesta célula.",
-      subtitle: "Esse cuidado segue com liderança e supervisão.",
-      tone: "attention",
-    };
-  }
-
-  if (localAttentionCount > 0) {
-    if (isLeaderView) {
-      return {
-        title: localAttentionCount === 1
-          ? "Uma pessoa pede acompanhamento mais próximo."
-          : "Há pessoas para acompanhar de perto.",
-        subtitle: "Vale uma aproximação simples, sem tom de cobrança.",
-        tone: "attention",
-      };
-    }
-
-    if (isPastorView) {
-      return {
-        title: "Há atenção local nesta célula.",
-        subtitle: "Esse cuidado segue com líderes e supervisores.",
-        tone: "calm",
-      };
-    }
-
-    return {
-      title: localAttentionCount === 1
-        ? "Uma pessoa pede acompanhamento mais próximo."
-        : "Há pessoas para acompanhar de perto.",
-      subtitle: "A liderança segue cuidando, mas vale manter esta célula no radar.",
-      tone: "attention",
-    };
-  }
-
-  if (inCareCount > 0) {
-    return {
-      title: inCareCount === 1
-        ? "Uma pessoa segue em cuidado nesta célula."
-        : "Há pessoas em cuidado nesta célula.",
-      subtitle: isLeaderView
-        ? "Continue acompanhando com leveza, sem transformar cuidado em cobrança."
-        : "Elas já receberam cuidado e seguem no radar com leveza.",
-      tone: "ok",
-    };
-  }
-
-  if (hasPendingEvent) {
-    return {
-      title: isLeaderView
-        ? "Há um encontro aguardando presença."
-        : "Há presença aguardando registro nesta célula.",
-      subtitle: isLeaderView
-        ? "Registre quando puder para manter a leitura pastoral em dia."
-        : "Quando a liderança registrar, a leitura da célula fica mais clara.",
-      tone: "calm",
-    };
-  }
-
-  if (!hasRecentPresence) {
-    return {
-      title: "Ainda sem presença recente registrada.",
-      subtitle: isLeaderView
-        ? "Quando houver encontro, registre a presença para ajudar no cuidado da célula."
-        : "Talvez a célula tenha se reunido, mas a presença ainda não foi marcada.",
-      tone: "calm",
-    };
-  }
-
-  if (presenceRate < 70) {
-    if (isLeaderView) {
-      return {
-        title: "O ritmo de presença pede atenção.",
-        subtitle: "Vale olhar quem faltou e se aproximar sem tom de cobrança.",
-        tone: "attention",
-      };
-    }
-
-    return {
-      title: "O ritmo de presença pede acompanhamento.",
-      subtitle: isPastorView
-        ? "Acompanhe o contexto da célula antes de orientar próximos passos."
-        : "Veja se a liderança precisa de apoio para retomar vínculos.",
-      tone: "attention",
-    };
-  }
-
-  return {
-    title: "A célula está sem sinais abertos neste momento.",
-    subtitle: "Continue acompanhando o ritmo de presença e cuidado.",
-    tone: "ok",
-  };
+}): PastoralPulseMessage {
+  return buildPastoralPulseMessage({
+    viewerRole: role,
+    scope: "groupDetail",
+    counts: {
+      urgentOrPastoral: urgentOrPastoralCount,
+      support: supportCount,
+      attention: localAttentionCount,
+      inCare: inCareCount,
+      hasRecentPresence,
+      presenceRate,
+      hasPendingEvent,
+    },
+  });
 }
 
 export default async function GroupDetailPage({ params, searchParams }: GroupDetailPageProps) {
