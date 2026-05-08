@@ -1,126 +1,35 @@
 import Link from "next/link";
-import { CalendarCheck2, UsersRound } from "lucide-react";
 import { notFound } from "next/navigation";
-import type { CSSProperties } from "react";
-import { GroupResponsibilityRole, PersonStatus, SignalStatus, UserRole } from "../../../../generated/prisma/client";
+import { GroupResponsibilityRole, PersonStatus, SignalStatus, UserRole } from "@/generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
-import { appNavForRole, homeHrefForRole, secondaryNavHrefForRole } from "@/features/navigation/app-nav";
-import { BackLink, ContextSummary, EmptyState, InfoCard, PulseCard, SectionTitle } from "@/components/cards";
-import { type BadgeTone } from "@/components/ui/badge";
+import { BackLink, ContextSummary, InfoCard, PulseCard, SectionTitle } from "@/components/cards";
+import { GroupPendingEventCard } from "@/components/group-pending-event-card";
+import { GroupRegisteredEncountersList } from "@/components/group-registered-encounters-list";
 import { MemberPriorityList } from "@/components/member-priority-list";
-import { ProgressiveList } from "@/components/progressive-list";
 import { presenceTone } from "@/features/events/presence-display";
-import { isPresenceRecordedEvent, summarizeEventPresence, summarizeEventsPresence, summarizePresenceTrend } from "@/features/events/presence-summary";
+import { isPresenceRecordedEvent, summarizeEventsPresence, summarizePresenceTrend } from "@/features/events/presence-summary";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
+import {
+  buildGroupMemberDisplays,
+  buildGroupMembersView,
+  groupMeetingText,
+  groupPastoralPulse,
+  GROUP_REGULAR_MEMBER_INITIAL_COUNT,
+  GROUP_REGULAR_MEMBER_STEP,
+} from "@/features/groups/group-detail-view";
 import { responsibilityNames } from "@/features/groups/responsibility-display";
-import { memberCardTone, memberMatchesFilter, readMembersFilter } from "@/features/people/member-filters";
-import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
+import { appNavForRole, homeHrefForRole, secondaryNavHrefForRole } from "@/features/navigation/app-nav";
+import { readMembersFilter } from "@/features/people/member-filters";
 import { canManageGroups, canViewGroup, isGroupLeader } from "@/features/permissions/permissions";
-import { escalationStatusDetailForViewer } from "@/features/signals/escalation";
-import { signalDetailForViewer, type SignalBadgeTone } from "@/features/signals/display";
-import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features/pastoral-pulse";
 import { getPastoralSectionSignalsByPerson, isSupportRequest, isUrgentOrPastoralCase } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
-import { cn } from "@/lib/cn";
-import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/search-params";
-
-const dayLabels: Record<number, string> = {
-  0: "Domingo",
-  1: "Segunda",
-  2: "Terça",
-  3: "Quarta",
-  4: "Quinta",
-  5: "Sexta",
-  6: "Sábado",
-};
 
 type GroupDetailPageProps = {
   params: Promise<{ groupId: string }>;
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
-
-type MemberDisplay = {
-  membershipId: string;
-  personId: string;
-  name: string;
-  subtitle?: string;
-  badgeLabel: string;
-  badgeTone: BadgeTone;
-  cardTone?: SignalBadgeTone | "stable" | "muted";
-  priorityRank: number;
-  status: PersonStatus;
-};
-
-function groupMeetingText(day?: number | null, time?: string | null) {
-  if (day === null || day === undefined) return time ? `Horário: ${time}` : "Encontro sem horário fixo informado.";
-  return `${dayLabels[day] ?? "Dia informado"}${time ? ` · ${time}` : ""}`;
-}
-
-
-
-function encounterToneVars(tone: BadgeTone): CSSProperties {
-  if (tone === "risk") {
-    return {
-      "--encounter-tone": "var(--color-badge-risco-text)",
-      "--encounter-tone-soft": "var(--color-badge-risco-bg)",
-    } as CSSProperties;
-  }
-
-  if (tone === "warn") {
-    return {
-      "--encounter-tone": "var(--color-badge-atencao-text)",
-      "--encounter-tone-soft": "var(--color-badge-atencao-bg)",
-    } as CSSProperties;
-  }
-
-  if (tone === "ok") {
-    return {
-      "--encounter-tone": "var(--color-metric-presenca)",
-      "--encounter-tone-soft": "var(--color-badge-estavel-bg)",
-    } as CSSProperties;
-  }
-
-  return {
-    "--encounter-tone": "var(--color-text-secondary)",
-    "--encounter-tone-soft": "var(--surface-alt)",
-  } as CSSProperties;
-}
-
-function groupPastoralPulse({
-  role,
-  urgentOrPastoralCount,
-  supportCount,
-  localAttentionCount,
-  inCareCount,
-  hasRecentPresence,
-  presenceRate,
-  hasPendingEvent,
-}: {
-  role: UserRole;
-  urgentOrPastoralCount: number;
-  supportCount: number;
-  localAttentionCount: number;
-  inCareCount: number;
-  hasRecentPresence: boolean;
-  presenceRate: number;
-  hasPendingEvent: boolean;
-}): PastoralPulseMessage {
-  return buildPastoralPulseMessage({
-    viewerRole: role,
-    scope: "groupDetail",
-    counts: {
-      urgentOrPastoral: urgentOrPastoralCount,
-      support: supportCount,
-      attention: localAttentionCount,
-      inCare: inCareCount,
-      hasRecentPresence,
-      presenceRate,
-      hasPendingEvent,
-    },
-  });
-}
 
 export default async function GroupDetailPage({ params, searchParams }: GroupDetailPageProps) {
   const user = await getCurrentUser();
@@ -201,49 +110,12 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
   const canRegisterPendingEvent = user.role === UserRole.LEADER && isGroupLeader(user, group);
   const pendingEventStatusLabel = canRegisterPendingEvent ? "Presença pendente" : "Aguardando registro";
   const pendingEventActionLabel = canRegisterPendingEvent ? "Registrar presença" : "Abrir encontro";
-  const members: MemberDisplay[] = group.memberships
-    .map((membership) => {
-      const attentionSignal = attentionSignalByPersonId.get(membership.personId);
-      const memberBadge = personEffectiveBadgeForViewer(membership.person, attentionSignal, user);
-      const escalationSubtitle = attentionSignal ? escalationStatusDetailForViewer(attentionSignal, user) : null;
-      const signalSubtitle = attentionSignal ? escalationSubtitle ?? signalDetailForViewer(attentionSignal, user) : undefined;
-      const subtitle = signalSubtitle
-        ?? (membership.person.status === PersonStatus.COOLING_AWAY ? "Em cuidado" : undefined);
-      const priorityRank = (() => {
-        if (attentionSignal && isUrgentOrPastoralCase(attentionSignal)) return 1;
-        if (attentionSignal && isSupportRequest(attentionSignal, user)) return 2;
-        if (attentionSignal) return 3;
-        if (membership.person.status === PersonStatus.COOLING_AWAY) return 4;
-        if (membership.person.status === PersonStatus.ACTIVE) return 5;
-        return 6;
-      })();
-
-      return {
-        membershipId: membership.id,
-        personId: membership.personId,
-        name: membership.person.fullName,
-        subtitle,
-        badgeLabel: memberBadge.label,
-        badgeTone: memberBadge.tone,
-        cardTone: memberCardTone(memberBadge.tone),
-        priorityRank,
-        status: membership.person.status,
-      };
-    })
-    .sort((left, right) => {
-      const priorityDifference = left.priorityRank - right.priorityRank;
-      if (priorityDifference !== 0) return priorityDifference;
-      return left.name.localeCompare(right.name, "pt-BR");
-    });
-  const visibleMembers = members.filter((member) => memberMatchesFilter(member, activeMembersFilter, {
-    attentionMaxPriorityRank: 4,
-  }));
-  const priorityMembers = members.filter((member) => member.priorityRank <= 4);
-  const activeMembers = members.filter((member) => member.priorityRank >= 5);
-  const regularMembers = activeMembersFilter === "todos" ? activeMembers : visibleMembers;
-  const membersSectionDetail = activeMembersFilter === "todos"
-    ? `${members.length} ${members.length === 1 ? "membro" : "membros"}${priorityMembers.length > 0 ? ` · ${priorityMembers.length} em atenção` : ""}`
-    : `${visibleMembers.length} ${visibleMembers.length === 1 ? "pessoa neste recorte" : "pessoas neste recorte"}`;
+  const members = buildGroupMemberDisplays({
+    memberships: group.memberships,
+    attentionSignalsByPersonId: attentionSignalByPersonId,
+    viewer: user,
+  });
+  const membersView = buildGroupMembersView(members, activeMembersFilter);
   const canEditGroup = canManageGroups(user);
   const savedMessage = savedParam === "celula-criada"
     ? "Célula criada."
@@ -330,104 +202,32 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
         </div>
 
         {pendingEvent ? (
-          <section className="group-pending-event-section">
-            <Link href={`/eventos/${pendingEvent.id}`} className={cn("group-pending-event-card", "priority-card priority-card-warn")}>
-              <span className="group-pending-event-top">
-                <span>{pendingEventStatusLabel}</span>
-              </span>
-              <span className="group-pending-event-body">
-                <span className="min-w-0">
-                  <span className="block truncate text-base font-bold text-[var(--color-text-primary)]">{pendingEvent.title}</span>
-                  <span className="mt-1 block text-xs font-medium leading-relaxed text-[var(--color-text-secondary)]">
-                    {formatShortDate(pendingEvent.startsAt)} · {formatTime(pendingEvent.startsAt)}
-                  </span>
-                </span>
-                <span className="group-pending-event-action">
-                  {pendingEventActionLabel} →
-                </span>
-              </span>
-            </Link>
-          </section>
+          <GroupPendingEventCard
+            event={pendingEvent}
+            statusLabel={pendingEventStatusLabel}
+            actionLabel={pendingEventActionLabel}
+          />
         ) : null}
 
         <section id="membros" className="scroll-mt-6">
-          <SectionTitle detail={membersSectionDetail}>Membros</SectionTitle>
+          <SectionTitle detail={membersView.sectionDetail}>Membros</SectionTitle>
           <MemberPriorityList
             basePath={`/celulas/${group.id}`}
             activeFilter={activeMembersFilter}
-            priorityMembers={priorityMembers}
-            regularMembers={regularMembers}
+            priorityMembers={membersView.priorityMembers}
+            regularMembers={membersView.regularMembers}
             keyForMember={(member) => member.membershipId}
             hrefForMember={(member) => `/pessoas/${member.personId}`}
             priorityContextForMember={(member) => member.subtitle}
             filteredContextForMember={(member) => member.subtitle}
             priorityMoreLabel="Ver mais pessoas em atenção"
             priorityLessLabel="Mostrar menos pessoas em atenção"
-            regularInitialCount={5}
-            regularStep={5}
+            regularInitialCount={GROUP_REGULAR_MEMBER_INITIAL_COUNT}
+            regularStep={GROUP_REGULAR_MEMBER_STEP}
           />
         </section>
 
-        <section>
-          <SectionTitle>Últimos encontros registrados</SectionTitle>
-          <div className="group-detail-list">
-            <ProgressiveList
-              initialCount={4}
-              step={4}
-              moreLabel="Ver mais encontros"
-              lessLabel="Mostrar menos encontros"
-            >
-              {completedEvents.map((event) => {
-              const metrics = summarizeEventPresence(event);
-              const presenceBadgeTone = presenceTone(metrics.hasPresenceData, metrics.presenceRate);
-              const presenceLabel = metrics.hasPresenceData ? `${metrics.presenceRate}%` : "Sem registro";
-              const presenceProgress = metrics.hasPresenceData ? metrics.presenceRate : 0;
-
-              return (
-                <Link
-                  key={event.id}
-                  href={`/eventos/${event.id}`}
-                  className="group-encounter-card relative min-h-[74px] gap-3 overflow-hidden py-3 pr-4 pl-5"
-                  style={encounterToneVars(presenceBadgeTone)}
-                >
-                  <span className="absolute inset-y-0 left-0 w-1 bg-[var(--encounter-tone)]" aria-hidden="true" />
-                  <span
-                    className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[var(--encounter-tone-soft)] text-[var(--encounter-tone)]"
-                    aria-hidden="true"
-                  >
-                    <CalendarCheck2 className="h-4 w-4" strokeWidth={2.2} />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-bold text-[var(--color-text-secondary)]">
-                      {formatShortDate(event.startsAt)} · {formatTime(event.startsAt)}
-                    </span>
-                    <span className="mt-2 flex min-w-0 items-center gap-2 text-xs leading-none text-[var(--color-text-muted)]">
-                      <span className="h-1 w-24 overflow-hidden rounded-full bg-[var(--color-border-divider)]" aria-hidden="true">
-                        <span
-                          className="block h-full rounded-full bg-[var(--encounter-tone)]"
-                          style={{ width: `${presenceProgress}%` }}
-                        />
-                      </span>
-                      <strong className="min-w-8 font-bold text-[var(--encounter-tone)]">{presenceLabel}</strong>
-                      <span className="h-3 w-px bg-[var(--color-border-divider)]" aria-hidden="true" />
-                      <span className="flex min-w-0 items-center gap-1 truncate font-medium text-[var(--color-text-secondary)]">
-                        <UsersRound className="h-3 w-3 shrink-0" strokeWidth={1.8} aria-hidden="true" />
-                        {metrics.visitorCount} {metrics.visitorCount === 1 ? "visitante" : "visitantes"}
-                      </span>
-                    </span>
-                  </span>
-                  <span className="shrink-0 self-center text-xs font-semibold text-[var(--color-text-secondary)]">
-                    Abrir →
-                  </span>
-                </Link>
-              );
-              })}
-            </ProgressiveList>
-            {completedEvents.length === 0 ? (
-              <EmptyState compact>Ainda não há encontros registrados para resumir presença.</EmptyState>
-            ) : null}
-          </div>
-        </section>
+        <GroupRegisteredEncountersList events={completedEvents} />
       </div>
     </AppShell>
   );
