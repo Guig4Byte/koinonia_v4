@@ -42,8 +42,6 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
   const group = await prisma.smallGroup.findUnique({
     where: { id: groupId },
     include: {
-      leader: true,
-      supervisor: true,
       responsibilities: {
         where: { activeUntil: null },
         include: { user: true },
@@ -70,8 +68,8 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
 
   if (!group || !canViewGroup(user, group)) notFound();
 
-  const leadershipName = responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, group.leader?.name ?? "não informada");
-  const supervisionName = responsibilityNames(group.responsibilities, GroupResponsibilityRole.SUPERVISOR, group.supervisor?.name ?? "");
+  const leadershipName = responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, "não informada");
+  const supervisionName = responsibilityNames(group.responsibilities, GroupResponsibilityRole.SUPERVISOR, "");
 
   const referenceDate = new Date();
   const homeHref = homeHrefForRole(user.role);

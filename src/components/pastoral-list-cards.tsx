@@ -19,7 +19,7 @@ type PastoralSignalCardItem = {
   assignedToId?: string | null;
   assignedTo?: { role: UserRole } | null;
   person: { id: string; fullName: string };
-  group?: { name?: string | null; leader?: { name?: string | null } | null } | null;
+  group?: { name?: string | null } | null;
 };
 
 type InCarePersonCardItem = {
@@ -30,10 +30,7 @@ type InCarePersonCardItem = {
 };
 
 function defaultSignalContext(signal: PastoralSignalCardItem): string {
-  const groupName = signal.group?.name ?? "Sem célula";
-  const leaderName = signal.group?.leader?.name ?? "Sem líder";
-
-  return `${groupName} · ${leaderName}`;
+  return signal.group?.name ?? "Sem célula";
 }
 
 function defaultInCareContext(person: InCarePersonCardItem): string {

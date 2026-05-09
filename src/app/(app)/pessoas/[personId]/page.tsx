@@ -31,7 +31,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
     include: {
       memberships: {
         where: { leftAt: null },
-        include: { group: { include: { leader: true, supervisor: true, responsibilities: { where: { activeUntil: null }, include: { user: true }, orderBy: { createdAt: "asc" } } } } },
+        include: { group: { include: { responsibilities: { where: { activeUntil: null }, include: { user: true }, orderBy: { createdAt: "asc" } } } } },
       },
     },
   });
@@ -51,7 +51,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const [signals, attendances, careTouches] = await Promise.all([
     prisma.careSignal.findMany({
       where: { ...visibleOpenSignalWhere, personId: person.id },
-      include: { assignedTo: true, group: { include: { leader: true, supervisor: true, responsibilities: { where: { activeUntil: null }, include: { user: true }, orderBy: { createdAt: "asc" } } } } },
+      include: { assignedTo: true, group: { include: { responsibilities: { where: { activeUntil: null }, include: { user: true }, orderBy: { createdAt: "asc" } } } } },
       orderBy: [{ severity: "desc" }, { detectedAt: "desc" }],
     }),
     prisma.attendance.findMany({
@@ -70,10 +70,10 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const primaryMembership = person.memberships.find((membership) => canViewGroup(user, membership.group));
   const primaryGroup = primaryMembership?.group;
   const primaryLeadershipName = primaryGroup
-    ? responsibilityNames(primaryGroup.responsibilities, GroupResponsibilityRole.LEADER, primaryGroup.leader?.name ?? "")
+    ? responsibilityNames(primaryGroup.responsibilities, GroupResponsibilityRole.LEADER, "")
     : "";
   const primarySupervisionName = primaryGroup
-    ? responsibilityNames(primaryGroup.responsibilities, GroupResponsibilityRole.SUPERVISOR, primaryGroup.supervisor?.name ?? "")
+    ? responsibilityNames(primaryGroup.responsibilities, GroupResponsibilityRole.SUPERVISOR, "")
     : "";
   const homeHref = homeHrefForRole(user.role);
   const openSignalsCount = signals.length;

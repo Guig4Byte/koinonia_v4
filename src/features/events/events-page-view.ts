@@ -27,8 +27,6 @@ export type EventListEvent = {
     churchId: string;
     isActive?: boolean | null;
     locationName?: string | null;
-    leaderUserId?: string | null;
-    supervisorUserId?: string | null;
     responsibilities?: {
       userId: string;
       role: string;

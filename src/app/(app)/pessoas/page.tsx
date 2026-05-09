@@ -44,7 +44,7 @@ export default async function PeoplePage({ searchParams }: PeoplePageProps) {
   const [openSignals, visibleMembers, inCarePeople] = await Promise.all([
     prisma.careSignal.findMany({
       where: getVisibleOpenSignalWhere(user),
-      include: { person: true, assignedTo: true, group: { include: { leader: true } } },
+      include: { person: true, assignedTo: true, group: true },
       orderBy: { detectedAt: "desc" },
       take: PEOPLE_PAGE_ATTENTION_SIGNAL_QUERY_LIMIT,
     }),

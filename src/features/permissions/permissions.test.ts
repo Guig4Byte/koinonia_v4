@@ -33,19 +33,14 @@ function scopedGroupWhere(userId: string, role: GroupResponsibilityRole) {
   return {
     churchId: "church-1",
     isActive: true,
-    OR: [
-      {
-        responsibilities: {
-          some: {
-            churchId: "church-1",
-            userId,
-            role,
-            activeUntil: null,
-          },
-        },
+    responsibilities: {
+      some: {
+        churchId: "church-1",
+        userId,
+        role,
+        activeUntil: null,
       },
-      role === GroupResponsibilityRole.LEADER ? { leaderUserId: userId } : { supervisorUserId: userId },
-    ],
+    },
   };
 }
 
@@ -53,8 +48,6 @@ const group = {
   id: "group-1",
   churchId: "church-1",
   isActive: true,
-  leaderUserId: null,
-  supervisorUserId: null,
   responsibilities: [
     responsibility(leader.id, GroupResponsibilityRole.LEADER),
     responsibility(supervisor.id, GroupResponsibilityRole.SUPERVISOR),
@@ -139,8 +132,6 @@ describe("permission helpers", () => {
       id: "group-2",
       churchId: "church-1",
       isActive: true,
-      leaderUserId: null,
-      supervisorUserId: null,
       responsibilities: [responsibility(supervisor.id, GroupResponsibilityRole.SUPERVISOR)],
     };
     const inactiveGroup = { ...group, id: "group-inactive", isActive: false };

@@ -27,8 +27,6 @@ export type DashboardEvent = PresenceEvent & { startsAt: Date };
 export type DashboardGroupBase = {
   id: string;
   name: string;
-  leader?: { name: string } | null;
-  supervisor?: { name: string } | null;
   responsibilities: DashboardResponsibility[];
   signals: DashboardSignal[];
   events: DashboardEvent[];
@@ -91,8 +89,8 @@ export function buildPastorGroupPresence(group: DashboardGroupBase) {
   return {
     id: group.id,
     name: group.name,
-    leaderName: responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, group.leader?.name ?? "Sem liderança"),
-    supervisorName: responsibilityNames(group.responsibilities, GroupResponsibilityRole.SUPERVISOR, group.supervisor?.name ?? "Sem supervisão"),
+    leaderName: responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, "Sem liderança"),
+    supervisorName: responsibilityNames(group.responsibilities, GroupResponsibilityRole.SUPERVISOR, "Sem supervisão"),
     presenceRate: groupPresence.presenceRate,
     hasPresenceData: groupPresence.hasPresenceData,
     recordedEventsCount: recordedEvents.length,
@@ -129,7 +127,7 @@ export function buildPastorTeamGroup(group: DashboardTeamGroup) {
   return {
     id: group.id,
     name: group.name,
-    leadershipName: responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, group.leader?.name ?? "não informada"),
+    leadershipName: responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, "não informada"),
     membersCount: group.memberships.length,
     presenceRate: presence.presenceRate,
     hasPresenceData: presence.hasPresenceData,
@@ -160,14 +158,12 @@ export function mergeGroupsById<T extends { id: string }>(groups: T[][]) {
 
 export function buildSupervisorTeam<TGroup extends DashboardTeamGroup>({
   supervisor,
-  responsibilityGroups,
-  legacyGroups,
+  groups: supervisorGroups,
 }: {
   supervisor: { id: string; name: string; email: string };
-  responsibilityGroups: TGroup[];
-  legacyGroups: TGroup[];
+  groups: TGroup[];
 }) {
-  const groups = mergeGroupsById([responsibilityGroups, legacyGroups]).map(buildPastorTeamGroup).sort(comparePastoralPriorityThenName);
+  const groups = mergeGroupsById([supervisorGroups]).map(buildPastorTeamGroup).sort(comparePastoralPriorityThenName);
   const highestPriorityScore = groups[0]?.pastoralPriorityScore ?? 0;
   const groupsNeedingAttentionCount = groups.filter((group) => group.pastoralPriorityScore > 0).length;
 

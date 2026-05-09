@@ -73,7 +73,7 @@ eventsGeneratedUntil
 isActive
 ```
 
-`leaderUserId` e `supervisorUserId` continuam no schema como compatibilidade temporária. Novas regras devem priorizar `GroupResponsibility`.
+`GroupResponsibility` é a única fonte de verdade para liderança e supervisão. O schema não mantém campos legados de líder/supervisor em `SmallGroup`.
 
 ### `GroupResponsibility`
 
@@ -201,7 +201,6 @@ Regras:
 - Pastor/Admin: escopo amplo para busca/leitura autorizada, mas listas padrão filtram relevância pastoral.
 - Supervisor: grupos ativos onde tem responsabilidade `SUPERVISOR`.
 - Líder: grupos ativos onde tem responsabilidade `LEADER`.
-- Campos legados `leaderUserId` e `supervisorUserId` são fallback temporário.
 - Check-in: somente líder ativo da célula, encontro já iniciado e não fechado.
 - Ações operacionais do encontro: somente líder ativo da célula.
 - Pastor/supervisor podem ver encontro dentro do escopo, mas não ajustar/cancelar/remarcar.
@@ -210,7 +209,7 @@ Regras:
 - Grupo inativo não deve liberar visibilidade, encontro, check-in ou histórico padrão.
 - Sinais sem grupo podem continuar visíveis quando estiverem dentro do escopo institucional.
 
-## Exibição e backfill de responsabilidades
+## Exibição de responsabilidades
 
 A exibição de liderança/supervisão compartilhada usa:
 
@@ -218,26 +217,7 @@ A exibição de liderança/supervisão compartilhada usa:
 src/features/groups/responsibility-display.ts
 ```
 
-O backfill de vínculos legados usa:
-
-```txt
-src/features/groups/responsibilities-backfill.ts
-prisma/backfill-group-responsibilities.ts
-```
-
-Comando:
-
-```txt
-npm run db:backfill:responsibilities
-```
-
-Uso:
-
-- migrar bancos antigos de `leaderUserId`/`supervisorUserId` para `GroupResponsibility`;
-- evitar duplicatas de responsabilidades ativas;
-- recriar responsabilidade quando a anterior está encerrada.
-
-Rode antes de remover dependência dos campos legados.
+Como não há campos legados em `SmallGroup`, criação, escopo e exibição devem consultar responsabilidades ativas em `GroupResponsibility`.
 
 ## Geração automática de encontros
 
@@ -588,7 +568,6 @@ npm run db:generate
 npm run db:push
 npm run db:migrate
 npm run db:seed
-npm run db:backfill:responsibilities
 npm run lint
 npm run typecheck
 npm test

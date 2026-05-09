@@ -77,8 +77,7 @@ A fonte atual para liderança e supervisão é `GroupResponsibility`.
 
 - Use responsabilidades ativas (`activeUntil = null`) para escopo atual.
 - O modelo suporta mais de um líder/supervisor por célula.
-- Campos legados `leaderUserId` e `supervisorUserId` continuam apenas como compatibilidade temporária.
-- Rode o backfill quando um banco antigo precisar migrar vínculos legados.
+- Não use campos legados em `SmallGroup`: liderança e supervisão vivem somente em `GroupResponsibility`.
 
 ## Seções pastorais
 
@@ -172,7 +171,7 @@ Não implementar sem decisão explícita:
 - Login/logout: `src/app/login`, `src/app/logout`.
 - Permissões/escopo: `src/features/permissions/permissions.ts`.
 - Navegação por papel: `src/features/navigation/app-nav.ts`.
-- Responsabilidades/backfill: `src/features/groups/responsibilities-backfill.ts`, `prisma/backfill-group-responsibilities.ts`.
+- Exibição de liderança/supervisão: `src/features/groups/responsibility-display.ts`.
 - Exibição de liderança/supervisão: `src/features/groups/responsibility-display.ts`.
 - Geração de encontros: `src/features/events/schedule.ts`.
 - Cadastro mínimo de célula: `src/app/(app)/celulas/actions.ts`, `src/app/(app)/celulas/nova/page.tsx`, `src/app/(app)/celulas/[groupId]/editar/page.tsx`, `src/components/group-form.tsx`, `src/features/groups/group-form.ts`.

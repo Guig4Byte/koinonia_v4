@@ -35,8 +35,6 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
     include: {
       group: {
         include: {
-          leader: true,
-          supervisor: true,
           responsibilities: { where: { activeUntil: null } },
           memberships: {
             where: { leftAt: null, role: { not: MembershipRole.VISITOR } },

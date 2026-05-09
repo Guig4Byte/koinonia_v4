@@ -17,7 +17,7 @@ export type SupervisorPageSignal = {
   assignedToId?: string | null;
   assignedTo?: { role: UserRole } | null;
   person: { id: string; fullName: string };
-  group: { name: string; leader?: { name?: string | null } | null };
+  group: { name: string };
 };
 
 export type SupervisorPageInCarePerson = {

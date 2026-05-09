@@ -55,18 +55,18 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
       return apiError("Apenas o líder da célula pode pedir apoio à supervisão", 403);
     }
 
-    const supervisorUserId =
-      signal.group?.responsibilities.find((responsibility) => responsibility.role === GroupResponsibilityRole.SUPERVISOR)?.userId
-      ?? signal.group?.supervisorUserId;
+    const supervisorAssigneeId = signal.group?.responsibilities.find(
+      (responsibility) => responsibility.role === GroupResponsibilityRole.SUPERVISOR,
+    )?.userId;
 
-    if (!supervisorUserId) {
+    if (!supervisorAssigneeId) {
       return apiError("Esta célula ainda não tem supervisor definido", 400);
     }
 
     const updated = await prisma.$transaction(async (tx) => {
       const updatedSignal = await tx.careSignal.update({
         where: { id: signal.id },
-        data: { assignedToId: supervisorUserId },
+        data: { assignedToId: supervisorAssigneeId },
         include: { assignedTo: true },
       });
 

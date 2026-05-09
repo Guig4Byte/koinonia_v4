@@ -14,7 +14,6 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
-    "db:backfill:responsibilities": "tsx prisma/backfill-group-responsibilities.ts",
     "db:studio": "prisma studio",
     "db:seed:active-sandbox": "tsx prisma/seed-active-sandbox.ts"
   },

@@ -166,8 +166,6 @@ async function createGroup({
       churchId,
       name: seed.name,
       kind: "CELL",
-      leaderUserId: leader.id,
-      supervisorUserId: supervisor.id,
       meetingDayOfWeek: seed.meetingDayOfWeek,
       meetingTime: seed.meetingTime,
       locationName: seed.locationName,

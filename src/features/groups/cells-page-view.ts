@@ -47,7 +47,7 @@ export function groupSearchText(group: SupervisorGroup) {
   const leadership = responsibilityNames(
     group.responsibilities,
     GroupResponsibilityRole.LEADER,
-    group.leader?.name ?? "",
+    "",
   );
 
   return normalizeSearchText(`${group.name} ${leadership}`);
@@ -57,7 +57,7 @@ export function groupLeadershipName(group: SupervisorGroup) {
   return responsibilityNames(
     group.responsibilities,
     GroupResponsibilityRole.LEADER,
-    group.leader?.name ?? "Liderança não informada",
+    "Liderança não informada",
   );
 }
 

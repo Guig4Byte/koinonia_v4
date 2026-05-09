@@ -11,8 +11,6 @@ export type GroupResponsibilityLike = {
 };
 
 export type ResponsibleGroupLike = {
-  leaderUserId?: string | null;
-  supervisorUserId?: string | null;
   responsibilities?: GroupResponsibilityLike[];
 };
 
@@ -43,17 +41,9 @@ export function hasGroupResponsibilityScope(
   user: ResponsibilityUserLike | null | undefined,
   role: GroupResponsibilityRole,
 ) {
-  if (!user?.id) return false;
-
-  if (hasActiveGroupResponsibility(group, user, role)) return true;
-
-  if (role === GroupResponsibilityRole.LEADER) return group?.leaderUserId === user.id;
-  return group?.supervisorUserId === user.id;
+  return hasActiveGroupResponsibility(group, user, role);
 }
 
 export function hasAnyGroupResponsibilityScope(group: ResponsibleGroupLike | null | undefined, role: GroupResponsibilityRole) {
-  if (hasAnyActiveGroupResponsibility(group, role)) return true;
-
-  if (role === GroupResponsibilityRole.LEADER) return Boolean(group?.leaderUserId);
-  return Boolean(group?.supervisorUserId);
+  return hasAnyActiveGroupResponsibility(group, role);
 }

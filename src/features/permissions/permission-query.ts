@@ -6,29 +6,18 @@ export type PermissionUser = {
   role: UserRole;
 };
 
-function legacyGroupResponsibilityWhere(user: PermissionUser, role: GroupResponsibilityRole): Prisma.SmallGroupWhereInput {
-  return role === GroupResponsibilityRole.LEADER
-    ? { leaderUserId: user.id }
-    : { supervisorUserId: user.id };
-}
-
 function scopedGroupWhere(user: PermissionUser, role: GroupResponsibilityRole): Prisma.SmallGroupWhereInput {
   return {
     churchId: user.churchId,
     isActive: true,
-    OR: [
-      {
-        responsibilities: {
-          some: {
-            churchId: user.churchId,
-            userId: user.id,
-            role,
-            activeUntil: null,
-          },
-        },
+    responsibilities: {
+      some: {
+        churchId: user.churchId,
+        userId: user.id,
+        role,
+        activeUntil: null,
       },
-      legacyGroupResponsibilityWhere(user, role),
-    ],
+    },
   };
 }
 

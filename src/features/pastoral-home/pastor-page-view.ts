@@ -17,7 +17,7 @@ export type PastorPageSignal = {
   assignedToId?: string | null;
   assignedTo?: { role: UserRole } | null;
   person: { id: string; fullName: string };
-  group?: { name?: string | null; leader?: { name?: string | null } | null } | null;
+  group?: { name?: string | null } | null;
 };
 
 export type PastorPageInCarePerson = {

@@ -38,10 +38,9 @@ function group(overrides: Partial<Parameters<typeof buildPastorTeamGroup>[0]> = 
   return {
     id: overrides.id ?? "group-1",
     name: overrides.name ?? "Célula Central",
-    leader: overrides.leader ?? { name: "Bruno" },
-    supervisor: overrides.supervisor ?? { name: "Ana" },
     responsibilities: overrides.responsibilities ?? [
       { role: GroupResponsibilityRole.LEADER, user: { name: "Camila" } },
+      { role: GroupResponsibilityRole.SUPERVISOR, user: { name: "Ana" } },
     ],
     signals: overrides.signals ?? [],
     events: overrides.events ?? [event()],
@@ -92,11 +91,11 @@ describe("dashboard-view", () => {
   });
 
   it("deduplica células mantendo a primeira fonte encontrada", () => {
-    const responsibilityGroup = group({ id: "shared", name: "Com responsabilidade ativa" });
-    const legacyGroup = group({ id: "shared", name: "Vínculo legado" });
+    const firstGroup = group({ id: "shared", name: "Primeiro vínculo" });
+    const repeatedGroup = group({ id: "shared", name: "Vínculo repetido" });
     const otherGroup = group({ id: "other" });
 
-    expect(mergeGroupsById([[responsibilityGroup], [legacyGroup, otherGroup]])).toEqual([responsibilityGroup, otherGroup]);
+    expect(mergeGroupsById([[firstGroup], [repeatedGroup, otherGroup]])).toEqual([firstGroup, otherGroup]);
   });
 
   it("ordena por prioridade pastoral e depois por nome", () => {
@@ -112,8 +111,10 @@ describe("dashboard-view", () => {
   it("monta equipe de supervisor com agregados", () => {
     const team = buildSupervisorTeam({
       supervisor: { id: "sup-1", name: "Ana", email: "ana@igreja.com" },
-      responsibilityGroups: [group({ id: "group-1", signals: [signal({ severity: SignalSeverity.URGENT })] })],
-      legacyGroups: [group({ id: "group-1" }), group({ id: "group-2" })],
+      groups: [
+        group({ id: "group-1", signals: [signal({ severity: SignalSeverity.URGENT })] }),
+        group({ id: "group-2" }),
+      ],
     });
 
     expect(team.groups).toHaveLength(2);

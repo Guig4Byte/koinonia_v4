@@ -61,7 +61,7 @@ export async function getPastorDashboard(user: PermissionUser) {
         startsAt: { gte: weekStart, lte: weekEnd },
         group: { is: { churchId, isActive: true } },
       },
-      include: { attendances: true, group: { include: { leader: true, supervisor: true, responsibilities: activeGroupResponsibilityInclude } } },
+      include: { attendances: true, group: { include: { responsibilities: activeGroupResponsibilityInclude } } },
       orderBy: { startsAt: "asc" },
     }),
     prisma.careSignal.findMany({
@@ -73,15 +73,13 @@ export async function getPastorDashboard(user: PermissionUser) {
           { OR: [{ groupId: null }, { group: { is: { churchId, isActive: true } } }] },
         ],
       },
-      include: { person: true, assignedTo: true, group: { include: { leader: true, supervisor: true, responsibilities: activeGroupResponsibilityInclude } } },
+      include: { person: true, assignedTo: true, group: { include: { responsibilities: activeGroupResponsibilityInclude } } },
       orderBy: [{ detectedAt: "desc" }],
       take: PASTORAL_SIGNAL_QUERY_LIMIT,
     }),
     prisma.smallGroup.findMany({
       where: { churchId, isActive: true },
       include: {
-        leader: true,
-        supervisor: true,
         responsibilities: activeGroupResponsibilityInclude,
         signals: { where: { status: SignalStatus.OPEN }, include: { assignedTo: true } },
         events: { orderBy: { startsAt: "desc" }, take: PRESENCE_TREND_RECENT_SAMPLE_COUNT, include: { attendances: true } },
@@ -141,8 +139,6 @@ export async function getPastorTeamOverview(user: PermissionUser) {
   const churchId = user.churchId;
 
   const groupInclude = {
-    leader: true,
-    supervisor: true,
     responsibilities: activeGroupResponsibilityInclude,
     memberships: {
       where: { leftAt: null, role: { not: MembershipRole.VISITOR } },
@@ -170,11 +166,6 @@ export async function getPastorTeamOverview(user: PermissionUser) {
           },
           orderBy: { createdAt: "asc" },
         },
-        groupsSupervised: {
-          where: { churchId, isActive: true },
-          include: groupInclude,
-          orderBy: { name: "asc" },
-        },
       },
       orderBy: { name: "asc" },
     }),
@@ -182,7 +173,6 @@ export async function getPastorTeamOverview(user: PermissionUser) {
       where: {
         churchId,
         isActive: true,
-        supervisorUserId: null,
         responsibilities: { none: { role: GroupResponsibilityRole.SUPERVISOR, activeUntil: null } },
       },
       include: groupInclude,
@@ -194,8 +184,7 @@ export async function getPastorTeamOverview(user: PermissionUser) {
 
   const supervisorTeams = supervisors.map((supervisor) => buildSupervisorTeam({
     supervisor,
-    responsibilityGroups: supervisor.groupResponsibilities.map((responsibility) => responsibility.group),
-    legacyGroups: supervisor.groupsSupervised,
+    groups: supervisor.groupResponsibilities.map((responsibility) => responsibility.group),
   })).sort(compareSupervisorPriority);
   const unassignedGroups = groupsWithoutSupervisor.map(toTeamGroup).sort(comparePastoralPriorityThenName);
   const allGroups = [...supervisorTeams.flatMap((supervisor) => supervisor.groups), ...unassignedGroups];
@@ -229,8 +218,6 @@ async function getGroupScopedDashboard(user: PermissionUser) {
   const groups = await prisma.smallGroup.findMany({
     where: getVisibleGroupWhere(user),
     include: {
-      leader: true,
-      supervisor: true,
       responsibilities: activeGroupResponsibilityInclude,
       memberships: { where: { leftAt: null, role: { not: MembershipRole.VISITOR } }, include: { person: true } },
       signals: { where: { status: SignalStatus.OPEN }, include: { person: true, assignedTo: true } },

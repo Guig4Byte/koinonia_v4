@@ -1,4 +1,4 @@
-import { EventStatus, EventType, GroupKind } from "@/generated/prisma/client";
+import { EventStatus, EventType, GroupKind, GroupResponsibilityRole } from "@/generated/prisma/client";
 import { DAYS_PER_WEEK, isValidWeekday } from "@/features/groups/weekdays";
 import { getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { addBrasiliaDays, dateFromBrasiliaParts, getBrasiliaDateParts, startOfBrasiliaDay } from "@/lib/brasilia-time";
@@ -91,7 +91,11 @@ export async function ensureUpcomingCellMeetingsForUser(
       id: true,
       churchId: true,
       name: true,
-      leaderUserId: true,
+      responsibilities: {
+        where: { role: GroupResponsibilityRole.LEADER, activeUntil: null },
+        select: { userId: true },
+        orderBy: { createdAt: "asc" },
+      },
       meetingDayOfWeek: true,
       meetingTime: true,
       locationName: true,
@@ -131,7 +135,7 @@ export async function ensureUpcomingCellMeetingsForUser(
         data: startsToCreate.map((startsAt) => ({
           churchId: group.churchId,
           groupId: group.id,
-          createdById: group.leaderUserId,
+          createdById: group.responsibilities[0]?.userId ?? null,
           type: EventType.CELL_MEETING,
           title: group.name,
           startsAt,
