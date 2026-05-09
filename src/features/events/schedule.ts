@@ -1,9 +1,13 @@
 import { EventStatus, EventType, GroupKind } from "@/generated/prisma/client";
-import { getVisibleGroupWhere, type PermissionUser } from "../permissions/permissions";
-import { prisma } from "../../lib/prisma";
-import { addBrasiliaDays, dateFromBrasiliaParts, getBrasiliaDateParts, startOfBrasiliaDay } from "../../lib/brasilia-time";
+import { getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
+import { addBrasiliaDays, dateFromBrasiliaParts, getBrasiliaDateParts, startOfBrasiliaDay } from "@/lib/brasilia-time";
+import { prisma } from "@/lib/prisma";
 
 export const DEFAULT_CELL_MEETING_GENERATION_WEEKS = 12;
+export const MIN_MEETING_HOUR = 0;
+export const MAX_MEETING_HOUR = 23;
+export const MIN_MEETING_MINUTE = 0;
+export const MAX_MEETING_MINUTE = 59;
 
 export type CellMeetingSchedule = {
   meetingDayOfWeek: number | null;
@@ -32,7 +36,7 @@ export function parseMeetingTime(meetingTime: string | null) {
   const minutes = Number(match[2]);
 
   if (!Number.isInteger(hours) || !Number.isInteger(minutes)) return null;
-  if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return null;
+  if (hours < MIN_MEETING_HOUR || hours > MAX_MEETING_HOUR || minutes < MIN_MEETING_MINUTE || minutes > MAX_MEETING_MINUTE) return null;
 
   return { hours, minutes };
 }

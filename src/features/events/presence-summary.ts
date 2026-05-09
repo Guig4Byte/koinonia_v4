@@ -1,5 +1,5 @@
-import { AttendanceStatus } from "@/generated/prisma/client";
-import { percent } from "../../lib/format";
+import { AttendanceStatus, EventStatus } from "@/generated/prisma/client";
+import { percent } from "@/lib/format";
 
 export type PresenceAttendance = {
   status: AttendanceStatus;
@@ -40,7 +40,7 @@ export const PRESENCE_TREND_MIN_ACCOUNTABLE_COUNT = 3;
 export const PRESENCE_TREND_MIN_DELTA = 6;
 
 export function isPresenceRecordedEvent(event: PresenceEvent) {
-  return event.status === "COMPLETED" || event.attendances.length > 0;
+  return event.status === EventStatus.COMPLETED || event.attendances.length > 0;
 }
 
 export function summarizePresenceFromAttendances(attendances: PresenceAttendance[]): PresenceSummary {

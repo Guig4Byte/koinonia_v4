@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { careContactInfo, careNoteId, careSavedMessage, digitsOnly } from "./care-actions-view";
+import { CARE_PHONE_MIN_DIGITS, careContactInfo, careNoteId, careSavedMessage, digitsOnly } from "./care-actions-view";
 
 describe("care-actions-view", () => {
   it("normaliza telefone para links de contato", () => {
@@ -15,6 +15,7 @@ describe("care-actions-view", () => {
   });
 
   it("não gera links quando o telefone é insuficiente", () => {
+    expect(CARE_PHONE_MIN_DIGITS).toBe(10);
     expect(careContactInfo("12345")).toEqual({
       digits: "12345",
       hasPhone: false,

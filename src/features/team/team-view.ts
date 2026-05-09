@@ -1,5 +1,6 @@
 import type { getPastorTeamOverview } from "@/features/dashboard/queries";
 import type { SignalBadgeTone } from "@/features/signals/display";
+import { hasLowPresence } from "@/features/groups/group-pastoral-priority";
 import { weekdayLabel } from "@/features/groups/weekdays";
 import { normalizeSearchText } from "@/lib/text";
 
@@ -8,7 +9,6 @@ export const SUPERVISOR_SECTION_LIMIT = 4;
 export const GROUPS_PER_SUPERVISOR_LIMIT = 4;
 export const SUPERVISORS_SECTION_ID = "supervisores";
 
-const LOW_PRESENCE_DISPLAY_THRESHOLD = 70;
 
 export type TeamFilter = "todos" | "atencao" | "sem-presenca";
 
@@ -141,7 +141,7 @@ export function compactGroupSubtitle(group: TeamGroup) {
 export function groupBadgeTone(group: TeamGroup): SignalBadgeTone {
   if (group.urgentCount > 0 || group.pastoralCasesCount > 0) return "risk";
   if (!group.hasPresenceData) return "neutral";
-  if (group.presenceRate < LOW_PRESENCE_DISPLAY_THRESHOLD) return "warn";
+  if (hasLowPresence(group)) return "warn";
   return "ok";
 }
 

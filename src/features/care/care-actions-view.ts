@@ -7,13 +7,15 @@ export type CareContactLinks = {
 
 export { CARE_NOTE_MAX_LENGTH } from "./care-note";
 
+export const CARE_PHONE_MIN_DIGITS = 10;
+
 export function digitsOnly(value?: string | null) {
   return value?.replace(/\D/g, "") ?? "";
 }
 
 export function careContactInfo(phone?: string | null) {
   const digits = digitsOnly(phone);
-  const hasPhone = digits.length >= 10;
+  const hasPhone = digits.length >= CARE_PHONE_MIN_DIGITS;
 
   return {
     digits,

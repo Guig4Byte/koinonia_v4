@@ -1,4 +1,5 @@
-import { addBrasiliaDays, isSameBrasiliaDay, startOfBrasiliaDay } from "../../lib/brasilia-time";
+import { EventStatus } from "@/generated/prisma/client";
+import { addBrasiliaDays, isSameBrasiliaDay, startOfBrasiliaDay } from "@/lib/brasilia-time";
 
 export type RelevantEventCandidate = {
   startsAt: Date;
@@ -11,11 +12,11 @@ function nextBrasiliaDay(date: Date) {
 }
 
 export function hasRecordedPresence(event: RelevantEventCandidate) {
-  return event.status === "COMPLETED" || (event.attendances?.length ?? 0) > 0;
+  return event.status === EventStatus.COMPLETED || (event.attendances?.length ?? 0) > 0;
 }
 
 function isCancelledEvent(event: RelevantEventCandidate) {
-  return event.status === "CANCELLED" || event.status === "NO_MEETING";
+  return event.status === EventStatus.CANCELLED || event.status === EventStatus.NO_MEETING;
 }
 
 export function selectRelevantCheckInEvent<T extends RelevantEventCandidate>(events: T[], referenceDate = new Date()) {
