@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Search } from "lucide-react";
 import { Badge, isBadgeTone, type BadgeTone } from "@/components/ui/badge";
+import { shouldSearchPeople, normalizeSearchQuery } from "@/features/search/search-view";
 import { isRecord, readJsonResponse } from "@/lib/json";
 
 type SearchResult = {
@@ -40,12 +41,13 @@ export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: 
 
   async function onChange(value: string) {
     setQuery(value);
-    if (value.trim().length < 2) {
+    const normalizedQuery = normalizeSearchQuery(value);
+    if (!shouldSearchPeople(normalizedQuery)) {
       setResults([]);
       return;
     }
 
-    const response = await fetch(`/api/search?q=${encodeURIComponent(value)}`);
+    const response = await fetch(`/api/search?q=${encodeURIComponent(normalizedQuery)}`);
     if (!response.ok) return;
     const data = await readJsonResponse(response);
     setResults(isSearchResponse(data) ? data.people : []);

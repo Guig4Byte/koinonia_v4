@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "@/features/permissions/permissions";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
+import { SEARCH_PRIMARY_MEMBERSHIP_LIMIT, SEARCH_RESULT_LIMIT, shouldSearchPeople } from "@/features/search/search-view";
 import { getPastoralSectionSignalsByPerson } from "@/features/signals/sections";
 import type { Prisma } from "@/generated/prisma/client";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -8,20 +9,18 @@ import { apiJson } from "@/lib/api-response";
 import { prisma } from "@/lib/prisma";
 import { normalizeSearchText } from "@/lib/text";
 
-const SEARCH_RESULT_LIMIT = 8;
-
 
 export async function GET(request: NextRequest) {
   const user = await getCurrentUser();
   const q = request.nextUrl.searchParams.get("q")?.trim() ?? "";
 
-  if (q.length < 2) {
+  if (!shouldSearchPeople(q)) {
     return apiJson({ people: [] });
   }
 
   const normalizedQuery = normalizeSearchText(q);
   const includeVisibleContext = {
-    memberships: { where: getVisibleMembershipWhere(user), include: { group: true }, take: 1 },
+    memberships: { where: getVisibleMembershipWhere(user), include: { group: true }, take: SEARCH_PRIMARY_MEMBERSHIP_LIMIT },
     signals: {
       where: getVisibleOpenSignalWhere(user),
       include: { assignedTo: true },
