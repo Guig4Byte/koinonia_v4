@@ -53,11 +53,12 @@ describe("leader-page-view", () => {
     const inCare = person("care-person", "Ana");
     const hiddenInCare = person("attention-person", "Pessoa em atenção");
 
-    const view = buildLeaderPageView({
-      signals: [attention, support, urgent],
+    const dashboard = {
+      attentionPeople: [attention, support, urgent],
       inCarePeople: [inCare, hiddenInCare],
-      viewer,
-    });
+      currentEvent: null,
+    };
+    const view = buildLeaderPageView({ dashboard, viewer });
 
     expect(view.urgentSignals.map((item) => item.id)).toEqual(["urgent"]);
     expect(view.supportSignals.map((item) => item.id)).toEqual(["support"]);

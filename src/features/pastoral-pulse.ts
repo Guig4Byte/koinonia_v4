@@ -1,13 +1,15 @@
 import { UserRole } from "@/generated/prisma/client";
 import {
   attentionMessage,
-  groupPresenceMessage,
-  inCareMessage,
   mixedCareMessage,
-  stableMessage,
   supportMessage,
   urgentMessage,
-} from "./pastoral-pulse-messages";
+} from "./pastoral-pulse-priority-messages";
+import {
+  groupPresenceMessage,
+  inCareMessage,
+  stableMessage,
+} from "./pastoral-pulse-state-messages";
 
 export type PastoralPulseTone = "calm" | "attention" | "ok";
 

@@ -130,3 +130,10 @@ export function getVisibleGroupIdsForPerson(user: PermissionUser, person: Scoped
 export function getPrimaryVisibleGroupIdForPerson(user: PermissionUser, person: ScopedPerson | null | undefined) {
   return getVisibleGroupIdsForPerson(user, person)[0];
 }
+
+export function isPastoralRole(
+  viewer: UserRole | { role: UserRole } | null | undefined,
+): boolean {
+  const role = typeof viewer === "string" ? viewer : viewer?.role;
+  return role === UserRole.PASTOR || role === UserRole.ADMIN;
+}

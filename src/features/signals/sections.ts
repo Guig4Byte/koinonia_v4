@@ -1,4 +1,5 @@
 import { PersonStatus, SignalSeverity, UserRole } from "@/generated/prisma/client";
+import { selectBestSignalByPerson } from "./signal-utils";
 import { isAssignedToPastoralRole, isAssignedToSupervisor } from "./escalation";
 import { compareSignalsBySeverityAndRecency } from "./ranking";
 
@@ -102,17 +103,8 @@ export function getPastoralSectionSignalsByPerson<TSignal extends SectionSignalW
   signals: TSignal[],
   viewer: SectionViewerLike,
 ): TSignal[] {
-  const selectedByPerson = new Map<string, TSignal>();
-
-  for (const signal of signals) {
-    const current = selectedByPerson.get(signal.personId);
-
-    if (!current || compareSignalsForPastoralSection(signal, current, viewer) < 0) {
-      selectedByPerson.set(signal.personId, signal);
-    }
-  }
-
-  return sortSignalsForPastoralViewer(Array.from(selectedByPerson.values()), viewer);
+  const selected = selectBestSignalByPerson(signals, (a, b) => compareSignalsForPastoralSection(a, b, viewer));
+  return sortSignalsForPastoralViewer(selected, viewer);
 }
 
 export function splitPastoralSignals<TSignal extends SectionSignalWithIdentity>(

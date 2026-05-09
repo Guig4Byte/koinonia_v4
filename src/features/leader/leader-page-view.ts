@@ -1,8 +1,9 @@
 import { UserRole } from "@/generated/prisma/client";
 import { hasRecordedPresence, type RelevantEventCandidate } from "@/features/events/relevant-event";
 import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features/pastoral-pulse";
-import { signalDetailForViewer, type SignalDetailLike } from "@/features/signals/display";
+import { signalTitleForViewer, type SignalDetailLike } from "@/features/signals/display";
 import { splitPastoralSections, type SectionPersonWithIdentity, type SectionSignalWithIdentity } from "@/features/signals/sections";
+import type { LeaderDashboard } from "@/features/dashboard/queries";
 
 export const LEADER_RELEVANT_EVENT_LOOKBACK_DAYS = 60;
 export const LEADER_RELEVANT_EVENT_LIMIT = 20;
@@ -110,13 +111,13 @@ export function buildLeaderPastoralPulse({
     },
     subjects: {
       urgentOrPastoral: primaryUrgentSignal
-        ? { personName: primaryUrgentSignal.person.fullName, detail: signalDetailForViewer(primaryUrgentSignal, viewer) }
+        ? { personName: primaryUrgentSignal.person.fullName, detail: signalTitleForViewer(primaryUrgentSignal, viewer) }
         : null,
       support: primarySupportSignal
-        ? { personName: primarySupportSignal.person.fullName, detail: signalDetailForViewer(primarySupportSignal, viewer) }
+        ? { personName: primarySupportSignal.person.fullName, detail: signalTitleForViewer(primarySupportSignal, viewer) }
         : null,
       attention: primaryAttentionSignal
-        ? { personName: primaryAttentionSignal.person.fullName, detail: signalDetailForViewer(primaryAttentionSignal, viewer) }
+        ? { personName: primaryAttentionSignal.person.fullName, detail: signalTitleForViewer(primaryAttentionSignal, viewer) }
         : null,
       inCare: primaryInCarePerson ? { personName: primaryInCarePerson.fullName } : null,
     },
@@ -124,22 +125,24 @@ export function buildLeaderPastoralPulse({
 }
 
 export function buildLeaderPageView({
-  signals,
-  inCarePeople,
+  dashboard,
   viewer,
 }: {
-  signals: LeaderPageSignal[];
-  inCarePeople: LeaderPageInCarePerson[];
+  dashboard: LeaderDashboard;
   viewer: LeaderPageViewer;
 }): LeaderPageView {
-  const sections = buildLeaderPastoralSections({ signals, inCarePeople, viewer });
+  const sections = buildLeaderPastoralSections({
+    signals: dashboard.attentionPeople,
+    inCarePeople: dashboard.inCarePeople,
+    viewer,
+  });
 
   return {
     ...sections,
     hasPeopleInRadar: sections.prioritySignals.length > 0 || sections.inCarePeople.length > 0,
     navIndicator: leaderNavIndicator({
       urgentCount: sections.urgentSignals.length,
-      attentionCount: signals.length,
+      attentionCount: dashboard.attentionPeople.length,
       inCareCount: sections.inCarePeople.length,
     }),
     pastoralPulse: buildLeaderPastoralPulse({ sections, viewer }),

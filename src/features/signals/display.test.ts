@@ -3,9 +3,9 @@ import { SignalSeverity, SignalSource, UserRole } from "@/generated/prisma/clien
 import {
   signalBadgeForViewer,
   signalDescriptionForViewer,
-  signalDetailForViewer,
   signalPastoralMessageForViewer,
   signalReasonForViewer,
+  signalTitleForViewer,
 } from "./display";
 
 describe("signal display helpers", () => {
@@ -52,16 +52,16 @@ describe("signal display helpers", () => {
       assignedTo: { role: UserRole.PASTOR },
     };
 
-    expect(signalDetailForViewer(supportSignal, { role: UserRole.SUPERVISOR })).toBe("Pedido de apoio recebido.");
-    expect(signalDetailForViewer(supportSignal, { role: UserRole.LEADER })).toBe("Apoio solicitado à supervisão.");
-    expect(signalDetailForViewer(pastoralSignal, { role: UserRole.PASTOR })).toBe("Cuidado pastoral solicitado.");
+    expect(signalTitleForViewer(supportSignal, { role: UserRole.SUPERVISOR })).toBe("Pedido de apoio recebido.");
+    expect(signalTitleForViewer(supportSignal, { role: UserRole.LEADER })).toBe("Apoio solicitado à supervisão.");
+    expect(signalTitleForViewer(pastoralSignal, { role: UserRole.PASTOR })).toBe("Cuidado pastoral solicitado.");
     expect(signalDescriptionForViewer({ ...pastoralSignal, pastoralEscalationActorName: "Ana Martins" }, { role: UserRole.PASTOR })).toBe(
       "Ana Martins compartilhou este cuidado para um olhar mais próximo. Um contato pode ajudar a entender melhor o momento.",
     );
     expect(signalDescriptionForViewer(pastoralSignal, { role: UserRole.PASTOR })).toBe(
       "Há um contexto que pede um olhar mais próximo. Um contato pode ajudar a entender melhor o momento.",
     );
-    expect(signalDetailForViewer(pastoralSignal, { role: UserRole.LEADER })).toBe("Encaminhado ao pastor.");
+    expect(signalTitleForViewer(pastoralSignal, { role: UserRole.LEADER })).toBe("Encaminhado ao pastor.");
   });
 
   it("describes attendance signals without ordering the user to act", () => {
@@ -84,7 +84,7 @@ describe("signal display helpers", () => {
       severity: SignalSeverity.ATTENTION,
     };
 
-    expect(signalDetailForViewer(signal, { role: UserRole.LEADER })).toBe("Ausência recente percebida.");
+    expect(signalTitleForViewer(signal, { role: UserRole.LEADER })).toBe("Ausência recente percebida.");
     expect(signalDescriptionForViewer(signal, { role: UserRole.LEADER })).toBe("Parece que houve ausências sem justificativa registrada.");
   });
 

@@ -14,7 +14,7 @@ import { canRegisterCare, canViewGroup, canViewPerson, getVisibleCareTouchWhere,
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { PERSON_DETAIL_ATTENDANCE_HISTORY_LIMIT, buildPersonPresenceView, careKindLabels } from "@/features/people/person-detail-view";
 import { canEscalateSignalToPastor, canRequestSupervisorSupport, escalationStatusChipForViewer } from "@/features/signals/escalation";
-import { signalBadgeForViewer, signalDescriptionForViewer, signalDetailForViewer } from "@/features/signals/display";
+import { signalBadgeForViewer, signalDescriptionForViewer, signalTitleForViewer } from "@/features/signals/display";
 import { isUrgentOrPastoralCase, sortSignalsForPastoralViewer } from "@/features/signals/sections";
 import { responsibilityNames } from "@/features/groups/responsibility-display";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -174,7 +174,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           return (
             <article key={signal.id} className={`card-hover-lift rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card ${priorityCardClass(signalTone)}`}>
               <div className="min-w-0">
-                <p className="font-semibold text-[var(--color-text-primary)]">{signalDetailForViewer(signalForDisplay, user)}</p>
+                <p className="font-semibold text-[var(--color-text-primary)]">{signalTitleForViewer(signalForDisplay, user)}</p>
                 <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
                   {signal.group?.name ?? primaryGroup?.name ?? "Sem célula"} · {formatShortDate(signal.detectedAt)}, {formatTime(signal.detectedAt)}
                 </p>

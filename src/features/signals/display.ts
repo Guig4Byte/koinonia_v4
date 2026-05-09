@@ -1,4 +1,5 @@
 import { SignalSeverity, SignalSource, UserRole } from "@/generated/prisma/client";
+import { isPastoralRole } from "@/features/permissions/permissions";
 import {
   escalationStatusLabelForViewer,
   isAssignedToPastoralRole,
@@ -39,10 +40,6 @@ export type SignalPastoralMessage = {
   description?: string;
 };
 
-function isPastoralViewer(viewer?: SignalDisplayViewerLike | null): boolean {
-  return viewer?.role === UserRole.PASTOR || viewer?.role === UserRole.ADMIN;
-}
-
 /**
  * Resolves the user-facing signal badge for a specific viewer role.
  *
@@ -54,7 +51,7 @@ export function signalBadgeForViewer(signal: SignalDisplayLike, viewer?: SignalD
   }
 
   if (isAssignedToSupervisor(signal)) {
-    if (isPastoralViewer(viewer)) {
+    if (isPastoralRole(viewer)) {
       return { label: "Atenção local", tone: "warn" };
     }
 
@@ -63,14 +60,14 @@ export function signalBadgeForViewer(signal: SignalDisplayLike, viewer?: SignalD
   }
 
   if (isAssignedToPastoralRole(signal)) {
-    return { label: isPastoralViewer(viewer) ? "Caso pastoral" : "Encaminhado", tone: "risk" };
+    return { label: isPastoralRole(viewer) ? "Caso pastoral" : "Encaminhado", tone: "risk" };
   }
 
   if (signal.severity === SignalSeverity.INFO) {
     return { label: "Informativo", tone: "info" };
   }
 
-  if (isPastoralViewer(viewer)) {
+  if (isPastoralRole(viewer)) {
     return { label: "Atenção local", tone: "warn" };
   }
 
@@ -86,7 +83,7 @@ export function signalReasonForViewer(reason: string, viewer: { role: UserRole }
   return reason.replace("Líder pediu apoio da supervisão", "Apoio solicitado à supervisão");
 }
 
-export function signalDetailForViewer(signal: SignalDetailLike, viewer: SignalDisplayViewerLike): string {
+export function signalTitleForViewer(signal: SignalDetailLike, viewer: SignalDisplayViewerLike): string {
   return signalPastoralMessageForViewer(signal, viewer).title;
 }
 

@@ -1,7 +1,7 @@
 import { UserRole } from "@/generated/prisma/client";
 import { DEFAULT_PRESENCE_TONE_THRESHOLDS } from "@/features/events/presence-display";
 import type { PastoralPulseCounts, PastoralPulseMessage, PastoralPulseScope, PastoralPulseSubject } from "./pastoral-pulse";
-import { isPastorRole } from "./pastoral-pulse-message-utils";
+import { isPastoralRole } from "@/features/permissions/permissions";
 
 export function inCareMessage(
   role: UserRole,
@@ -106,7 +106,7 @@ export function groupPresenceMessage(role: UserRole, counts: Required<Pick<Pasto
       title: role === UserRole.LEADER
         ? "O ritmo de presença pede atenção."
         : "O ritmo de presença pede acompanhamento.",
-      subtitle: isPastorRole(role)
+      subtitle: isPastoralRole(role)
         ? "Acompanhe o contexto da célula antes de orientar próximos passos."
         : role === UserRole.LEADER
           ? "Vale olhar quem faltou e se aproximar sem tom de cobrança."

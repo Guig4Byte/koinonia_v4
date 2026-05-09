@@ -2,6 +2,7 @@ import type { getPastorTeamOverview } from "@/features/dashboard/queries";
 import type { SignalBadgeTone } from "@/features/signals/display";
 import { hasLowPresence } from "@/features/groups/group-pastoral-priority";
 import { weekdayLabel } from "@/features/groups/weekdays";
+import type { TeamFilter } from "@/features/team/team-filters";
 import { normalizeSearchText } from "@/lib/text";
 
 export const TEAM_SECTION_LIMIT = 4;
@@ -10,13 +11,7 @@ export const GROUPS_PER_SUPERVISOR_LIMIT = 4;
 export const SUPERVISORS_SECTION_ID = "supervisores";
 
 
-export type TeamFilter = "todos" | "atencao" | "sem-presenca";
-
-export const TEAM_FILTERS: Array<{ value: TeamFilter; label: string }> = [
-  { value: "todos", label: "Todos" },
-  { value: "atencao", label: "Pedem atenção" },
-  { value: "sem-presenca", label: "Sem presença recente" },
-];
+export { readTeamFilter, TEAM_FILTERS, type TeamFilter } from "@/features/team/team-filters";
 
 export type TeamOverview = Awaited<ReturnType<typeof getPastorTeamOverview>>;
 export type SupervisorTeam = TeamOverview["supervisors"][number];
@@ -35,10 +30,6 @@ export type TeamPageLists = {
   filteredInactiveGroups: InactiveTeamGroup[];
   isFiltered: boolean;
 };
-
-export function readTeamFilter(value: string): TeamFilter {
-  return TEAM_FILTERS.some((filter) => filter.value === value) ? value as TeamFilter : "todos";
-}
 
 export function groupMatchesQuery(group: TeamGroup, normalizedQuery: string) {
   if (!normalizedQuery) return true;

@@ -1,4 +1,5 @@
 import { GroupResponsibilityRole, SignalSeverity, UserRole } from "@/generated/prisma/client";
+import { isPastoralRole } from "@/features/permissions/permissions";
 import {
   hasAnyGroupResponsibilityScope,
   hasGroupResponsibilityScope,
@@ -55,10 +56,6 @@ function hasSupervisorAvailable(group: EscalationGroupLike | null | undefined) {
   return hasAnyGroupResponsibilityScope(group, GroupResponsibilityRole.SUPERVISOR);
 }
 
-function isPastoralViewer(viewer: EscalationViewerLike): boolean {
-  return viewer.role === UserRole.PASTOR || viewer.role === UserRole.ADMIN;
-}
-
 function isSupervisorSupportViewer(viewer: EscalationViewerLike): boolean {
   return viewer.role === UserRole.LEADER || viewer.role === UserRole.SUPERVISOR;
 }
@@ -92,7 +89,7 @@ function supervisorEscalationDisplay(viewer: EscalationViewerLike): EscalationDi
 }
 
 function pastoralEscalationDisplay(viewer: EscalationViewerLike): EscalationDisplay {
-  const isPastoralRoleViewer = isPastoralViewer(viewer);
+  const isPastoralRoleViewer = isPastoralRole(viewer);
 
   return {
     label: "Encaminhado ao pastor",

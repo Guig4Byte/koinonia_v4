@@ -3,7 +3,7 @@ import { addBrasiliaDays, isSameBrasiliaDay, startOfBrasiliaDay } from "@/lib/br
 
 export type RelevantEventCandidate = {
   startsAt: Date;
-  status: string;
+  status: string | EventStatus;
   attendances?: unknown[];
 };
 

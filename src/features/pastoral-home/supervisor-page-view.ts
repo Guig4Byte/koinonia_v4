@@ -1,6 +1,6 @@
 import { UserRole, type SignalSeverity, type PersonStatus } from "@/generated/prisma/client";
 import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features/pastoral-pulse";
-import { signalDetailForViewer } from "@/features/signals/display";
+import { signalTitleForViewer } from "@/features/signals/display";
 import { splitPastoralSections } from "@/features/signals/sections";
 
 export type SupervisorPageViewer = {
@@ -83,9 +83,9 @@ export function buildSupervisorPageView({
         inCare: inCarePeople.length,
       },
       subjects: {
-        urgentOrPastoral: firstUrgentSignal ? { personName: firstUrgentSignal.person.fullName, groupName: firstUrgentSignal.group.name, detail: signalDetailForViewer(firstUrgentSignal, user) } : null,
-        support: firstSupportRequest ? { personName: firstSupportRequest.person.fullName, groupName: firstSupportRequest.group.name, detail: signalDetailForViewer(firstSupportRequest, user) } : null,
-        attention: firstAttentionSignal ? { personName: firstAttentionSignal.person.fullName, groupName: firstAttentionSignal.group.name, detail: signalDetailForViewer(firstAttentionSignal, user) } : null,
+        urgentOrPastoral: firstUrgentSignal ? { personName: firstUrgentSignal.person.fullName, groupName: firstUrgentSignal.group.name, detail: signalTitleForViewer(firstUrgentSignal, user) } : null,
+        support: firstSupportRequest ? { personName: firstSupportRequest.person.fullName, groupName: firstSupportRequest.group.name, detail: signalTitleForViewer(firstSupportRequest, user) } : null,
+        attention: firstAttentionSignal ? { personName: firstAttentionSignal.person.fullName, groupName: firstAttentionSignal.group.name, detail: signalTitleForViewer(firstAttentionSignal, user) } : null,
         inCare: firstInCarePerson ? { personName: firstInCarePerson.fullName, groupName: firstInCarePerson.groupName } : null,
       },
     }),

@@ -1,7 +1,7 @@
 "use client";
 
 import { StructureSearch } from "@/components/structure-search";
-import { TEAM_FILTERS, type TeamFilter } from "@/features/team/team-view";
+import { TEAM_FILTERS, type TeamFilter } from "@/features/team/team-filters";
 
 type TeamStructureSearchProps = {
   query: string;

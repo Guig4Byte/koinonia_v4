@@ -1,7 +1,7 @@
 import { PersonStatus, UserRole } from "@/generated/prisma/client";
 import { memberCardTone, memberMatchesFilter, type MembersFilter } from "@/features/people/member-filters";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
-import { signalDetailForViewer, type SignalBadgeTone, type SignalDetailLike } from "@/features/signals/display";
+import { signalTitleForViewer, type SignalBadgeTone, type SignalDetailLike } from "@/features/signals/display";
 import { isSupportRequest, isUrgentOrPastoralCase, type SectionSignalWithIdentity } from "@/features/signals/sections";
 
 export const PEOPLE_PAGE_ATTENTION_SIGNAL_QUERY_LIMIT = 80;
@@ -99,7 +99,7 @@ export function buildPeoplePageMembers({
       const groupName = person.memberships[0]?.group?.name ?? "Sua célula";
       const isInCare = inCarePersonIds.has(person.id);
       const subtitle = attentionSignal
-        ? signalDetailForViewer(attentionSignal, viewer)
+        ? signalTitleForViewer(attentionSignal, viewer)
         : isInCare
           ? "Já recebeu cuidado e segue no radar."
           : undefined;

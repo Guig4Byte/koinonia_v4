@@ -1,14 +1,11 @@
 import { SignalSeverity, SignalSource, UserRole } from "@/generated/prisma/client";
+import { isPastoralRole } from "@/features/permissions/permissions";
 import {
   isAssignedToPastoralRole,
   isAssignedToSupervisor,
   shouldShowEscalationStatusForViewer,
 } from "./escalation";
 import type { SignalDetailLike, SignalDisplayViewerLike, SignalPastoralMessage } from "./display";
-
-function isPastoralViewer(viewer?: SignalDisplayViewerLike | null): boolean {
-  return viewer?.role === UserRole.PASTOR || viewer?.role === UserRole.ADMIN;
-}
 
 function isAttendanceSignal(signal: SignalDetailLike): boolean {
   return signal.source === SignalSource.ATTENDANCE;
@@ -51,7 +48,7 @@ function pastoralEscalationMessage(
   signal: SignalDetailLike,
   viewer: SignalDisplayViewerLike,
 ): SignalPastoralMessage {
-  if (isPastoralViewer(viewer)) {
+  if (isPastoralRole(viewer)) {
     const actorName = signal.pastoralEscalationActorName?.trim();
 
     return {
@@ -78,7 +75,7 @@ function urgentPastoralMessage(
 ): SignalPastoralMessage {
   if (isAttendanceSignal(signal)) {
     const compactDescription = "Parece que houve ausências recorrentes sem justificativa registrada.";
-    const detailDescription = isPastoralViewer(viewer)
+    const detailDescription = isPastoralRole(viewer)
       ? "Parece que houve ausências recorrentes sem justificativa registrada. A presença recente pede um olhar pastoral mais próximo, com calma e contexto."
       : "Parece que houve ausências recorrentes sem justificativa registrada. Talvez valha uma aproximação simples, com calma e proximidade.";
 
@@ -94,7 +91,7 @@ function urgentPastoralMessage(
 
   return {
     title: "Cuidado mais próximo.",
-    description: isPastoralViewer(viewer)
+    description: isPastoralRole(viewer)
       ? "Há um sinal sensível que vale olhar com calma antes de orientar a equipe."
       : "Há um sinal sensível que vale acompanhar com calma e proximidade.",
   };

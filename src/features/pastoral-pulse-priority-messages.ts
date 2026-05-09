@@ -1,6 +1,7 @@
 import { UserRole } from "@/generated/prisma/client";
 import type { PastoralPulseMessage, PastoralPulseScope, PastoralPulseSubject } from "./pastoral-pulse";
-import { groupPrefix, isPastorRole } from "./pastoral-pulse-message-utils";
+import { isPastoralRole } from "@/features/permissions/permissions";
+import { groupPrefix } from "./pastoral-pulse-message-utils";
 
 export function mixedCareMessage(role: UserRole, scope: PastoralPulseScope, urgentOrPastoral: number): PastoralPulseMessage {
   if (scope === "pastorDashboard") {
@@ -12,7 +13,7 @@ export function mixedCareMessage(role: UserRole, scope: PastoralPulseScope, urge
   }
 
   if (scope === "groupDetail") {
-    if (isPastorRole(role)) {
+    if (isPastoralRole(role)) {
       return {
         title: "Há cuidados com prioridades diferentes nesta célula.",
         subtitle: "Os sinais mais sensíveis aparecem primeiro; os demais seguem com líderes e supervisores.",
@@ -91,7 +92,7 @@ export function urgentMessage(
       title: urgentOrPastoral === 1
         ? "Há um cuidado sensível nesta célula."
         : "Há cuidados sensíveis nesta célula.",
-      subtitle: isPastorRole(role)
+      subtitle: isPastoralRole(role)
         ? "Algumas pessoas podem precisar de um olhar pastoral mais próximo."
         : "A liderança segue perto; o cuidado pode pedir apoio em alguns pontos.",
       tone: "attention",
@@ -199,7 +200,7 @@ export function attentionMessage(
   subject?: PastoralPulseSubject | null,
 ): PastoralPulseMessage {
   if (scope === "groupDetail") {
-    if (isPastorRole(role)) {
+    if (isPastoralRole(role)) {
       return {
         title: "Há atenção local nesta célula.",
         subtitle: "Esse cuidado segue com líderes e supervisores.",

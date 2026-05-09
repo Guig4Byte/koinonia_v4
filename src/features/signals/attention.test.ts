@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { SignalSeverity, UserRole } from "@/generated/prisma/client";
-import { getPastoralSignalsByPerson, getPrimarySignalsByPerson, isPastoralSignal } from "./attention";
+import { isPastoralEscalation } from "./escalation";
+import { getPastoralSignalsByPerson, getPrimarySignalsByPerson } from "./attention";
 
 function signal(personId: string, severity: SignalSeverity, detectedAt: string, role?: UserRole) {
   return { personId, severity, detectedAt: new Date(detectedAt), assignedTo: role ? { role } : null };
@@ -32,15 +33,15 @@ describe("getPrimarySignalsByPerson", () => {
 
 describe("pastoral signal helpers", () => {
   it("treats urgent signals as pastoral by default", () => {
-    expect(isPastoralSignal(signal("person-1", SignalSeverity.URGENT, "2026-04-24T10:00:00.000Z"))).toBe(true);
-    expect(isPastoralSignal(signal("person-1", SignalSeverity.ATTENTION, "2026-04-24T10:00:00.000Z"))).toBe(false);
-    expect(isPastoralSignal(signal("person-1", SignalSeverity.INFO, "2026-04-24T10:00:00.000Z"))).toBe(false);
+    expect(isPastoralEscalation(signal("person-1", SignalSeverity.URGENT, "2026-04-24T10:00:00.000Z"))).toBe(true);
+    expect(isPastoralEscalation(signal("person-1", SignalSeverity.ATTENTION, "2026-04-24T10:00:00.000Z"))).toBe(false);
+    expect(isPastoralEscalation(signal("person-1", SignalSeverity.INFO, "2026-04-24T10:00:00.000Z"))).toBe(false);
   });
 
   it("treats signals assigned to pastor/admin as pastoral even when not urgent", () => {
-    expect(isPastoralSignal(signal("person-1", SignalSeverity.ATTENTION, "2026-04-24T10:00:00.000Z", UserRole.PASTOR))).toBe(true);
-    expect(isPastoralSignal(signal("person-1", SignalSeverity.ATTENTION, "2026-04-24T10:00:00.000Z", UserRole.ADMIN))).toBe(true);
-    expect(isPastoralSignal(signal("person-1", SignalSeverity.ATTENTION, "2026-04-24T10:00:00.000Z", UserRole.SUPERVISOR))).toBe(false);
+    expect(isPastoralEscalation(signal("person-1", SignalSeverity.ATTENTION, "2026-04-24T10:00:00.000Z", UserRole.PASTOR))).toBe(true);
+    expect(isPastoralEscalation(signal("person-1", SignalSeverity.ATTENTION, "2026-04-24T10:00:00.000Z", UserRole.ADMIN))).toBe(true);
+    expect(isPastoralEscalation(signal("person-1", SignalSeverity.ATTENTION, "2026-04-24T10:00:00.000Z", UserRole.SUPERVISOR))).toBe(false);
   });
 
   it("keeps pastor defaults focused on severe or escalated cases, not local operational attention", () => {

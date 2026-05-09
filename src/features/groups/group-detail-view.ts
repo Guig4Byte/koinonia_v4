@@ -4,7 +4,7 @@ import { type BadgeTone } from "@/components/ui/badge";
 import { memberCardTone, memberMatchesFilter, type MembersFilter } from "@/features/people/member-filters";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { escalationStatusDetailForViewer } from "@/features/signals/escalation";
-import { signalDetailForViewer, type SignalBadgeTone, type SignalDetailLike, type SignalDisplayViewerLike } from "@/features/signals/display";
+import { signalTitleForViewer, type SignalBadgeTone, type SignalDetailLike, type SignalDisplayViewerLike } from "@/features/signals/display";
 import { isSupportRequest, isUrgentOrPastoralCase, type SectionSignalWithIdentity } from "@/features/signals/sections";
 import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features/pastoral-pulse";
 
@@ -111,7 +111,7 @@ export function buildGroupMemberDisplays({
       const attentionSignal = attentionSignalsByPersonId.get(membership.personId);
       const memberBadge = personEffectiveBadgeForViewer(membership.person, attentionSignal, viewer);
       const escalationSubtitle = attentionSignal ? escalationStatusDetailForViewer(attentionSignal, viewer) : null;
-      const signalSubtitle = attentionSignal ? escalationSubtitle ?? signalDetailForViewer(attentionSignal, viewer) : undefined;
+      const signalSubtitle = attentionSignal ? escalationSubtitle ?? signalTitleForViewer(attentionSignal, viewer) : undefined;
       const subtitle = signalSubtitle
         ?? (membership.person.status === PersonStatus.COOLING_AWAY ? "Em cuidado" : undefined);
 
