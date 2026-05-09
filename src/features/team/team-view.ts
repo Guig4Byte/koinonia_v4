@@ -1,5 +1,6 @@
 import type { getPastorTeamOverview } from "@/features/dashboard/queries";
 import type { SignalBadgeTone } from "@/features/signals/display";
+import { weekdayLabel } from "@/features/groups/weekdays";
 import { normalizeSearchText } from "@/lib/text";
 
 export const TEAM_SECTION_LIMIT = 4;
@@ -8,16 +9,6 @@ export const GROUPS_PER_SUPERVISOR_LIMIT = 4;
 export const SUPERVISORS_SECTION_ID = "supervisores";
 
 const LOW_PRESENCE_DISPLAY_THRESHOLD = 70;
-
-const dayLabels: Record<number, string> = {
-  0: "Domingo",
-  1: "Segunda",
-  2: "Terça",
-  3: "Quarta",
-  4: "Quinta",
-  5: "Sexta",
-  6: "Sábado",
-};
 
 export type TeamFilter = "todos" | "atencao" | "sem-presenca";
 
@@ -188,7 +179,7 @@ export function supervisorBadgeTone(supervisor: SupervisorTeam): SignalBadgeTone
 
 export function inactiveGroupScheduleText(group: InactiveTeamGroup) {
   if (group.meetingDayOfWeek === null || !group.meetingTime) return "Sem agenda padrão";
-  return `${dayLabels[group.meetingDayOfWeek] ?? "Dia informado"} · ${group.meetingTime}`;
+  return `${weekdayLabel(group.meetingDayOfWeek)} · ${group.meetingTime}`;
 }
 
 export function teamSavedMessage(savedParam: string) {

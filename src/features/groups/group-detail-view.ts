@@ -1,4 +1,5 @@
 import { PersonStatus, UserRole } from "@/generated/prisma/client";
+import { weekdayLabel } from "@/features/groups/weekdays";
 import { type BadgeTone } from "@/components/ui/badge";
 import { memberCardTone, memberMatchesFilter, type MembersFilter } from "@/features/people/member-filters";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
@@ -6,16 +7,6 @@ import { escalationStatusDetailForViewer } from "@/features/signals/escalation";
 import { signalDetailForViewer, type SignalBadgeTone, type SignalDetailLike, type SignalDisplayViewerLike } from "@/features/signals/display";
 import { isSupportRequest, isUrgentOrPastoralCase, type SectionSignalWithIdentity } from "@/features/signals/sections";
 import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features/pastoral-pulse";
-
-const dayLabels: Record<number, string> = {
-  0: "Domingo",
-  1: "Segunda",
-  2: "Terça",
-  3: "Quarta",
-  4: "Quinta",
-  5: "Sexta",
-  6: "Sábado",
-};
 
 export const GROUP_MEMBER_ATTENTION_MAX_PRIORITY = 4;
 export const GROUP_REGULAR_MEMBER_INITIAL_COUNT = 5;
@@ -59,7 +50,7 @@ export type GroupMembersView = {
 
 export function groupMeetingText(day?: number | null, time?: string | null) {
   if (day === null || day === undefined) return time ? `Horário: ${time}` : "Encontro sem horário fixo informado.";
-  return `${dayLabels[day] ?? "Dia informado"}${time ? ` · ${time}` : ""}`;
+  return `${weekdayLabel(day)}${time ? ` · ${time}` : ""}`;
 }
 
 export function groupPastoralPulse({
