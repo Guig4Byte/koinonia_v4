@@ -1,4 +1,5 @@
 import { UserRole, type SignalSeverity, type PersonStatus } from "@/generated/prisma/client";
+import { weeklyPresenceTone } from "@/features/dashboard/presence-health";
 import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features/pastoral-pulse";
 import { splitPastoralSections } from "@/features/signals/sections";
 
@@ -48,13 +49,6 @@ export type PastorPageView = {
   presenceSummary: PresenceSummaryItem[];
 };
 
-function pastorPresenceTone(hasPresenceData: boolean, presenceRate: number): PresenceSummaryItem["tone"] {
-  if (!hasPresenceData) return "neutral";
-  if (presenceRate < 65) return "risk";
-  if (presenceRate < 75) return "warn";
-  return "ok";
-}
-
 export function buildPastorPageView({
   dashboard,
   user,
@@ -93,7 +87,7 @@ export function buildPastorPageView({
         label: "Presença da semana",
         value: dashboard.hasPresenceData ? `${dashboard.presenceRate}%` : "—",
         detail: dashboard.hasPresenceData ? "Média dos encontros registrados nesta semana." : "Nenhum encontro registrado nesta semana.",
-        tone: pastorPresenceTone(dashboard.hasPresenceData, dashboard.presenceRate),
+        tone: weeklyPresenceTone(dashboard.hasPresenceData, dashboard.presenceRate),
       },
     ],
   };

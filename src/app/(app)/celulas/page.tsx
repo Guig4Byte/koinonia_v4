@@ -5,6 +5,7 @@ import { AppShell } from "@/components/app-shell";
 import { CellsPageSections } from "@/components/cells-page-sections";
 import { CellsStructureSearch } from "@/components/cells-structure-search";
 import { ContextSummary, EmptyState, InfoCard, SectionTitle } from "@/components/base-cards";
+import { weeklyPresenceTone } from "@/features/dashboard/presence-health";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { CELLS_SECTION_ID, readCellsFilter } from "@/features/groups/cells-page-filters";
 import { buildCellsPageView } from "@/features/groups/cells-page-view";
@@ -78,7 +79,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
                 detail: dashboard.hasPresenceData
                   ? "Média dos encontros registrados nesta semana."
                   : "Ainda sem presença registrada nesta semana.",
-                tone: !dashboard.hasPresenceData ? "neutral" : dashboard.presenceRate < 65 ? "risk" : dashboard.presenceRate < 75 ? "warn" : "ok",
+                tone: weeklyPresenceTone(dashboard.hasPresenceData, dashboard.presenceRate),
               },
               {
                 label: "Pedem cuidado mais próximo",
