@@ -1,6 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { AttendanceStatus } from "@/generated/prisma/client";
-import { summarizeEventPresence, summarizeEventsPresence, summarizePresenceTrend } from "./presence-summary";
+import {
+  PRESENCE_TREND_MIN_ACCOUNTABLE_COUNT,
+  PRESENCE_TREND_MIN_DELTA,
+  PRESENCE_TREND_PREVIOUS_SAMPLE_COUNT,
+  PRESENCE_TREND_RECENT_SAMPLE_COUNT,
+  PRESENCE_TREND_TOTAL_SAMPLE_COUNT,
+  splitPresenceTrendSamples,
+  summarizeEventPresence,
+  summarizeEventsPresence,
+  summarizePresenceTrend,
+} from "./presence-summary";
 
 function event(status: string, attendances: AttendanceStatus[]) {
   return { status, attendances: attendances.map((attendanceStatus) => ({ status: attendanceStatus })) };
@@ -61,5 +71,19 @@ describe("presence summary", () => {
     expect(summarizePresenceTrend(current, previous)).toEqual({ direction: "up", delta: 25 });
     expect(summarizePresenceTrend(previous, current)).toEqual({ direction: "down", delta: 25 });
     expect(summarizePresenceTrend(current, thinSample)).toBeNull();
+  });
+
+  it("separa a janela padrão usada para tendência de presença", () => {
+    expect(PRESENCE_TREND_RECENT_SAMPLE_COUNT).toBe(4);
+    expect(PRESENCE_TREND_PREVIOUS_SAMPLE_COUNT).toBe(4);
+    expect(PRESENCE_TREND_TOTAL_SAMPLE_COUNT).toBe(8);
+    expect(PRESENCE_TREND_MIN_ACCOUNTABLE_COUNT).toBe(3);
+    expect(PRESENCE_TREND_MIN_DELTA).toBe(6);
+
+    const samples = Array.from({ length: 10 }, (_, index) => index + 1);
+    const { recentItems, previousItems } = splitPresenceTrendSamples(samples);
+
+    expect(recentItems).toEqual([1, 2, 3, 4]);
+    expect(previousItems).toEqual([5, 6, 7, 8]);
   });
 });

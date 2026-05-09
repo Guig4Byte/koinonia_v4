@@ -1,5 +1,5 @@
 import { GroupResponsibilityRole, MembershipRole, PersonStatus, SignalSeverity, SignalStatus, UserRole } from "@/generated/prisma/client";
-import { summarizeEventsPresence, isPresenceRecordedEvent } from "@/features/events/presence-summary";
+import { isPresenceRecordedEvent, PRESENCE_TREND_RECENT_SAMPLE_COUNT, PRESENCE_TREND_TOTAL_SAMPLE_COUNT, summarizeEventsPresence } from "@/features/events/presence-summary";
 import { canUsePastorDashboard, getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson } from "@/features/signals/attention";
 import { getPastoralSectionSignalsByPerson, isSupportRequest } from "@/features/signals/sections";
@@ -72,7 +72,7 @@ export async function getPastorDashboard(user: PermissionUser) {
         supervisor: true,
         responsibilities: activeGroupResponsibilityInclude,
         signals: { where: { status: SignalStatus.OPEN }, include: { assignedTo: true } },
-        events: { orderBy: { startsAt: "desc" }, take: 4, include: { attendances: true } },
+        events: { orderBy: { startsAt: "desc" }, take: PRESENCE_TREND_RECENT_SAMPLE_COUNT, include: { attendances: true } },
       },
       orderBy: { name: "asc" },
     }),
@@ -137,7 +137,7 @@ export async function getPastorTeamOverview(user: PermissionUser) {
       include: { person: { select: { status: true } } },
     },
     signals: { where: { status: SignalStatus.OPEN }, include: { assignedTo: true } },
-    events: { orderBy: { startsAt: "desc" as const }, take: 4, include: { attendances: true } },
+    events: { orderBy: { startsAt: "desc" as const }, take: PRESENCE_TREND_RECENT_SAMPLE_COUNT, include: { attendances: true } },
   };
 
   const [supervisors, groupsWithoutSupervisor] = await Promise.all([
@@ -222,7 +222,7 @@ async function getGroupScopedDashboard(user: PermissionUser) {
       responsibilities: activeGroupResponsibilityInclude,
       memberships: { where: { leftAt: null, role: { not: MembershipRole.VISITOR } }, include: { person: true } },
       signals: { where: { status: SignalStatus.OPEN }, include: { person: true, assignedTo: true } },
-      events: { orderBy: { startsAt: "desc" }, take: 8, include: { attendances: true } },
+      events: { orderBy: { startsAt: "desc" }, take: PRESENCE_TREND_TOTAL_SAMPLE_COUNT, include: { attendances: true } },
     },
     orderBy: { name: "asc" },
   });

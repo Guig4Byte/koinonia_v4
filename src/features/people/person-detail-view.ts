@@ -2,6 +2,8 @@ import { AttendanceStatus, CareKind } from "@/generated/prisma/client";
 import { presenceTone, type PresenceTone } from "@/features/events/presence-display";
 import {
   summarizePresenceFromAttendances,
+  PRESENCE_TREND_MIN_ACCOUNTABLE_COUNT,
+  splitPresenceTrendSamples,
   summarizePresenceTrend,
   type PresenceSummary,
   type PresenceTrend,
@@ -44,8 +46,6 @@ export type PersonPresenceView = {
   hasPartialTrendHistory: boolean;
 };
 
-const RECENT_PRESENCE_LIMIT = 4;
-const PREVIOUS_PRESENCE_LIMIT = 4;
 
 export type AttendanceTone = "ok" | "warn" | "risk" | "info";
 
@@ -98,11 +98,7 @@ export function recentPresenceTrendLabel(trend: PresenceTrend, currentTone: Pres
 
 export function buildPersonPresenceView(attendances: PersonRecentAttendance[]): PersonPresenceView {
   const accountableAttendances = attendances.filter((attendance) => attendance.status !== AttendanceStatus.VISITOR);
-  const recentAttendances = accountableAttendances.slice(0, RECENT_PRESENCE_LIMIT);
-  const previousAttendances = accountableAttendances.slice(
-    RECENT_PRESENCE_LIMIT,
-    RECENT_PRESENCE_LIMIT + PREVIOUS_PRESENCE_LIMIT,
-  );
+  const { recentItems: recentAttendances, previousItems: previousAttendances } = splitPresenceTrendSamples(accountableAttendances);
   const recentPresence = summarizePresenceFromAttendances(recentAttendances);
   const previousPresence = summarizePresenceFromAttendances(previousAttendances);
   const trend = summarizePresenceTrend(recentPresence, previousPresence);
@@ -115,6 +111,6 @@ export function buildPersonPresenceView(attendances: PersonRecentAttendance[]): 
     trend,
     tone,
     hiddenAttendancesCount: Math.max(accountableAttendances.length - recentAttendances.length, 0),
-    hasPartialTrendHistory: previousPresence.accountableCount > 0 && previousPresence.accountableCount < 3,
+    hasPartialTrendHistory: previousPresence.accountableCount > 0 && previousPresence.accountableCount < PRESENCE_TREND_MIN_ACCOUNTABLE_COUNT,
   };
 }

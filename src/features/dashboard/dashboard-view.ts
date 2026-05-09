@@ -1,5 +1,5 @@
 import { GroupResponsibilityRole, PersonStatus, SignalSeverity, UserRole } from "@/generated/prisma/client";
-import { isPresenceRecordedEvent, summarizeEventsPresence, summarizePresenceTrend, type PresenceEvent } from "@/features/events/presence-summary";
+import { isPresenceRecordedEvent, splitPresenceTrendSamples, summarizeEventsPresence, summarizePresenceTrend, type PresenceEvent } from "@/features/events/presence-summary";
 import {
   hasLowPresence,
   teamGroupPastoralPriorityScore,
@@ -188,8 +188,7 @@ export function buildSupervisorTeam<TGroup extends DashboardTeamGroup>({
 
 export function buildScopedGroupDashboardItem<TGroup extends DashboardTeamGroup>(group: TGroup, user: PermissionUser, now = new Date()) {
   const recordedGroupEvents = group.events.filter((event) => event.startsAt <= now && isPresenceRecordedEvent(event));
-  const recentGroupEvents = recordedGroupEvents.slice(0, 4);
-  const previousGroupEvents = recordedGroupEvents.slice(4, 8);
+  const { recentItems: recentGroupEvents, previousItems: previousGroupEvents } = splitPresenceTrendSamples(recordedGroupEvents);
   const groupPresence = summarizeEventsPresence(recentGroupEvents);
   const previousGroupPresence = summarizeEventsPresence(previousGroupEvents);
   const groupAttentionSignals = getPastoralSectionSignalsByPerson(group.signals, user);

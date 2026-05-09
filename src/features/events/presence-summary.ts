@@ -32,8 +32,12 @@ export type PresenceTrend = {
   delta: number;
 };
 
-const TREND_MIN_ACCOUNTABLE_COUNT = 3;
-const TREND_MIN_DELTA = 6;
+export const PRESENCE_TREND_RECENT_SAMPLE_COUNT = 4;
+export const PRESENCE_TREND_PREVIOUS_SAMPLE_COUNT = 4;
+export const PRESENCE_TREND_TOTAL_SAMPLE_COUNT = PRESENCE_TREND_RECENT_SAMPLE_COUNT + PRESENCE_TREND_PREVIOUS_SAMPLE_COUNT;
+
+export const PRESENCE_TREND_MIN_ACCOUNTABLE_COUNT = 3;
+export const PRESENCE_TREND_MIN_DELTA = 6;
 
 export function isPresenceRecordedEvent(event: PresenceEvent) {
   return event.status === "COMPLETED" || event.attendances.length > 0;
@@ -76,13 +80,23 @@ export function summarizeEventsPresence(events: PresenceEvent[]): EventsPresence
   };
 }
 
+export function splitPresenceTrendSamples<T>(items: T[]) {
+  return {
+    recentItems: items.slice(0, PRESENCE_TREND_RECENT_SAMPLE_COUNT),
+    previousItems: items.slice(
+      PRESENCE_TREND_RECENT_SAMPLE_COUNT,
+      PRESENCE_TREND_TOTAL_SAMPLE_COUNT,
+    ),
+  };
+}
+
 export function summarizePresenceTrend(current: PresenceSummary, previous: PresenceSummary): PresenceTrend | null {
-  if (current.accountableCount < TREND_MIN_ACCOUNTABLE_COUNT || previous.accountableCount < TREND_MIN_ACCOUNTABLE_COUNT) {
+  if (current.accountableCount < PRESENCE_TREND_MIN_ACCOUNTABLE_COUNT || previous.accountableCount < PRESENCE_TREND_MIN_ACCOUNTABLE_COUNT) {
     return null;
   }
 
   const delta = current.presenceRate - previous.presenceRate;
-  if (Math.abs(delta) < TREND_MIN_DELTA) return null;
+  if (Math.abs(delta) < PRESENCE_TREND_MIN_DELTA) return null;
 
   return {
     direction: delta > 0 ? "up" : "down",

@@ -7,7 +7,7 @@ import { GroupPendingEventCard } from "@/components/group-pending-event-card";
 import { GroupRegisteredEncountersList } from "@/components/group-registered-encounters-list";
 import { MemberPriorityList } from "@/components/member-priority-list";
 import { presenceTone } from "@/features/events/presence-display";
-import { isPresenceRecordedEvent, summarizeEventsPresence, summarizePresenceTrend } from "@/features/events/presence-summary";
+import { isPresenceRecordedEvent, splitPresenceTrendSamples, summarizeEventsPresence, summarizePresenceTrend } from "@/features/events/presence-summary";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
 import {
   buildGroupMemberDisplays,
@@ -88,8 +88,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
   const hasRiskSignal = urgentOrPastoralSignals.length > 0;
   const navIndicator = hasRiskSignal ? "risk" : attentionPeople.length > 0 ? "attention" : inCareCount > 0 ? "care" : undefined;
   const recordedPresenceEvents = group.events.filter((event) => event.startsAt <= referenceDate && isPresenceRecordedEvent(event));
-  const recentPresenceEvents = recordedPresenceEvents.slice(0, 4);
-  const previousPresenceEvents = recordedPresenceEvents.slice(4, 8);
+  const { recentItems: recentPresenceEvents, previousItems: previousPresenceEvents } = splitPresenceTrendSamples(recordedPresenceEvents);
   const completedEvents = recordedPresenceEvents;
   const presence = summarizeEventsPresence(recentPresenceEvents);
   const previousPresence = summarizeEventsPresence(previousPresenceEvents);
