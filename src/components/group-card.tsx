@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/cn";
 import type { SignalBadgeTone } from "@/features/signals/display";
-import { presenceTone } from "@/features/events/presence-display";
+import { DEFAULT_PRESENCE_TONE_THRESHOLDS, presenceTone } from "@/features/events/presence-display";
 import type { PresenceTrend } from "@/features/events/presence-summary";
 import { priorityCardClass, type CardPriorityTone } from "@/components/card-priority";
 import { metricTextClass, PresenceTrendDelta } from "@/components/presence-metric";
@@ -55,7 +55,9 @@ export function GroupCard({
   const resolvedBadgeLabel = badgeLabel ?? fallbackBadgeLabel;
   const priorityTone = cardTone ?? (resolvedBadgeTone === "neutral" || resolvedBadgeTone === "ok" || resolvedBadgeTone === "info" ? undefined : resolvedBadgeTone);
   const presenceText = hasPresenceData ? `${presenceRate}%` : "—";
-  const presenceLabel = !hasPresenceData ? "Registro de presença" : presenceRate < 50 ? "Presença baixa" : "Presença recente";
+  const presenceLabel = !hasPresenceData
+    ? "Registro de presença"
+    : presenceRate < DEFAULT_PRESENCE_TONE_THRESHOLDS.risk ? "Presença baixa" : "Presença recente";
   const presenceToneClass = metricTextClass(tone);
   const content = (
     <article className={cn("card-hover-lift rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card transition active:scale-[0.99]", priorityCardClass(priorityTone))}>

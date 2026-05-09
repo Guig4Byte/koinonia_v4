@@ -1,4 +1,5 @@
 import { UserRole } from "@/generated/prisma/client";
+import { DEFAULT_PRESENCE_TONE_THRESHOLDS } from "@/features/events/presence-display";
 import type { PastoralPulseCounts, PastoralPulseMessage, PastoralPulseScope, PastoralPulseSubject } from "./pastoral-pulse";
 import { isPastorRole } from "./pastoral-pulse-message-utils";
 
@@ -100,7 +101,7 @@ export function groupPresenceMessage(role: UserRole, counts: Required<Pick<Pasto
     };
   }
 
-  if (counts.presenceRate < 70) {
+  if (counts.presenceRate < DEFAULT_PRESENCE_TONE_THRESHOLDS.warn) {
     return {
       title: role === UserRole.LEADER
         ? "O ritmo de presença pede atenção."
