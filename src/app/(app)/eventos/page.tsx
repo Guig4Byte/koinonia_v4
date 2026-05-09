@@ -1,7 +1,13 @@
 import { AppShell } from "@/components/app-shell";
 import { EmptyState, SectionTitle } from "@/components/base-cards";
 import { EventConsultationCards, EventList, EventsConsultationView } from "@/components/events-page-sections";
-import { buildEventsHomeSections, readEventConsultationMode, readEventPeriod } from "@/features/events/events-page-view";
+import {
+  EVENTS_PAGE_HISTORY_LOOKBACK_DAYS,
+  EVENTS_PAGE_QUERY_LIMIT,
+  buildEventsHomeSections,
+  readEventConsultationMode,
+  readEventPeriod,
+} from "@/features/events/events-page-view";
 import { ensureUpcomingCellMeetingsForUser } from "@/features/events/schedule";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { getVisibleEventWhere, type PermissionUser } from "@/features/permissions/permissions";
@@ -17,7 +23,7 @@ type EventsSearchParams = Promise<{
 
 async function getEventsForUser(user: PermissionUser, referenceDate: Date) {
   const today = startOfBrasiliaDay(referenceDate);
-  const historyStart = addBrasiliaDays(today, -60);
+  const historyStart = addBrasiliaDays(today, -EVENTS_PAGE_HISTORY_LOOKBACK_DAYS);
   const weekEnd = endOfBrasiliaWeek(today, 1);
 
   return prisma.event.findMany({
@@ -29,7 +35,7 @@ async function getEventsForUser(user: PermissionUser, referenceDate: Date) {
     },
     include: { group: { include: { responsibilities: { where: { activeUntil: null } } } }, attendances: true },
     orderBy: { startsAt: "asc" },
-    take: 120,
+    take: EVENTS_PAGE_QUERY_LIMIT,
   });
 }
 

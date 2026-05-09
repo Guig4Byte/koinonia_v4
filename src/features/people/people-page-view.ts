@@ -4,6 +4,11 @@ import { personEffectiveBadgeForViewer } from "@/features/people/status-display"
 import { signalDetailForViewer, type SignalBadgeTone, type SignalDetailLike } from "@/features/signals/display";
 import { isSupportRequest, isUrgentOrPastoralCase, type SectionSignalWithIdentity } from "@/features/signals/sections";
 
+export const PEOPLE_PAGE_ATTENTION_SIGNAL_QUERY_LIMIT = 80;
+export const PEOPLE_PAGE_VISIBLE_MEMBER_QUERY_LIMIT = 80;
+export const PEOPLE_PAGE_IN_CARE_QUERY_LIMIT = 40;
+export const PEOPLE_PAGE_PRIMARY_MEMBERSHIP_LIMIT = 1;
+
 export type PeoplePageMemberDisplay = {
   id: string;
   name: string;

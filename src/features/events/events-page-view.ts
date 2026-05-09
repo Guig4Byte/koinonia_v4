@@ -6,7 +6,10 @@ import { canCheckInEvent, type PermissionUser } from "@/features/permissions/per
 import { formatShortDate, formatTime } from "@/lib/format";
 import { normalizeSearchText } from "@/lib/text";
 import { addBrasiliaDays, endOfBrasiliaWeek, isTodayInBrasilia, startOfBrasiliaDay, startOfBrasiliaWeek } from "@/lib/brasilia-time";
+
 export const EVENT_LIST_LIMIT = 4;
+export const EVENTS_PAGE_HISTORY_LOOKBACK_DAYS = 60;
+export const EVENTS_PAGE_QUERY_LIMIT = 120;
 
 export type EventConsultationMode = "sem-presenca" | "historico";
 export type EventPeriod = "semana" | "semana-passada" | "30d";

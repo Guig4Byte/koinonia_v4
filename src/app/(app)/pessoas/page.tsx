@@ -7,7 +7,13 @@ import { MemberPriorityList } from "@/components/member-priority-list";
 import { SearchBox } from "@/components/search-box";
 import { getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "@/features/permissions/permissions";
 import { readMembersFilter } from "@/features/people/member-filters";
-import { buildPeoplePageView } from "@/features/people/people-page-view";
+import {
+  PEOPLE_PAGE_ATTENTION_SIGNAL_QUERY_LIMIT,
+  PEOPLE_PAGE_IN_CARE_QUERY_LIMIT,
+  PEOPLE_PAGE_PRIMARY_MEMBERSHIP_LIMIT,
+  PEOPLE_PAGE_VISIBLE_MEMBER_QUERY_LIMIT,
+  buildPeoplePageView,
+} from "@/features/people/people-page-view";
 import { splitPastoralSections } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
@@ -40,7 +46,7 @@ export default async function PeoplePage({ searchParams }: PeoplePageProps) {
       where: getVisibleOpenSignalWhere(user),
       include: { person: true, assignedTo: true, group: { include: { leader: true } } },
       orderBy: { detectedAt: "desc" },
-      take: 80,
+      take: PEOPLE_PAGE_ATTENTION_SIGNAL_QUERY_LIMIT,
     }),
     prisma.person.findMany({
       where: {
@@ -53,11 +59,11 @@ export default async function PeoplePage({ searchParams }: PeoplePageProps) {
         memberships: {
           where: memberMembershipWhere,
           include: { group: true },
-          take: 1,
+          take: PEOPLE_PAGE_PRIMARY_MEMBERSHIP_LIMIT,
         },
       },
       orderBy: { fullName: "asc" },
-      take: 80,
+      take: PEOPLE_PAGE_VISIBLE_MEMBER_QUERY_LIMIT,
     }),
     prisma.person.findMany({
       where: {
@@ -71,11 +77,11 @@ export default async function PeoplePage({ searchParams }: PeoplePageProps) {
         memberships: {
           where: memberMembershipWhere,
           include: { group: true },
-          take: 1,
+          take: PEOPLE_PAGE_PRIMARY_MEMBERSHIP_LIMIT,
         },
       },
       orderBy: { updatedAt: "desc" },
-      take: 40,
+      take: PEOPLE_PAGE_IN_CARE_QUERY_LIMIT,
     }),
   ]);
 

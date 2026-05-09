@@ -12,7 +12,7 @@ import { PersonPresenceCard } from "@/components/person-presence-card";
 import { Badge } from "@/components/ui/badge";
 import { canRegisterCare, canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
-import { buildPersonPresenceView, careKindLabels } from "@/features/people/person-detail-view";
+import { PERSON_DETAIL_ATTENDANCE_HISTORY_LIMIT, buildPersonPresenceView, careKindLabels } from "@/features/people/person-detail-view";
 import { canEscalateSignalToPastor, canRequestSupervisorSupport, escalationStatusChipForViewer } from "@/features/signals/escalation";
 import { signalBadgeForViewer, signalDescriptionForViewer, signalDetailForViewer } from "@/features/signals/display";
 import { isUrgentOrPastoralCase, sortSignalsForPastoralViewer } from "@/features/signals/sections";
@@ -58,7 +58,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       where: { personId: person.id, event: recordedEventWhere },
       include: { event: { include: { group: { include: { responsibilities: { where: { activeUntil: null }, include: { user: true }, orderBy: { createdAt: "asc" } } } } } } },
       orderBy: [{ event: { startsAt: "desc" } }, { markedAt: "desc" }],
-      take: 12,
+      take: PERSON_DETAIL_ATTENDANCE_HISTORY_LIMIT,
     }),
     prisma.careTouch.findMany({
       where: visibleCareTouchWhere,
