@@ -1,5 +1,5 @@
 import { parseClockTime } from "@/features/events/time-validation";
-import { WEEKDAY_OPTIONS } from "@/features/groups/weekdays";
+import { isValidWeekday, WEEKDAY_OPTIONS } from "@/features/groups/weekdays";
 
 export { WEEKDAY_OPTIONS };
 
@@ -48,7 +48,7 @@ function parseMeetingDayOfWeek(value: unknown) {
   if (!text) return { ok: true as const, value: null };
 
   const day = Number(text);
-  if (!Number.isInteger(day) || day < 0 || day > 6) {
+  if (!isValidWeekday(day)) {
     return { ok: false as const, error: "dia-invalido" as const };
   }
 

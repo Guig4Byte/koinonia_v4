@@ -1,4 +1,5 @@
 import { EventStatus, EventType, GroupKind } from "@/generated/prisma/client";
+import { DAYS_PER_WEEK, isValidWeekday } from "@/features/groups/weekdays";
 import { getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { addBrasiliaDays, dateFromBrasiliaParts, getBrasiliaDateParts, startOfBrasiliaDay } from "@/lib/brasilia-time";
 import { prisma } from "@/lib/prisma";
@@ -27,10 +28,6 @@ export function parseMeetingTime(meetingTime: string | null) {
   return meetingTime ? parseClockTime(meetingTime, { allowSingleDigitHour: true }) : null;
 }
 
-function isValidWeekday(value: number | null): value is number {
-  return Number.isInteger(value) && value !== null && value >= 0 && value <= 6;
-}
-
 export function scheduledCellMeetingStarts({
   meetingDayOfWeek,
   meetingTime,
@@ -43,7 +40,7 @@ export function scheduledCellMeetingStarts({
 
   const firstDay = startOfBrasiliaDay(from);
   const firstDayParts = getBrasiliaDateParts(firstDay);
-  const daysUntilMeeting = (meetingDayOfWeek - firstDayParts.weekday + 7) % 7;
+  const daysUntilMeeting = (meetingDayOfWeek - firstDayParts.weekday + DAYS_PER_WEEK) % DAYS_PER_WEEK;
   const firstMeetingDayParts = getBrasiliaDateParts(addBrasiliaDays(firstDay, daysUntilMeeting));
   let first = dateFromBrasiliaParts(
     firstMeetingDayParts.year,
@@ -54,7 +51,7 @@ export function scheduledCellMeetingStarts({
   );
 
   if (first < from) {
-    first = addBrasiliaDays(first, 7);
+    first = addBrasiliaDays(first, DAYS_PER_WEEK);
   }
 
   const starts: Date[] = [];
@@ -62,7 +59,7 @@ export function scheduledCellMeetingStarts({
 
   while (cursor <= until) {
     starts.push(new Date(cursor));
-    cursor = addBrasiliaDays(cursor, 7);
+    cursor = addBrasiliaDays(cursor, DAYS_PER_WEEK);
   }
 
   return starts;
@@ -75,7 +72,7 @@ export async function ensureUpcomingCellMeetingsForUser(
   const referenceDate = options.referenceDate ?? new Date();
   const generationStart = startOfBrasiliaDay(referenceDate);
   const weeksAhead = options.weeksAhead ?? DEFAULT_CELL_MEETING_GENERATION_WEEKS;
-  const generatedUntil = addBrasiliaDays(generationStart, weeksAhead * 7);
+  const generatedUntil = addBrasiliaDays(generationStart, weeksAhead * DAYS_PER_WEEK);
 
   const groups = await prisma.smallGroup.findMany({
     where: {
