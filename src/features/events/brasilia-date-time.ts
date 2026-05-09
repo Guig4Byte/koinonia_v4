@@ -1,4 +1,5 @@
 import { BRASILIA_UTC_OFFSET_HOURS, BRASILIA_UTC_OFFSET_MS } from "@/lib/brasilia-time";
+import { parseClockTime } from "./time-validation";
 
 export type DateParts = { year: number; month: number; day: number };
 export type CalendarMonth = { year: number; monthIndex: number };
@@ -86,15 +87,12 @@ export function toBrasiliaDateTimeParts(value: string) {
 
 export function parseBrasiliaDateTime(dateValue: string, timeValue: string) {
   const dateParts = parseBrasiliaDateValue(dateValue);
-  const timeMatch = timeValue.trim().match(/^(\d{2}):(\d{2})$/);
+  const time = parseClockTime(timeValue);
 
-  if (!dateParts || !timeMatch) return null;
+  if (!dateParts || !time) return null;
 
   const { year, month, day } = dateParts;
-  const hour = Number(timeMatch[1]);
-  const minute = Number(timeMatch[2]);
-
-  if (hour > 23 || minute > 59) return null;
+  const { hours: hour, minutes: minute } = time;
 
   const utcTime = Date.UTC(year, month - 1, day, hour + BRASILIA_UTC_OFFSET_HOURS, minute);
   const parsed = new Date(utcTime);
