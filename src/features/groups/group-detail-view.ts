@@ -11,6 +11,7 @@ import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features
 export const GROUP_MEMBER_ATTENTION_MAX_PRIORITY = 4;
 export const GROUP_REGULAR_MEMBER_INITIAL_COUNT = 5;
 export const GROUP_REGULAR_MEMBER_STEP = 5;
+export const GROUP_DETAIL_EVENT_HISTORY_LIMIT = 12;
 
 export type GroupDetailViewer = SignalDisplayViewerLike & {
   id: string;

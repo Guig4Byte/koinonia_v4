@@ -7,6 +7,7 @@ import {
   getConsecutiveAbsenceDatesNewestFirst,
   getRecordedStatusesNewestFirst,
   planAttendanceSignalSync,
+  ATTENDANCE_SIGNAL_EVENT_LOOKBACK_COUNT,
 } from "./rules-core";
 
 const attentionStatuses = [PersonStatus.ACTIVE, PersonStatus.NEW, PersonStatus.NEEDS_ATTENTION, PersonStatus.COOLING_AWAY];
@@ -36,7 +37,7 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string, db: 
           OR: [{ status: EventStatus.COMPLETED }, { attendances: { some: {} } }],
         },
         orderBy: { startsAt: "desc" },
-        take: 4,
+        take: ATTENDANCE_SIGNAL_EVENT_LOOKBACK_COUNT,
         include: { attendances: true },
       },
     },

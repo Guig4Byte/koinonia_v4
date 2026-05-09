@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { EventType } from "@/generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { EmptyState, PulseCard } from "@/components/base-cards";
 import { PastoralSectionTitle } from "@/components/pastoral-section";
@@ -6,7 +7,7 @@ import { LeaderCurrentEventCard } from "@/components/leader-current-event-card";
 import { InCareSection, PastoralSignalSection } from "@/components/pastoral-list-cards";
 import { ensureUpcomingCellMeetingsForUser } from "@/features/events/schedule";
 import { selectRelevantCheckInEvent } from "@/features/events/relevant-event";
-import { buildLeaderPageView } from "@/features/leader/leader-page-view";
+import { buildLeaderPageView, LEADER_RELEVANT_EVENT_LIMIT, LEADER_RELEVANT_EVENT_LOOKBACK_DAYS } from "@/features/leader/leader-page-view";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { canUseLeaderDashboard } from "@/features/permissions/permissions";
 import { getLeaderDashboard } from "@/features/dashboard/queries";
@@ -26,7 +27,7 @@ export default async function LeaderPage() {
   const groupIds = dashboard.groups.map((group) => group.id);
   const now = new Date();
   const today = startOfBrasiliaDay(now);
-  const historyStart = addBrasiliaDays(today, -60);
+  const historyStart = addBrasiliaDays(today, -LEADER_RELEVANT_EVENT_LOOKBACK_DAYS);
   const tomorrow = addBrasiliaDays(today, 1);
 
   if (groupIds.length > 0) {
@@ -37,11 +38,11 @@ export default async function LeaderPage() {
     ? await prisma.event.findMany({
         where: {
           groupId: { in: groupIds },
-          type: "CELL_MEETING",
+          type: EventType.CELL_MEETING,
           startsAt: { gte: historyStart, lt: tomorrow },
         },
         orderBy: { startsAt: "desc" },
-        take: 20,
+        take: LEADER_RELEVANT_EVENT_LIMIT,
         include: {
           group: true,
           attendances: true,

@@ -3,6 +3,9 @@ import { hasRecordedPresence, type RelevantEventCandidate } from "@/features/eve
 import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features/pastoral-pulse";
 import { signalDetailForViewer, type SignalDetailLike } from "@/features/signals/display";
 import { splitPastoralSections, type SectionPersonWithIdentity, type SectionSignalWithIdentity } from "@/features/signals/sections";
+
+export const LEADER_RELEVANT_EVENT_LOOKBACK_DAYS = 60;
+export const LEADER_RELEVANT_EVENT_LIMIT = 20;
 export type LeaderPageViewer = {
   id: string;
   role: UserRole;

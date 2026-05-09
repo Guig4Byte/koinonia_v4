@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { isAfter } from "date-fns";
 import { notFound } from "next/navigation";
-import { AttendanceStatus } from "@/generated/prisma/client";
+import { AttendanceStatus, MembershipRole } from "@/generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { CheckInList } from "@/components/check-in-list";
@@ -39,7 +39,7 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
           supervisor: true,
           responsibilities: { where: { activeUntil: null } },
           memberships: {
-            where: { leftAt: null, role: { not: "VISITOR" } },
+            where: { leftAt: null, role: { not: MembershipRole.VISITOR } },
             include: { person: true },
           },
         },

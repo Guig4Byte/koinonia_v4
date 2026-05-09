@@ -1,6 +1,8 @@
 import { AttendanceStatus, SignalSeverity } from "@/generated/prisma/client";
 import { formatBrasiliaShortDate } from "@/lib/brasilia-time";
 
+export const ATTENDANCE_SIGNAL_EVENT_LOOKBACK_COUNT = 4;
+
 export type AttendanceEventSnapshot = {
   attendances: Array<{ personId: string; status: AttendanceStatus }>;
 };

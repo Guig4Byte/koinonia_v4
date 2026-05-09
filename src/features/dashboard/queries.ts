@@ -1,4 +1,4 @@
-import { GroupResponsibilityRole, MembershipRole, PersonStatus, SignalSeverity, SignalStatus, UserRole } from "@/generated/prisma/client";
+import { EventType, GroupResponsibilityRole, MembershipRole, PersonStatus, SignalSeverity, SignalStatus, UserRole } from "@/generated/prisma/client";
 import { isPresenceRecordedEvent, PRESENCE_TREND_RECENT_SAMPLE_COUNT, PRESENCE_TREND_TOTAL_SAMPLE_COUNT, summarizeEventsPresence } from "@/features/events/presence-summary";
 import { canUsePastorDashboard, getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson } from "@/features/signals/attention";
@@ -24,6 +24,9 @@ const pastoralSignalWhere = {
   ],
 };
 
+const PASTORAL_SIGNAL_QUERY_LIMIT = 50;
+const PASTOR_IN_CARE_PEOPLE_QUERY_LIMIT = 30;
+
 const activeGroupResponsibilityInclude = {
   where: { activeUntil: null },
   include: { user: true },
@@ -45,7 +48,7 @@ export async function getPastorDashboard(user: PermissionUser) {
     prisma.event.findMany({
       where: {
         churchId,
-        type: "CELL_MEETING",
+        type: EventType.CELL_MEETING,
         startsAt: { gte: weekStart, lte: weekEnd },
         group: { is: { churchId, isActive: true } },
       },
@@ -63,7 +66,7 @@ export async function getPastorDashboard(user: PermissionUser) {
       },
       include: { person: true, assignedTo: true, group: { include: { leader: true, supervisor: true, responsibilities: activeGroupResponsibilityInclude } } },
       orderBy: [{ detectedAt: "desc" }],
-      take: 50,
+      take: PASTORAL_SIGNAL_QUERY_LIMIT,
     }),
     prisma.smallGroup.findMany({
       where: { churchId, isActive: true },
@@ -91,7 +94,7 @@ export async function getPastorDashboard(user: PermissionUser) {
         },
       },
       orderBy: { updatedAt: "desc" },
-      take: 30,
+      take: PASTOR_IN_CARE_PEOPLE_QUERY_LIMIT,
     }),
   ]);
 

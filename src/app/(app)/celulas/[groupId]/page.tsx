@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { GroupResponsibilityRole, PersonStatus, SignalStatus, UserRole } from "@/generated/prisma/client";
+import { EventType, GroupResponsibilityRole, MembershipRole, PersonStatus, SignalStatus, UserRole } from "@/generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { BackLink, ContextSummary, InfoCard, PulseCard, SectionTitle } from "@/components/base-cards";
 import { GroupPendingEventCard } from "@/components/group-pending-event-card";
@@ -14,6 +14,7 @@ import {
   buildGroupMembersView,
   groupMeetingText,
   groupPastoralPulse,
+  GROUP_DETAIL_EVENT_HISTORY_LIMIT,
   GROUP_REGULAR_MEMBER_INITIAL_COUNT,
   GROUP_REGULAR_MEMBER_STEP,
 } from "@/features/groups/group-detail-view";
@@ -49,7 +50,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
         orderBy: { createdAt: "asc" },
       },
       memberships: {
-        where: { leftAt: null, role: { not: "VISITOR" } },
+        where: { leftAt: null, role: { not: MembershipRole.VISITOR } },
         include: { person: true },
         orderBy: { person: { fullName: "asc" } },
       },
@@ -59,10 +60,10 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
         orderBy: [{ severity: "desc" }, { detectedAt: "desc" }],
       },
       events: {
-        where: { type: "CELL_MEETING" },
+        where: { type: EventType.CELL_MEETING },
         include: { attendances: true },
         orderBy: { startsAt: "desc" },
-        take: 12,
+        take: GROUP_DETAIL_EVENT_HISTORY_LIMIT,
       },
     },
   });
