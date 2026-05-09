@@ -1,0 +1,1 @@
+export const EVENT_LOCATION_MAX_LENGTH = 160;

@@ -1,3 +1,4 @@
+import { parseClockTime } from "@/features/events/time-validation";
 import { WEEKDAY_OPTIONS } from "@/features/groups/weekdays";
 
 export { WEEKDAY_OPTIONS };
@@ -58,7 +59,7 @@ function parseMeetingTime(value: unknown) {
   const time = nullableStringValue(value);
   if (!time) return { ok: true as const, value: null };
 
-  if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) {
+  if (!parseClockTime(time)) {
     return { ok: false as const, error: "horario-invalido" as const };
   }
 

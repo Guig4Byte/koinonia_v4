@@ -1,3 +1,7 @@
+export const CLOCK_TIME_INPUT_MAX_LENGTH = 5;
+export const CLOCK_TIME_PATTERN = "([01][0-9]|2[0-3]):[0-5][0-9]";
+export const CLOCK_TIME_FORMAT_HINT = "Use o formato hh:mm, como 19:30.";
+
 export const MIN_CLOCK_HOUR = 0;
 export const MAX_CLOCK_HOUR = 23;
 export const MIN_CLOCK_MINUTE = 0;

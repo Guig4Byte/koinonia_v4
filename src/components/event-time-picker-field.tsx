@@ -1,4 +1,5 @@
 import { Clock3 } from "lucide-react";
+import { CLOCK_TIME_INPUT_MAX_LENGTH } from "@/features/events/time-validation";
 import { cn } from "@/lib/cn";
 
 export function EventTimePickerField({
@@ -28,7 +29,7 @@ export function EventTimePickerField({
           onChange={(event) => onChange(event.target.value)}
           inputMode="numeric"
           placeholder="HH:mm"
-          maxLength={5}
+          maxLength={CLOCK_TIME_INPUT_MAX_LENGTH}
           className="event-picker-input min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-brand)]"
         />
         <button type="button" className="event-picker-trigger" aria-label="Escolher horário" aria-expanded={isOpen} onClick={() => onOpenChange(!isOpen)}>

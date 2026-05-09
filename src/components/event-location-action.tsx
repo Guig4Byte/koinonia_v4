@@ -1,4 +1,5 @@
 import { GhostButton } from "@/components/ui/button";
+import { EVENT_LOCATION_MAX_LENGTH } from "@/features/events/event-fields";
 
 export function EventLocationAction({
   value,
@@ -27,7 +28,7 @@ export function EventLocationAction({
           onChange={(event) => onChange(event.target.value)}
           placeholder={defaultLocationName ? `Padrão: ${defaultLocationName}` : "Ex.: Casa da família Souza"}
           className="min-h-11 rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] px-3 text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-brand)]"
-          maxLength={160}
+          maxLength={EVENT_LOCATION_MAX_LENGTH}
           required
         />
         <GhostButton type="button" onClick={onSave} disabled={disabled} className="w-full rounded-xl">

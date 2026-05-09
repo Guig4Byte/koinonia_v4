@@ -3,6 +3,7 @@
 import { Clock3 } from "lucide-react";
 import { useState } from "react";
 import { timeOptionsWithCurrent } from "@/features/events/time-options";
+import { CLOCK_TIME_FORMAT_HINT, CLOCK_TIME_INPUT_MAX_LENGTH, CLOCK_TIME_PATTERN } from "@/features/events/time-validation";
 import { cn } from "@/lib/cn";
 
 export function GroupMeetingTimeInput({ defaultValue }: { defaultValue?: string | null }) {
@@ -24,9 +25,9 @@ export function GroupMeetingTimeInput({ defaultValue }: { defaultValue?: string 
         inputMode="numeric"
         autoComplete="off"
         placeholder="hh:mm"
-        maxLength={5}
-        pattern="([01][0-9]|2[0-3]):[0-5][0-9]"
-        title="Use o formato hh:mm, como 19:30."
+        maxLength={CLOCK_TIME_INPUT_MAX_LENGTH}
+        pattern={CLOCK_TIME_PATTERN}
+        title={CLOCK_TIME_FORMAT_HINT}
         value={meetingTime}
         onChange={(event) => setMeetingTime(event.target.value)}
         className="event-picker-input min-h-12 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] text-sm font-medium text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] transition focus:border-[var(--color-brand)] focus:bg-[var(--color-bg-card)]"

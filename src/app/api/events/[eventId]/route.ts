@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
+import { EVENT_LOCATION_MAX_LENGTH } from "@/features/events/event-fields";
 import { EventStatus } from "@/generated/prisma/client";
 import { canManageEventDetails } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -8,7 +9,7 @@ import { readJsonBody } from "@/lib/json";
 import { prisma } from "@/lib/prisma";
 
 const payloadSchema = z.object({
-  locationName: z.string().trim().min(1).max(160).optional(),
+  locationName: z.string().trim().min(1).max(EVENT_LOCATION_MAX_LENGTH).optional(),
   startsAt: z.string().trim().min(1).optional(),
   status: z.union([
     z.literal(EventStatus.SCHEDULED),
