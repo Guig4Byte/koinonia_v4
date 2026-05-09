@@ -5,7 +5,7 @@ export type CareContactLinks = {
   whatsapp?: string;
 };
 
-export const CARE_NOTE_MAX_LENGTH = 500;
+export { CARE_NOTE_MAX_LENGTH } from "./care-note";
 
 export function digitsOnly(value?: string | null) {
   return value?.replace(/\D/g, "") ?? "";

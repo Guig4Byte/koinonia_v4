@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { CareKind } from "@/generated/prisma/client";
 import { parseCarePayload, resolvedAttentionMessage } from "./care-validation";
+import { CARE_NOTE_MAX_LENGTH } from "./care-note";
 
 describe("care validation", () => {
   it("trims empty notes to undefined and defaults signal resolution", () => {
@@ -13,8 +14,8 @@ describe("care validation", () => {
     expect(result.data.resolveOpenSignals).toBe(true);
   });
 
-  it("rejects notes longer than 500 characters", () => {
-    const result = parseCarePayload({ kind: CareKind.WHATSAPP, note: "a".repeat(501) });
+  it("rejects notes longer than the configured limit", () => {
+    const result = parseCarePayload({ kind: CareKind.WHATSAPP, note: "a".repeat(CARE_NOTE_MAX_LENGTH + 1) });
 
     expect(result.success).toBe(false);
   });
