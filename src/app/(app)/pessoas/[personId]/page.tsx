@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { CareKind, GroupResponsibilityRole, PersonStatus, UserRole } from "@/generated/prisma/client";
+import { CareKind, GroupResponsibilityRole, UserRole } from "@/generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole, homeHrefForRole, secondaryNavHrefForRole, secondaryNavLabelForRole } from "@/features/navigation/app-nav";
 import { CareActions } from "@/components/care-actions";
@@ -16,7 +16,10 @@ import { PERSON_DETAIL_ATTENDANCE_HISTORY_LIMIT, buildPersonPresenceView, careKi
 import { canEscalateSignalToPastor, canRequestSupervisorSupport, escalationStatusChipForViewer } from "@/features/signals/escalation";
 import { signalBadgeForViewer, signalDescriptionForViewer, signalTitleForViewer } from "@/features/signals/display";
 import { isUrgentOrPastoralCase, sortSignalsForPastoralViewer } from "@/features/signals/sections";
+import { groupNameOrFallback, FALLBACK_LEADER_NAME } from "@/features/groups/group-display";
+import { activeGroupResponsibilitiesInclude } from "@/features/groups/group-query";
 import { responsibilityNames } from "@/features/groups/responsibility-display";
+import { isInCarePerson } from "@/features/people/person-status";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -31,7 +34,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
     include: {
       memberships: {
         where: { leftAt: null },
-        include: { group: { include: { responsibilities: { where: { activeUntil: null }, include: { user: true }, orderBy: { createdAt: "asc" } } } } },
+        include: { group: { include: { responsibilities: activeGroupResponsibilitiesInclude } } },
       },
     },
   });
@@ -51,18 +54,18 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const [signals, attendances, careTouches] = await Promise.all([
     prisma.careSignal.findMany({
       where: { ...visibleOpenSignalWhere, personId: person.id },
-      include: { assignedTo: true, group: { include: { responsibilities: { where: { activeUntil: null }, include: { user: true }, orderBy: { createdAt: "asc" } } } } },
+      include: { assignedTo: true, group: { include: { responsibilities: activeGroupResponsibilitiesInclude } } },
       orderBy: [{ severity: "desc" }, { detectedAt: "desc" }],
     }),
     prisma.attendance.findMany({
       where: { personId: person.id, event: recordedEventWhere },
-      include: { event: { include: { group: { include: { responsibilities: { where: { activeUntil: null }, include: { user: true }, orderBy: { createdAt: "asc" } } } } } } },
+      include: { event: { include: { group: { include: { responsibilities: activeGroupResponsibilitiesInclude } } } } },
       orderBy: [{ event: { startsAt: "desc" } }, { markedAt: "desc" }],
       take: PERSON_DETAIL_ATTENDANCE_HISTORY_LIMIT,
     }),
     prisma.careTouch.findMany({
       where: visibleCareTouchWhere,
-      include: { actor: true, group: { include: { responsibilities: { where: { activeUntil: null }, include: { user: true }, orderBy: { createdAt: "asc" } } } } },
+      include: { actor: true, group: { include: { responsibilities: activeGroupResponsibilitiesInclude } } },
       orderBy: { happenedAt: "desc" },
     }),
   ]);
@@ -83,9 +86,9 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const isLeader = user.role === UserRole.LEADER;
   const backHref = isLeader ? secondaryNavHref : homeHref;
   const backLabel = isLeader ? secondaryNavLabel : "Visão";
-  const canMarkActive = person.status === PersonStatus.COOLING_AWAY && canRegisterCare(user, person);
+  const canMarkActive = isInCarePerson(person) && canRegisterCare(user, person);
   const hasRiskSignal = signals.some(isUrgentOrPastoralCase);
-  const navIndicator = hasRiskSignal ? "risk" : openSignalsCount > 0 ? "attention" : person.status === PersonStatus.COOLING_AWAY ? "care" : undefined;
+  const navIndicator = hasRiskSignal ? "risk" : openSignalsCount > 0 ? "attention" : isInCarePerson(person) ? "care" : undefined;
   const pastoralOrderedSignals = sortSignalsForPastoralViewer(signals, user);
   const primarySignal = pastoralOrderedSignals[0];
   const personBadge = personEffectiveBadgeForViewer(person, primarySignal, user);
@@ -136,7 +139,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
               <div>
                 <h2 className="text-2xl font-semibold leading-tight text-[var(--color-text-primary)]">{person.fullName}</h2>
                 <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
-                  {primaryGroup?.name ?? "Sem célula"}
+                  {groupNameOrFallback(primaryGroup)}
                   {primaryLeadershipName ? ` · ${primaryLeadershipName}` : ""}
                 </p>
               </div>
@@ -176,7 +179,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
               <div className="min-w-0">
                 <p className="font-semibold text-[var(--color-text-primary)]">{signalTitleForViewer(signalForDisplay, user)}</p>
                 <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
-                  {signal.group?.name ?? primaryGroup?.name ?? "Sem célula"} · {formatShortDate(signal.detectedAt)}, {formatTime(signal.detectedAt)}
+                  {signal.group?.name ?? groupNameOrFallback(primaryGroup)} · {formatShortDate(signal.detectedAt)}, {formatTime(signal.detectedAt)}
                 </p>
               </div>
               {signalDescription ? <p className="mt-3 whitespace-pre-line border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">{signalDescription}</p> : null}
@@ -214,7 +217,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
             title={primaryGroup.name}
             meta={
               <>
-                Liderança: {primaryLeadershipName || "não informada"}
+                Liderança: {primaryLeadershipName || FALLBACK_LEADER_NAME}
                 {primarySupervisionName ? ` · Supervisão: ${primarySupervisionName}` : ""}
               </>
             }

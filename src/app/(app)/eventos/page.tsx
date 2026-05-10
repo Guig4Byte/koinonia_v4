@@ -9,6 +9,7 @@ import {
   readEventPeriod,
 } from "@/features/events/events-page-view";
 import { ensureUpcomingCellMeetingsForUser } from "@/features/events/schedule";
+import { activeGroupResponsibilitiesScopeInclude } from "@/features/groups/group-query";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { getVisibleEventWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -33,7 +34,7 @@ async function getEventsForUser(user: PermissionUser, referenceDate: Date) {
         { startsAt: { gte: historyStart, lte: weekEnd } },
       ],
     },
-    include: { group: { include: { responsibilities: { where: { activeUntil: null } } } }, attendances: true },
+    include: { group: { include: { responsibilities: activeGroupResponsibilitiesScopeInclude } }, attendances: true },
     orderBy: { startsAt: "asc" },
     take: EVENTS_PAGE_QUERY_LIMIT,
   });

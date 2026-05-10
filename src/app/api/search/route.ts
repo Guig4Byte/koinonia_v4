@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { groupNameOrFallback } from "@/features/groups/group-display";
 import { getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "@/features/permissions/permissions";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { SEARCH_PRIMARY_MEMBERSHIP_LIMIT, SEARCH_RESULT_LIMIT, shouldSearchPeople } from "@/features/search/search-view";
@@ -65,7 +66,7 @@ export async function GET(request: NextRequest) {
       return {
         id: person.id,
         fullName: person.fullName,
-        context: person.memberships[0]?.group.name ?? "Sem célula",
+        context: groupNameOrFallback(person.memberships[0]?.group),
         status: badge.label,
         statusTone: badge.tone,
       };

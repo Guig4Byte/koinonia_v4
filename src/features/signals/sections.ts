@@ -1,4 +1,5 @@
 import { PersonStatus, SignalSeverity, UserRole } from "@/generated/prisma/client";
+import { isInCarePerson as isPersonInCare } from "@/features/people/person-status";
 import { selectBestSignalByPerson } from "./signal-utils";
 import { isAssignedToPastoralRole, isAssignedToSupervisor } from "./escalation";
 import { compareSignalsBySeverityAndRecency } from "./ranking";
@@ -65,7 +66,7 @@ export function isSupportRequest(signal: SectionSignalLike, viewer: SectionViewe
 }
 
 export function isInCarePerson(person: SectionPersonLike): boolean {
-  return person.status === PersonStatus.COOLING_AWAY;
+  return isPersonInCare(person);
 }
 
 function signalSectionKey(signal: SectionSignalLike, viewer: SectionViewerLike): Exclude<PastoralSectionKey, "care"> {

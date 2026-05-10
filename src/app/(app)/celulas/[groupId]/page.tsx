@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { EventType, GroupResponsibilityRole, MembershipRole, PersonStatus, SignalStatus, UserRole } from "@/generated/prisma/client";
+import { EventType, GroupResponsibilityRole, MembershipRole, SignalStatus, UserRole } from "@/generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { BackLink, ContextSummary, InfoCard, PulseCard, SectionTitle } from "@/components/base-cards";
 import { GroupPendingEventCard } from "@/components/group-pending-event-card";
@@ -18,7 +18,10 @@ import {
   GROUP_REGULAR_MEMBER_INITIAL_COUNT,
   GROUP_REGULAR_MEMBER_STEP,
 } from "@/features/groups/group-detail-view";
+import { FALLBACK_LEADER_NAME } from "@/features/groups/group-display";
+import { activeGroupResponsibilitiesInclude } from "@/features/groups/group-query";
 import { responsibilityNames } from "@/features/groups/responsibility-display";
+import { isInCarePerson } from "@/features/people/person-status";
 import { appNavForRole, homeHrefForRole, secondaryNavHrefForRole } from "@/features/navigation/app-nav";
 import { readMembersFilter } from "@/features/people/member-filters";
 import { canManageGroups, canViewGroup, isGroupLeader } from "@/features/permissions/permissions";
@@ -42,11 +45,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
   const group = await prisma.smallGroup.findUnique({
     where: { id: groupId },
     include: {
-      responsibilities: {
-        where: { activeUntil: null },
-        include: { user: true },
-        orderBy: { createdAt: "asc" },
-      },
+      responsibilities: activeGroupResponsibilitiesInclude,
       memberships: {
         where: { leftAt: null, role: { not: MembershipRole.VISITOR } },
         include: { person: true },
@@ -68,7 +67,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
 
   if (!group || !canViewGroup(user, group)) notFound();
 
-  const leadershipName = responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, "não informada");
+  const leadershipName = responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, FALLBACK_LEADER_NAME);
   const supervisionName = responsibilityNames(group.responsibilities, GroupResponsibilityRole.SUPERVISOR, "");
 
   const referenceDate = new Date();
@@ -83,7 +82,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
   const supportRequests = attentionPeople.filter((signal) => isSupportRequest(signal, user));
   const urgentOrPastoralSignals = attentionPeople.filter(isUrgentOrPastoralCase);
   const localAttentionCount = attentionPeople.length - urgentOrPastoralSignals.length - supportRequests.length;
-  const inCareCount = group.memberships.filter((membership) => membership.person.status === PersonStatus.COOLING_AWAY).length;
+  const inCareCount = group.memberships.filter((membership) => isInCarePerson(membership.person)).length;
   const hasRiskSignal = urgentOrPastoralSignals.length > 0;
   const navIndicator = hasRiskSignal ? "risk" : attentionPeople.length > 0 ? "attention" : inCareCount > 0 ? "care" : undefined;
   const recordedPresenceEvents = group.events.filter((event) => event.startsAt <= referenceDate && isPresenceRecordedEvent(event));

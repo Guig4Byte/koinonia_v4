@@ -3,6 +3,7 @@ import { z } from "zod";
 import { validateMemberCheckInPayload } from "@/features/check-in/check-in-validation";
 import { validateNewVisitors } from "@/features/check-in/visitor-validation";
 import { AttendanceStatus, EventStatus, MembershipRole, PersonStatus, SignalStatus } from "@/generated/prisma/client";
+import { activeGroupResponsibilitiesScopeInclude } from "@/features/groups/group-query";
 import { canCheckInEvent } from "@/features/permissions/permissions";
 import { recalculateAttendanceSignalsForGroup } from "@/features/signals/rules";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ev
 
   const event = await prisma.event.findUnique({
     where: { id: eventId },
-    include: { group: { include: { responsibilities: { where: { activeUntil: null } } } } },
+    include: { group: { include: { responsibilities: activeGroupResponsibilitiesScopeInclude } } },
   });
 
   if (!event || event.churchId !== user.churchId) {

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { MembershipRole, PersonStatus, UserRole } from "@/generated/prisma/client";
+import { MembershipRole, UserRole } from "@/generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { SectionTitle } from "@/components/base-cards";
@@ -7,6 +7,7 @@ import { MemberPriorityList } from "@/components/member-priority-list";
 import { SearchBox } from "@/components/search-box";
 import { getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "@/features/permissions/permissions";
 import { readMembersFilter } from "@/features/people/member-filters";
+import { IN_CARE_STATUS } from "@/features/people/person-status";
 import {
   PEOPLE_PAGE_ATTENTION_SIGNAL_QUERY_LIMIT,
   PEOPLE_PAGE_IN_CARE_QUERY_LIMIT,
@@ -69,7 +70,7 @@ export default async function PeoplePage({ searchParams }: PeoplePageProps) {
       where: {
         AND: [
           getVisiblePersonWhere(user),
-          { status: PersonStatus.COOLING_AWAY },
+          { status: IN_CARE_STATUS },
           { memberships: { some: memberMembershipWhere } },
         ],
       },

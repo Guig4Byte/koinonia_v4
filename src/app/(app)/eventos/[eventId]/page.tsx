@@ -13,6 +13,7 @@ import { eventEffectiveLocation, isClosedWithoutPresenceStatus, closedWithoutPre
 import { presenceTone } from "@/features/events/presence-display";
 import { summarizeEventPresence } from "@/features/events/presence-summary";
 import { buildEventDetailState, savedPresenceMessage } from "@/features/events/event-detail-view";
+import { activeGroupResponsibilitiesScopeInclude } from "@/features/groups/group-query";
 import { canCheckInEvent, canManageEventDetails, canViewEvent } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
@@ -35,7 +36,7 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
     include: {
       group: {
         include: {
-          responsibilities: { where: { activeUntil: null } },
+          responsibilities: activeGroupResponsibilitiesScopeInclude,
           memberships: {
             where: { leftAt: null, role: { not: MembershipRole.VISITOR } },
             include: { person: true },

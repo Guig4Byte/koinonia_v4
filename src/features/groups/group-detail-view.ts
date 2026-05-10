@@ -2,6 +2,7 @@ import { PersonStatus, UserRole } from "@/generated/prisma/client";
 import { weekdayLabel } from "@/features/groups/weekdays";
 import { type BadgeTone } from "@/components/ui/badge";
 import { memberCardTone, memberMatchesFilter, type MembersFilter } from "@/features/people/member-filters";
+import { isActiveStatus, isInCarePerson, isInCareStatus } from "@/features/people/person-status";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { escalationStatusDetailForViewer } from "@/features/signals/escalation";
 import { signalTitleForViewer, type SignalBadgeTone, type SignalDetailLike, type SignalDisplayViewerLike } from "@/features/signals/display";
@@ -92,8 +93,8 @@ export function groupMemberPriorityRank(signal: GroupDetailSignal | undefined, p
   if (signal && isUrgentOrPastoralCase(signal)) return 1;
   if (signal && isSupportRequest(signal, viewer)) return 2;
   if (signal) return 3;
-  if (personStatus === PersonStatus.COOLING_AWAY) return 4;
-  if (personStatus === PersonStatus.ACTIVE) return 5;
+  if (isInCareStatus(personStatus)) return 4;
+  if (isActiveStatus(personStatus)) return 5;
   return 6;
 }
 
@@ -113,7 +114,7 @@ export function buildGroupMemberDisplays({
       const escalationSubtitle = attentionSignal ? escalationStatusDetailForViewer(attentionSignal, viewer) : null;
       const signalSubtitle = attentionSignal ? escalationSubtitle ?? signalTitleForViewer(attentionSignal, viewer) : undefined;
       const subtitle = signalSubtitle
-        ?? (membership.person.status === PersonStatus.COOLING_AWAY ? "Em cuidado" : undefined);
+        ?? (isInCarePerson(membership.person) ? "Em cuidado" : undefined);
 
       return {
         membershipId: membership.id,

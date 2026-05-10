@@ -1,3 +1,4 @@
+import { isActiveStatus, isInCareStatus } from "@/features/people/person-status";
 export type MembersFilter = "todos" | "atencao" | "em-cuidado" | "ativos";
 
 export const MEMBERS_FILTERS: Array<{ value: MembersFilter; label: string }> = [
@@ -41,14 +42,14 @@ export function memberMatchesFilter(
   if (filter === "atencao") return member.priorityRank <= options.attentionMaxPriorityRank;
 
   if (filter === "em-cuidado") {
-    const isInCare = member.status === "COOLING_AWAY";
+    const isInCare = isInCareStatus(member.status);
     return options.inCarePriorityRank === undefined
       ? isInCare
       : isInCare && member.priorityRank === options.inCarePriorityRank;
   }
 
   if (filter === "ativos") {
-    return member.status === "ACTIVE" && member.priorityRank >= (options.activeMinPriorityRank ?? 5);
+    return isActiveStatus(member.status) && member.priorityRank >= (options.activeMinPriorityRank ?? 5);
   }
 
   return true;

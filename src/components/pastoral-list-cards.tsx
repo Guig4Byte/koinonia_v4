@@ -1,5 +1,6 @@
 import { PastoralListSection } from "@/components/pastoral-section";
 import { PersonMiniCard, PersonSignalCard } from "@/components/person-cards";
+import { groupNameOrFallback } from "@/features/groups/group-display";
 import { signalBadgeForViewer, signalDescriptionForViewer } from "@/features/signals/display";
 import { isSupportRequest } from "@/features/signals/sections";
 import { SignalSeverity, UserRole } from "@/generated/prisma/client";
@@ -30,11 +31,11 @@ type InCarePersonCardItem = {
 };
 
 function defaultSignalContext(signal: PastoralSignalCardItem): string {
-  return signal.group?.name ?? "Sem célula";
+  return groupNameOrFallback(signal.group);
 }
 
 function defaultInCareContext(person: InCarePersonCardItem): string {
-  return person.groupName ?? person.memberships?.[0]?.group?.name ?? "Sem célula";
+  return person.groupName ?? groupNameOrFallback(person.memberships?.[0]?.group);
 }
 
 function pastoralSignalCards<TSignal extends PastoralSignalCardItem>({

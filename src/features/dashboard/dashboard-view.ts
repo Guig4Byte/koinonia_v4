@@ -5,7 +5,9 @@ import {
   teamGroupPastoralPriorityScore,
   teamGroupStatusLabel,
 } from "@/features/groups/group-pastoral-priority";
+import { FALLBACK_LEADER_NAME, FALLBACK_SUPERVISOR_NAME } from "@/features/groups/group-display";
 import { responsibilityNames } from "@/features/groups/responsibility-display";
+import { isInCarePerson } from "@/features/people/person-status";
 import { getPastoralSectionSignalsByPerson, isSupportRequest } from "@/features/signals/sections";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson, type AttentionSignalLike } from "@/features/signals/attention";
 import type { PermissionUser } from "@/features/permissions/permissions";
@@ -89,8 +91,8 @@ export function buildPastorGroupPresence(group: DashboardGroupBase) {
   return {
     id: group.id,
     name: group.name,
-    leaderName: responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, "Sem liderança"),
-    supervisorName: responsibilityNames(group.responsibilities, GroupResponsibilityRole.SUPERVISOR, "Sem supervisão"),
+    leaderName: responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, FALLBACK_LEADER_NAME),
+    supervisorName: responsibilityNames(group.responsibilities, GroupResponsibilityRole.SUPERVISOR, FALLBACK_SUPERVISOR_NAME),
     presenceRate: groupPresence.presenceRate,
     hasPresenceData: groupPresence.hasPresenceData,
     recordedEventsCount: recordedEvents.length,
@@ -108,7 +110,7 @@ export function buildPastorTeamGroup(group: DashboardTeamGroup) {
   const pastoralCasesCount = pastoralSignals.length;
   const attentionCount = primarySignals.length;
   const localAttentionCount = Math.max(attentionCount - pastoralCasesCount - supportRequestsCount, 0);
-  const inCareCount = group.memberships.filter((membership) => membership.person.status === PersonStatus.COOLING_AWAY).length;
+  const inCareCount = group.memberships.filter((membership) => isInCarePerson(membership.person)).length;
   const hasLowPresenceValue = hasLowPresence(presence);
   const hasNoPresenceData = !presence.hasPresenceData;
   const pastoralPriorityScore = teamGroupPastoralPriorityScore({
@@ -127,7 +129,7 @@ export function buildPastorTeamGroup(group: DashboardTeamGroup) {
   return {
     id: group.id,
     name: group.name,
-    leadershipName: responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, "não informada"),
+    leadershipName: responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, FALLBACK_LEADER_NAME),
     membersCount: group.memberships.length,
     presenceRate: presence.presenceRate,
     hasPresenceData: presence.hasPresenceData,
@@ -197,6 +199,6 @@ export function buildScopedGroupDashboardItem<TGroup extends DashboardTeamGroup>
     recordedEventsCount: recordedGroupEvents.length,
     attentionCount: groupAttentionSignals.length,
     supportRequestsCount: groupAttentionSignals.filter((signal) => isSupportRequest(signal, user)).length,
-    inCareCount: group.memberships.filter((membership) => membership.person.status === PersonStatus.COOLING_AWAY).length,
+    inCareCount: group.memberships.filter((membership) => isInCarePerson(membership.person)).length,
   };
 }

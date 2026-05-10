@@ -7,6 +7,7 @@ import {
   groupUrgentCount,
   hasLowPresence,
 } from "@/features/groups/group-pastoral-priority";
+import { FALLBACK_LEADER_NAME } from "@/features/groups/group-display";
 import { responsibilityNames } from "@/features/groups/responsibility-display";
 import { GroupResponsibilityRole } from "@/generated/prisma/client";
 import { groupAttentionLabel, type SignalBadge } from "@/features/signals/display";
@@ -57,7 +58,7 @@ export function groupLeadershipName(group: SupervisorGroup) {
   return responsibilityNames(
     group.responsibilities,
     GroupResponsibilityRole.LEADER,
-    "Liderança não informada",
+    FALLBACK_LEADER_NAME,
   );
 }
 

@@ -1,4 +1,5 @@
 import { GroupResponsibilityRole, SignalStatus, UserRole, type Prisma } from "@/generated/prisma/client";
+import { activeGroupResponsibilityWhere } from "@/features/groups/group-query";
 
 export type PermissionUser = {
   id: string;
@@ -14,8 +15,7 @@ function scopedGroupWhere(user: PermissionUser, role: GroupResponsibilityRole): 
       some: {
         churchId: user.churchId,
         userId: user.id,
-        role,
-        activeUntil: null,
+        ...activeGroupResponsibilityWhere(role),
       },
     },
   };

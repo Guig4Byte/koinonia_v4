@@ -1,5 +1,6 @@
-import { PersonStatus } from "@/generated/prisma/client";
-import { canRegisterCare, getOpenSignalInActiveGroupWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
+import { findPersonForCareAction } from "@/features/care/person-care-access";
+import { ACTIVE_STATUS, IN_CARE_STATUS } from "@/features/people/person-status";
+import { getOpenSignalInActiveGroupWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { apiError, apiOk } from "@/lib/api-response";
 import { prisma } from "@/lib/prisma";
@@ -8,17 +9,12 @@ export async function POST(_request: Request, context: { params: Promise<{ perso
   const user = await getCurrentUser();
   const { personId } = await context.params;
 
-  const person = await prisma.person.findUnique({
-    where: { id: personId },
-    include: { memberships: { where: { leftAt: null }, include: { group: { include: { responsibilities: { where: { activeUntil: null } } } } } } },
+  const personAccess = await findPersonForCareAction(user, personId, {
+    forbiddenMessage: "Sem permissão para atualizar esta pessoa",
   });
 
-  if (!person || person.churchId !== user.churchId) {
-    return apiError("Pessoa não encontrada", 404);
-  }
-
-  if (!canRegisterCare(user, person)) {
-    return apiError("Sem permissão para atualizar esta pessoa", 403);
+  if (!personAccess.ok) {
+    return apiError(personAccess.message, personAccess.status);
   }
 
   const visibleOpenSignalWhere = getVisibleOpenSignalWhere(user);
@@ -40,9 +36,9 @@ export async function POST(_request: Request, context: { params: Promise<{ perso
   }
 
   await prisma.person.updateMany({
-    where: { id: personId, churchId: user.churchId, status: PersonStatus.COOLING_AWAY },
-    data: { status: PersonStatus.ACTIVE },
+    where: { id: personId, churchId: user.churchId, status: IN_CARE_STATUS },
+    data: { status: ACTIVE_STATUS },
   });
 
-  return apiOk({ status: PersonStatus.ACTIVE });
+  return apiOk({ status: ACTIVE_STATUS });
 }

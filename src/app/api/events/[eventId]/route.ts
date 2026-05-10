@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { EVENT_LOCATION_MAX_LENGTH } from "@/features/events/event-fields";
 import { EventStatus } from "@/generated/prisma/client";
+import { activeGroupResponsibilitiesScopeInclude } from "@/features/groups/group-query";
 import { canManageEventDetails } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { apiError, apiOk } from "@/lib/api-response";
@@ -35,7 +36,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ e
   const event = await prisma.event.findUnique({
     where: { id: eventId },
     include: {
-      group: { include: { responsibilities: { where: { activeUntil: null } } } },
+      group: { include: { responsibilities: activeGroupResponsibilitiesScopeInclude } },
       _count: { select: { attendances: true } },
     },
   });

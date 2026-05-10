@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { CareKind, GroupResponsibilityRole, SignalStatus, UserRole } from "@/generated/prisma/client";
+import { activeGroupResponsibilitiesInclude } from "@/features/groups/group-query";
 import { canViewGroup } from "@/features/permissions/permissions";
 import { canEscalateSignalToPastor, canRequestSupervisorSupport } from "@/features/signals/escalation";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -31,11 +32,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
     include: {
       group: {
         include: {
-          responsibilities: {
-            where: { activeUntil: null },
-            include: { user: true },
-            orderBy: { createdAt: "asc" },
-          },
+          responsibilities: activeGroupResponsibilitiesInclude,
         },
       },
       assignedTo: true,

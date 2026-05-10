@@ -1,4 +1,5 @@
 import { EventStatus, EventType, MembershipRole, PersonStatus, SignalSource, SignalStatus } from "@/generated/prisma/client";
+import { ATTENTION_ELIGIBLE_PERSON_STATUSES } from "@/features/people/person-status";
 import { prisma } from "@/lib/prisma";
 import {
   countConsecutiveAbsences,
@@ -10,13 +11,12 @@ import {
   ATTENDANCE_SIGNAL_EVENT_LOOKBACK_COUNT,
 } from "./rules-core";
 
-const attentionStatuses = [PersonStatus.ACTIVE, PersonStatus.NEW, PersonStatus.NEEDS_ATTENTION, PersonStatus.COOLING_AWAY];
 
 type AttendanceSignalDatabase = Pick<typeof prisma, "smallGroup" | "careSignal" | "person">;
 
 async function markPersonInAttention(db: AttendanceSignalDatabase, personId: string) {
   await db.person.updateMany({
-    where: { id: personId, status: { in: attentionStatuses } },
+    where: { id: personId, status: { in: ATTENTION_ELIGIBLE_PERSON_STATUSES } },
     data: { status: PersonStatus.NEEDS_ATTENTION },
   });
 }

@@ -1,10 +1,10 @@
 import { NextRequest } from "next/server";
-import { PersonStatus, SignalStatus } from "@/generated/prisma/client";
+import { SignalStatus } from "@/generated/prisma/client";
+import { findPersonForCareAction } from "@/features/care/person-care-access";
 import { parseCarePayload, resolvedAttentionMessage } from "@/features/care/care-validation";
+import { ATTENTION_ELIGIBLE_PERSON_STATUSES, IN_CARE_STATUS } from "@/features/people/person-status";
 import {
-  canRegisterCare,
   getOpenSignalInActiveGroupWhere,
-  getVisibleGroupIdsForPerson,
   hasWholeChurchScope,
 } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -22,21 +22,13 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pe
   }
 
   const body = parsedBody.data;
+  const personAccess = await findPersonForCareAction(user, personId);
 
-  const person = await prisma.person.findUnique({
-    where: { id: personId },
-    include: { memberships: { where: { leftAt: null }, include: { group: { include: { responsibilities: { where: { activeUntil: null } } } } } } },
-  });
-
-  if (!person || person.churchId !== user.churchId) {
-    return apiError("Pessoa não encontrada", 404);
+  if (!personAccess.ok) {
+    return apiError(personAccess.message, personAccess.status);
   }
 
-  if (!canRegisterCare(user, person)) {
-    return apiError("Sem permissão para registrar cuidado", 403);
-  }
-
-  const visibleGroupIds = getVisibleGroupIdsForPerson(user, person);
+  const visibleGroupIds = personAccess.visibleGroupIds;
   const visibleGroupId = visibleGroupIds[0];
 
   if (!hasWholeChurchScope(user) && visibleGroupIds.length === 0) {
@@ -79,9 +71,9 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pe
           where: {
             id: personId,
             churchId: user.churchId,
-            status: { in: [PersonStatus.ACTIVE, PersonStatus.NEW, PersonStatus.NEEDS_ATTENTION, PersonStatus.COOLING_AWAY] },
+            status: { in: ATTENTION_ELIGIBLE_PERSON_STATUSES },
           },
-          data: { status: PersonStatus.COOLING_AWAY },
+          data: { status: IN_CARE_STATUS },
         });
 
         personStatusChangedToCare = personUpdate.count > 0;

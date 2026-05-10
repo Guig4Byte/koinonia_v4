@@ -5,6 +5,7 @@ import { InCareSection, PastoralSignalSection } from "@/components/pastoral-list
 import { SearchBox } from "@/components/search-box";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { canUseSupervisorDashboard } from "@/features/permissions/permissions";
+import { groupNameOrFallback } from "@/features/groups/group-display";
 import { buildSupervisorPageView } from "@/features/pastoral-home/supervisor-page-view";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { redirect } from "next/navigation";
@@ -38,7 +39,7 @@ export default async function SupervisorPage() {
         emptyMessage="Nenhum caso urgente ou encaminhado agora."
         signals={view.urgentSignals}
         viewer={user}
-        contextForSignal={(signal) => signal.group?.name ?? "Sem célula"}
+        contextForSignal={(signal) => groupNameOrFallback(signal.group)}
       />
 
       <PastoralSignalSection
@@ -47,7 +48,7 @@ export default async function SupervisorPage() {
         emptyMessage="Nenhum líder pediu apoio agora."
         signals={view.supportSignals}
         viewer={user}
-        contextForSignal={(signal) => signal.group?.name ?? "Sem célula"}
+        contextForSignal={(signal) => groupNameOrFallback(signal.group)}
         ctaLabelForSignal={() => "Abrir apoio"}
       />
 
@@ -57,7 +58,7 @@ export default async function SupervisorPage() {
         emptyMessage="Nenhum outro caso em atenção agora."
         signals={view.attentionSignals}
         viewer={user}
-        contextForSignal={(signal) => signal.group?.name ?? "Sem célula"}
+        contextForSignal={(signal) => groupNameOrFallback(signal.group)}
       />
 
       <InCareSection

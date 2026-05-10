@@ -1,5 +1,6 @@
 import { PersonStatus, UserRole } from "@/generated/prisma/client";
 import { memberCardTone, memberMatchesFilter, type MembersFilter } from "@/features/people/member-filters";
+import { isInCareStatus } from "@/features/people/person-status";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { signalTitleForViewer, type SignalBadgeTone, type SignalDetailLike } from "@/features/signals/display";
 import { isSupportRequest, isUrgentOrPastoralCase, type SectionSignalWithIdentity } from "@/features/signals/sections";
@@ -74,7 +75,7 @@ export function memberPriorityRank({
   if (signal && isUrgentOrPastoralCase(signal)) return 1;
   if (signal && isSupportRequest(signal, viewer)) return 2;
   if (signal) return 3;
-  if (isInCare || personStatus === PersonStatus.COOLING_AWAY) return 4;
+  if (isInCare || isInCareStatus(personStatus)) return 4;
   return 5;
 }
 
