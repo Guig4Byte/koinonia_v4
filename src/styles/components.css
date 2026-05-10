@@ -19,8 +19,8 @@
   --check-in-card-border: var(--color-border-card);
   position: relative;
   overflow: hidden;
-  border-color: var(--check-in-card-border) !important;
-  background: var(--check-in-card-bg) !important;
+  border-color: var(--check-in-card-border);
+  background: var(--check-in-card-bg);
   box-shadow:
     inset 4px 0 0 color-mix(in srgb, var(--check-in-card-accent) 72%, transparent),
     var(--color-shadow-card);
@@ -91,27 +91,6 @@
   color: var(--color-badge-atencao-text);
 }
 
-.check-in-status-button {
-  background: color-mix(in srgb, var(--color-btn-secondary-bg) 82%, transparent);
-}
-
-.check-in-status-button-selected-present {
-  border-color: var(--color-badge-estavel-border) !important;
-  background: var(--color-badge-estavel-bg) !important;
-  color: var(--color-badge-estavel-text) !important;
-}
-
-.check-in-status-button-selected-absent {
-  border-color: var(--color-badge-risco-border) !important;
-  background: var(--color-badge-risco-bg) !important;
-  color: var(--color-badge-risco-text) !important;
-}
-
-.check-in-status-button-selected-justified {
-  border-color: var(--color-badge-atencao-border) !important;
-  background: var(--color-badge-atencao-bg) !important;
-  color: var(--color-badge-atencao-text) !important;
-}
 
 .event-reschedule-fields {
   display: grid;
@@ -237,7 +216,7 @@
     transform 150ms ease;
 }
 
-.event-calendar-day:hover {
+.event-calendar-day:not(.event-calendar-day-selected):hover {
   background: var(--color-btn-secondary-bg);
   color: var(--color-brand);
 }
@@ -246,9 +225,10 @@
   transform: scale(0.96);
 }
 
-.event-calendar-day-selected {
-  background: var(--color-brand) !important;
-  color: var(--color-btn-primary-text) !important;
+.event-calendar-day-selected,
+.event-calendar-day-selected:hover {
+  background: var(--color-brand);
+  color: var(--color-btn-primary-text);
 }
 
 .event-time-popover {
@@ -271,7 +251,7 @@
     transform 150ms ease;
 }
 
-.event-time-option:hover {
+.event-time-option:not(.event-time-option-selected):hover {
   background: var(--color-btn-secondary-bg);
   color: var(--color-brand);
 }
@@ -280,10 +260,11 @@
   transform: scale(0.97);
 }
 
-.event-time-option-selected {
+.event-time-option-selected,
+.event-time-option-selected:hover {
   border-color: var(--color-brand);
-  background: var(--color-brand) !important;
-  color: var(--color-btn-primary-text) !important;
+  background: var(--color-brand);
+  color: var(--color-btn-primary-text);
 }
 
 @media (max-width: 360px) {
@@ -1170,46 +1151,3 @@
   line-height: 1.2;
 }
 
-.event-card-action {
-  display: inline-flex;
-  min-height: 32px;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 8px;
-  border-radius: var(--radius-pill);
-  font-size: 0.8125rem;
-  font-weight: 800;
-  transition:
-    background-color 150ms ease,
-    color 150ms ease,
-    transform 150ms ease;
-}
-
-.event-card-registered .event-card-action {
-  min-height: 28px;
-  margin-top: 6px;
-}
-
-.event-card-action-primary {
-  background: var(--color-btn-primary-bg);
-  color: var(--color-btn-primary-text) !important;
-  border: 1px solid color-mix(in srgb, var(--color-btn-primary-bg) 84%, var(--color-btn-primary-text));
-  padding: 0 14px;
-}
-
-.event-card-action-secondary {
-  border: 1px solid var(--color-btn-secondary-border);
-  background: var(--color-btn-secondary-bg);
-  color: var(--color-btn-secondary-text) !important;
-  padding: 0 14px;
-}
-
-.event-card-action:active {
-  transform: scale(0.98);
-}
-
-.event-card-action:focus-visible {
-  outline: 2px solid var(--color-brand-accent);
-  outline-offset: 3px;
-}

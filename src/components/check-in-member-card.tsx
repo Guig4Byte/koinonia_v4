@@ -1,6 +1,6 @@
 "use client";
 
-import { GhostButton } from "@/components/ui/button";
+import { Button, type ButtonVariant } from "@/components/ui/button";
 import {
   ATTENDANCE,
   ATTENDANCE_LABELS,
@@ -18,11 +18,11 @@ function memberCardTone(status: AttendanceSelection) {
   return "check-in-member-card-pending";
 }
 
-function statusButtonTone(status: MemberAttendanceStatus, selected: boolean) {
-  if (!selected) return "check-in-status-button";
-  if (status === ATTENDANCE.PRESENT) return "check-in-status-button-selected-present";
-  if (status === ATTENDANCE.ABSENT) return "check-in-status-button-selected-absent";
-  return "check-in-status-button-selected-justified";
+function statusButtonVariant(status: MemberAttendanceStatus, selected: boolean): ButtonVariant {
+  if (!selected) return "secondary";
+  if (status === ATTENDANCE.PRESENT) return "stableSoft";
+  if (status === ATTENDANCE.ABSENT) return "dangerSoft";
+  return "attentionSoft";
 }
 
 function statusBadgeTone(status: AttendanceSelection) {
@@ -40,7 +40,7 @@ type CheckInMemberCardProps = {
 export function CheckInMemberCard({ item, onSetStatus }: CheckInMemberCardProps) {
   return (
     <article
-      className={cn("check-in-member-card rounded-2xl border p-3 shadow-card", memberCardTone(item.status))}
+      className={cn("check-in-member-card rounded-2xl border p-3", memberCardTone(item.status))}
     >
       <div className="mb-3 flex items-center justify-between gap-2">
         <p className="k-item-title">{item.fullName}</p>
@@ -55,13 +55,17 @@ export function CheckInMemberCard({ item, onSetStatus }: CheckInMemberCardProps)
       </div>
       <div className="grid grid-cols-3 gap-2">
         {MEMBER_ATTENDANCE_OPTIONS.map((status) => (
-          <GhostButton
+          <Button
             key={status}
+            type="button"
+            variant={statusButtonVariant(status, item.status === status)}
+            size="sm"
+            aria-pressed={item.status === status}
             onClick={() => onSetStatus(item.personId, status)}
-            className={cn("min-h-10 rounded-xl px-2 text-xs", statusButtonTone(status, item.status === status))}
+            className="min-h-10 rounded-xl px-2 text-[length:var(--text-xs)]"
           >
             {ATTENDANCE_LABELS[status]}
-          </GhostButton>
+          </Button>
         ))}
       </div>
     </article>

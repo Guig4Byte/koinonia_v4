@@ -3,6 +3,7 @@ import { BackLink, EmptyState, SectionTitle } from "@/components/base-cards";
 import { priorityCardClass } from "@/lib/card-priority";
 import { ProgressiveList } from "@/components/progressive-list";
 import { Badge } from "@/components/ui/badge";
+import { buttonClassName } from "@/components/ui/button";
 import { formatPresenceRate } from "@/features/events/presence-display";
 import {
   buildEventListCardState,
@@ -62,10 +63,14 @@ export function EventCard({ event, user, now }: { event: EventListEvent; user: P
 
       <Link
         href={ROUTES.event(event.id)}
-        className={cn(
-          "event-card-action",
-          state.canRegisterPresence ? "event-card-action-primary" : "event-card-action-secondary",
-        )}
+        className={buttonClassName({
+          variant: state.canRegisterPresence ? "primaryFlat" : "secondary",
+          size: "sm",
+          className: cn(
+            "mt-2 min-h-8 rounded-full px-3.5 py-0 text-[length:var(--text-sm)] font-extrabold",
+            state.recordedPresence && "mt-1.5 min-h-7",
+          ),
+        })}
       >
         {state.actionLabel} <span aria-hidden="true">→</span>
       </Link>
