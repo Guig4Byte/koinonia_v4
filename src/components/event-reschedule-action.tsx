@@ -35,8 +35,8 @@ export function EventRescheduleAction({
 }) {
   return (
     <div className="mt-4 rounded-2xl border border-[var(--color-border-divider)] bg-[var(--surface-alt)] p-3">
-      <p className="text-sm font-semibold text-[var(--color-text-primary)]">Remarcar encontro</p>
-      <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+      <p className="k-item-title-sm">Remarcar encontro</p>
+      <p className="k-item-detail">
         Use quando a célula vai se reunir em outro dia ou horário. O local informado acima será salvo junto.
       </p>
       <div className="event-reschedule-fields mt-3">

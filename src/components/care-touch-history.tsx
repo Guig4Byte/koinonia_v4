@@ -28,8 +28,8 @@ export function CareTouchHistory({ items }: { items: CareTouchHistoryItem[] }) {
           return (
             <article key={item.id} className="py-3 first:pt-0 last:pb-0">
               <div className="min-w-0">
-                <p className="font-semibold text-[var(--color-text-primary)]">{item.title}</p>
-                <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
+                <p className="k-item-title">{item.title}</p>
+                <p className="k-item-meta">
                   {item.actorName} · {item.happenedAtLabel}
                 </p>
               </div>

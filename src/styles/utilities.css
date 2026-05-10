@@ -12,6 +12,69 @@
   box-shadow: var(--color-shadow-card);
 }
 
+.k-card-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.k-section-kicker {
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.k-item-title {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.k-item-title-sm {
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.k-item-detail {
+  margin-top: 4px;
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  line-height: 1.625;
+}
+
+.k-item-detail-tight {
+  margin-top: 2px;
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  line-height: 1.625;
+}
+
+.k-item-meta {
+  margin-top: 4px;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.k-item-caption-truncate {
+  display: block;
+  margin-top: 2px;
+  overflow: hidden;
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.k-supporting-copy {
+  margin-top: 4px;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.625;
+}
+
 .priority-card {
   --priority-accent: var(--color-brand-accent);
   --priority-soft: transparent;

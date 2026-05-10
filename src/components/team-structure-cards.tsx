@@ -28,8 +28,8 @@ export function TeamGroupLink({ group }: { group: TeamGroup }) {
       className={cn("team-cell-link card-hover-lift", shouldShowGroupBadge(group) && `team-cell-link-${tone}`)}
     >
       <span className="min-w-0">
-        <span className="block truncate text-sm font-semibold text-[var(--color-text-primary)]">{group.name}</span>
-        <span className="mt-0.5 block truncate text-xs text-[var(--color-text-secondary)]">{compactGroupSubtitle(group)}</span>
+        <span className="k-item-title-sm block truncate">{group.name}</span>
+        <span className="k-item-caption-truncate">{compactGroupSubtitle(group)}</span>
       </span>
       <span className="flex shrink-0 items-center gap-2">
         {shouldShowGroupBadge(group) ? <Badge tone={tone}>{group.statusLabel}</Badge> : null}
@@ -50,8 +50,8 @@ export function InactiveTeamGroupLink({ group }: { group: InactiveTeamGroup }) {
       className="team-cell-link team-cell-link-neutral card-hover-lift"
     >
       <span className="min-w-0">
-        <span className="block truncate text-sm font-semibold text-[var(--color-text-primary)]">{group.name}</span>
-        <span className="mt-0.5 block truncate text-xs text-[var(--color-text-secondary)]">
+        <span className="k-item-title-sm block truncate">{group.name}</span>
+        <span className="k-item-caption-truncate">
           {scheduleText}{group.locationName ? ` · ${group.locationName}` : ""}
         </span>
       </span>
@@ -81,7 +81,7 @@ export function TeamSupervisorCard({ supervisor }: { supervisor: SupervisorTeam 
         </div>
         <div className="min-w-0 flex-1">
           <div className="min-w-0">
-            <p className="font-semibold text-[var(--color-text-primary)]">{supervisor.name}</p>
+            <p className="k-item-title">{supervisor.name}</p>
           </div>
 
           {!hasGroups ? (

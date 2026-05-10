@@ -10,7 +10,7 @@ type GroupFormInitialValues = GroupFormValues;
 
 function FormSectionTitle({ children }: { children: string }) {
   return (
-    <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">{children}</p>
+    <p className="k-section-kicker">{children}</p>
   );
 }
 
@@ -40,7 +40,7 @@ export function GroupForm({
       <BackLink href={backHref}>{backLabel}</BackLink>
 
       <Card padding="lg" className="rounded-[1.35rem]">
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">Célula</p>
+        <p className="k-section-kicker">Célula</p>
         <h2 className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-[var(--color-text-primary)]">{title}</h2>
         <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-secondary)]">{description}</p>
       </Card>
@@ -54,7 +54,7 @@ export function GroupForm({
           <FormSectionTitle>Dados básicos</FormSectionTitle>
 
           <label className="block space-y-1.5">
-            <span className="text-sm font-semibold text-[var(--color-text-primary)]">Nome</span>
+            <span className="k-item-title-sm">Nome</span>
             <input
               name="name"
               defaultValue={initialValues.name}
@@ -66,7 +66,7 @@ export function GroupForm({
           </label>
 
           <label className="block space-y-1.5">
-            <span className="text-sm font-semibold text-[var(--color-text-primary)]">Local padrão</span>
+            <span className="k-item-title-sm">Local padrão</span>
             <input
               name="locationName"
               defaultValue={initialValues.locationName ?? ""}
@@ -85,7 +85,7 @@ export function GroupForm({
 
           <div className="group-schedule-fields">
             <label className="block min-w-0 space-y-1.5">
-              <span className="text-sm font-semibold text-[var(--color-text-primary)]">Dia padrão</span>
+              <span className="k-item-title-sm">Dia padrão</span>
               <div className="group-select-field">
                 <select
                   name="meetingDayOfWeek"
@@ -104,7 +104,7 @@ export function GroupForm({
             </label>
 
             <label className="block min-w-0 space-y-1.5">
-              <span className="text-sm font-semibold text-[var(--color-text-primary)]">Horário padrão</span>
+              <span className="k-item-title-sm">Horário padrão</span>
               <GroupMeetingTimeInput defaultValue={initialValues.meetingTime} />
             </label>
           </div>
@@ -125,7 +125,7 @@ export function GroupForm({
               className="mt-1 h-4 w-4 rounded border-[var(--color-border-card)] accent-[var(--color-brand)]"
             />
             <span>
-              <span className="block text-sm font-semibold text-[var(--color-text-primary)]">Célula ativa</span>
+              <span className="k-item-title-sm block">Célula ativa</span>
               <span className="mt-1 block text-xs leading-relaxed text-[var(--color-text-secondary)]">
                 Células inativas não aparecem nas superfícies padrão, encontros ou check-in.
               </span>

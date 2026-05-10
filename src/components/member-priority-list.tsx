@@ -77,8 +77,8 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
           {priorityMembers.length > 0 ? (
             <div className="space-y-2">
               <div>
-                <p className="text-sm font-semibold text-[var(--color-text-primary)]">Quem merece proximidade</p>
-                <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+                <p className="k-item-title-sm">Quem merece proximidade</p>
+                <p className="k-item-detail-tight">
                   {countLabel(priorityMembers.length, "pessoa no radar", "pessoas no radar")}
                 </p>
               </div>
@@ -107,8 +107,8 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
             <div className={cn("space-y-2", priorityMembers.length > 0 && "pt-1")}>
               {priorityMembers.length > 0 ? (
                 <div>
-                  <p className="text-sm font-semibold text-[var(--color-text-primary)]">Ativos</p>
-                  <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+                  <p className="k-item-title-sm">Ativos</p>
+                  <p className="k-item-detail-tight">
                     {countLabel(regularMembers.length, "membro sem sinal aberto", "membros sem sinal aberto")}
                   </p>
                 </div>

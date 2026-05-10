@@ -33,7 +33,7 @@ export default async function LoginPage({
     <main className="safe-page login-page flex min-h-screen items-center">
       <section className="w-full">
         <div className="login-card rounded-[24px] border p-5 shadow-card">
-          <div className="flex items-start justify-between gap-3">
+          <div className="k-card-header-row">
             <div className="login-logo inline-flex h-10 w-10 items-center justify-center rounded-[12px] border">
               <HeartHandshake className="h-5 w-5" aria-hidden="true" />
             </div>

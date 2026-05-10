@@ -37,7 +37,7 @@ export function CheckInSaveBar({
     >
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-[var(--color-text-primary)]">
+          <p className="k-item-title-sm">
             {summary.pending > 0 ? `Faltam ${summary.pending}` : "Pronto para salvar"}
           </p>
           <p className="mt-0.5 text-xs text-[var(--color-text-secondary)]">

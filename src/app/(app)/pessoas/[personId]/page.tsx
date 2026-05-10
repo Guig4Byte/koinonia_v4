@@ -140,7 +140,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
             <div className="flex items-start justify-between gap-2">
               <div>
                 <h2 className="text-2xl font-semibold leading-tight text-[var(--color-text-primary)]">{person.fullName}</h2>
-                <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
+                <p className="k-item-meta">
                   {groupNameOrFallback(primaryGroup)}
                   {primaryLeadershipName ? ` · ${primaryLeadershipName}` : ""}
                 </p>
@@ -179,8 +179,8 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           return (
             <article key={signal.id} className={`card-hover-lift rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card ${priorityCardClass(signalTone)}`}>
               <div className="min-w-0">
-                <p className="font-semibold text-[var(--color-text-primary)]">{signalTitleForViewer(signalForDisplay, user)}</p>
-                <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
+                <p className="k-item-title">{signalTitleForViewer(signalForDisplay, user)}</p>
+                <p className="k-item-meta">
                   {signal.group?.name ?? groupNameOrFallback(primaryGroup)} · {formatShortDate(signal.detectedAt)}, {formatTime(signal.detectedAt)}
                 </p>
               </div>

@@ -72,9 +72,9 @@ export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: 
         <div className="absolute left-0 right-0 top-14 z-30 overflow-hidden rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] shadow-card">
           {results.map((person) => (
             <Link key={person.id} href={ROUTES.person(person.id)} className="block border-b border-[var(--color-border-divider)] px-4 py-3 last:border-0">
-              <div className="flex items-start justify-between gap-3">
+              <div className="k-card-header-row">
                 <span className="min-w-0">
-                  <span className="block text-sm font-semibold text-[var(--color-text-primary)]">{person.fullName}</span>
+                  <span className="k-item-title-sm block">{person.fullName}</span>
                   <span className="mt-0.5 block text-xs text-[var(--color-text-secondary)]">{person.context}</span>
                 </span>
                 <Badge tone={person.statusTone ?? "neutral"} className="shrink-0">

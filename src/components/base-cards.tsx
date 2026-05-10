@@ -62,7 +62,7 @@ export function ContextSummary({
         {items.map((item) => (
           <div key={item.label} className="context-summary-row flex items-center justify-between gap-4 border-b border-[var(--color-border-divider)] pb-3 last:border-0 last:pb-0">
             <div className="min-w-0">
-              <p className="context-summary-label font-semibold text-[var(--color-text-primary)]">{item.label}</p>
+              <p className="context-summary-label k-item-title">{item.label}</p>
               {item.detail ? <p className={cn("context-summary-detail leading-relaxed", detailClass)}>{item.detail}</p> : null}
             </div>
             <div className="shrink-0 text-right">
@@ -94,8 +94,8 @@ export function ContextSummary({
 export function SectionTitle({ children, detail }: { children: ReactNode; detail?: string }) {
   return (
     <div className="mb-2 mt-6">
-      <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">{children}</h2>
-      {detail ? <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">{detail}</p> : null}
+      <h2 className="k-section-kicker">{children}</h2>
+      {detail ? <p className="k-supporting-copy">{detail}</p> : null}
     </div>
   );
 }
@@ -186,10 +186,10 @@ export function DetailLinkCard({
 }) {
   return (
     <Link href={href} className={cn("card-hover-lift block rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]", priorityCardClass(badgeTone))}>
-      <div className="flex items-start justify-between gap-3">
+      <div className="k-card-header-row">
         <div className="min-w-0">
-          <p className="truncate font-semibold text-[var(--color-text-primary)]">{title}</p>
-          {meta ? <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">{meta}</p> : null}
+          <p className="k-item-title truncate">{title}</p>
+          {meta ? <p className="k-supporting-copy">{meta}</p> : null}
         </div>
         {badgeLabel ? <Badge tone={badgeTone}>{badgeLabel}</Badge> : null}
       </div>

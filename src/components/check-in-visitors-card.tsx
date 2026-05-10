@@ -35,7 +35,7 @@ export function CheckInVisitorsCard({
 }: CheckInVisitorsCardProps) {
   return (
     <div className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
-      <p className="font-semibold text-[var(--color-text-primary)]">Visitantes do encontro</p>
+      <p className="k-item-title">Visitantes do encontro</p>
       {savedVisitors.length > 0 ? (
         <div className="mt-3 space-y-2">
           <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">Já salvos</p>

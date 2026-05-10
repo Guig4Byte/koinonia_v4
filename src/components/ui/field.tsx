@@ -32,7 +32,7 @@ export function Field({
         {label}
       </label>
       {children}
-      {description ? <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">{description}</p> : null}
+      {description ? <p className="k-item-detail">{description}</p> : null}
     </div>
   );
 }

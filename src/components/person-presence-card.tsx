@@ -29,8 +29,8 @@ export function PersonPresenceCard({ view }: { view: PersonPresenceView }) {
     <Card>
       <div className="flex items-center justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-[var(--color-text-primary)]">Presença recente</p>
-          <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+          <p className="k-item-title-sm">Presença recente</p>
+          <p className="k-item-detail-tight">
             {recentPresence.hasPresenceData
               ? "Ritmo dos últimos encontros registrados. Ajuda a perceber se vale se aproximar."
               : "Ainda sem presença registrada em encontros recentes."}
@@ -60,7 +60,7 @@ export function PersonPresenceCard({ view }: { view: PersonPresenceView }) {
       {recentAttendances.length > 0 ? (
         <div className="mt-3 border-t border-[var(--color-border-divider)] pt-3">
           <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">Últimos encontros</p>
+            <p className="k-section-kicker">Últimos encontros</p>
             <p className="shrink-0 text-xs text-[var(--color-text-secondary)]">
               {recentPresenceCountLabel(recentPresence.presentCount, recentPresence.accountableCount)}
             </p>
@@ -74,10 +74,10 @@ export function PersonPresenceCard({ view }: { view: PersonPresenceView }) {
                 className="flex min-h-12 items-center justify-between gap-3 rounded-2xl bg-[var(--surface-alt)] px-3 py-2 transition active:scale-[0.99]"
               >
                 <span className="min-w-0">
-                  <span className="block text-sm font-semibold text-[var(--color-text-primary)]">
+                  <span className="k-item-title-sm block">
                     {formatShortDate(attendance.event.startsAt)} · {formatTime(attendance.event.startsAt)}
                   </span>
-                  <span className="mt-0.5 block truncate text-xs text-[var(--color-text-secondary)]">
+                  <span className="k-item-caption-truncate">
                     {attendance.event.group?.name ?? "Encontro"}
                   </span>
                 </span>

@@ -63,8 +63,8 @@ export function PersonMiniCard(props: {
       <span className="flex min-w-0 items-center gap-3">
         <Avatar name={name} compact={compact} />
         <span className="min-w-0">
-          <span className="block truncate text-sm font-semibold text-[var(--color-text-primary)]">{name}</span>
-          {context ? <span className="mt-0.5 block truncate text-xs text-[var(--color-text-secondary)]">{context}</span> : null}
+          <span className="k-item-title-sm block truncate">{name}</span>
+          {context ? <span className="k-item-caption-truncate">{context}</span> : null}
         </span>
       </span>
       <span className="flex shrink-0 items-center gap-2">
@@ -111,7 +111,7 @@ export function PersonSignalCard(props: {
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="font-semibold text-[var(--color-text-primary)]">{name}</p>
+              <p className="k-item-title">{name}</p>
               <p className="mt-0.5 text-[13px] leading-snug text-[var(--color-text-secondary)]">{context}</p>
             </div>
             <Badge tone={resolvedBadgeTone} className="px-2 py-0.5 text-[11px]">{resolvedBadgeLabel}</Badge>

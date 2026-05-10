@@ -31,8 +31,8 @@ function AttendanceGroup({ group }: { group: EventAttendanceGroup }) {
   return (
     <div className="space-y-2">
       <div>
-        <p className="text-sm font-semibold text-[var(--color-text-primary)]">{group.title}</p>
-        <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-secondary)]">{group.description}</p>
+        <p className="k-item-title-sm">{group.title}</p>
+        <p className="k-item-detail-tight">{group.description}</p>
       </div>
       <div className="space-y-1.5">
         {group.members.map((member) => (
@@ -73,8 +73,8 @@ export function EventReadOnlySummary({
   return (
     <section className="space-y-3">
       <Card>
-        <p className="font-semibold text-[var(--color-text-primary)]">Membros</p>
-        <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">{attendanceView.memberSummary}</p>
+        <p className="k-item-title">Membros</p>
+        <p className="k-item-detail">{attendanceView.memberSummary}</p>
 
         <div className="mt-4 space-y-4">
           {attendanceView.groups.map((group) => (
@@ -92,8 +92,8 @@ export function EventReadOnlySummary({
           <details className="group mt-4">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-divider)] bg-[var(--surface-alt)] px-3 py-2 text-sm transition active:scale-[0.99]">
               <div>
-                <p className="font-semibold text-[var(--color-text-primary)]">Presentes ({attendanceView.presentMembers.length})</p>
-                <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+                <p className="k-item-title">Presentes ({attendanceView.presentMembers.length})</p>
+                <p className="k-item-detail-tight">
                   Quem esteve no encontro. Abra só se quiser conferir a lista completa.
                 </p>
               </div>
@@ -113,8 +113,8 @@ export function EventReadOnlySummary({
 
       {visitors.length > 0 ? (
         <Card>
-          <p className="font-semibold text-[var(--color-text-primary)]">Visitantes</p>
-          <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+          <p className="k-item-title">Visitantes</p>
+          <p className="k-item-detail">
             Pessoas novas ou visitantes marcados neste encontro.
           </p>
           <div className="mt-3 space-y-1.5">

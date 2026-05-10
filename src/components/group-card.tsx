@@ -62,9 +62,9 @@ export function GroupCard({
   const presenceToneClass = metricTextClass(tone);
   const content = (
     <article className={cn("card-hover-lift rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card transition active:scale-[0.99]", priorityCardClass(priorityTone))}>
-      <div className="flex items-start justify-between gap-3">
+      <div className="k-card-header-row">
         <div>
-          <p className="font-semibold text-[var(--color-text-primary)]">{name}</p>
+          <p className="k-item-title">{name}</p>
           <p className="mt-0.5 text-sm text-[var(--color-text-secondary)]">{subtitle}</p>
         </div>
         {showBadge ? <Badge tone={resolvedBadgeTone}>{resolvedBadgeLabel}</Badge> : null}

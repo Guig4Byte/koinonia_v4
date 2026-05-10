@@ -28,14 +28,14 @@ export function EventCard({ event, user, now }: { event: EventListEvent; user: P
       state.recordedPresence && "event-card-registered priority-card event-card-registered-ok",
       priorityCardClass(state.isPendingEvent ? "warn" : undefined),
     )}>
-      <div className="flex items-start justify-between gap-3">
+      <div className="k-card-header-row">
         <div className="min-w-0">
-          <p className="font-semibold text-[var(--color-text-primary)]">{event.title}</p>
+          <p className="k-item-title">{event.title}</p>
           <p className="mt-0.5 text-sm leading-relaxed text-[var(--color-text-secondary)]">
             {eventMeta(event)}
           </p>
           {state.locationName ? (
-            <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+            <p className="k-item-detail-tight">
               {state.locationName}
             </p>
           ) : null}
@@ -84,8 +84,8 @@ export function EventList({ events, user, now, limit = EVENT_LIST_LIMIT }: { eve
 function ConsultationCard({ href, title, description }: { href: string; title: string; description: string }) {
   return (
     <Link href={href} className="card-hover-lift block rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
-      <p className="font-semibold text-[var(--color-text-primary)]">{title}</p>
-      <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">{description}</p>
+      <p className="k-item-title">{title}</p>
+      <p className="k-supporting-copy">{description}</p>
       <p className="mt-3 text-sm font-semibold text-[var(--color-brand)]">Consultar →</p>
     </Link>
   );

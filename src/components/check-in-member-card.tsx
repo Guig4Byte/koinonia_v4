@@ -43,7 +43,7 @@ export function CheckInMemberCard({ item, onSetStatus }: CheckInMemberCardProps)
       className={cn("check-in-member-card rounded-2xl border p-3 shadow-card", memberCardTone(item.status))}
     >
       <div className="mb-3 flex items-center justify-between gap-2">
-        <p className="font-semibold text-[var(--color-text-primary)]">{item.fullName}</p>
+        <p className="k-item-title">{item.fullName}</p>
         <span
           className={cn(
             "check-in-status-badge rounded-full border px-2.5 py-1 text-[11px] font-semibold",

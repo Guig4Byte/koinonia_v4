@@ -9,14 +9,14 @@ export function LeaderCurrentEventCard({ event }: { event: LeaderCurrentEvent })
 
   return (
     <section className="card-hover-lift rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
-      <div className="flex items-start justify-between gap-3">
+      <div className="k-card-header-row">
         <div className="min-w-0">
-          <p className="font-semibold text-[var(--color-text-primary)]">{state.groupName}</p>
+          <p className="k-item-title">{state.groupName}</p>
           <p className="mt-0.5 text-sm text-[var(--color-text-secondary)]">
             {formatShortDate(event.startsAt)}, {formatTime(event.startsAt)}
           </p>
           {state.locationName ? (
-            <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+            <p className="k-item-detail-tight">
               {state.locationName}
             </p>
           ) : null}

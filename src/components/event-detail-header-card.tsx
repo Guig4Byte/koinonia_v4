@@ -40,17 +40,17 @@ export function EventDetailHeaderCard({
 }) {
   return (
     <Card>
-      <div className="flex items-start justify-between gap-3">
+      <div className="k-card-header-row">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">
             {checkInLabel}
           </p>
           <h2 className="mt-1 text-2xl font-semibold text-[var(--color-text-primary)]">{title}</h2>
-          <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
+          <p className="k-item-meta">
             {groupName ?? "Encontro geral"} · {formatShortDate(startsAt)}, {formatTime(startsAt)}
           </p>
           {locationName ? (
-            <p className="mt-1 text-sm text-[var(--color-text-secondary)]">{locationName}</p>
+            <p className="k-item-meta">{locationName}</p>
           ) : null}
           {groupId && showGroupLink ? (
             <Link href={ROUTES.group(groupId)} className="mt-3 inline-flex text-sm font-semibold text-[var(--color-brand)]">

@@ -37,8 +37,8 @@ export function EventDetailsActions({
 
   return (
     <Card>
-      <p className="font-semibold text-[var(--color-text-primary)]">Ajustes do encontro</p>
-      <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">
+      <p className="k-item-title">Ajustes do encontro</p>
+      <p className="k-supporting-copy">
         Ajuste só o que mudou nesta semana. Estas alterações valem apenas para este encontro.
       </p>
 
