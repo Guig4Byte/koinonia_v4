@@ -1,15 +1,20 @@
 import { cn } from "@/lib/cn";
-import type { PresenceTone } from "@/features/events/presence-display";
-import type { PresenceTrend } from "@/features/events/presence-summary";
 
-export function metricTextClass(tone: PresenceTone): string {
+export type MetricTone = "ok" | "warn" | "risk" | "neutral";
+
+export type PresenceTrend = {
+  direction: "up" | "down";
+  delta: number;
+};
+
+export function metricTextClass(tone: MetricTone): string {
   if (tone === "ok") return "text-[var(--color-metric-presenca)]";
   if (tone === "warn") return "text-[var(--color-badge-atencao-text)]";
   if (tone === "risk") return "text-[var(--color-metric-atencoes)]";
   return "text-[var(--color-text-secondary)]";
 }
 
-function trendTextClass(trend: PresenceTrend, tone: PresenceTone): string {
+function trendTextClass(trend: PresenceTrend, tone: MetricTone): string {
   if (trend.direction === "up") return "text-[var(--color-metric-presenca)]";
   if (tone === "ok") return "text-[var(--color-badge-atencao-text)]";
   return "text-[var(--color-metric-atencoes)]";
@@ -29,7 +34,7 @@ export function PresenceTrendDelta({
   className,
 }: {
   trend: PresenceTrend;
-  tone: PresenceTone;
+  tone: MetricTone;
   className?: string;
 }) {
   return (

@@ -1,6 +1,6 @@
-import type { SignalBadgeTone } from "@/features/signals/display";
+import type { BadgeTone } from "@/components/ui/badge";
 
-export type CardPriorityTone = SignalBadgeTone | "stable" | "muted";
+export type CardPriorityTone = BadgeTone | "stable" | "muted";
 
 export function priorityCardClass(tone?: CardPriorityTone): string {
   if (tone === "risk") return "priority-card priority-card-risk";

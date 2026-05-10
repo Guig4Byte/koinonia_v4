@@ -1,12 +1,10 @@
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, AlertCircle, Info, Heart } from "lucide-react";
 import type { ReactNode } from "react";
-import { Badge } from "@/components/ui/badge";
+import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { cn } from "@/lib/cn";
-import type { SignalBadgeTone } from "@/features/signals/display";
-import type { PresenceTrend } from "@/features/events/presence-summary";
 import { priorityCardClass } from "@/components/card-priority";
-import { metricTextClass, PresenceTrendDelta } from "@/components/presence-metric";
+import { metricTextClass, PresenceTrendDelta, type PresenceTrend } from "@/components/presence-metric";
 
 export function PulseCard({
   title,
@@ -180,7 +178,7 @@ export function DetailLinkCard({
   title: string;
   meta?: ReactNode;
   badgeLabel?: string;
-  badgeTone?: SignalBadgeTone;
+  badgeTone?: BadgeTone;
   actionLabel: string;
   children?: ReactNode;
 }) {

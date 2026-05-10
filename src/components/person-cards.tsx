@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
+import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { cn } from "@/lib/cn";
 import { avatarColorForName, initials } from "@/lib/text";
-import type { SignalBadgeTone } from "@/features/signals/display";
 import { priorityCardClass, type CardPriorityTone } from "@/components/card-priority";
 
 function Avatar({ name, compact = false }: { name: string; compact?: boolean }) {
@@ -20,7 +19,7 @@ function Avatar({ name, compact = false }: { name: string; compact?: boolean }) 
   );
 }
 
-function signalCardPriorityTone(resolvedBadgeTone: SignalBadgeTone, severity: "ok" | "warn" | "risk" | "info"): CardPriorityTone | undefined {
+function signalCardPriorityTone(resolvedBadgeTone: BadgeTone, severity: "ok" | "warn" | "risk" | "info"): CardPriorityTone | undefined {
   if (resolvedBadgeTone !== "neutral" && resolvedBadgeTone !== "ok" && resolvedBadgeTone !== "info") {
     return resolvedBadgeTone;
   }
@@ -35,7 +34,7 @@ export function PersonMiniCard(props: {
   name: string;
   context?: string;
   badgeLabel?: string;
-  badgeTone?: SignalBadgeTone;
+  badgeTone?: BadgeTone;
   cardTone?: CardPriorityTone;
   ctaLabel?: string;
   compact?: boolean;
@@ -83,7 +82,7 @@ export function PersonSignalCard(props: {
   reason?: string;
   severity?: "ok" | "warn" | "risk" | "info";
   badgeLabel?: string;
-  badgeTone?: SignalBadgeTone;
+  badgeTone?: BadgeTone;
   detailHref?: string;
   href?: string;
   ctaLabel?: string;

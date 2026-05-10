@@ -1,11 +1,9 @@
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
+import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { cn } from "@/lib/cn";
-import type { SignalBadgeTone } from "@/features/signals/display";
 import { DEFAULT_PRESENCE_TONE_THRESHOLDS, formatPresenceRate, presenceTone } from "@/features/events/presence-display";
-import type { PresenceTrend } from "@/features/events/presence-summary";
 import { priorityCardClass, type CardPriorityTone } from "@/components/card-priority";
-import { metricTextClass, PresenceTrendDelta } from "@/components/presence-metric";
+import { metricTextClass, PresenceTrendDelta, type PresenceTrend } from "@/components/presence-metric";
 import { countLabel } from "@/lib/format";
 
 function groupAttentionLabel(count: number, kind: "default" | "local" | "pastoral") {
@@ -38,7 +36,7 @@ export function GroupCard({
   noPresenceLabel?: string;
   attentionLabelKind?: "default" | "local" | "pastoral";
   badgeLabel?: string;
-  badgeTone?: SignalBadgeTone;
+  badgeTone?: BadgeTone;
   showBadge?: boolean;
   cardTone?: CardPriorityTone;
   presenceTrend?: PresenceTrend | null;
@@ -46,13 +44,13 @@ export function GroupCard({
   const tone = presenceTone(hasPresenceData, presenceRate);
   const hasLowPresence = tone === "risk" || tone === "warn";
   const attentionLabel = groupAttentionLabel(attentionCount, attentionLabelKind);
-  const fallbackBadgeTone: SignalBadgeTone = attentionCount > 0
+  const fallbackBadgeTone: BadgeTone = attentionCount > 0
     ? attentionLabelKind === "pastoral" ? "risk" : "warn"
     : !hasPresenceData ? "neutral" : tone === "risk" ? "risk" : hasLowPresence ? "warn" : "ok";
   const fallbackBadgeLabel = attentionCount > 0
     ? attentionLabel
     : !hasPresenceData ? noPresenceLabel : hasLowPresence ? "Presença baixa" : "Estável";
-  const resolvedBadgeTone: SignalBadgeTone = badgeTone ?? fallbackBadgeTone;
+  const resolvedBadgeTone: BadgeTone = badgeTone ?? fallbackBadgeTone;
   const resolvedBadgeLabel = badgeLabel ?? fallbackBadgeLabel;
   const priorityTone = cardTone ?? (resolvedBadgeTone === "neutral" || resolvedBadgeTone === "ok" || resolvedBadgeTone === "info" ? undefined : resolvedBadgeTone);
   const presenceText = formatPresenceRate(hasPresenceData, presenceRate);

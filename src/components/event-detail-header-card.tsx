@@ -3,7 +3,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { ContextSummary } from "@/components/base-cards";
 import type { BadgeTone } from "@/components/ui/badge";
-import { formatPresenceRate, type PresenceTone } from "@/features/events/presence-display";
+import type { MetricTone } from "@/components/presence-metric";
+import { formatPresenceRate } from "@/features/events/presence-display";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { ROUTES } from "@/lib/routes";
 
@@ -33,7 +34,7 @@ export function EventDetailHeaderCard({
   eventStatusTone: BadgeTone;
   hasPresenceData: boolean;
   presenceRate: number;
-  presenceTone: PresenceTone;
+  presenceTone: MetricTone;
   visitorsCount: number;
   membersCount: number;
   showGroupLink: boolean;
