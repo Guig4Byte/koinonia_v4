@@ -5,7 +5,7 @@ import { EmptyState, SectionTitle } from "@/components/base-cards";
 import { AttendanceStatus } from "@/generated/prisma/client";
 import { ProgressiveList } from "@/components/progressive-list";
 import { type BadgeTone } from "@/components/ui/badge";
-import { presenceTone } from "@/features/events/presence-display";
+import { formatPresenceRate, presenceTone } from "@/features/events/presence-display";
 import { summarizeEventPresence } from "@/features/events/presence-summary";
 import { countLabel, formatShortDate, formatTime } from "@/lib/format";
 import { ROUTES } from "@/lib/routes";
@@ -61,7 +61,7 @@ export function GroupRegisteredEncountersList({ events }: { events: GroupRegiste
           {events.map((event) => {
             const metrics = summarizeEventPresence(event);
             const presenceBadgeTone = presenceTone(metrics.hasPresenceData, metrics.presenceRate);
-            const presenceLabel = metrics.hasPresenceData ? `${metrics.presenceRate}%` : "Sem registro";
+            const presenceLabel = formatPresenceRate(metrics.hasPresenceData, metrics.presenceRate, "Sem registro");
             const presenceProgress = metrics.hasPresenceData ? metrics.presenceRate : 0;
 
             return (

@@ -9,6 +9,7 @@ import {
   recentPresenceTrendLabel,
   type PersonPresenceView,
 } from "@/features/people/person-detail-view";
+import { formatPresenceRate } from "@/features/events/presence-display";
 import { countLabel, formatShortDate, formatTime } from "@/lib/format";
 import { ROUTES } from "@/lib/routes";
 
@@ -41,7 +42,7 @@ export function PersonPresenceCard({ view }: { view: PersonPresenceView }) {
         </div>
         <div className="shrink-0 text-right">
           <p className={`text-[21px] font-bold leading-none tracking-[-0.02em] ${presenceToneClass(tone)}`}>
-            {recentPresence.hasPresenceData ? `${recentPresence.presenceRate}%` : "—"}
+            {formatPresenceRate(recentPresence.hasPresenceData, recentPresence.presenceRate)}
           </p>
           {trend ? (
             <p

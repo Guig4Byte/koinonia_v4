@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { ContextSummary } from "@/components/base-cards";
 import type { BadgeTone } from "@/components/ui/badge";
-import type { PresenceTone } from "@/features/events/presence-display";
+import { formatPresenceRate, type PresenceTone } from "@/features/events/presence-display";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { ROUTES } from "@/lib/routes";
 
@@ -68,7 +68,7 @@ export function EventDetailHeaderCard({
             {
               label: "Presença",
               detail: hasPresenceData ? "Ritmo do encontro registrado." : "Ainda sem presença registrada.",
-              value: hasPresenceData ? `${presenceRate}%` : "—",
+              value: formatPresenceRate(hasPresenceData, presenceRate),
               tone: presenceTone,
             },
             {

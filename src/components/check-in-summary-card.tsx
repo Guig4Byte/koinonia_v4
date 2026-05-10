@@ -1,6 +1,7 @@
 "use client";
 
 import { GhostButton } from "@/components/ui/button";
+import { formatPresenceRate } from "@/features/events/presence-display";
 import { countLabel } from "@/lib/format";
 import type { CheckInSummary } from "@/features/check-in/check-in-view";
 
@@ -26,7 +27,7 @@ export function CheckInSummaryCard({
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm text-[var(--color-text-secondary)]">Presença do encontro</p>
-          <p className="text-3xl font-bold text-[var(--color-metric-presenca)]">{summary.hasPresenceData ? `${summary.presenceRate}%` : "—"}</p>
+          <p className="text-3xl font-bold text-[var(--color-metric-presenca)]">{formatPresenceRate(summary.hasPresenceData, summary.presenceRate)}</p>
           <p className="mt-1 text-xs text-[var(--color-text-secondary)]">
             {summary.pending > 0
               ? `${summary.totalMembers - summary.pending} de ${summary.totalMembers} marcados`

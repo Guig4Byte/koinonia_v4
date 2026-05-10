@@ -1,5 +1,5 @@
 import { UserRole, type SignalSeverity, type PersonStatus } from "@/generated/prisma/client";
-import { weeklyPresenceTone } from "@/features/dashboard/presence-health";
+import { buildWeeklyPresenceSummaryItem, type WeeklyPresenceSummaryItem } from "@/features/dashboard/presence-health";
 import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features/pastoral-pulse";
 import { splitPastoralSections } from "@/features/signals/sections";
 
@@ -34,19 +34,12 @@ export type PastorPageDashboard = {
   presenceRate: number;
 };
 
-type PresenceSummaryItem = {
-  label: string;
-  value: string;
-  detail: string;
-  tone: "ok" | "warn" | "risk" | "neutral";
-};
-
 export type PastorPageView = {
   navIndicator?: "risk" | "care";
   pastoralPulse: PastoralPulseMessage;
   urgentOrPastoralCases: PastorPageSignal[];
   inCarePeople: PastorPageInCarePerson[];
-  presenceSummary: PresenceSummaryItem[];
+  presenceSummary: WeeklyPresenceSummaryItem[];
 };
 
 export function buildPastorPageView({
@@ -82,13 +75,6 @@ export function buildPastorPageView({
     }),
     urgentOrPastoralCases,
     inCarePeople,
-    presenceSummary: [
-      {
-        label: "Presença da semana",
-        value: dashboard.hasPresenceData ? `${dashboard.presenceRate}%` : "—",
-        detail: dashboard.hasPresenceData ? "Média dos encontros registrados nesta semana." : "Nenhum encontro registrado nesta semana.",
-        tone: weeklyPresenceTone(dashboard.hasPresenceData, dashboard.presenceRate),
-      },
-    ],
+    presenceSummary: [buildWeeklyPresenceSummaryItem(dashboard.hasPresenceData, dashboard.presenceRate)],
   };
 }

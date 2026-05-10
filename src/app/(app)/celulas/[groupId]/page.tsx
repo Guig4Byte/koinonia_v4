@@ -6,7 +6,7 @@ import { BackLink, ContextSummary, InfoCard, PulseCard, SectionTitle } from "@/c
 import { GroupPendingEventCard } from "@/components/group-pending-event-card";
 import { GroupRegisteredEncountersList } from "@/components/group-registered-encounters-list";
 import { MemberPriorityList } from "@/components/member-priority-list";
-import { presenceTone } from "@/features/events/presence-display";
+import { formatPresenceRate, presenceTone } from "@/features/events/presence-display";
 import { isPresenceRecordedEvent, splitPresenceTrendSamples, summarizeEventsPresence, summarizePresenceTrend } from "@/features/events/presence-summary";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
 import {
@@ -180,7 +180,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
               },
               {
                 label: "Presença recente",
-                value: hasRecentPresence ? `${presence.presenceRate}%` : "—",
+                value: formatPresenceRate(hasRecentPresence, presence.presenceRate),
                 detail: hasRecentPresence
                   ? "Média dos últimos encontros registrados."
                   : "Ainda sem presença recente registrada.",

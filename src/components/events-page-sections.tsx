@@ -3,6 +3,7 @@ import { BackLink, EmptyState, SectionTitle } from "@/components/base-cards";
 import { priorityCardClass } from "@/components/card-priority";
 import { ProgressiveList } from "@/components/progressive-list";
 import { Badge } from "@/components/ui/badge";
+import { formatPresenceRate } from "@/features/events/presence-display";
 import {
   buildEventListCardState,
   buildEventsConsultationView,
@@ -45,7 +46,7 @@ export function EventCard({ event, user, now }: { event: EventListEvent; user: P
       {state.recordedPresence ? (
         <div className="event-card-stats">
           <p>
-            <strong className="text-[var(--color-metric-presenca)]">{metrics.presenceRate}%</strong>
+            <strong className="text-[var(--color-metric-presenca)]">{formatPresenceRate(metrics.hasPresenceData, metrics.presenceRate)}</strong>
             <span>presença</span>
           </p>
           <p>

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/cn";
 import type { SignalBadgeTone } from "@/features/signals/display";
-import { DEFAULT_PRESENCE_TONE_THRESHOLDS, presenceTone } from "@/features/events/presence-display";
+import { DEFAULT_PRESENCE_TONE_THRESHOLDS, formatPresenceRate, presenceTone } from "@/features/events/presence-display";
 import type { PresenceTrend } from "@/features/events/presence-summary";
 import { priorityCardClass, type CardPriorityTone } from "@/components/card-priority";
 import { metricTextClass, PresenceTrendDelta } from "@/components/presence-metric";
@@ -55,7 +55,7 @@ export function GroupCard({
   const resolvedBadgeTone: SignalBadgeTone = badgeTone ?? fallbackBadgeTone;
   const resolvedBadgeLabel = badgeLabel ?? fallbackBadgeLabel;
   const priorityTone = cardTone ?? (resolvedBadgeTone === "neutral" || resolvedBadgeTone === "ok" || resolvedBadgeTone === "info" ? undefined : resolvedBadgeTone);
-  const presenceText = hasPresenceData ? `${presenceRate}%` : "—";
+  const presenceText = formatPresenceRate(hasPresenceData, presenceRate);
   const presenceLabel = !hasPresenceData
     ? "Registro de presença"
     : presenceRate < DEFAULT_PRESENCE_TONE_THRESHOLDS.risk ? "Presença baixa" : "Presença recente";
