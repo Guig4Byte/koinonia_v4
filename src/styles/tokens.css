@@ -52,6 +52,18 @@
   --support-soft: var(--color-badge-apoio-bg);
   --nav-bg: var(--color-bg-tab);
   --page-glow: color-mix(in srgb, var(--color-brand-accent) 14%, transparent);
+
+  /* Aliases de cor derivados da paleta ativa */
+  --color-bg-banner: var(--color-bg-header);
+  --color-btn-secondary-bg: transparent;
+  --color-action-call-bg: transparent;
+  --color-action-call-border: var(--color-brand);
+  --color-action-whatsapp-bg: var(--color-btn-primary-bg);
+  --color-action-whatsapp-border: var(--color-action-whatsapp-bg);
+  --color-segmented-bg: rgba(0, 0, 0, 0.18);
+  --color-segmented-active-bg: var(--color-brand-accent);
+  --color-tab-active: var(--color-brand);
+
   --action-primary-bg: var(--color-btn-primary-bg);
   --action-primary-text: var(--color-btn-primary-text);
   --action-secondary-bg: var(--color-btn-secondary-bg);
@@ -65,7 +77,6 @@ html[data-theme="light"] {
   --color-bg-page: #ede8e0;
   --color-bg-card: #fffaf2;
   --color-bg-header: #2c1a0a;
-  --color-bg-banner: #2c1a0a;
   --color-bg-tab: rgba(255, 250, 242, 0.02);
   --color-bg-tab-active: rgba(255, 250, 242, 0.10);
   --color-bg-metric-card: #f1e7da;
@@ -87,27 +98,19 @@ html[data-theme="light"] {
   /* Botões */
   --color-btn-primary-bg: #2c1a0a;
   --color-btn-primary-text: #f0d8a8;
-  --color-btn-secondary-bg: transparent;
   --color-btn-secondary-border: #2c1a0a;
   --color-btn-secondary-text: #2c1a0a;
 
   /* Ações diretas */
-  --color-action-call-bg: transparent;
-  --color-action-call-border: #2c1a0a;
   --color-action-call-text: #2c1a0a;
-  --color-action-whatsapp-bg: #2c1a0a;
-  --color-action-whatsapp-border: #2c1a0a;
   --color-action-whatsapp-text: #fff7e8;
 
   /* Controles segmentados */
-  --color-segmented-bg: rgba(0, 0, 0, 0.18);
   --color-segmented-border: rgba(201, 160, 96, 0.34);
-  --color-segmented-active-bg: #c9a060;
   --color-segmented-active-text: #2c1a0a;
   --color-segmented-inactive-text: #f0e0c0;
 
   /* Tab bar */
-  --color-tab-active: #2c1a0a;
   --color-tab-inactive: #e8e0d6;
   --color-tab-label-active: #2c1a0a;
   --color-tab-label-inactive: #7d6b5a;
@@ -186,7 +189,6 @@ html[data-theme="parchment"] {
   --color-bg-page: #d2ad72;
   --color-bg-card: rgba(255, 249, 236, 0.68);
   --color-bg-header: #7a4f18;
-  --color-bg-banner: #7a4f18;
   --color-bg-tab: rgba(255, 249, 236, 0.02);
   --color-bg-tab-active: rgba(255, 249, 236, 0.09);
   --color-bg-metric-card: rgba(107, 64, 16, 0.17);
@@ -205,24 +207,17 @@ html[data-theme="parchment"] {
 
   --color-btn-primary-bg: #6b4010;
   --color-btn-primary-text: #f5dfa0;
-  --color-btn-secondary-bg: transparent;
   --color-btn-secondary-border: #6b4010;
   --color-btn-secondary-text: #4a2808;
 
-  --color-action-call-bg: transparent;
-  --color-action-call-border: #6b4010;
   --color-action-call-text: #4a2808;
-  --color-action-whatsapp-bg: #6b4010;
-  --color-action-whatsapp-border: #6b4010;
   --color-action-whatsapp-text: #fff6dc;
 
   --color-segmented-bg: rgba(0, 0, 0, 0.16);
   --color-segmented-border: rgba(245, 223, 160, 0.40);
-  --color-segmented-active-bg: #f5dfa0;
   --color-segmented-active-text: #4a2808;
   --color-segmented-inactive-text: #fff0cf;
 
-  --color-tab-active: #6b4010;
   --color-tab-inactive: rgba(0, 0, 0, 0.12);
   --color-tab-label-active: #3a2008;
   --color-tab-label-inactive: #5e3d18;
@@ -296,7 +291,6 @@ html[data-theme="dark"] {
   --color-bg-page: #14110e;
   --color-bg-card: #241f19;
   --color-bg-header: #241f19;
-  --color-bg-banner: #241f19;
   --color-bg-tab: rgba(20, 17, 14, 0.03);
   --color-bg-tab-active: rgba(36, 31, 25, 0.14);
   --color-bg-metric-card: #302820;
@@ -319,20 +313,13 @@ html[data-theme="dark"] {
   --color-btn-secondary-border: #3b342c;
   --color-btn-secondary-text: #f5eee5;
 
-  --color-action-call-bg: transparent;
-  --color-action-call-border: #d7b98f;
   --color-action-call-text: #d7b98f;
-  --color-action-whatsapp-bg: #d7b98f;
-  --color-action-whatsapp-border: #d7b98f;
   --color-action-whatsapp-text: #241b13;
 
-  --color-segmented-bg: rgba(0, 0, 0, 0.18);
   --color-segmented-border: rgba(215, 185, 143, 0.34);
-  --color-segmented-active-bg: #d7b98f;
   --color-segmented-active-text: #241b13;
   --color-segmented-inactive-text: #d8c7b5;
 
-  --color-tab-active: #d7b98f;
   --color-tab-inactive: #2b251f;
   --color-tab-label-active: #f5eee5;
   --color-tab-label-inactive: #a08f7c;
