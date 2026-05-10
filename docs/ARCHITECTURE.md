@@ -77,7 +77,8 @@ Loading states
   Skeletons reutilizáveis ficam em components/ui/skeleton.tsx.
   Skeletons com formato de tela ficam em components/page-loading-skeletons.tsx.
   Rotas de lista devem ter loading.tsx próprio quando a tela depende de consulta server-side perceptível.
-  O skeleton deve imitar o shape real dos cards, filtros e resumos sem introduzir lógica de domínio.
+  Rotas de detalhe também devem ter loading.tsx quando carregam pessoa, célula ou encontro por id.
+  O skeleton deve imitar o shape real dos cards, filtros, resumos e blocos de detalhe sem introduzir lógica de domínio.
 ```
 
 ## Entidades principais
