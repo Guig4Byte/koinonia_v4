@@ -24,8 +24,8 @@ export function PulseCard({
   return (
     <section className="relative mb-4 overflow-hidden rounded-[1.35rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-5 shadow-card">
       <div className={cn("absolute inset-x-0 top-0 h-1", accentClass)} />
-      <p className="text-xl font-semibold leading-snug tracking-[-0.02em] text-[var(--color-text-primary)] text-balance">{title}</p>
-      {subtitle ? <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-secondary)]">{subtitle}</p> : null}
+      <p className="text-[length:var(--text-xl)] font-semibold leading-snug tracking-[-0.02em] text-[color:var(--color-text-primary)] text-balance">{title}</p>
+      {subtitle ? <p className="mt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{subtitle}</p> : null}
     </section>
   );
 }
@@ -47,7 +47,7 @@ export function ContextSummary({
     ok: metricTextClass("ok"),
     warn: metricTextClass("warn"),
     risk: metricTextClass("risk"),
-    neutral: "text-[var(--color-text-primary)]",
+    neutral: "text-[color:var(--color-text-primary)]",
   };
   const detailClass = detailTone === "strong" ? "context-summary-detail-strong" : undefined;
   const surfaceClass = surface === "inset"
@@ -70,7 +70,7 @@ export function ContextSummary({
                 <PresenceTrendDelta
                   trend={item.trend}
                   tone={item.tone ?? "neutral"}
-                  className="ml-1 align-middle text-xs"
+                  className="ml-1 align-middle text-[length:var(--text-xs)]"
                 />
               ) : null}
               </p>
@@ -78,7 +78,7 @@ export function ContextSummary({
                 <PresenceTrendDelta
                   trend={item.trend}
                   tone={item.tone ?? "neutral"}
-                  className="mt-1 block text-[13px] leading-none"
+                  className="mt-1 block text-[length:var(--text-sm)] leading-none"
                 />
               ) : null}
             </div>
@@ -108,7 +108,7 @@ export function BackLink({
   return (
     <Link
       href={href}
-      className="mb-4 inline-flex min-h-10 items-center gap-1.5 rounded-xl px-2.5 text-sm font-semibold text-[var(--color-brand)] transition active:scale-[0.98]"
+      className="mb-4 inline-flex min-h-10 items-center gap-1.5 rounded-xl px-2.5 text-[length:var(--text-sm)] font-semibold text-[color:var(--color-brand)] transition active:scale-[0.98]"
     >
       <ArrowLeft className="h-4 w-4" aria-hidden="true" />
       {children}
@@ -124,10 +124,10 @@ export function InfoCard({
   tone?: "default" | "success" | "error" | "warning";
 }) {
   const toneStyles = {
-    default: "border-[var(--color-border-card)] bg-[var(--color-bg-card)] text-[var(--color-text-secondary)]",
-    success: "border-[var(--color-metric-presenca)]/25 bg-[var(--color-metric-presenca)]/8 text-[var(--color-metric-presenca)]",
-    error: "border-[var(--color-metric-atencoes)]/25 bg-[var(--color-metric-atencoes)]/8 text-[var(--color-metric-atencoes)]",
-    warning: "border-[var(--color-badge-atencao-text)]/25 bg-[var(--color-badge-atencao-text)]/8 text-[var(--color-badge-atencao-text)]",
+    default: "border-[var(--color-border-card)] bg-[var(--color-bg-card)] text-[color:var(--color-text-secondary)]",
+    success: "border-[var(--color-metric-presenca)]/25 bg-[var(--color-metric-presenca)]/8 text-[color:var(--color-metric-presenca)]",
+    error: "border-[var(--color-metric-atencoes)]/25 bg-[var(--color-metric-atencoes)]/8 text-[color:var(--color-metric-atencoes)]",
+    warning: "border-[var(--color-badge-atencao-text)]/25 bg-[var(--color-badge-atencao-text)]/8 text-[color:var(--color-badge-atencao-text)]",
   };
 
   const Icon = {
@@ -138,7 +138,7 @@ export function InfoCard({
   }[tone];
 
   return (
-    <div className={cn("mb-4 flex items-start gap-2.5 rounded-2xl border p-4 text-sm leading-relaxed shadow-card", toneStyles[tone])}>
+    <div className={cn("mb-4 flex items-start gap-2.5 rounded-2xl border p-4 text-[length:var(--text-sm)] leading-relaxed shadow-card", toneStyles[tone])}>
       <Icon className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
       <p>{children}</p>
     </div>
@@ -155,7 +155,7 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex items-center gap-2.5 rounded-2xl border border-dashed border-[var(--color-border-card)] bg-[var(--surface-alt)] text-sm leading-relaxed text-[var(--color-text-secondary)]",
+        "flex items-center gap-2.5 rounded-2xl border border-dashed border-[var(--color-border-card)] bg-[var(--surface-alt)] text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]",
         compact ? "px-3 py-2.5" : "p-4",
       )}
     >
@@ -191,8 +191,8 @@ export function DetailLinkCard({
         </div>
         {badgeLabel ? <Badge tone={badgeTone}>{badgeLabel}</Badge> : null}
       </div>
-      {children ? <div className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">{children}</div> : null}
-      <p className="mt-3 text-sm font-semibold text-[var(--color-brand)]">{actionLabel} <span className="inline-block transition group-active:translate-x-0.5">→</span></p>
+      {children ? <div className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{children}</div> : null}
+      <p className="mt-3 text-[length:var(--text-sm)] font-semibold text-[color:var(--color-brand)]">{actionLabel} <span className="inline-block transition group-active:translate-x-0.5">→</span></p>
     </Link>
   );
 }

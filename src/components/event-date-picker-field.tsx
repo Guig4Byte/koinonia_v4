@@ -24,7 +24,7 @@ export function EventDatePickerField({
 }) {
   return (
     <div>
-      <label className="block text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]" htmlFor="event-start-date">
+      <label className="block text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.12em] text-[color:var(--color-text-secondary)]" htmlFor="event-start-date">
         Nova data
       </label>
       <div className="event-picker-field">
@@ -34,7 +34,7 @@ export function EventDatePickerField({
           onChange={(event) => onChange(event.target.value)}
           inputMode="numeric"
           placeholder="dd/mm/aaaa"
-          className="event-picker-input min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-brand)]"
+          className="event-picker-input min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)] focus:border-[var(--color-brand)]"
         />
         <button type="button" className="event-picker-trigger" aria-label="Escolher data" aria-expanded={isOpen} onClick={() => onOpenChange(!isOpen)}>
           <CalendarDays className="h-4 w-4" aria-hidden="true" />

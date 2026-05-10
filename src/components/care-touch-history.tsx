@@ -33,7 +33,7 @@ export function CareTouchHistory({ items }: { items: CareTouchHistoryItem[] }) {
                   {item.actorName} · {item.happenedAtLabel}
                 </p>
               </div>
-              {note ? <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-primary)]">{note}</p> : null}
+              {note ? <p className="mt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-primary)]">{note}</p> : null}
             </article>
           );
         })}

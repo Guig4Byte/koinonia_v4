@@ -18,7 +18,7 @@ export function LoginErrorMessage({ show }: { show: boolean }) {
 
   return (
     <p
-      className="rounded-[16px] border border-[var(--color-badge-risco-border)] bg-[var(--color-badge-risco-bg)] px-4 py-3 text-sm font-medium text-[var(--color-badge-risco-text)]"
+      className="rounded-[16px] border border-[var(--color-badge-risco-border)] bg-[var(--color-badge-risco-bg)] px-4 py-3 text-[length:var(--text-sm)] font-medium text-[color:var(--color-badge-risco-text)]"
       role="alert"
     >
       E-mail ou senha não conferem.
@@ -33,7 +33,7 @@ export function PasswordField() {
 
   return (
     <label className="block">
-      <span className="mb-2 block text-[11px] font-extrabold uppercase tracking-[0.16em] text-[var(--login-muted)]">
+      <span className="mb-2 block text-[length:var(--text-xs)] font-extrabold uppercase tracking-[0.16em] text-[color:var(--login-muted)]">
         Senha
       </span>
       <div className="relative">
@@ -42,7 +42,7 @@ export function PasswordField() {
           type={isVisible ? "text" : "password"}
           autoComplete="current-password"
           required
-          className="login-input min-h-[48px] w-full rounded-[16px] border px-4 pr-14 text-[15px] font-medium outline-none transition"
+          className="login-input min-h-[48px] w-full rounded-[16px] border px-4 pr-14 text-[length:var(--text-base)] font-medium outline-none transition"
           placeholder="Sua senha"
         />
         <button

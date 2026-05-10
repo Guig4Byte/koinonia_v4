@@ -46,7 +46,7 @@ export function CheckInMemberCard({ item, onSetStatus }: CheckInMemberCardProps)
         <p className="k-item-title">{item.fullName}</p>
         <span
           className={cn(
-            "check-in-status-badge rounded-full border px-2.5 py-1 text-[11px] font-semibold",
+            "check-in-status-badge rounded-full border px-2.5 py-1 text-[length:var(--text-xs)] font-semibold",
             statusBadgeTone(item.status),
           )}
         >

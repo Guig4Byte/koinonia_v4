@@ -28,9 +28,9 @@ export function CheckInSummaryCard({
     <Card>
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm text-[var(--color-text-secondary)]">Presença do encontro</p>
-          <p className="text-3xl font-bold text-[var(--color-metric-presenca)]">{formatPresenceRate(summary.hasPresenceData, summary.presenceRate)}</p>
-          <p className="mt-1 text-xs text-[var(--color-text-secondary)]">
+          <p className="text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">Presença do encontro</p>
+          <p className="text-[length:var(--text-3xl)] font-bold text-[color:var(--color-metric-presenca)]">{formatPresenceRate(summary.hasPresenceData, summary.presenceRate)}</p>
+          <p className="mt-1 text-[length:var(--text-xs)] text-[color:var(--color-text-secondary)]">
             {summary.pending > 0
               ? `${summary.totalMembers - summary.pending} de ${summary.totalMembers} marcados`
               : `${summary.present} de ${summary.totalMembers} presentes`}
@@ -38,12 +38,12 @@ export function CheckInSummaryCard({
             {countLabel(summary.visitorTotal, "visitante", "visitantes")}
           </p>
         </div>
-        <div className="rounded-full border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-3 py-1 text-xs font-semibold text-[var(--color-text-secondary)]">
+        <div className="rounded-full border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-3 py-1 text-[length:var(--text-xs)] font-semibold text-[color:var(--color-text-secondary)]">
           {summary.pending > 0 ? `Faltam ${summary.pending}` : "Tudo marcado"}
         </div>
       </div>
 
-      <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">{helperText}</p>
+      <p className="mt-3 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{helperText}</p>
 
       {!allMembersPresent ? (
         <Button
@@ -53,7 +53,7 @@ export function CheckInSummaryCard({
           fullWidth
           onClick={onMarkAllAsPresent}
           disabled={isPending}
-          className="mt-4 text-xs"
+          className="mt-4 text-[length:var(--text-xs)]"
         >
           Marcar todos como presentes
         </Button>
@@ -64,7 +64,7 @@ export function CheckInSummaryCard({
           <p className="font-semibold">
             {summary.pending === 1 ? "Falta marcar 1 pessoa." : `Falta marcar ${summary.pending} pessoas.`}
           </p>
-          <p className="mt-1 text-xs leading-relaxed">Se todos vieram, use o atalho acima e ajuste só exceções.</p>
+          <p className="mt-1 text-[length:var(--text-xs)] leading-relaxed">Se todos vieram, use o atalho acima e ajuste só exceções.</p>
         </Feedback>
       ) : null}
 

@@ -63,7 +63,7 @@ export function ThemeToggle({
   const variantClass =
     variant === "card"
       ? "theme-toggle-card"
-      : "border-[var(--color-theme-icon-active-border)] bg-[var(--color-theme-icon-active-bg)] text-[var(--color-text-on-header)]";
+      : "border-[var(--color-theme-icon-active-border)] bg-[var(--color-theme-icon-active-bg)] text-[color:var(--color-text-on-header)]";
 
   return (
     <button
@@ -76,7 +76,7 @@ export function ThemeToggle({
       } ${variantClass} ${className}`}
     >
       <Icon className="h-4 w-4" />
-      {showLabel ? <span className="text-xs font-bold">{label}</span> : null}
+      {showLabel ? <span className="text-[length:var(--text-xs)] font-bold">{label}</span> : null}
     </button>
   );
 }

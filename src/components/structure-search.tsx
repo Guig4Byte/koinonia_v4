@@ -106,13 +106,13 @@ function StructureSearchContent<TFilter extends string>({
           router.push(searchPath(nextQuery));
         }}
       >
-        <Search className="h-4 w-4 text-[var(--color-text-secondary)]" />
+        <Search className="h-4 w-4 text-[color:var(--color-text-secondary)]" />
         <input
           name="q"
           value={draftQuery}
           aria-label={ariaLabel}
           placeholder={placeholder}
-          className="w-full bg-transparent text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)]"
+          className="w-full bg-transparent text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)]"
           onChange={(event) => {
             const nextQuery = event.currentTarget.value;
             setDraftQuery(nextQuery);

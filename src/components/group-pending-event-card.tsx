@@ -26,8 +26,8 @@ export function GroupPendingEventCard({
         </span>
         <span className="group-pending-event-body">
           <span className="min-w-0">
-            <span className="block truncate text-base font-bold text-[var(--color-text-primary)]">{event.title}</span>
-            <span className="mt-1 block text-xs font-medium leading-relaxed text-[var(--color-text-secondary)]">
+            <span className="block truncate text-[length:var(--text-base)] font-bold text-[color:var(--color-text-primary)]">{event.title}</span>
+            <span className="mt-1 block text-[length:var(--text-xs)] font-medium leading-relaxed text-[color:var(--color-text-secondary)]">
               {formatShortDate(event.startsAt)} · {formatTime(event.startsAt)}
             </span>
           </span>

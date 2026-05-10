@@ -67,6 +67,11 @@ components.css
 
 utilities.css
   Utilitários compartilhados pequenos. Quando forem tipográficos, devem consumir tokens --text-*.
+
+Tipografia em TSX
+  Tamanhos de texto devem usar tokens: text-[length:var(--text-*)].
+  Cores arbitrárias de texto devem declarar tipo: text-[color:var(--color-*)].
+  Evitar text-xs/text-sm/text-[11px] porque ignoram o controle data-text-size.
 ```
 
 ## Entidades principais

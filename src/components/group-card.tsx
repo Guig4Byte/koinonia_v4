@@ -63,11 +63,11 @@ export function GroupCard({
       <div className="k-card-header-row">
         <div>
           <p className="k-item-title">{name}</p>
-          <p className="mt-0.5 text-sm text-[var(--color-text-secondary)]">{subtitle}</p>
+          <p className="mt-0.5 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">{subtitle}</p>
         </div>
         {showBadge ? <Badge tone={resolvedBadgeTone}>{resolvedBadgeLabel}</Badge> : null}
       </div>
-      <div className="mt-3 flex items-center justify-between gap-3 border-t border-[var(--color-border-divider)] pt-2 text-xs text-[var(--color-text-secondary)]">
+      <div className="mt-3 flex items-center justify-between gap-3 border-t border-[var(--color-border-divider)] pt-2 text-[length:var(--text-xs)] text-[color:var(--color-text-secondary)]">
         <span className="min-w-0">
           {presenceLabel}:{" "}
           <strong className={cn("font-bold", presenceToneClass)}>{presenceText}</strong>
@@ -75,7 +75,7 @@ export function GroupCard({
             <PresenceTrendDelta trend={presenceTrend} tone={tone} className="ml-1" />
           ) : null}
         </span>
-        {href ? <span className="font-semibold text-[var(--color-brand)]">Ver célula →</span> : null}
+        {href ? <span className="font-semibold text-[color:var(--color-brand)]">Ver célula →</span> : null}
       </div>
     </article>
   );

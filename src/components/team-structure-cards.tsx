@@ -45,7 +45,7 @@ function TeamCellLink({
       </span>
       <span className="flex shrink-0 items-center gap-2">
         {badgeLabel ? <Badge tone={badgeTone}>{badgeLabel}</Badge> : null}
-        <span className="text-sm font-bold text-[var(--color-brand)] opacity-60" aria-hidden="true">
+        <span className="text-[length:var(--text-sm)] font-bold text-[color:var(--color-brand)] opacity-60" aria-hidden="true">
           →
         </span>
       </span>

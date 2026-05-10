@@ -56,10 +56,10 @@ export function BottomNav({ items }: { items: NavItem[] }) {
               href={item.href}
               aria-current={item.active ? "page" : undefined}
               className={cn(
-                "relative flex min-h-12 flex-col items-center justify-center rounded-[1rem] px-2 py-1 text-[10px] font-semibold transition active:scale-[0.98]",
+                "relative flex min-h-12 flex-col items-center justify-center rounded-[1rem] px-2 py-1 text-[length:var(--text-xs)] font-semibold transition active:scale-[0.98]",
                 item.active
-                  ? "bg-[var(--color-bg-tab-active)] text-[var(--color-tab-label-active)] shadow-[var(--color-shadow-nav-active)]"
-                  : "text-[var(--color-tab-label-inactive)]",
+                  ? "bg-[var(--color-bg-tab-active)] text-[color:var(--color-tab-label-active)] shadow-[var(--color-shadow-nav-active)]"
+                  : "text-[color:var(--color-tab-label-inactive)]",
               )}
             >
               <span className="relative">
@@ -69,7 +69,7 @@ export function BottomNav({ items }: { items: NavItem[] }) {
                 <Icon
                   className={cn(
                     "h-[18px] w-[18px]",
-                    item.active ? "text-[var(--color-tab-active)]" : "text-[var(--color-tab-label-inactive)]",
+                    item.active ? "text-[color:var(--color-tab-active)]" : "text-[color:var(--color-tab-label-inactive)]",
                   )}
                   strokeWidth={2.25}
                 />

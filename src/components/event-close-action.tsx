@@ -18,7 +18,7 @@ export function EventCloseAction({
 }) {
   if (hasPresenceData) {
     return (
-      <p className="mt-4 rounded-2xl border border-[var(--color-border-divider)] bg-[var(--surface-alt)] p-3 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+      <p className="mt-4 rounded-2xl border border-[var(--color-border-divider)] bg-[var(--surface-alt)] p-3 text-[length:var(--text-xs)] leading-relaxed text-[color:var(--color-text-secondary)]">
         Este encontro já tem presença registrada. O local ainda pode ser ajustado, mas o encontro não pode ser cancelado ou remarcado.
       </p>
     );

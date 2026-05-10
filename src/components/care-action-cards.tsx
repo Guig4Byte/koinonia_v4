@@ -147,7 +147,7 @@ export function CareAskNoteCard({
           {isPending ? CARE_COPY.noteForm.savingLabel : CARE_COPY.notePrompt.saveWithoutNoteLabel}
         </Button>
       </div>
-      <Button type="button" variant="ghost" size="sm" fullWidth disabled={isPending} onClick={onCancel} className="mt-2 text-xs">
+      <Button type="button" variant="ghost" size="sm" fullWidth disabled={isPending} onClick={onCancel} className="mt-2 text-[length:var(--text-xs)]">
         {CARE_COPY.notePrompt.cancelLabel}
       </Button>
     </ActionPanel>

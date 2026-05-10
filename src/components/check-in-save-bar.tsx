@@ -40,7 +40,7 @@ export function CheckInSaveBar({
           <p className="k-item-title-sm">
             {summary.pending > 0 ? `Faltam ${summary.pending}` : "Pronto para salvar"}
           </p>
-          <p className="mt-0.5 text-xs text-[var(--color-text-secondary)]">
+          <p className="mt-0.5 text-[length:var(--text-xs)] text-[color:var(--color-text-secondary)]">
             {summary.pending > 0
               ? "Marque todos para salvar."
               : mode === "adjust"

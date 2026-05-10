@@ -17,8 +17,8 @@ function AttendanceMemberRow({ member }: { member: EventReadOnlyMember }) {
       href={ROUTES.person(member.personId)}
       className="flex items-center justify-between gap-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 transition active:scale-[0.99]"
     >
-      <span className="min-w-0 text-sm font-medium text-[var(--color-text-primary)]">{member.fullName}</span>
-      <Badge tone={eventAttendanceStatusTone(member.currentStatus)} className="px-2 py-0.5 text-[11px]">
+      <span className="min-w-0 text-[length:var(--text-sm)] font-medium text-[color:var(--color-text-primary)]">{member.fullName}</span>
+      <Badge tone={eventAttendanceStatusTone(member.currentStatus)} className="px-2 py-0.5 text-[length:var(--text-xs)]">
         {member.currentStatus ? eventAttendanceLabels[member.currentStatus] : "Pendente"}
       </Badge>
     </Link>
@@ -62,7 +62,7 @@ export function EventReadOnlySummary({
 
   if (emptyMessage) {
     return (
-      <Card className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
+      <Card className="text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">
         {emptyMessage}
       </Card>
     );
@@ -82,7 +82,7 @@ export function EventReadOnlySummary({
           ))}
 
           {!attendanceView.hasPriorityAttention ? (
-            <p className="rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 text-sm text-[var(--color-text-secondary)]">
+            <p className="rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">
               Nenhuma ausência, justificativa ou pendência registrada.
             </p>
           ) : null}
@@ -90,14 +90,14 @@ export function EventReadOnlySummary({
 
         {attendanceView.presentMembers.length > 0 ? (
           <details className="group mt-4">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-divider)] bg-[var(--surface-alt)] px-3 py-2 text-sm transition active:scale-[0.99]">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-divider)] bg-[var(--surface-alt)] px-3 py-2 text-[length:var(--text-sm)] transition active:scale-[0.99]">
               <div>
                 <p className="k-item-title">Presentes ({attendanceView.presentMembers.length})</p>
                 <p className="k-item-detail-tight">
                   Quem esteve no encontro. Abra só se quiser conferir a lista completa.
                 </p>
               </div>
-              <span className="shrink-0 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--color-brand)]">
+              <span className="shrink-0 text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.08em] text-[color:var(--color-brand)]">
                 <span className="group-open:hidden">Mostrar</span>
                 <span className="hidden group-open:inline">Ocultar</span>
               </span>
@@ -124,8 +124,8 @@ export function EventReadOnlySummary({
                 href={ROUTES.person(visitor.personId)}
                 className="flex items-center justify-between gap-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 transition active:scale-[0.99]"
               >
-                <span className="min-w-0 text-sm font-medium text-[var(--color-text-primary)]">{visitor.fullName}</span>
-                <Badge tone="info" className="px-2 py-0.5 text-[11px]">Visitante</Badge>
+                <span className="min-w-0 text-[length:var(--text-sm)] font-medium text-[color:var(--color-text-primary)]">{visitor.fullName}</span>
+                <Badge tone="info" className="px-2 py-0.5 text-[length:var(--text-xs)]">Visitante</Badge>
               </Link>
             ))}
           </div>

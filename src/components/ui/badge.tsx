@@ -12,13 +12,13 @@ export function isBadgeTone(value: unknown): value is BadgeTone {
 }
 
 const badgeToneClass: Record<BadgeTone, string> = {
-  neutral: "border border-[var(--color-border-card)] bg-[var(--surface-alt)] text-[var(--color-text-secondary)]",
-  ok: "border border-[var(--color-badge-estavel-border)] bg-[var(--color-badge-estavel-bg)] text-[var(--color-badge-estavel-text)]",
-  warn: "border border-[var(--color-badge-atencao-border)] bg-[var(--color-badge-atencao-bg)] text-[var(--color-badge-atencao-text)]",
-  risk: "border border-[var(--color-badge-risco-border)] bg-[var(--color-badge-risco-bg)] text-[var(--color-badge-risco-text)]",
-  info: "border border-[var(--color-border-card)] bg-[var(--info-soft)] text-[var(--color-brand)]",
-  care: "border border-[var(--color-badge-cuidado-border)] bg-[var(--color-badge-cuidado-bg)] text-[var(--color-badge-cuidado-text)]",
-  support: "border border-[var(--color-badge-apoio-border)] bg-[var(--color-badge-apoio-bg)] text-[var(--color-badge-apoio-text)]",
+  neutral: "border border-[var(--color-border-card)] bg-[var(--surface-alt)] text-[color:var(--color-text-secondary)]",
+  ok: "border border-[var(--color-badge-estavel-border)] bg-[var(--color-badge-estavel-bg)] text-[color:var(--color-badge-estavel-text)]",
+  warn: "border border-[var(--color-badge-atencao-border)] bg-[var(--color-badge-atencao-bg)] text-[color:var(--color-badge-atencao-text)]",
+  risk: "border border-[var(--color-badge-risco-border)] bg-[var(--color-badge-risco-bg)] text-[color:var(--color-badge-risco-text)]",
+  info: "border border-[var(--color-border-card)] bg-[var(--info-soft)] text-[color:var(--color-brand)]",
+  care: "border border-[var(--color-badge-cuidado-border)] bg-[var(--color-badge-cuidado-bg)] text-[color:var(--color-badge-cuidado-text)]",
+  support: "border border-[var(--color-badge-apoio-border)] bg-[var(--color-badge-apoio-bg)] text-[color:var(--color-badge-apoio-text)]",
 };
 
 export function Badge({ tone = "neutral", className, children }: { tone?: BadgeTone; className?: string; children: ReactNode }) {

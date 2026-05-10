@@ -10,7 +10,7 @@ function Avatar({ name, compact = false }: { name: string; compact?: boolean }) 
     <span
       className={cn(
         "flex shrink-0 items-center justify-center rounded-full font-bold",
-        compact ? "h-8 w-8 text-[11px]" : "h-9 w-9 text-xs",
+        compact ? "h-8 w-8 text-[length:var(--text-xs)]" : "h-9 w-9 text-[length:var(--text-xs)]",
       )}
       style={{ backgroundColor: colors.bg, color: colors.text }}
     >
@@ -67,8 +67,8 @@ export function PersonMiniCard(props: {
         </span>
       </span>
       <span className="flex shrink-0 items-center gap-2">
-        {badgeLabel ? <Badge tone={badgeTone} className={compact ? "px-2 py-0.5 text-[11px]" : undefined}>{badgeLabel}</Badge> : null}
-        <span className="text-sm font-bold text-[var(--color-brand)] opacity-60 transition group-active:translate-x-0.5" aria-hidden="true">
+        {badgeLabel ? <Badge tone={badgeTone} className={compact ? "px-2 py-0.5 text-[length:var(--text-xs)]" : undefined}>{badgeLabel}</Badge> : null}
+        <span className="text-[length:var(--text-sm)] font-bold text-[color:var(--color-brand)] opacity-60 transition group-active:translate-x-0.5" aria-hidden="true">
           →
         </span>
       </span>
@@ -111,13 +111,13 @@ export function PersonSignalCard(props: {
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
               <p className="k-item-title">{name}</p>
-              <p className="mt-0.5 text-[13px] leading-snug text-[var(--color-text-secondary)]">{context}</p>
+              <p className="mt-0.5 text-[length:var(--text-sm)] leading-snug text-[color:var(--color-text-secondary)]">{context}</p>
             </div>
-            <Badge tone={resolvedBadgeTone} className="px-2 py-0.5 text-[11px]">{resolvedBadgeLabel}</Badge>
+            <Badge tone={resolvedBadgeTone} className="px-2 py-0.5 text-[length:var(--text-xs)]">{resolvedBadgeLabel}</Badge>
           </div>
-          {reason ? <p className="mt-2 whitespace-pre-line border-t border-[var(--color-border-divider)] pt-2 text-[13px] leading-relaxed text-[var(--color-text-primary)]">{reason}</p> : null}
+          {reason ? <p className="mt-2 whitespace-pre-line border-t border-[var(--color-border-divider)] pt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-primary)]">{reason}</p> : null}
           {cardHref ? (
-            <p className="mt-2 text-[13px] font-semibold text-[var(--color-brand)]">
+            <p className="mt-2 text-[length:var(--text-sm)] font-semibold text-[color:var(--color-brand)]">
               {ctaLabel} <span className="inline-block transition group-active:translate-x-0.5">→</span>
             </p>
           ) : null}

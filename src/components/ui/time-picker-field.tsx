@@ -10,7 +10,7 @@ import {
 import { cn } from "@/lib/cn";
 
 const defaultTimePickerInputClassName =
-  "event-picker-input min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] text-[length:var(--text-sm)] text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-brand)]";
+  "event-picker-input min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)] focus:border-[var(--color-brand)]";
 
 type TimePickerFieldProps = {
   id: string;
@@ -96,7 +96,7 @@ export function TimePickerField({
       {label ? (
         <label
           className={cn(
-            "block text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]",
+            "block text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.12em] text-[color:var(--color-text-secondary)]",
             labelClassName,
           )}
           htmlFor={id}

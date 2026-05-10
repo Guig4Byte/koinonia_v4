@@ -10,6 +10,9 @@
   --text-base: 0.875rem;
   --text-lg: 1rem;
   --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-display: 2.1rem;
   --text-hero: 2.375rem;
 
   --weight-regular: 400;
@@ -398,6 +401,9 @@ html[data-text-size="large"] {
   --text-base: 0.9375rem;
   --text-lg: 1.0625rem;
   --text-xl: 1.375rem;
+  --text-2xl: 1.625rem;
+  --text-3xl: 2.0625rem;
+  --text-display: 2.3rem;
   --text-hero: 2.625rem;
 }
 
@@ -407,5 +413,8 @@ html[data-text-size="extra-large"] {
   --text-base: 1rem;
   --text-lg: 1.1875rem;
   --text-xl: 1.5rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.25rem;
+  --text-display: 2.5rem;
   --text-hero: 2.875rem;
 }

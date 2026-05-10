@@ -58,7 +58,7 @@ export function EventRescheduleAction({
           onTimeSelect={onTimeSelect}
         />
       </div>
-      <p className="mt-2 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+      <p className="mt-2 text-[length:var(--text-xs)] leading-relaxed text-[color:var(--color-text-secondary)]">
         Data e horário seguem Brasília (UTC-3), em formato 24h.
       </p>
       <GhostButton type="button" onClick={onReschedule} disabled={disabled} className="mt-3 w-full rounded-xl">

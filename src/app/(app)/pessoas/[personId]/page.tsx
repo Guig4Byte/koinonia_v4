@@ -131,7 +131,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       <section className={`card-hover-lift rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card ${priorityCardClass(personBadge.tone)}`}>
         <div className="flex items-start gap-3">
           <div
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-bold"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-[length:var(--text-sm)] font-bold"
             style={{ backgroundColor: avatarColorForName(person.fullName).bg, color: avatarColorForName(person.fullName).text }}
           >
             {initials(person.fullName)}
@@ -139,7 +139,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-2">
               <div>
-                <h2 className="text-2xl font-semibold leading-tight text-[var(--color-text-primary)]">{person.fullName}</h2>
+                <h2 className="text-[length:var(--text-2xl)] font-semibold leading-tight text-[color:var(--color-text-primary)]">{person.fullName}</h2>
                 <p className="k-item-meta">
                   {groupNameOrFallback(primaryGroup)}
                   {primaryLeadershipName ? ` · ${primaryLeadershipName}` : ""}
@@ -149,7 +149,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
             </div>
 
             {person.shortNote ? (
-              <p className="mt-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 text-sm leading-relaxed text-[var(--color-text-primary)]">
+              <p className="mt-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-primary)]">
                 {person.shortNote}
               </p>
             ) : null}
@@ -184,7 +184,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
                   {signal.group?.name ?? groupNameOrFallback(primaryGroup)} · {formatShortDate(signal.detectedAt)}, {formatTime(signal.detectedAt)}
                 </p>
               </div>
-              {signalDescription ? <p className="mt-3 whitespace-pre-line border-t border-[var(--color-border-divider)] pt-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">{signalDescription}</p> : null}
+              {signalDescription ? <p className="mt-3 whitespace-pre-line border-t border-[var(--color-border-divider)] pt-3 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{signalDescription}</p> : null}
               <SignalSupportActions
                 signalId={signal.id}
                 assignmentMessage={assignmentMessage}

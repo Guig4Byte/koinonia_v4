@@ -49,16 +49,16 @@ export function attendanceTone(status?: AttendanceStatus | null): AttendanceTone
 }
 
 export function presenceToneClass(tone: PresenceTone) {
-  if (tone === "risk") return "text-[var(--color-metric-atencoes)]";
-  if (tone === "warn") return "text-[var(--color-badge-atencao-text)]";
-  if (tone === "ok") return "text-[var(--color-metric-presenca)]";
-  return "text-[var(--color-text-primary)]";
+  if (tone === "risk") return "text-[color:var(--color-metric-atencoes)]";
+  if (tone === "warn") return "text-[color:var(--color-badge-atencao-text)]";
+  if (tone === "ok") return "text-[color:var(--color-metric-presenca)]";
+  return "text-[color:var(--color-text-primary)]";
 }
 
 export function presenceTrendToneClass(direction: PresenceTrend["direction"], currentTone: PresenceTone) {
-  if (direction === "up") return "text-[var(--color-metric-presenca)]";
-  if (currentTone === "ok") return "text-[var(--color-badge-atencao-text)]";
-  return "text-[var(--color-metric-atencoes)]";
+  if (direction === "up") return "text-[color:var(--color-metric-presenca)]";
+  if (currentTone === "ok") return "text-[color:var(--color-badge-atencao-text)]";
+  return "text-[color:var(--color-metric-atencoes)]";
 }
 
 export function recentPresenceCountLabel(presentCount: number, encountersCount: number) {

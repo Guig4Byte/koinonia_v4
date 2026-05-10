@@ -13,7 +13,7 @@ export function LeaderCurrentEventCard({ event }: { event: LeaderCurrentEvent })
       <div className="k-card-header-row">
         <div className="min-w-0">
           <p className="k-item-title">{state.groupName}</p>
-          <p className="mt-0.5 text-sm text-[var(--color-text-secondary)]">
+          <p className="mt-0.5 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">
             {formatShortDate(event.startsAt)}, {formatTime(event.startsAt)}
           </p>
           {state.locationName ? (
@@ -24,7 +24,7 @@ export function LeaderCurrentEventCard({ event }: { event: LeaderCurrentEvent })
         </div>
         <Badge tone={state.badgeTone}>{state.badgeLabel}</Badge>
       </div>
-      <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">
+      <p className="mt-3 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">
         {state.description}
       </p>
       <Link

@@ -27,9 +27,9 @@ function getServerSnapshot(): TextSize {
 }
 
 function textSizeVisual(size: TextSize): { letterSize: string; plus: string } {
-  if (size === "extra-large") return { letterSize: "text-[15px]", plus: "++" };
-  if (size === "large") return { letterSize: "text-[13px]", plus: "+" };
-  return { letterSize: "text-[11px]", plus: "" };
+  if (size === "extra-large") return { letterSize: "text-[length:var(--text-base)]", plus: "++" };
+  if (size === "large") return { letterSize: "text-[length:var(--text-sm)]", plus: "+" };
+  return { letterSize: "text-[length:var(--text-xs)]", plus: "" };
 }
 
 export function TextSizeToggle({ className }: { className?: string }) {
@@ -54,7 +54,7 @@ export function TextSizeToggle({ className }: { className?: string }) {
       <span className="flex items-baseline leading-none">
         <span className={`font-extrabold ${visual.letterSize}`}>A</span>
         {visual.plus ? (
-          <span className="ml-[1px] text-[9px] font-bold">{visual.plus}</span>
+          <span className="ml-[1px] text-[length:var(--text-xs)] font-bold">{visual.plus}</span>
         ) : null}
       </span>
     </button>

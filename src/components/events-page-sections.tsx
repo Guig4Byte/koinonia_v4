@@ -32,7 +32,7 @@ export function EventCard({ event, user, now }: { event: EventListEvent; user: P
       <div className="k-card-header-row">
         <div className="min-w-0">
           <p className="k-item-title">{event.title}</p>
-          <p className="mt-0.5 text-sm leading-relaxed text-[var(--color-text-secondary)]">
+          <p className="mt-0.5 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">
             {eventMeta(event)}
           </p>
           {state.locationName ? (
@@ -47,15 +47,15 @@ export function EventCard({ event, user, now }: { event: EventListEvent; user: P
       {state.recordedPresence ? (
         <div className="event-card-stats">
           <p>
-            <strong className="text-[var(--color-metric-presenca)]">{formatPresenceRate(metrics.hasPresenceData, metrics.presenceRate)}</strong>
+            <strong className="text-[color:var(--color-metric-presenca)]">{formatPresenceRate(metrics.hasPresenceData, metrics.presenceRate)}</strong>
             <span>presença</span>
           </p>
           <p>
-            <strong className="text-[var(--color-metric-visitantes)]">{metrics.visitorCount}</strong>
+            <strong className="text-[color:var(--color-metric-visitantes)]">{metrics.visitorCount}</strong>
             <span>{metrics.visitorCount === 1 ? "visitante" : "visitantes"}</span>
           </p>
           <p>
-            <strong className="text-[var(--color-text-primary)]">{metrics.markingsCount}</strong>
+            <strong className="text-[color:var(--color-text-primary)]">{metrics.markingsCount}</strong>
             <span>marcações</span>
           </p>
         </div>
@@ -91,7 +91,7 @@ function ConsultationCard({ href, title, description }: { href: string; title: s
     <Link href={href} className="card-hover-lift block rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
       <p className="k-item-title">{title}</p>
       <p className="k-supporting-copy">{description}</p>
-      <p className="mt-3 text-sm font-semibold text-[var(--color-brand)]">Consultar →</p>
+      <p className="mt-3 text-[length:var(--text-sm)] font-semibold text-[color:var(--color-brand)]">Consultar →</p>
     </Link>
   );
 }
@@ -125,10 +125,10 @@ function PeriodChips({ mode, activePeriod }: { mode: EventConsultationMode; acti
             key={period}
             href={ROUTES.eventsConsultation(mode, period)}
             className={cn(
-              "rounded-full border px-3 py-2 text-xs font-semibold transition active:scale-[0.98]",
+              "rounded-full border px-3 py-2 text-[length:var(--text-xs)] font-semibold transition active:scale-[0.98]",
               active
-                ? "border-[var(--color-brand)] bg-[var(--color-brand-soft)] text-[var(--color-brand)]"
-                : "border-[var(--color-border-card)] bg-[var(--surface-alt)] text-[var(--color-text-secondary)]",
+                ? "border-[var(--color-brand)] bg-[var(--color-brand-soft)] text-[color:var(--color-brand)]"
+                : "border-[var(--color-border-card)] bg-[var(--surface-alt)] text-[color:var(--color-text-secondary)]",
             )}
           >
             {eventPeriodLabel(period)}

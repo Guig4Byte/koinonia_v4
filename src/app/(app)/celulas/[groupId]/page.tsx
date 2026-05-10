@@ -56,7 +56,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
           <div className="mb-4 flex justify-end">
             <Link
               href={ROUTES.editGroup(group.id)}
-              className="inline-flex min-h-10 items-center justify-center rounded-2xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)] transition active:scale-[0.98]"
+              className="inline-flex min-h-10 items-center justify-center rounded-2xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-[length:var(--text-sm)] font-semibold text-[color:var(--color-btn-secondary-text)] transition active:scale-[0.98]"
             >
               Editar célula
             </Link>
@@ -65,9 +65,9 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
 
         <section className="group-detail-hero">
           <div className="min-w-0">
-            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">Célula</p>
-            <h2 className="mt-1 text-[1.45rem] font-extrabold leading-tight tracking-[-0.02em] text-[var(--color-text-primary)]">{group.name}</h2>
-            <p className="mt-2 text-[13px] leading-relaxed text-[var(--color-text-secondary)]">
+            <p className="text-[length:var(--text-xs)] font-bold uppercase tracking-[0.14em] text-[color:var(--color-text-secondary)]">Célula</p>
+            <h2 className="mt-1 text-[length:var(--text-2xl)] font-extrabold leading-tight tracking-[-0.02em] text-[color:var(--color-text-primary)]">{group.name}</h2>
+            <p className="mt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">
               Liderança: {leadershipName}
               {supervisionName ? ` · Supervisão: ${supervisionName}` : ""}
             </p>

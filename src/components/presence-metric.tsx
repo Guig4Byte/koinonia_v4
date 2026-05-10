@@ -8,16 +8,16 @@ export type PresenceTrend = {
 };
 
 export function metricTextClass(tone: MetricTone): string {
-  if (tone === "ok") return "text-[var(--color-metric-presenca)]";
-  if (tone === "warn") return "text-[var(--color-badge-atencao-text)]";
-  if (tone === "risk") return "text-[var(--color-metric-atencoes)]";
-  return "text-[var(--color-text-secondary)]";
+  if (tone === "ok") return "text-[color:var(--color-metric-presenca)]";
+  if (tone === "warn") return "text-[color:var(--color-badge-atencao-text)]";
+  if (tone === "risk") return "text-[color:var(--color-metric-atencoes)]";
+  return "text-[color:var(--color-text-secondary)]";
 }
 
 function trendTextClass(trend: PresenceTrend, tone: MetricTone): string {
-  if (trend.direction === "up") return "text-[var(--color-metric-presenca)]";
-  if (tone === "ok") return "text-[var(--color-badge-atencao-text)]";
-  return "text-[var(--color-metric-atencoes)]";
+  if (trend.direction === "up") return "text-[color:var(--color-metric-presenca)]";
+  if (tone === "ok") return "text-[color:var(--color-badge-atencao-text)]";
+  return "text-[color:var(--color-metric-atencoes)]";
 }
 
 function presenceTrendLabel(trend: PresenceTrend, capitalized = false): string {

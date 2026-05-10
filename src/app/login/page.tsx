@@ -41,13 +41,13 @@ export default async function LoginPage({
           </div>
 
           <div className="mt-6 border-b border-[var(--login-divider)] pb-5">
-            <p className="login-brand-kicker text-[11px] font-extrabold uppercase tracking-[0.18em]">
+            <p className="login-brand-kicker text-[length:var(--text-xs)] font-extrabold uppercase tracking-[0.18em]">
               Koinonia
             </p>
-            <h1 className="font-serif-display mt-2 max-w-[15ch] text-[1.82rem] font-bold leading-[0.98] tracking-normal text-[var(--login-title)] sm:text-[2.1rem]">
+            <h1 className="font-serif-display mt-2 max-w-[15ch] text-[length:var(--text-3xl)] font-bold leading-[0.98] tracking-normal text-[color:var(--login-title)] sm:text-[length:var(--text-display)]">
               Cuidado pastoral em suas mãos.
             </h1>
-            <p className="mt-3 max-w-[34rem] text-[13px] leading-[1.5] text-[var(--login-text)] sm:text-sm">
+            <p className="mt-3 max-w-[34rem] text-[length:var(--text-sm)] leading-[1.5] text-[color:var(--login-text)] sm:text-[length:var(--text-sm)]">
               Entre com seu e-mail e sua senha para acessar sua visão pastoral.
             </p>
           </div>
@@ -56,13 +56,13 @@ export default async function LoginPage({
             {nextPath ? <input type="hidden" name="next" value={nextPath} /> : null}
 
             <label className="block">
-              <span className="mb-2 block text-[11px] font-extrabold uppercase tracking-[0.16em] text-[var(--login-muted)]">E-mail</span>
+              <span className="mb-2 block text-[length:var(--text-xs)] font-extrabold uppercase tracking-[0.16em] text-[color:var(--login-muted)]">E-mail</span>
               <input
                 name="email"
                 type="email"
                 autoComplete="email"
                 required
-                className="login-input min-h-[48px] w-full rounded-[16px] border px-4 text-[15px] font-medium outline-none transition"
+                className="login-input min-h-[48px] w-full rounded-[16px] border px-4 text-[length:var(--text-base)] font-medium outline-none transition"
                 placeholder="nome@igreja.com"
               />
             </label>
@@ -73,7 +73,7 @@ export default async function LoginPage({
 
             <button
               type="submit"
-              className="login-submit mt-1 inline-flex min-h-[48px] w-full items-center justify-center rounded-[16px] px-4 text-sm font-bold transition"
+              className="login-submit mt-1 inline-flex min-h-[48px] w-full items-center justify-center rounded-[16px] px-4 text-[length:var(--text-sm)] font-bold transition"
             >
               Entrar
             </button>

@@ -18,7 +18,7 @@ export function EventLocationAction({
 }) {
   return (
     <>
-      <label className="mt-4 block text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]" htmlFor="event-location-name">
+      <label className="mt-4 block text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.12em] text-[color:var(--color-text-secondary)]" htmlFor="event-location-name">
         Local deste encontro
       </label>
       <div className="mt-2 flex flex-col gap-2">
@@ -27,7 +27,7 @@ export function EventLocationAction({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           placeholder={defaultLocationName ? `Padrão: ${defaultLocationName}` : "Ex.: Casa da família Souza"}
-          className="min-h-11 rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] px-3 text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-brand)]"
+          className="min-h-11 rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] px-3 text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)] focus:border-[var(--color-brand)]"
           maxLength={EVENT_LOCATION_MAX_LENGTH}
           required
         />

@@ -33,8 +33,8 @@ export function AppShell({
       <header className="app-header">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-[11px] font-bold uppercase text-[var(--color-brand-accent)]">Koinonia</p>
-            <p className="mt-1 text-xs font-semibold text-[var(--color-text-on-header)]">{roleLabels[role]}</p>
+            <p className="text-[length:var(--text-xs)] font-bold uppercase text-[color:var(--color-brand-accent)]">Koinonia</p>
+            <p className="mt-1 text-[length:var(--text-xs)] font-semibold text-[color:var(--color-text-on-header)]">{roleLabels[role]}</p>
           </div>
 
           <div className="flex items-center gap-2">
@@ -45,8 +45,8 @@ export function AppShell({
 
         <div className="app-header-greeting mt-5 flex items-end justify-between gap-4">
           <div>
-            <p className="text-sm text-[var(--color-text-on-header)] opacity-80">Olá,</p>
-            <h1 className="app-header-name font-serif-display mt-1 text-[2.35rem] font-semibold leading-none text-[var(--color-text-on-header)]">
+            <p className="text-[length:var(--text-sm)] text-[color:var(--color-text-on-header)] opacity-80">Olá,</p>
+            <h1 className="app-header-name font-serif-display mt-1 text-[length:var(--text-hero)] font-semibold leading-none text-[color:var(--color-text-on-header)]">
               {firstName}.
             </h1>
           </div>

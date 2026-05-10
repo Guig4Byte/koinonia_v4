@@ -23,7 +23,7 @@ export function SignalSupportFeedback({
   return (
     <>
       {guidance ? (
-        <p className="text-xs leading-relaxed text-[var(--color-text-secondary)]">
+        <p className="text-[length:var(--text-xs)] leading-relaxed text-[color:var(--color-text-secondary)]">
           {guidance}
         </p>
       ) : null}

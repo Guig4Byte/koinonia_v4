@@ -41,8 +41,8 @@ export function GroupForm({
 
       <Card padding="lg" className="rounded-[1.35rem]">
         <p className="k-section-kicker">Célula</p>
-        <h2 className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-[var(--color-text-primary)]">{title}</h2>
-        <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-secondary)]">{description}</p>
+        <h2 className="mt-1 text-[length:var(--text-2xl)] font-semibold tracking-[-0.03em] text-[color:var(--color-text-primary)]">{title}</h2>
+        <p className="mt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{description}</p>
       </Card>
 
       {errorMessage ? (
@@ -61,7 +61,7 @@ export function GroupForm({
               maxLength={GROUP_NAME_MAX_LENGTH}
               required
               placeholder="Ex.: Célula Central"
-              className="min-h-12 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-4 text-sm font-medium text-[var(--color-text-primary)] outline-none transition focus:border-[var(--color-brand)] focus:bg-[var(--color-bg-card)]"
+              className="min-h-12 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-4 text-[length:var(--text-sm)] font-medium text-[color:var(--color-text-primary)] outline-none transition focus:border-[var(--color-brand)] focus:bg-[var(--color-bg-card)]"
             />
           </label>
 
@@ -72,9 +72,9 @@ export function GroupForm({
               defaultValue={initialValues.locationName ?? ""}
               maxLength={GROUP_LOCATION_MAX_LENGTH}
               placeholder="Casa, bairro ou referência"
-              className="min-h-12 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-4 text-sm font-medium text-[var(--color-text-primary)] outline-none transition focus:border-[var(--color-brand)] focus:bg-[var(--color-bg-card)]"
+              className="min-h-12 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-4 text-[length:var(--text-sm)] font-medium text-[color:var(--color-text-primary)] outline-none transition focus:border-[var(--color-brand)] focus:bg-[var(--color-bg-card)]"
             />
-            <span className="block text-xs leading-relaxed text-[var(--color-text-secondary)]">
+            <span className="block text-[length:var(--text-xs)] leading-relaxed text-[color:var(--color-text-secondary)]">
               O local padrão é copiado para novos encontros, mas cada encontro pode ter local próprio.
             </span>
           </label>
@@ -90,7 +90,7 @@ export function GroupForm({
                 <select
                   name="meetingDayOfWeek"
                   defaultValue={initialValues.meetingDayOfWeek ?? ""}
-                  className="min-h-12 w-full appearance-none rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-4 pr-12 text-sm font-medium text-[var(--color-text-primary)] outline-none transition focus:border-[var(--color-brand)] focus:bg-[var(--color-bg-card)]"
+                  className="min-h-12 w-full appearance-none rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-4 pr-12 text-[length:var(--text-sm)] font-medium text-[color:var(--color-text-primary)] outline-none transition focus:border-[var(--color-brand)] focus:bg-[var(--color-bg-card)]"
                 >
                   <option value="">Sem dia fixo</option>
                   {WEEKDAY_OPTIONS.map((option) => (
@@ -109,7 +109,7 @@ export function GroupForm({
             </label>
           </div>
 
-          <span className="block text-xs leading-relaxed text-[var(--color-text-secondary)]">
+          <span className="block text-[length:var(--text-xs)] leading-relaxed text-[color:var(--color-text-secondary)]">
             Informe dia e horário juntos para gerar encontros automaticamente.
           </span>
         </section>
@@ -126,7 +126,7 @@ export function GroupForm({
             />
             <span>
               <span className="k-item-title-sm block">Célula ativa</span>
-              <span className="mt-1 block text-xs leading-relaxed text-[var(--color-text-secondary)]">
+              <span className="mt-1 block text-[length:var(--text-xs)] leading-relaxed text-[color:var(--color-text-secondary)]">
                 Células inativas não aparecem nas superfícies padrão, encontros ou check-in.
               </span>
             </span>

@@ -43,10 +43,10 @@ export function EventDetailHeaderCard({
     <Card>
       <div className="k-card-header-row">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">
+          <p className="text-[length:var(--text-sm)] font-semibold uppercase tracking-[0.12em] text-[color:var(--color-text-secondary)]">
             {checkInLabel}
           </p>
-          <h2 className="mt-1 text-2xl font-semibold text-[var(--color-text-primary)]">{title}</h2>
+          <h2 className="mt-1 text-[length:var(--text-2xl)] font-semibold text-[color:var(--color-text-primary)]">{title}</h2>
           <p className="k-item-meta">
             {groupName ?? "Encontro geral"} · {formatShortDate(startsAt)}, {formatTime(startsAt)}
           </p>
@@ -54,7 +54,7 @@ export function EventDetailHeaderCard({
             <p className="k-item-meta">{locationName}</p>
           ) : null}
           {groupId && showGroupLink ? (
-            <Link href={ROUTES.group(groupId)} className="mt-3 inline-flex text-sm font-semibold text-[var(--color-brand)]">
+            <Link href={ROUTES.group(groupId)} className="mt-3 inline-flex text-[length:var(--text-sm)] font-semibold text-[color:var(--color-brand)]">
               Ver célula →
             </Link>
           ) : null}
