@@ -85,6 +85,12 @@ Check-in seguro
   Durante salvamento, marcações, visitantes, cancelamento e novo envio devem ficar bloqueados para evitar estado concorrente.
   Erros de salvamento precisam aparecer no resumo e na barra fixa, pois o usuário pode estar no fim da lista.
   Falhas de rede devem ter mensagem própria e recuperável, sem depender apenas de resposta JSON da API.
+
+Busca de pessoas
+  A busca/autocomplete deve esperar debounce curto antes de consultar a API.
+  Toda nova consulta deve cancelar a requisição anterior para evitar resultado antigo sobrescrevendo resultado novo.
+  O componente precisa mostrar estados visuais para carregando, vazio e erro.
+  A lista de resultados deve expor semântica básica de combobox/listbox e permitir navegação por teclado com setas, Enter e Escape.
 ```
 
 ## Entidades principais

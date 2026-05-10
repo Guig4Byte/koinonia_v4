@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useId, useState, type KeyboardEvent } from "react";
+import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { Badge, isBadgeTone, type BadgeTone } from "@/components/ui/badge";
-import { shouldSearchPeople, normalizeSearchQuery } from "@/features/search/search-view";
+import { SEARCH_MIN_QUERY_LENGTH, shouldSearchPeople, normalizeSearchQuery } from "@/features/search/search-view";
 import { isRecord, readJsonResponse } from "@/lib/json";
 import { API_ROUTES } from "@/lib/api-routes";
 import { ROUTES } from "@/lib/routes";
+import { cn } from "@/lib/cn";
 
 type SearchResult = {
   id: string;
@@ -20,6 +22,11 @@ type SearchResult = {
 type SearchResponse = {
   people: SearchResult[];
 };
+
+type SearchStatus = "idle" | "loading" | "success" | "error";
+
+const SEARCH_DEBOUNCE_MS = 300;
+const NO_ACTIVE_OPTION = -1;
 
 function isSearchResult(value: unknown): value is SearchResult {
   if (!isRecord(value)) return false;
@@ -37,22 +44,127 @@ function isSearchResponse(value: unknown): value is SearchResponse {
   return isRecord(value) && Array.isArray(value.people) && value.people.every(isSearchResult);
 }
 
+function pluralizeResults(count: number) {
+  return count === 1 ? "1 pessoa encontrada." : `${count} pessoas encontradas.`;
+}
+
+function getSearchMessage({
+  query,
+  resultsCount,
+  status,
+}: {
+  query: string;
+  resultsCount: number;
+  status: SearchStatus;
+}) {
+  const normalizedQuery = normalizeSearchQuery(query);
+
+  if (normalizedQuery.length === 0) return "Digite para buscar uma pessoa.";
+  if (!shouldSearchPeople(normalizedQuery)) return `Digite pelo menos ${SEARCH_MIN_QUERY_LENGTH} letras.`;
+  if (status === "loading") return "Buscando pessoas...";
+  if (status === "error") return "Não foi possível buscar agora. Tente novamente.";
+  if (resultsCount === 0) return "Nenhuma pessoa encontrada.";
+  return pluralizeResults(resultsCount);
+}
+
 export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: string }) {
+  const router = useRouter();
+  const listboxId = useId();
+  const statusId = useId();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
+  const [status, setStatus] = useState<SearchStatus>("idle");
+  const [activeIndex, setActiveIndex] = useState(NO_ACTIVE_OPTION);
 
-  async function onChange(value: string) {
+  const normalizedQuery = normalizeSearchQuery(query);
+  const canSearch = shouldSearchPeople(normalizedQuery);
+  const showPanel = canSearch && status !== "idle";
+  const hasResults = results.length > 0;
+  const activePerson = activeIndex >= 0 ? results[activeIndex] : undefined;
+  const activeOptionId = activePerson ? `${listboxId}-option-${activePerson.id}` : undefined;
+  const searchMessage = getSearchMessage({ query, resultsCount: results.length, status });
+
+  useEffect(() => {
+    if (!canSearch) return;
+
+    const controller = new AbortController();
+
+    const timeoutId = window.setTimeout(async () => {
+      try {
+        const response = await fetch(API_ROUTES.searchPeople(normalizedQuery), { signal: controller.signal });
+        if (!response.ok) throw new Error("Search request failed");
+
+        const data = await readJsonResponse(response);
+        if (controller.signal.aborted) return;
+
+        setResults(isSearchResponse(data) ? data.people : []);
+        setStatus("success");
+      } catch {
+        if (controller.signal.aborted) return;
+        setResults([]);
+        setStatus("error");
+      }
+    }, SEARCH_DEBOUNCE_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      controller.abort();
+    };
+  }, [canSearch, normalizedQuery]);
+
+
+  function handleQueryChange(value: string) {
+    const nextNormalizedQuery = normalizeSearchQuery(value);
+
     setQuery(value);
-    const normalizedQuery = normalizeSearchQuery(value);
-    if (!shouldSearchPeople(normalizedQuery)) {
+    setActiveIndex(NO_ACTIVE_OPTION);
+
+    if (!shouldSearchPeople(nextNormalizedQuery)) {
       setResults([]);
+      setStatus("idle");
       return;
     }
 
-    const response = await fetch(API_ROUTES.searchPeople(normalizedQuery));
-    if (!response.ok) return;
-    const data = await readJsonResponse(response);
-    setResults(isSearchResponse(data) ? data.people : []);
+    if (nextNormalizedQuery !== normalizedQuery) {
+      setResults([]);
+      setStatus("loading");
+    }
+  }
+
+  function moveActiveOption(direction: 1 | -1) {
+    if (!hasResults) return;
+    setActiveIndex((current) => {
+      if (current === NO_ACTIVE_OPTION) return direction === 1 ? 0 : results.length - 1;
+      return (current + direction + results.length) % results.length;
+    });
+  }
+
+  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      moveActiveOption(1);
+      return;
+    }
+
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      moveActiveOption(-1);
+      return;
+    }
+
+    if (event.key === "Enter" && activePerson) {
+      event.preventDefault();
+      router.push(ROUTES.person(activePerson.id));
+      return;
+    }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      setQuery("");
+      setResults([]);
+      setStatus("idle");
+      setActiveIndex(NO_ACTIVE_OPTION);
+    }
   }
 
   return (
@@ -62,27 +174,75 @@ export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: 
         <input
           id="search-input"
           value={query}
-          onChange={(event) => onChange(event.target.value)}
+          onChange={(event) => handleQueryChange(event.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder={placeholder}
+          role="combobox"
+          aria-autocomplete="list"
+          aria-haspopup="listbox"
+          aria-controls={showPanel ? listboxId : undefined}
+          aria-describedby={statusId}
+          aria-expanded={showPanel}
+          aria-activedescendant={activeOptionId}
           className="w-full bg-transparent text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)]"
         />
       </div>
 
-      {results.length > 0 ? (
-        <div className="absolute left-0 right-0 top-14 z-30 overflow-hidden rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] shadow-card">
-          {results.map((person) => (
-            <Link key={person.id} href={ROUTES.person(person.id)} className="block border-b border-[var(--color-border-divider)] px-4 py-3 last:border-0">
-              <div className="k-card-header-row">
-                <span className="min-w-0">
-                  <span className="k-item-title-sm block">{person.fullName}</span>
-                  <span className="mt-0.5 block text-[length:var(--text-xs)] text-[color:var(--color-text-secondary)]">{person.context}</span>
-                </span>
-                <Badge tone={person.statusTone ?? "neutral"} className="shrink-0">
-                  {person.status}
-                </Badge>
-              </div>
-            </Link>
-          ))}
+      <p id={statusId} aria-live="polite" className="sr-only">
+        {searchMessage}
+      </p>
+
+      {showPanel ? (
+        <div
+          id={listboxId}
+          role="listbox"
+          aria-label="Resultados da busca de pessoas"
+          className="absolute left-0 right-0 top-14 z-30 overflow-hidden rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] shadow-card"
+        >
+          {status === "loading" ? (
+            <div className="px-4 py-3 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">Buscando pessoas...</div>
+          ) : null}
+
+          {status === "error" ? (
+            <div role="alert" className="px-4 py-3 text-[length:var(--text-sm)] font-medium text-[color:var(--color-badge-risco-text)]">
+              Não foi possível buscar agora. Tente novamente.
+            </div>
+          ) : null}
+
+          {status === "success" && !hasResults ? (
+            <div className="px-4 py-3 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">Nenhuma pessoa encontrada.</div>
+          ) : null}
+
+          {status === "success" && hasResults
+            ? results.map((person, index) => {
+                const isActive = index === activeIndex;
+
+                return (
+                  <Link
+                    key={person.id}
+                    id={`${listboxId}-option-${person.id}`}
+                    href={ROUTES.person(person.id)}
+                    role="option"
+                    aria-selected={isActive}
+                    className={cn(
+                      "block border-b border-[var(--color-border-divider)] px-4 py-3 outline-none last:border-0 focus:bg-[var(--color-btn-secondary-bg)]",
+                      isActive && "bg-[var(--color-btn-secondary-bg)]",
+                    )}
+                    onMouseEnter={() => setActiveIndex(index)}
+                  >
+                    <div className="k-card-header-row">
+                      <span className="min-w-0">
+                        <span className="k-item-title-sm block">{person.fullName}</span>
+                        <span className="mt-0.5 block text-[length:var(--text-xs)] text-[color:var(--color-text-secondary)]">{person.context}</span>
+                      </span>
+                      <Badge tone={person.statusTone ?? "neutral"} className="shrink-0">
+                        {person.status}
+                      </Badge>
+                    </div>
+                  </Link>
+                );
+              })
+            : null}
         </div>
       ) : null}
     </div>
