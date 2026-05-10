@@ -1,0 +1,113 @@
+/* Reusable utility classes. */
+
+.font-serif-display {
+  font-family: var(--font-display);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.shadow-card {
+  box-shadow: var(--color-shadow-card);
+}
+
+.priority-card {
+  --priority-accent: var(--color-brand-accent);
+  --priority-soft: transparent;
+  position: relative;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--priority-accent) 34%, var(--color-border-card));
+  background:
+    linear-gradient(90deg, var(--priority-soft), transparent 68%),
+    var(--color-bg-card);
+}
+
+.priority-card::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 4px;
+  background: var(--priority-accent);
+  opacity: 0.92;
+}
+
+.priority-card-risk {
+  --priority-accent: var(--color-metric-atencoes);
+  --priority-soft: color-mix(in srgb, var(--color-badge-risco-bg) 64%, transparent);
+  box-shadow:
+    0 14px 34px color-mix(in srgb, var(--color-metric-atencoes) 16%, transparent),
+    var(--color-shadow-card);
+}
+
+.priority-card-warn {
+  --priority-accent: var(--color-badge-atencao-text);
+  --priority-soft: color-mix(in srgb, var(--color-badge-atencao-bg) 58%, transparent);
+  box-shadow:
+    0 12px 28px color-mix(in srgb, var(--color-badge-atencao-text) 12%, transparent),
+    var(--color-shadow-card);
+}
+
+.priority-card-support {
+  --priority-accent: var(--color-badge-apoio-text);
+  --priority-soft: color-mix(in srgb, var(--color-badge-apoio-bg) 58%, transparent);
+  box-shadow:
+    0 12px 28px color-mix(in srgb, var(--color-badge-apoio-text) 12%, transparent),
+    var(--color-shadow-card);
+}
+
+.priority-card-care {
+  --priority-accent: var(--color-badge-cuidado-text);
+  --priority-soft: color-mix(in srgb, var(--color-badge-cuidado-bg) 45%, transparent);
+}
+
+.priority-card-stable {
+  --priority-accent: var(--color-metric-presenca);
+  --priority-soft: color-mix(in srgb, var(--color-metric-presenca) 13%, transparent);
+  box-shadow:
+    0 12px 28px color-mix(in srgb, var(--color-metric-presenca) 8%, transparent),
+    var(--color-shadow-card);
+}
+
+.priority-card-muted {
+  --priority-accent: #7b7a73;
+  --priority-soft: color-mix(in srgb, #7b7a73 11%, transparent);
+  box-shadow: var(--color-shadow-card);
+}
+
+.card-hover-lift {
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.card-hover-lift:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 16px 36px rgba(60, 30, 10, 0.10),
+    0 2px 4px rgba(60, 30, 10, 0.04);
+}
+
+html[data-theme="dark"] .card-hover-lift:hover {
+  box-shadow:
+    0 16px 36px rgba(0, 0, 0, 0.28),
+    0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.pastoral-section-title {
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  text-transform: none;
+}
+
+.pastoral-section-detail {
+  margin-top: 4px;
+  color: var(--color-text-secondary);
+  font-size: 12.5px;
+  line-height: 1.45;
+}

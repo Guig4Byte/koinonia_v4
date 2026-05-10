@@ -1,0 +1,26 @@
+/* Shared page layout primitives. */
+
+.safe-page {
+  --bottom-nav-height: 64px;
+  --bottom-nav-offset: 12px;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 14px 16px calc(var(--bottom-nav-height) + var(--bottom-nav-offset) + env(safe-area-inset-bottom) + 32px);
+}
+
+.safe-page-focus {
+  padding-bottom: calc(112px + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 768px) {
+  .safe-page {
+    max-width: 560px;
+    padding-inline: 20px;
+  }
+
+  .app-header {
+    padding: 18px;
+  }
+}
