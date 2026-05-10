@@ -4,6 +4,7 @@ import { Plus } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { CellsPageSections } from "@/components/cells-page-sections";
 import { CellsStructureSearch } from "@/components/cells-structure-search";
+import { buttonClassName } from "@/components/ui/button";
 import { ContextSummary, EmptyState, InfoCard, SectionTitle } from "@/components/base-cards";
 import { buildWeeklyPresenceSummaryItem } from "@/features/dashboard/presence-health";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
@@ -58,7 +59,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
           {canCreateGroup ? (
             <Link
               href={ROUTES.newCell}
-              className="k-primary-action inline-flex min-h-10 shrink-0 items-center gap-2 rounded-2xl px-3 text-sm font-bold transition active:scale-[0.98]"
+              className={buttonClassName({ size: "sm", className: "shrink-0 rounded-2xl px-3 font-bold" })}
             >
               <Plus className="h-4 w-4" aria-hidden="true" />
               Nova célula

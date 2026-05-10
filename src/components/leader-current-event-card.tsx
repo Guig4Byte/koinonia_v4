@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { buttonClassName } from "@/components/ui/button";
 import { leaderCurrentEventState, type LeaderCurrentEvent } from "@/features/leader/leader-page-view";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { ROUTES } from "@/lib/routes";
@@ -28,9 +29,9 @@ export function LeaderCurrentEventCard({ event }: { event: LeaderCurrentEvent })
       </p>
       <Link
         href={ROUTES.event(event.id)}
-        className="k-primary-action mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-full px-4 text-sm font-semibold transition active:scale-[0.98]"
+        className={buttonClassName({ fullWidth: true, size: "sm", className: "mt-4 rounded-full px-4" })}
       >
-        {state.ctaLabel} <span aria-hidden="true" className="ml-1">→</span>
+        {state.ctaLabel} <span aria-hidden="true">→</span>
       </Link>
     </section>
   );

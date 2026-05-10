@@ -48,8 +48,8 @@ export function Feedback({
       role={role}
       aria-live={ariaLive}
       className={cn(
-        "rounded-2xl border text-sm leading-relaxed",
-        compact ? "px-3 py-2 text-xs" : "p-3",
+        "rounded-2xl border text-[length:var(--text-sm)] leading-relaxed",
+        compact ? "px-3 py-2 text-[length:var(--text-xs)]" : "p-3",
         feedbackToneClass[tone],
         className,
       )}

@@ -44,6 +44,31 @@ docs
   Produto, vocabulário, arquitetura e briefing para agentes.
 ```
 
+## Regra de UI/CSS
+
+A UI deve separar decisão de design, primitivos visuais e componentes de domínio para evitar crescimento de CSS global e conflitos com Tailwind.
+
+```txt
+tokens.css
+  Guarda decisões de design: cores, tipografia, raios, sombras e aliases.
+
+components/ui/
+  Primitivos visuais reutilizáveis. Usam Tailwind e CSS variables.
+  Não usam classes k-* nem termos de domínio pastoral.
+
+components/
+  Componentes de domínio. Usam Tailwind para layout, espaçamento e composição.
+  Estados visuais simples ficam em variant maps no componente React.
+  CSS global só para pseudo-elementos, efeitos estruturais ou estados difíceis de expressar com Tailwind.
+
+components.css
+  Arquivo controlado/legado. Não deve receber novas classes sem justificativa.
+  Deve encolher conforme estados simples migram para componentes.
+
+utilities.css
+  Utilitários compartilhados pequenos. Quando forem tipográficos, devem consumir tokens --text-*.
+```
+
 ## Entidades principais
 
 | Entidade | Papel |

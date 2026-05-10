@@ -184,7 +184,7 @@
   justify-content: space-between;
   gap: 8px;
   color: var(--color-text-primary);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 800;
   text-transform: capitalize;
 }
@@ -198,7 +198,7 @@
   border: 1px solid var(--color-border-divider);
   border-radius: 12px;
   color: var(--color-brand);
-  font-size: 18px;
+  font-size: 1.125rem;
   line-height: 1;
 }
 
@@ -212,7 +212,7 @@
 .event-calendar-weekdays {
   margin-top: 12px;
   color: var(--color-text-muted);
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 800;
   text-align: center;
 }
@@ -229,7 +229,7 @@
 
 .event-calendar-day {
   color: var(--color-text-primary);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 700;
   transition:
     background-color 150ms ease,
@@ -263,7 +263,7 @@
   border-radius: 13px;
   background: var(--surface-alt);
   color: var(--color-text-primary);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 700;
   transition:
     background-color 150ms ease,
@@ -444,26 +444,6 @@
   outline-offset: 2px;
 }
 
-.k-primary-action {
-  background: var(--color-btn-primary-bg);
-  color: var(--color-btn-primary-text) !important;
-  border: 1px solid color-mix(in srgb, var(--color-btn-primary-bg) 72%, var(--color-btn-primary-text));
-  box-shadow: var(--color-shadow-card);
-}
-
-.k-primary-action:hover {
-  background: color-mix(in srgb, var(--color-btn-primary-bg) 92%, var(--color-btn-primary-text));
-}
-
-.k-primary-action svg {
-  color: currentColor;
-  opacity: 1;
-}
-
-.k-primary-action:focus-visible {
-  outline: 2px solid var(--color-brand-accent);
-  outline-offset: 2px;
-}
 
 .group-schedule-fields {
   display: grid;
@@ -533,7 +513,7 @@
 .team-description {
   margin: 0 0 16px;
   color: var(--color-text-secondary);
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.5;
 }
 
@@ -603,7 +583,7 @@
   background: transparent;
   color: var(--color-brand);
   padding: 0 6px;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 700;
   transition:
     background-color 150ms ease,
@@ -641,7 +621,7 @@
   background: var(--surface-alt);
   color: var(--color-text-secondary);
   padding: 0 12px;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 700;
   transition:
     background-color 150ms ease,
@@ -688,7 +668,7 @@
 .cell-priority-heading p {
   margin: 4px 0 0;
   color: var(--color-text-secondary);
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.45;
 }
 
@@ -725,7 +705,7 @@
   border-radius: var(--radius-circle);
   background: var(--color-avatar-bg);
   color: var(--color-avatar-text);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 800;
 }
 
@@ -770,13 +750,13 @@
   align-items: center;
   gap: 4px;
   color: var(--color-brand);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
 
 .team-supervisor-summary-text {
   color: var(--color-text-primary);
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.625;
 }
 
@@ -790,7 +770,7 @@
   border-radius: var(--radius-pill);
   color: var(--color-brand);
   padding: 0 2px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 800;
   transition:
     color 150ms ease,
@@ -876,7 +856,7 @@
   background: transparent;
   color: var(--color-brand);
   padding: 0 2px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 800;
 }
 
@@ -912,7 +892,7 @@
   background: var(--metric-card-bg);
   padding: 8px 12px;
   color: var(--color-text-secondary);
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.35;
 }
 
@@ -921,67 +901,67 @@
 }
 
 .context-summary-label {
-  font-size: 14px !important;
-  line-height: 1.25 !important;
+  font-size: 0.875rem;
+  line-height: 1.25;
 }
 
 .context-summary-detail {
-  margin-top: 2px !important;
-  color: var(--color-text-muted) !important;
-  font-size: 12.5px !important;
-  line-height: 1.35 !important;
+  margin-top: 2px;
+  color: var(--color-text-muted);
+  font-size: 0.78125rem;
+  line-height: 1.35;
 }
 
 .context-summary-detail-strong {
-  color: var(--color-text-muted) !important;
+  color: var(--color-text-muted);
 }
 
 .context-summary-value {
-  font-size: 20px !important;
-  line-height: 1 !important;
+  font-size: 1.25rem;
+  line-height: 1;
 }
 
 .context-summary-prominent .context-summary-label {
-  font-size: 14.5px !important;
+  font-size: 0.90625rem;
 }
 
 .context-summary-prominent .context-summary-detail {
-  font-size: 13px !important;
-  line-height: 1.4 !important;
+  font-size: 0.8125rem;
+  line-height: 1.4;
 }
 
 .context-summary-prominent .context-summary-value {
-  font-size: 22px !important;
+  font-size: 1.375rem;
 }
 
 
 .context-summary-balanced .context-summary-label {
-  font-size: 14px !important;
+  font-size: 0.875rem;
 }
 
 .context-summary-balanced .context-summary-detail {
-  font-size: 12.75px !important;
-  line-height: 1.38 !important;
+  font-size: 0.796875rem;
+  line-height: 1.38;
 }
 
 .context-summary-balanced .context-summary-value {
-  font-size: 21px !important;
+  font-size: 1.3125rem;
 }
 
 .context-summary-compact .context-summary-label {
-  font-size: 13.5px !important;
+  font-size: 0.84375rem;
 }
 
 .context-summary-compact .context-summary-detail {
-  font-size: 12px !important;
+  font-size: 0.75rem;
 }
 
 .context-summary-compact .context-summary-value {
-  font-size: 20px !important;
+  font-size: 1.25rem;
 }
 
 .context-summary-inset {
-  margin-bottom: 0 !important;
+  margin-bottom: 0;
 }
 
 .context-summary-inset .context-summary-row {
@@ -1055,7 +1035,7 @@
   border-bottom: 1px solid var(--color-border-divider);
   padding: 14px 18px;
   color: var(--color-brand);
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1081,7 +1061,7 @@
   border-radius: 12px;
   background: color-mix(in srgb, var(--color-bg-card) 82%, transparent);
   color: var(--color-brand);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 800;
   padding: 0 14px;
   white-space: nowrap;
@@ -1129,7 +1109,7 @@
 .events-description {
   margin: 0;
   color: var(--color-text-secondary);
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.5;
 }
 
@@ -1155,7 +1135,7 @@
 
 .event-card-badge {
   padding: 4px 8px;
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 
 .event-card-stats {
@@ -1178,7 +1158,7 @@
 }
 
 .event-card-stats strong {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 800;
   line-height: 1;
 }
@@ -1186,7 +1166,7 @@
 .event-card-stats span {
   margin-top: 3px;
   color: var(--color-text-secondary);
-  font-size: 11px;
+  font-size: 0.6875rem;
   line-height: 1.2;
 }
 
@@ -1198,7 +1178,7 @@
   gap: 6px;
   margin-top: 8px;
   border-radius: var(--radius-pill);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 800;
   transition:
     background-color 150ms ease,

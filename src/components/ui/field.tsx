@@ -23,7 +23,7 @@ export function Field({
     <div className={className}>
       <label
         className={cn(
-          "mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]",
+          "mb-2 block text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]",
           labelClassName,
         )}
         htmlFor={htmlFor}
@@ -32,7 +32,11 @@ export function Field({
         {label}
       </label>
       {children}
-      {description ? <p className="k-item-detail">{description}</p> : null}
+      {description ? (
+        <p className="mt-1 text-[length:var(--text-xs)] leading-relaxed text-[var(--color-text-secondary)]">
+          {description}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -55,7 +59,7 @@ export function TextareaField({
       <textarea
         id={id}
         className={cn(
-          "w-full resize-none rounded-xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-2 text-sm leading-relaxed text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-secondary)] focus:border-[var(--color-brand)]",
+          "w-full resize-none rounded-xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-2 text-[length:var(--text-sm)] leading-relaxed text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-secondary)] focus:border-[var(--color-brand)]",
           textareaClassName,
         )}
         {...props}
