@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
+import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { ProgressiveList } from "@/components/progressive-list";
 import { EmptyState } from "@/components/base-cards";
 import { priorityCardClass } from "@/components/card-priority";
@@ -19,20 +19,32 @@ import { cn } from "@/lib/cn";
 import { avatarColorForName, initials } from "@/lib/text";
 import { ROUTES } from "@/lib/routes";
 
-export function TeamGroupLink({ group }: { group: TeamGroup }) {
-  const tone = groupBadgeTone(group);
-
+function TeamCellLink({
+  href,
+  name,
+  subtitle,
+  badgeLabel,
+  badgeTone,
+  className,
+}: {
+  href: string;
+  name: string;
+  subtitle: string;
+  badgeLabel?: string;
+  badgeTone?: BadgeTone;
+  className?: string;
+}) {
   return (
     <Link
-      href={ROUTES.group(group.id)}
-      className={cn("team-cell-link card-hover-lift", shouldShowGroupBadge(group) && `team-cell-link-${tone}`)}
+      href={href}
+      className={cn("team-cell-link card-hover-lift", className)}
     >
       <span className="min-w-0">
-        <span className="k-item-title-sm block truncate">{group.name}</span>
-        <span className="k-item-caption-truncate">{compactGroupSubtitle(group)}</span>
+        <span className="k-item-title-sm block truncate">{name}</span>
+        <span className="k-item-caption-truncate">{subtitle}</span>
       </span>
       <span className="flex shrink-0 items-center gap-2">
-        {shouldShowGroupBadge(group) ? <Badge tone={tone}>{group.statusLabel}</Badge> : null}
+        {badgeLabel ? <Badge tone={badgeTone}>{badgeLabel}</Badge> : null}
         <span className="text-sm font-bold text-[var(--color-brand)] opacity-60" aria-hidden="true">
           →
         </span>
@@ -41,27 +53,34 @@ export function TeamGroupLink({ group }: { group: TeamGroup }) {
   );
 }
 
+export function TeamGroupLink({ group }: { group: TeamGroup }) {
+  const tone = groupBadgeTone(group);
+  const showBadge = shouldShowGroupBadge(group);
+
+  return (
+    <TeamCellLink
+      href={ROUTES.group(group.id)}
+      name={group.name}
+      subtitle={compactGroupSubtitle(group)}
+      badgeLabel={showBadge ? group.statusLabel : undefined}
+      badgeTone={tone}
+      className={showBadge ? `team-cell-link-${tone}` : undefined}
+    />
+  );
+}
+
 export function InactiveTeamGroupLink({ group }: { group: InactiveTeamGroup }) {
   const scheduleText = inactiveGroupScheduleText(group);
 
   return (
-    <Link
+    <TeamCellLink
       href={ROUTES.editGroup(group.id)}
-      className="team-cell-link team-cell-link-neutral card-hover-lift"
-    >
-      <span className="min-w-0">
-        <span className="k-item-title-sm block truncate">{group.name}</span>
-        <span className="k-item-caption-truncate">
-          {scheduleText}{group.locationName ? ` · ${group.locationName}` : ""}
-        </span>
-      </span>
-      <span className="flex shrink-0 items-center gap-2">
-        <Badge tone="neutral">Inativa</Badge>
-        <span className="text-sm font-bold text-[var(--color-brand)] opacity-60" aria-hidden="true">
-          →
-        </span>
-      </span>
-    </Link>
+      name={group.name}
+      subtitle={`${scheduleText}${group.locationName ? ` · ${group.locationName}` : ""}`}
+      badgeLabel="Inativa"
+      badgeTone="neutral"
+      className="team-cell-link-neutral"
+    />
   );
 }
 

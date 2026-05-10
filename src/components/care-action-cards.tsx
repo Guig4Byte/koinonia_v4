@@ -2,10 +2,10 @@ import type { MouseEvent } from "react";
 import { ArrowLeft, CheckCircle2, MessageCircleMore, NotebookPen, Phone } from "lucide-react";
 import { CARE_NOTE_MAX_LENGTH, type CareContactLinks } from "@/features/care/care-actions-view";
 import { CARE_COPY } from "@/features/care/care-copy";
+import { ActionTextareaPanel } from "@/components/action-textarea-panel";
 import { ActionPanel } from "@/components/ui/action-panel";
 import { Button, buttonClassName } from "@/components/ui/button";
 import { Feedback } from "@/components/ui/feedback";
-import { TextareaField } from "@/components/ui/field";
 import { cn } from "@/lib/cn";
 
 const disabledLinkClass = "pointer-events-none cursor-not-allowed opacity-50";
@@ -172,26 +172,30 @@ export function CareNoteCard({
   const hasNote = Boolean(note.trim());
 
   return (
-    <ActionPanel title={CARE_COPY.notePrompt.title}>
-      <TextareaField
-        id={noteId}
-        label={CARE_COPY.noteForm.label}
-        value={note}
-        onChange={(event) => onNoteChange(event.target.value)}
-        rows={3}
-        maxLength={CARE_NOTE_MAX_LENGTH}
-        placeholder={CARE_COPY.noteForm.placeholder}
-        className="mb-2"
-      />
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <Button type="button" variant="secondary" fullWidth disabled={isPending} onClick={onBack}>
-          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          {CARE_COPY.noteForm.backLabel}
-        </Button>
-        <Button type="button" fullWidth disabled={!hasNote || isPending} onClick={onSave}>
-          {isPending ? CARE_COPY.noteForm.savingLabel : CARE_COPY.noteForm.saveLabel}
-        </Button>
-      </div>
-    </ActionPanel>
+    <ActionTextareaPanel
+      title={CARE_COPY.notePrompt.title}
+      fieldId={noteId}
+      fieldLabel={CARE_COPY.noteForm.label}
+      value={note}
+      onValueChange={onNoteChange}
+      maxLength={CARE_NOTE_MAX_LENGTH}
+      placeholder={CARE_COPY.noteForm.placeholder}
+      actions={[
+        {
+          id: "back",
+          label: CARE_COPY.noteForm.backLabel,
+          icon: <ArrowLeft className="h-4 w-4" aria-hidden="true" />,
+          variant: "secondary",
+          disabled: isPending,
+          onClick: onBack,
+        },
+        {
+          id: "save",
+          label: isPending ? CARE_COPY.noteForm.savingLabel : CARE_COPY.noteForm.saveLabel,
+          disabled: !hasNote || isPending,
+          onClick: onSave,
+        },
+      ]}
+    />
   );
 }
