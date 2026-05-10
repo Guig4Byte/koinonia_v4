@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { cn } from "@/lib/cn";
 import { useApiAction } from "@/lib/use-api-action";
+import { API_ROUTES } from "@/lib/api-routes";
 
 export function PersonStatusActions({ personId }: { personId: string }) {
   const router = useRouter();
@@ -14,7 +15,7 @@ export function PersonStatusActions({ personId }: { personId: string }) {
   function markActive() {
     runApiAction(
       () =>
-        fetch(`/api/people/${personId}/mark-active`, {
+        fetch(API_ROUTES.markPersonActive(personId), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
         }),

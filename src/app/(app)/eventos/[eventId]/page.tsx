@@ -18,6 +18,7 @@ import { canCheckInEvent, canManageEventDetails, canViewEvent } from "@/features
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/search-params";
+import { ROUTES } from "@/lib/routes";
 
 type EventDetailPageProps = {
   params: Promise<{ eventId: string }>;
@@ -87,7 +88,7 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
       nav={appNavForRole(user, { active: "events" })}
       hideBottomNav={showCheckInForm}
     >
-      <BackLink href={showCheckInForm && completed ? `/eventos/${event.id}` : "/eventos"}>
+      <BackLink href={showCheckInForm && completed ? ROUTES.event(event.id) : ROUTES.events}>
         {showCheckInForm && completed ? "Voltar ao resumo" : "Encontros"}
       </BackLink>
 
@@ -119,7 +120,7 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
             initialVisitors={visitorRows}
             submitLabel={detailState.checkInSubmitLabel}
             mode={completed ? "adjust" : "register"}
-            cancelHref={completed ? `/eventos/${event.id}` : "/eventos"}
+            cancelHref={completed ? ROUTES.event(event.id) : ROUTES.events}
             cancelLabel={completed ? "Cancelar" : "Voltar"}
             saveBarOffset="page"
           />
@@ -146,7 +147,7 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
             ) : null}
             {canOfferAdjustment ? (
               <Link
-                href={`/eventos/${event.id}?modo=ajuste`}
+                href={ROUTES.eventCheckInAdjustment(event.id)}
                 className="k-primary-action inline-flex w-full items-center justify-center rounded-full px-4 py-3 text-sm font-semibold transition active:scale-[0.99]"
               >
                 Ajustar presença →

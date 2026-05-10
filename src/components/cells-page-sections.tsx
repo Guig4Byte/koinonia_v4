@@ -9,6 +9,7 @@ import {
   type GroupSectionKey,
   type SupervisorGroup,
 } from "@/features/groups/cells-page-view";
+import { ROUTES } from "@/lib/routes";
 
 function CellsGroupCard({ group, sectionKey }: { group: SupervisorGroup; sectionKey: GroupSectionKey }) {
   const badge = groupBadge(group);
@@ -23,7 +24,7 @@ function CellsGroupCard({ group, sectionKey }: { group: SupervisorGroup; section
       badgeTone={badge?.tone}
       showBadge={Boolean(badge)}
       cardTone={sectionCardTone(sectionKey)}
-      href={`/celulas/${group.id}`}
+      href={ROUTES.group(group.id)}
       hasPresenceData={group.hasPresenceData}
       presenceTrend={group.presenceTrend}
       noPresenceLabel="Sem presença recente"

@@ -17,6 +17,7 @@ import {
   type SignalSupportFlowStage,
 } from "@/features/signals/support-actions-view";
 import { useApiAction } from "@/lib/use-api-action";
+import { API_ROUTES } from "@/lib/api-routes";
 
 type SignalSupportActionsProps = {
   signalId: string;
@@ -48,7 +49,7 @@ export function SignalSupportActions({
   function send(action: SignalSupportAction) {
     runApiAction(
       () =>
-        fetch(`/api/signals/${signalId}/support`, {
+        fetch(API_ROUTES.signalSupport(signalId), {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(signalSupportRequestPayload(action, note)),

@@ -8,6 +8,7 @@ import { GroupKind } from "@/generated/prisma/client";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/search-params";
+import { ROUTES } from "@/lib/routes";
 
 
 type EditCellPageProps = {
@@ -19,7 +20,7 @@ export default async function EditCellPage({ params, searchParams }: EditCellPag
   const user = await getCurrentUser();
 
   if (!canManageGroups(user)) {
-    redirect("/");
+    redirect(ROUTES.root);
   }
 
   const { groupId } = await params;
@@ -51,7 +52,7 @@ export default async function EditCellPage({ params, searchParams }: EditCellPag
       <GroupForm
         title="Editar célula"
         description="Ajuste os dados básicos da célula. Liderança e supervisão entram na próxima etapa para preservar responsabilidades múltiplas."
-        backHref={group.isActive ? `/celulas/${group.id}` : "/equipe"}
+        backHref={group.isActive ? ROUTES.group(group.id) : ROUTES.team}
         backLabel={group.isActive ? "Voltar para célula" : "Voltar para equipe"}
         action={updateCellAction.bind(null, group.id)}
         submitLabel="Salvar célula"

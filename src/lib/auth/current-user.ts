@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { readAuthSession } from "@/lib/auth/session";
+import { ROUTES } from "@/lib/routes";
 
 export async function getAuthenticatedUser() {
   const session = await readAuthSession();
@@ -21,7 +22,7 @@ export async function getCurrentUser() {
   const authenticatedUser = await getAuthenticatedUser();
 
   if (!authenticatedUser) {
-    redirect("/login");
+    redirect(ROUTES.login);
   }
 
   return authenticatedUser;

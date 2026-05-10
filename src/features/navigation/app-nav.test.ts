@@ -1,20 +1,21 @@
 import { describe, expect, it } from "vitest";
 import { UserRole } from "@/generated/prisma/client";
+import { ROUTES } from "@/lib/routes";
 import { appNavForRole, homeHrefForRole, secondaryNavForRole } from "./app-nav";
 
 describe("app navigation", () => {
   it("maps the home route for each role", () => {
-    expect(homeHrefForRole(UserRole.LEADER)).toBe("/lider");
-    expect(homeHrefForRole(UserRole.SUPERVISOR)).toBe("/supervisor");
-    expect(homeHrefForRole(UserRole.PASTOR)).toBe("/pastor");
-    expect(homeHrefForRole(UserRole.ADMIN)).toBe("/pastor");
+    expect(homeHrefForRole(UserRole.LEADER)).toBe(ROUTES.leader);
+    expect(homeHrefForRole(UserRole.SUPERVISOR)).toBe(ROUTES.supervisor);
+    expect(homeHrefForRole(UserRole.PASTOR)).toBe(ROUTES.pastor);
+    expect(homeHrefForRole(UserRole.ADMIN)).toBe(ROUTES.pastor);
   });
 
   it("maps the secondary section for each role", () => {
-    expect(secondaryNavForRole(UserRole.LEADER)).toMatchObject({ href: "/pessoas", label: "Membros" });
-    expect(secondaryNavForRole(UserRole.SUPERVISOR)).toMatchObject({ href: "/celulas", label: "Células" });
-    expect(secondaryNavForRole(UserRole.PASTOR)).toMatchObject({ href: "/equipe", label: "Equipe" });
-    expect(secondaryNavForRole(UserRole.ADMIN)).toMatchObject({ href: "/equipe", label: "Equipe" });
+    expect(secondaryNavForRole(UserRole.LEADER)).toMatchObject({ href: ROUTES.people, label: "Membros" });
+    expect(secondaryNavForRole(UserRole.SUPERVISOR)).toMatchObject({ href: ROUTES.cells, label: "Células" });
+    expect(secondaryNavForRole(UserRole.PASTOR)).toMatchObject({ href: ROUTES.team, label: "Equipe" });
+    expect(secondaryNavForRole(UserRole.ADMIN)).toMatchObject({ href: ROUTES.team, label: "Equipe" });
   });
 
   it("marks only the selected tab as active and receives the indicator", () => {

@@ -19,6 +19,7 @@ import { splitPastoralSections } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/search-params";
+import { ROUTES } from "@/lib/routes";
 
 type PeoplePageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -30,11 +31,11 @@ export default async function PeoplePage({ searchParams }: PeoplePageProps) {
   const activeMembersFilter = readMembersFilter(firstParam(queryParams.membros));
 
   if (user.role === UserRole.SUPERVISOR) {
-    redirect("/celulas");
+    redirect(ROUTES.cells);
   }
 
   if (user.role === UserRole.PASTOR || user.role === UserRole.ADMIN) {
-    redirect("/equipe");
+    redirect(ROUTES.team);
   }
 
   const memberMembershipWhere = {
@@ -115,12 +116,12 @@ export default async function PeoplePage({ searchParams }: PeoplePageProps) {
       <section id="membros" className="scroll-mt-6">
         <SectionTitle detail={peopleView.membersSectionDetail}>Membros da célula</SectionTitle>
         <MemberPriorityList
-          basePath="/pessoas"
+          basePath={ROUTES.people}
           activeFilter={activeMembersFilter}
           priorityMembers={peopleView.priorityMembers}
           regularMembers={peopleView.regularMembers}
           keyForMember={(member) => member.id}
-          hrefForMember={(member) => `/pessoas/${member.id}`}
+          hrefForMember={(member) => ROUTES.person(member.id)}
           priorityContextForMember={(member) => member.subtitle ?? member.context}
           filteredContextForMember={(member) => member.priorityRank >= 5 ? undefined : member.subtitle ?? member.context}
           priorityMoreLabel="Ver mais pessoas no radar"

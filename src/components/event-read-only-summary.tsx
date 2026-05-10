@@ -8,11 +8,12 @@ import {
   sortPeopleByName,
 } from "@/features/events/event-detail-view";
 import type { EventAttendanceGroup, EventReadOnlyMember, EventReadOnlyVisitor } from "@/features/events/event-detail-view";
+import { ROUTES } from "@/lib/routes";
 
 function AttendanceMemberRow({ member }: { member: EventReadOnlyMember }) {
   return (
     <Link
-      href={`/pessoas/${member.personId}`}
+      href={ROUTES.person(member.personId)}
       className="flex items-center justify-between gap-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 transition active:scale-[0.99]"
     >
       <span className="min-w-0 text-sm font-medium text-[var(--color-text-primary)]">{member.fullName}</span>
@@ -119,7 +120,7 @@ export function EventReadOnlySummary({
             {sortPeopleByName(visitors).map((visitor) => (
               <Link
                 key={visitor.id}
-                href={`/pessoas/${visitor.personId}`}
+                href={ROUTES.person(visitor.personId)}
                 className="flex items-center justify-between gap-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 transition active:scale-[0.99]"
               >
                 <span className="min-w-0 text-sm font-medium text-[var(--color-text-primary)]">{visitor.fullName}</span>

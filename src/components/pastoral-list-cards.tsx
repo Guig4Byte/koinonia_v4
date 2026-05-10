@@ -4,6 +4,7 @@ import { groupNameOrFallback } from "@/features/groups/group-display";
 import { signalBadgeForViewer, signalDescriptionForViewer } from "@/features/signals/display";
 import { isSupportRequest } from "@/features/signals/sections";
 import { SignalSeverity, UserRole } from "@/generated/prisma/client";
+import { ROUTES } from "@/lib/routes";
 
 export const PASTORAL_SECTION_LIMIT = 4;
 
@@ -58,7 +59,7 @@ function pastoralSignalCards<TSignal extends PastoralSignalCardItem>({
       <PersonSignalCard
         key={signal.id}
         name={signal.person.fullName}
-        detailHref={`/pessoas/${signal.person.id}`}
+        detailHref={ROUTES.person(signal.person.id)}
         context={contextForSignal(signal, viewer)}
         reason={reasonForSignal(signal, viewer)}
         severity={signal.severity === SignalSeverity.URGENT ? "risk" : "warn"}
@@ -126,7 +127,7 @@ function inCarePersonCards<TPerson extends InCarePersonCardItem>({
   return people.map((person) => (
     <PersonMiniCard
       key={person.id}
-      href={`/pessoas/${person.id}`}
+      href={ROUTES.person(person.id)}
       name={person.fullName}
       context={contextForPerson(person)}
       badgeLabel="Em cuidado"

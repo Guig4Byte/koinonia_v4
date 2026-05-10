@@ -23,6 +23,7 @@ import {
 import type { EventActionStatus, EventPatchPayload, OpenEventPicker } from "@/features/events/event-actions-view";
 import { timeOptionsWithCurrent } from "@/features/events/time-options";
 import { readJsonResponse } from "@/lib/json";
+import { API_ROUTES } from "@/lib/api-routes";
 
 export function EventDetailsActions({
   eventId,
@@ -60,7 +61,7 @@ export function EventDetailsActions({
     setMessage(null);
     setErrorMessage(null);
 
-    const response = await fetch(`/api/events/${eventId}`, {
+    const response = await fetch(API_ROUTES.event(eventId), {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

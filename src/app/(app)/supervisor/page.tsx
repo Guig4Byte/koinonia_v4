@@ -9,12 +9,13 @@ import { groupNameOrFallback } from "@/features/groups/group-display";
 import { buildSupervisorPageView } from "@/features/pastoral-home/supervisor-page-view";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { redirect } from "next/navigation";
+import { ROUTES } from "@/lib/routes";
 
 export default async function SupervisorPage() {
   const user = await getCurrentUser();
 
   if (!canUseSupervisorDashboard(user)) {
-    redirect("/");
+    redirect(ROUTES.root);
   }
 
   const dashboard = await getSupervisorDashboard(user);

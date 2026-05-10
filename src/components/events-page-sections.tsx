@@ -15,6 +15,7 @@ import {
 } from "@/features/events/events-page-view";
 import type { PermissionUser } from "@/features/permissions/permissions";
 import { cn } from "@/lib/cn";
+import { ROUTES } from "@/lib/routes";
 
 export function EventCard({ event, user, now }: { event: EventListEvent; user: PermissionUser; now: Date }) {
   const state = buildEventListCardState(event, user, now);
@@ -59,7 +60,7 @@ export function EventCard({ event, user, now }: { event: EventListEvent; user: P
       ) : null}
 
       <Link
-        href={`/eventos/${event.id}`}
+        href={ROUTES.event(event.id)}
         className={cn(
           "event-card-action",
           state.canRegisterPresence ? "event-card-action-primary" : "event-card-action-secondary",
@@ -93,12 +94,12 @@ export function EventConsultationCards() {
   return (
     <div className="space-y-3">
       <ConsultationCard
-        href="/eventos?consulta=sem-presenca&periodo=semana"
+        href={ROUTES.eventsConsultation("sem-presenca", "semana")}
         title="Sem presença registrada"
         description="Alguns encontros podem já ter acontecido, mas ainda não têm presença marcada."
       />
       <ConsultationCard
-        href="/eventos?consulta=historico&periodo=semana"
+        href={ROUTES.eventsConsultation("historico", "semana")}
         title="Histórico de presença"
         description="Consulte encontros já registrados por período."
       />
@@ -116,7 +117,7 @@ function PeriodChips({ mode, activePeriod }: { mode: EventConsultationMode; acti
         return (
           <Link
             key={period}
-            href={`/eventos?consulta=${mode}&periodo=${period}`}
+            href={ROUTES.eventsConsultation(mode, period)}
             className={cn(
               "rounded-full border px-3 py-2 text-xs font-semibold transition active:scale-[0.98]",
               active
@@ -149,7 +150,7 @@ export function EventsConsultationView({
 
   return (
     <>
-      <BackLink href="/eventos">Encontros</BackLink>
+      <BackLink href={ROUTES.events}>Encontros</BackLink>
       <h2 className="events-title">{view.title}</h2>
       <p className="events-description">{view.description}</p>
       <PeriodChips mode={mode} activePeriod={period} />

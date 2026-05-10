@@ -10,6 +10,7 @@ import {
   type PersonPresenceView,
 } from "@/features/people/person-detail-view";
 import { formatShortDate, formatTime } from "@/lib/format";
+import { ROUTES } from "@/lib/routes";
 
 export function PersonPresenceCard({ view }: { view: PersonPresenceView }) {
   const {
@@ -67,7 +68,7 @@ export function PersonPresenceCard({ view }: { view: PersonPresenceView }) {
             {recentAttendances.map((attendance) => (
               <Link
                 key={attendance.id}
-                href={`/eventos/${attendance.event.id}`}
+                href={ROUTES.event(attendance.event.id)}
                 className="flex min-h-12 items-center justify-between gap-3 rounded-2xl bg-[var(--surface-alt)] px-3 py-2 transition active:scale-[0.99]"
               >
                 <span className="min-w-0">

@@ -12,6 +12,7 @@ import {
 } from "@/components/care-action-cards";
 import { careContactInfo, careNoteId, careSavedMessage, type CareFlowStage } from "@/features/care/care-actions-view";
 import { useApiAction } from "@/lib/use-api-action";
+import { API_ROUTES } from "@/lib/api-routes";
 
 export function CareActions({ personId, phone }: { personId?: string; phone?: string | null }) {
   const router = useRouter();
@@ -36,7 +37,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
 
     runApiAction(
       () =>
-        fetch(`/api/care/${personId}`, {
+        fetch(API_ROUTES.care(personId), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

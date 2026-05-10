@@ -5,6 +5,7 @@ import { createAuthSession } from "@/lib/auth/session";
 import { homeForRole } from "@/lib/auth/redirects";
 import { verifyPassword } from "@/lib/auth/password";
 import { prisma } from "@/lib/prisma";
+import { ROUTES } from "@/lib/routes";
 
 function normalizeEmail(value: FormDataEntryValue | null) {
   return typeof value === "string" ? value.trim().toLowerCase() : "";
@@ -17,14 +18,13 @@ function normalizePassword(value: FormDataEntryValue | null) {
 function safeNextPath(value: FormDataEntryValue | null) {
   if (typeof value !== "string") return null;
   if (!value.startsWith("/") || value.startsWith("//")) return null;
-  if (value.startsWith("/login")) return null;
-  if (value.startsWith("/logout")) return null;
+  if (value.startsWith(ROUTES.login)) return null;
+  if (value.startsWith(ROUTES.logout)) return null;
   return value;
 }
 
 function loginErrorRedirect(nextPath: string | null): never {
-  const suffix = nextPath ? `&next=${encodeURIComponent(nextPath)}` : "";
-  redirect(`/login?erro=credenciais${suffix}`);
+  redirect(ROUTES.loginError(nextPath));
 }
 
 export async function loginAction(formData: FormData) {

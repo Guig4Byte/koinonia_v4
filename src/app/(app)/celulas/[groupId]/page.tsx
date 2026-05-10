@@ -29,6 +29,7 @@ import { getPastoralSectionSignalsByPerson, isSupportRequest, isUrgentOrPastoral
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/search-params";
+import { ROUTES } from "@/lib/routes";
 
 type GroupDetailPageProps = {
   params: Promise<{ groupId: string }>;
@@ -134,7 +135,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
         {canEditGroup ? (
           <div className="mb-4 flex justify-end">
             <Link
-              href={`/celulas/${group.id}/editar`}
+              href={ROUTES.editGroup(group.id)}
               className="inline-flex min-h-10 items-center justify-center rounded-2xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)] transition active:scale-[0.98]"
             >
               Editar célula
@@ -209,12 +210,12 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
         <section id="membros" className="scroll-mt-6">
           <SectionTitle detail={membersView.sectionDetail}>Membros</SectionTitle>
           <MemberPriorityList
-            basePath={`/celulas/${group.id}`}
+            basePath={ROUTES.group(group.id)}
             activeFilter={activeMembersFilter}
             priorityMembers={membersView.priorityMembers}
             regularMembers={membersView.regularMembers}
             keyForMember={(member) => member.membershipId}
-            hrefForMember={(member) => `/pessoas/${member.personId}`}
+            hrefForMember={(member) => ROUTES.person(member.personId)}
             priorityContextForMember={(member) => member.subtitle}
             filteredContextForMember={(member) => member.subtitle}
             priorityMoreLabel="Ver mais pessoas em atenção"

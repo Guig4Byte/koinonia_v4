@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AUTH_SESSION_COOKIE, readAuthSessionFromToken } from "@/lib/auth/token";
 import { homeForRole } from "@/lib/auth/redirects";
+import { API_ROUTES } from "@/lib/api-routes";
+import { ROUTES } from "@/lib/routes";
 
-const PUBLIC_ROUTES = new Set(["/login", "/logout"]);
+const PUBLIC_ROUTES: ReadonlySet<string> = new Set([ROUTES.login, ROUTES.logout]);
 
 function isPublicPath(pathname: string) {
   if (PUBLIC_ROUTES.has(pathname)) return true;
@@ -12,10 +14,10 @@ function isPublicPath(pathname: string) {
 }
 
 function redirectToLogin(request: NextRequest) {
-  const loginUrl = new URL("/login", request.url);
+  const loginUrl = new URL(ROUTES.login, request.url);
   const nextPath = `${request.nextUrl.pathname}${request.nextUrl.search}`;
 
-  if (nextPath !== "/") {
+  if (nextPath !== ROUTES.root) {
     loginUrl.searchParams.set("next", nextPath);
   }
 
@@ -26,7 +28,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const session = await readAuthSessionFromToken(request.cookies.get(AUTH_SESSION_COOKIE)?.value);
 
-  if (pathname === "/login" && session) {
+  if (pathname === ROUTES.login && session) {
     return NextResponse.redirect(new URL(homeForRole(session.role), request.url));
   }
 
@@ -35,7 +37,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (!session) {
-    if (pathname.startsWith("/api/")) {
+    if (pathname.startsWith(API_ROUTES.prefix)) {
       return NextResponse.json({ error: "Não autenticado." }, { status: 401 });
     }
 

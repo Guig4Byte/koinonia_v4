@@ -24,6 +24,7 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { avatarColorForName, initials } from "@/lib/text";
+import { ROUTES } from "@/lib/routes";
 
 export default async function PersonDetailPage({ params }: { params: Promise<{ personId: string }> }) {
   const user = await getCurrentUser();
@@ -213,7 +214,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
         <>
           <SectionTitle>Contexto da célula</SectionTitle>
           <DetailLinkCard
-            href={`/celulas/${primaryGroup.id}`}
+            href={ROUTES.group(primaryGroup.id)}
             title={primaryGroup.name}
             meta={
               <>

@@ -19,6 +19,8 @@ import {
 } from "@/features/check-in/check-in-view";
 import { findDuplicateVisitorName } from "@/features/check-in/visitor-validation";
 import { isRecord, readJsonResponse } from "@/lib/json";
+import { API_ROUTES } from "@/lib/api-routes";
+import { ROUTES } from "@/lib/routes";
 
 type Member = {
   personId: string;
@@ -152,7 +154,7 @@ export function CheckInList({
     startTransition(async () => {
       setErrorMessage(null);
 
-      const response = await fetch(`/api/events/${eventId}/check-in`, {
+      const response = await fetch(API_ROUTES.eventCheckIn(eventId), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -169,7 +171,7 @@ export function CheckInList({
         return;
       }
 
-      router.replace(`/eventos/${eventId}?presenca=${checkInConfirmationParam(mode)}`);
+      router.replace(ROUTES.eventPresenceConfirmation(eventId, checkInConfirmationParam(mode)));
     });
   }
 

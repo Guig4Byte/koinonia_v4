@@ -23,6 +23,7 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/search-params";
 import { normalizeSearchText } from "@/lib/text";
+import { ROUTES } from "@/lib/routes";
 
 type TeamPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -32,7 +33,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
   const user = await getCurrentUser();
 
   if (!canUsePastorDashboard(user)) {
-    redirect("/");
+    redirect(ROUTES.root);
   }
 
   const params = searchParams ? await searchParams : {};
@@ -74,7 +75,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
           </div>
           {canCreateGroup ? (
             <Link
-              href="/celulas/nova"
+              href={ROUTES.newCell}
               className="k-primary-action inline-flex min-h-10 shrink-0 items-center gap-2 rounded-2xl px-3 text-sm font-bold transition active:scale-[0.98]"
             >
               <Plus className="h-4 w-4" aria-hidden="true" />

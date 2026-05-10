@@ -6,6 +6,7 @@ import { appNavForRole } from "@/features/navigation/app-nav";
 import { canManageGroups } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { firstParam } from "@/lib/search-params";
+import { ROUTES } from "@/lib/routes";
 
 
 type NewCellPageProps = {
@@ -16,7 +17,7 @@ export default async function NewCellPage({ searchParams }: NewCellPageProps) {
   const user = await getCurrentUser();
 
   if (!canManageGroups(user)) {
-    redirect("/");
+    redirect(ROUTES.root);
   }
 
   const params = searchParams ? await searchParams : {};
@@ -30,7 +31,7 @@ export default async function NewCellPage({ searchParams }: NewCellPageProps) {
       <GroupForm
         title="Nova célula"
         description="Cadastre apenas o essencial para a célula aparecer na estrutura pastoral e gerar encontros quando tiver agenda padrão."
-        backHref="/equipe"
+        backHref={ROUTES.team}
         backLabel="Voltar para equipe"
         action={createCellAction}
         submitLabel="Salvar célula"

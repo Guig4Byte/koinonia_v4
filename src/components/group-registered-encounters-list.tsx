@@ -8,6 +8,7 @@ import { type BadgeTone } from "@/components/ui/badge";
 import { presenceTone } from "@/features/events/presence-display";
 import { summarizeEventPresence } from "@/features/events/presence-summary";
 import { formatShortDate, formatTime } from "@/lib/format";
+import { ROUTES } from "@/lib/routes";
 
 export type GroupRegisteredEncounter = {
   id: string;
@@ -66,7 +67,7 @@ export function GroupRegisteredEncountersList({ events }: { events: GroupRegiste
             return (
               <Link
                 key={event.id}
-                href={`/eventos/${event.id}`}
+                href={ROUTES.event(event.id)}
                 className="group-encounter-card relative min-h-[74px] gap-3 overflow-hidden py-3 pr-4 pl-5"
                 style={encounterToneVars(presenceBadgeTone)}
               >

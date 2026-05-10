@@ -4,6 +4,7 @@ import { BottomNav, type NavItem } from "@/components/bottom-nav";
 import { TextSizeToggle } from "@/components/text-size-toggle";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { UserRole } from "@/generated/prisma/client";
+import { ROUTES } from "@/lib/routes";
 
 const roleLabels: Record<UserRole, string> = {
   ADMIN: "Admin",
@@ -50,7 +51,7 @@ export function AppShell({
             </h1>
           </div>
 
-          <form action="/logout" method="post" className="shrink-0">
+          <form action={ROUTES.logout} method="post" className="shrink-0">
             <button
               type="submit"
               aria-label="Sair"

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { formatShortDate, formatTime } from "@/lib/format";
+import { ROUTES } from "@/lib/routes";
 
 export type GroupPendingEvent = {
   id: string;
@@ -19,7 +20,7 @@ export function GroupPendingEventCard({
 }) {
   return (
     <section className="group-pending-event-section">
-      <Link href={`/eventos/${event.id}`} className={cn("group-pending-event-card", "priority-card priority-card-warn")}>
+      <Link href={ROUTES.event(event.id)} className={cn("group-pending-event-card", "priority-card priority-card-warn")}>
         <span className="group-pending-event-top">
           <span>{statusLabel}</span>
         </span>

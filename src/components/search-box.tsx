@@ -6,6 +6,8 @@ import { Search } from "lucide-react";
 import { Badge, isBadgeTone, type BadgeTone } from "@/components/ui/badge";
 import { shouldSearchPeople, normalizeSearchQuery } from "@/features/search/search-view";
 import { isRecord, readJsonResponse } from "@/lib/json";
+import { API_ROUTES } from "@/lib/api-routes";
+import { ROUTES } from "@/lib/routes";
 
 type SearchResult = {
   id: string;
@@ -47,7 +49,7 @@ export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: 
       return;
     }
 
-    const response = await fetch(`/api/search?q=${encodeURIComponent(normalizedQuery)}`);
+    const response = await fetch(API_ROUTES.searchPeople(normalizedQuery));
     if (!response.ok) return;
     const data = await readJsonResponse(response);
     setResults(isSearchResponse(data) ? data.people : []);
@@ -69,7 +71,7 @@ export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: 
       {results.length > 0 ? (
         <div className="absolute left-0 right-0 top-14 z-30 overflow-hidden rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] shadow-card">
           {results.map((person) => (
-            <Link key={person.id} href={`/pessoas/${person.id}`} className="block border-b border-[var(--color-border-divider)] px-4 py-3 last:border-0">
+            <Link key={person.id} href={ROUTES.person(person.id)} className="block border-b border-[var(--color-border-divider)] px-4 py-3 last:border-0">
               <div className="flex items-start justify-between gap-3">
                 <span className="min-w-0">
                   <span className="block text-sm font-semibold text-[var(--color-text-primary)]">{person.fullName}</span>

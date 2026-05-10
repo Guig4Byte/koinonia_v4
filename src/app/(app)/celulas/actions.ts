@@ -7,9 +7,10 @@ import { canManageGroups } from "@/features/permissions/permissions";
 import { parseGroupFormData, type GroupFormError, type GroupFormValues } from "@/features/groups/group-form";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
+import { ROUTES, routeWithQuery } from "@/lib/routes";
 
 function redirectWithError(path: string, error: GroupFormError | "permissao" | "nao-encontrada"): never {
-  redirect(`${path}?erro=${encodeURIComponent(error)}`);
+  redirect(routeWithQuery(path, { erro: error }));
 }
 
 function groupData(values: GroupFormValues) {
@@ -59,12 +60,12 @@ export async function createCellAction(formData: FormData) {
   const user = await getCurrentUser();
 
   if (!canManageGroups(user)) {
-    redirectWithError("/equipe", "permissao");
+    redirectWithError(ROUTES.team, "permissao");
   }
 
   const parsed = parseGroupFormData(formData);
   if (!parsed.ok) {
-    redirectWithError("/celulas/nova", parsed.error);
+    redirectWithError(ROUTES.newCell, parsed.error);
   }
 
   const group = await prisma.smallGroup.create({
@@ -84,19 +85,19 @@ export async function createCellAction(formData: FormData) {
 
   await refreshFutureGeneratedMeetings(user, group);
 
-  redirect(group.isActive ? `/celulas/${group.id}?salvo=celula-criada` : "/equipe?salvo=celula-criada");
+  redirect(routeWithQuery(group.isActive ? ROUTES.group(group.id) : ROUTES.team, { salvo: "celula-criada" }));
 }
 
 export async function updateCellAction(groupId: string, formData: FormData) {
   const user = await getCurrentUser();
 
   if (!canManageGroups(user)) {
-    redirectWithError(`/celulas/${groupId}/editar`, "permissao");
+    redirectWithError(ROUTES.editGroup(groupId), "permissao");
   }
 
   const parsed = parseGroupFormData(formData);
   if (!parsed.ok) {
-    redirectWithError(`/celulas/${groupId}/editar`, parsed.error);
+    redirectWithError(ROUTES.editGroup(groupId), parsed.error);
   }
 
   const current = await prisma.smallGroup.findFirst({
@@ -116,7 +117,7 @@ export async function updateCellAction(groupId: string, formData: FormData) {
   });
 
   if (!current) {
-    redirectWithError("/equipe", "nao-encontrada");
+    redirectWithError(ROUTES.team, "nao-encontrada");
   }
 
   const shouldRefreshMeetings = hasScheduleOrLocationChange(current, parsed.values);
@@ -155,5 +156,5 @@ export async function updateCellAction(groupId: string, formData: FormData) {
     });
   }
 
-  redirect(group.isActive ? `/celulas/${group.id}?salvo=celula-atualizada` : "/equipe?salvo=celula-atualizada");
+  redirect(routeWithQuery(group.isActive ? ROUTES.group(group.id) : ROUTES.team, { salvo: "celula-atualizada" }));
 }

@@ -8,12 +8,13 @@ import { canUsePastorDashboard } from "@/features/permissions/permissions";
 import { buildPastorPageView } from "@/features/pastoral-home/pastor-page-view";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { redirect } from "next/navigation";
+import { ROUTES } from "@/lib/routes";
 
 export default async function PastorPage() {
   const user = await getCurrentUser();
 
   if (!canUsePastorDashboard(user)) {
-    redirect("/");
+    redirect(ROUTES.root);
   }
 
   const dashboard = await getPastorDashboard(user);

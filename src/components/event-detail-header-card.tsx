@@ -4,6 +4,7 @@ import { ContextSummary } from "@/components/base-cards";
 import type { BadgeTone } from "@/components/ui/badge";
 import type { PresenceTone } from "@/features/events/presence-display";
 import { formatShortDate, formatTime } from "@/lib/format";
+import { ROUTES } from "@/lib/routes";
 
 export function EventDetailHeaderCard({
   title,
@@ -51,7 +52,7 @@ export function EventDetailHeaderCard({
             <p className="mt-1 text-sm text-[var(--color-text-secondary)]">{locationName}</p>
           ) : null}
           {groupId && showGroupLink ? (
-            <Link href={`/celulas/${groupId}`} className="mt-3 inline-flex text-sm font-semibold text-[var(--color-brand)]">
+            <Link href={ROUTES.group(groupId)} className="mt-3 inline-flex text-sm font-semibold text-[var(--color-brand)]">
               Ver célula →
             </Link>
           ) : null}

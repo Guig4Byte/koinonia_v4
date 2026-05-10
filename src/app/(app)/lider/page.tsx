@@ -10,12 +10,13 @@ import { canUseLeaderDashboard } from "@/features/permissions/permissions";
 import { getLeaderDashboard } from "@/features/dashboard/queries";
 import { signalTitleForViewer } from "@/features/signals/display";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { ROUTES } from "@/lib/routes";
 
 export default async function LeaderPage() {
   const user = await getCurrentUser();
 
   if (!canUseLeaderDashboard(user)) {
-    redirect("/");
+    redirect(ROUTES.root);
   }
 
   const dashboard = await getLeaderDashboard(user);

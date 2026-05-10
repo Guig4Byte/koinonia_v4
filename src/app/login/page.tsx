@@ -5,11 +5,12 @@ import { LoginErrorMessage, PasswordField } from "@/app/login/login-form-control
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getAuthenticatedUser } from "@/lib/auth/current-user";
 import { homeForRole } from "@/lib/auth/redirects";
+import { ROUTES } from "@/lib/routes";
 
 function safeNextParam(value: string | undefined) {
   if (!value) return null;
   if (!value.startsWith("/") || value.startsWith("//")) return null;
-  if (value.startsWith("/login") || value.startsWith("/logout")) return null;
+  if (value.startsWith(ROUTES.login) || value.startsWith(ROUTES.logout)) return null;
   return value;
 }
 

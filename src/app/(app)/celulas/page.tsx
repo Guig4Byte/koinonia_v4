@@ -15,6 +15,7 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { firstParam } from "@/lib/search-params";
 import { normalizeSearchText } from "@/lib/text";
 import { UserRole } from "@/generated/prisma/client";
+import { ROUTES } from "@/lib/routes";
 
 type CellsPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -24,7 +25,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
   const user = await getCurrentUser();
 
   if (!canUseSupervisorDashboard(user)) {
-    redirect(user.role === UserRole.PASTOR || user.role === UserRole.ADMIN ? "/equipe" : user.role === UserRole.LEADER ? "/pessoas" : "/");
+    redirect(user.role === UserRole.PASTOR || user.role === UserRole.ADMIN ? ROUTES.team : user.role === UserRole.LEADER ? ROUTES.people : ROUTES.root);
   }
 
   const params = searchParams ? await searchParams : {};
@@ -55,7 +56,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
           </div>
           {canCreateGroup ? (
             <Link
-              href="/celulas/nova"
+              href={ROUTES.newCell}
               className="k-primary-action inline-flex min-h-10 shrink-0 items-center gap-2 rounded-2xl px-3 text-sm font-bold transition active:scale-[0.98]"
             >
               <Plus className="h-4 w-4" aria-hidden="true" />

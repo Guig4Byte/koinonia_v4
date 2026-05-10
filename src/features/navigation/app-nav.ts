@@ -1,27 +1,28 @@
 import type { NavIndicatorTone, NavItem } from "@/components/bottom-nav";
 import { UserRole } from "@/generated/prisma/client";
+import { ROUTES } from "@/lib/routes";
 
 type UserWithRole = { role: UserRole };
 
 export type AppNavActive = "home" | "secondary" | "events" | "none";
 
 export function homeHrefForRole(role: UserRole) {
-  if (role === UserRole.LEADER) return "/lider";
-  if (role === UserRole.SUPERVISOR) return "/supervisor";
+  if (role === UserRole.LEADER) return ROUTES.leader;
+  if (role === UserRole.SUPERVISOR) return ROUTES.supervisor;
 
-  return "/pastor";
+  return ROUTES.pastor;
 }
 
 export function secondaryNavForRole(role: UserRole): NavItem {
   if (role === UserRole.LEADER) {
-    return { href: "/pessoas", label: "Membros", icon: "people" };
+    return { href: ROUTES.people, label: "Membros", icon: "people" };
   }
 
   if (role === UserRole.SUPERVISOR) {
-    return { href: "/celulas", label: "Células", icon: "people" };
+    return { href: ROUTES.cells, label: "Células", icon: "people" };
   }
 
-  return { href: "/equipe", label: "Equipe", icon: "people" };
+  return { href: ROUTES.team, label: "Equipe", icon: "people" };
 }
 
 export function secondaryNavHrefForRole(role: UserRole) {
@@ -54,7 +55,7 @@ export function appNavForRole(
       indicator: active === "secondary" ? options.indicator : undefined,
     },
     {
-      href: "/eventos",
+      href: ROUTES.events,
       label: "Encontros",
       icon: "calendar",
       active: active === "events",

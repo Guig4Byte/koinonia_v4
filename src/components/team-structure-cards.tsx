@@ -17,13 +17,14 @@ import {
 } from "@/features/team/team-view";
 import { cn } from "@/lib/cn";
 import { avatarColorForName, initials } from "@/lib/text";
+import { ROUTES } from "@/lib/routes";
 
 export function TeamGroupLink({ group }: { group: TeamGroup }) {
   const tone = groupBadgeTone(group);
 
   return (
     <Link
-      href={`/celulas/${group.id}`}
+      href={ROUTES.group(group.id)}
       className={cn("team-cell-link card-hover-lift", shouldShowGroupBadge(group) && `team-cell-link-${tone}`)}
     >
       <span className="min-w-0">
@@ -45,7 +46,7 @@ export function InactiveTeamGroupLink({ group }: { group: InactiveTeamGroup }) {
 
   return (
     <Link
-      href={`/celulas/${group.id}/editar`}
+      href={ROUTES.editGroup(group.id)}
       className="team-cell-link team-cell-link-neutral card-hover-lift"
     >
       <span className="min-w-0">
