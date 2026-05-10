@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { cn } from "@/lib/cn";
 import { DEFAULT_PRESENCE_TONE_THRESHOLDS, formatPresenceRate, presenceTone } from "@/features/events/presence-display";
-import { priorityCardClass, type CardPriorityTone } from "@/components/card-priority";
+import { priorityCardClass, type CardPriorityTone } from "@/lib/card-priority";
 import { metricTextClass, PresenceTrendDelta, type PresenceTrend } from "@/components/presence-metric";
 import { countLabel } from "@/lib/format";
 

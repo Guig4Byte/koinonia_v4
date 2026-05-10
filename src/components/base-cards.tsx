@@ -3,7 +3,7 @@ import { ArrowLeft, CheckCircle2, AlertCircle, Info, Heart } from "lucide-react"
 import type { ReactNode } from "react";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { cn } from "@/lib/cn";
-import { priorityCardClass } from "@/components/card-priority";
+import { priorityCardClass } from "@/lib/card-priority";
 import { metricTextClass, PresenceTrendDelta, type PresenceTrend } from "@/components/presence-metric";
 
 export function PulseCard({

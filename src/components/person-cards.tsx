@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { cn } from "@/lib/cn";
 import { avatarColorForName, initials } from "@/lib/text";
-import { priorityCardClass, type CardPriorityTone } from "@/components/card-priority";
+import { priorityCardClass, type CardPriorityTone } from "@/lib/card-priority";
 
 function Avatar({ name, compact = false }: { name: string; compact?: boolean }) {
   const colors = avatarColorForName(name);

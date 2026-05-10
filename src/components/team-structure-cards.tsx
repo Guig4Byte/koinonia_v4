@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { ProgressiveList } from "@/components/progressive-list";
 import { EmptyState } from "@/components/base-cards";
-import { priorityCardClass } from "@/components/card-priority";
+import { priorityCardClass } from "@/lib/card-priority";
 import {
   compactGroupSubtitle,
   GROUPS_PER_SUPERVISOR_LIMIT,

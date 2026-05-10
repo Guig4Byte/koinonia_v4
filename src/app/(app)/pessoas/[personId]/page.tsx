@@ -6,7 +6,7 @@ import { CareActions } from "@/components/care-actions";
 import { CARE_COPY } from "@/features/care/care-copy";
 import { PersonStatusActions } from "@/components/person-status-actions";
 import { BackLink, DetailLinkCard, EmptyState, SectionTitle } from "@/components/base-cards";
-import { priorityCardClass } from "@/components/card-priority";
+import { priorityCardClass } from "@/lib/card-priority";
 import { SignalSupportActions } from "@/components/signal-support-actions";
 import { CareTouchHistory, type CareTouchHistoryItem } from "@/components/care-touch-history";
 import { PersonPresenceCard } from "@/components/person-presence-card";
