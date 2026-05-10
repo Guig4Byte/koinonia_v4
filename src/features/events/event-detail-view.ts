@@ -1,5 +1,7 @@
 import { AttendanceStatus } from "@/generated/prisma/client";
 import { closedWithoutPresenceLabel, isClosedWithoutPresenceStatus } from "@/features/events/event-display";
+import { countLabel } from "@/lib/format";
+import { compareByFullName } from "@/lib/text";
 
 export type EventDetailBadgeTone = "neutral" | "ok" | "warn" | "risk" | "info";
 
@@ -36,12 +38,9 @@ export function eventAttendanceStatusTone(status?: AttendanceStatus | null): Eve
 }
 
 export function sortPeopleByName<T extends { fullName: string }>(people: T[]) {
-  return [...people].sort((left, right) => left.fullName.localeCompare(right.fullName, "pt-BR"));
+  return [...people].sort(compareByFullName);
 }
 
-export function countLabel(count: number, singular: string, plural = `${singular}s`) {
-  return `${count} ${count === 1 ? singular : plural}`;
-}
 
 export function justifiedCountLabel(count: number) {
   return count === 1 ? "1 justificou" : `${count} justificaram`;

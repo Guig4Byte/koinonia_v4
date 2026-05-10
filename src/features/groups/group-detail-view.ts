@@ -8,6 +8,8 @@ import { escalationStatusDetailForViewer } from "@/features/signals/escalation";
 import { signalTitleForViewer, type SignalBadgeTone, type SignalDetailLike, type SignalDisplayViewerLike } from "@/features/signals/display";
 import { isSupportRequest, isUrgentOrPastoralCase, type SectionSignalWithIdentity } from "@/features/signals/sections";
 import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features/pastoral-pulse";
+import { countLabel } from "@/lib/format";
+import { compareByName } from "@/lib/text";
 
 export const GROUP_MEMBER_ATTENTION_MAX_PRIORITY = 4;
 export const GROUP_REGULAR_MEMBER_INITIAL_COUNT = 5;
@@ -134,7 +136,7 @@ export function buildGroupMemberDisplays({
 export function compareGroupMembers(left: MemberDisplay, right: MemberDisplay) {
   const priorityDifference = left.priorityRank - right.priorityRank;
   if (priorityDifference !== 0) return priorityDifference;
-  return left.name.localeCompare(right.name, "pt-BR");
+  return compareByName(left, right);
 }
 
 export function groupMembersSectionDetail({
@@ -149,10 +151,10 @@ export function groupMembersSectionDetail({
   activeFilter: MembersFilter;
 }) {
   if (activeFilter === "todos") {
-    return `${totalCount} ${totalCount === 1 ? "membro" : "membros"}${priorityCount > 0 ? ` · ${priorityCount} em atenção` : ""}`;
+    return `${countLabel(totalCount, "membro", "membros")}${priorityCount > 0 ? ` · ${priorityCount} em atenção` : ""}`;
   }
 
-  return `${visibleCount} ${visibleCount === 1 ? "pessoa neste recorte" : "pessoas neste recorte"}`;
+  return countLabel(visibleCount, "pessoa neste recorte", "pessoas neste recorte");
 }
 
 export function buildGroupMembersView(members: MemberDisplay[], activeFilter: MembersFilter): GroupMembersView {

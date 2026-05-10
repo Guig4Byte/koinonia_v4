@@ -2,6 +2,7 @@
 
 import { Plus } from "lucide-react";
 import { GhostButton } from "@/components/ui/button";
+import { countLabel } from "@/lib/format";
 
 type VisitorRecord = {
   id: string;
@@ -47,7 +48,7 @@ export function CheckInVisitorsCard({
         </div>
       ) : fallbackSavedVisitorCount > 0 ? (
         <p className="mt-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 text-sm text-[var(--color-text-secondary)]">
-          {fallbackSavedVisitorCount} {fallbackSavedVisitorCount === 1 ? "visitante já salvo" : "visitantes já salvos"}.
+          {countLabel(fallbackSavedVisitorCount, "visitante já salvo", "visitantes já salvos")}.
         </p>
       ) : (
         <p className="mt-2 text-sm text-[var(--color-text-secondary)]">Nenhum visitante neste encontro até agora.</p>

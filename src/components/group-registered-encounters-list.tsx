@@ -7,7 +7,7 @@ import { ProgressiveList } from "@/components/progressive-list";
 import { type BadgeTone } from "@/components/ui/badge";
 import { presenceTone } from "@/features/events/presence-display";
 import { summarizeEventPresence } from "@/features/events/presence-summary";
-import { formatShortDate, formatTime } from "@/lib/format";
+import { countLabel, formatShortDate, formatTime } from "@/lib/format";
 import { ROUTES } from "@/lib/routes";
 
 export type GroupRegisteredEncounter = {
@@ -93,7 +93,7 @@ export function GroupRegisteredEncountersList({ events }: { events: GroupRegiste
                     <span className="h-3 w-px bg-[var(--color-border-divider)]" aria-hidden="true" />
                     <span className="flex min-w-0 items-center gap-1 truncate font-medium text-[var(--color-text-secondary)]">
                       <UsersRound className="h-3 w-3 shrink-0" strokeWidth={1.8} aria-hidden="true" />
-                      {metrics.visitorCount} {metrics.visitorCount === 1 ? "visitante" : "visitantes"}
+                      {countLabel(metrics.visitorCount, "visitante", "visitantes")}
                     </span>
                   </span>
                 </span>

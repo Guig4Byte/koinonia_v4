@@ -4,6 +4,8 @@ import { isInCareStatus } from "@/features/people/person-status";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { signalTitleForViewer, type SignalBadgeTone, type SignalDetailLike } from "@/features/signals/display";
 import { isSupportRequest, isUrgentOrPastoralCase, type SectionSignalWithIdentity } from "@/features/signals/sections";
+import { countLabel } from "@/lib/format";
+import { compareByName } from "@/lib/text";
 
 export const PEOPLE_PAGE_ATTENTION_SIGNAL_QUERY_LIMIT = 80;
 export const PEOPLE_PAGE_VISIBLE_MEMBER_QUERY_LIMIT = 80;
@@ -129,7 +131,7 @@ export function buildPeoplePageMembers({
 export function comparePeoplePageMembers(left: PeoplePageMemberDisplay, right: PeoplePageMemberDisplay): number {
   const priorityDifference = left.priorityRank - right.priorityRank;
   if (priorityDifference !== 0) return priorityDifference;
-  return left.name.localeCompare(right.name, "pt-BR");
+  return compareByName(left, right);
 }
 
 export function peoplePageMembersSectionDetail({
@@ -144,10 +146,10 @@ export function peoplePageMembersSectionDetail({
   visibleMembersForFilterCount: number;
 }): string {
   if (activeFilter !== "todos") {
-    return `${visibleMembersForFilterCount} ${visibleMembersForFilterCount === 1 ? "pessoa neste recorte" : "pessoas neste recorte"}`;
+    return countLabel(visibleMembersForFilterCount, "pessoa neste recorte", "pessoas neste recorte");
   }
 
-  const totalLabel = `${membersCount} ${membersCount === 1 ? "membro" : "membros"}`;
+  const totalLabel = countLabel(membersCount, "membro", "membros");
   return priorityMembersCount > 0 ? `${totalLabel} · ${priorityMembersCount} no radar` : totalLabel;
 }
 

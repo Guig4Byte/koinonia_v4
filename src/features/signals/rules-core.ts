@@ -1,5 +1,5 @@
 import { AttendanceStatus, SignalSeverity } from "@/generated/prisma/client";
-import { formatBrasiliaShortDate } from "@/lib/brasilia-time";
+import { formatShortDate } from "@/lib/format";
 
 export const ATTENDANCE_SIGNAL_EVENT_LOOKBACK_COUNT = 4;
 
@@ -42,7 +42,7 @@ export function getConsecutiveAbsenceDatesNewestFirst(eventsNewestFirst: Attenda
 }
 
 function formatDateList(dates: Date[]) {
-  const labels = dates.map((date) => formatBrasiliaShortDate(date));
+  const labels = dates.map((date) => formatShortDate(date));
 
   if (labels.length <= 1) return labels[0] ?? "";
   if (labels.length === 2) return `${labels[0]} e ${labels[1]}`;

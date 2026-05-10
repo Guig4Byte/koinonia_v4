@@ -8,7 +8,7 @@ import type { Prisma } from "@/generated/prisma/client";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { apiJson } from "@/lib/api-response";
 import { prisma } from "@/lib/prisma";
-import { normalizeSearchText } from "@/lib/text";
+import { matchesNormalizedQuery, normalizeSearchText } from "@/lib/text";
 
 
 export async function GET(request: NextRequest) {
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
 
     matchingPeople = [
       ...directMatches,
-      ...accentFallbackMatches.filter((person) => normalizeSearchText(person.fullName).includes(normalizedQuery)),
+      ...accentFallbackMatches.filter((person) => matchesNormalizedQuery(person.fullName, normalizedQuery)),
     ].slice(0, SEARCH_RESULT_LIMIT);
   }
 

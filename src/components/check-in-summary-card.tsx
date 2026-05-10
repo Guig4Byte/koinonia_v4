@@ -1,6 +1,7 @@
 "use client";
 
 import { GhostButton } from "@/components/ui/button";
+import { countLabel } from "@/lib/format";
 import type { CheckInSummary } from "@/features/check-in/check-in-view";
 
 type CheckInSummaryCardProps = {
@@ -31,7 +32,7 @@ export function CheckInSummaryCard({
               ? `${summary.totalMembers - summary.pending} de ${summary.totalMembers} marcados`
               : `${summary.present} de ${summary.totalMembers} presentes`}
             {" · "}
-            {summary.visitorTotal} {summary.visitorTotal === 1 ? "visitante" : "visitantes"}
+            {countLabel(summary.visitorTotal, "visitante", "visitantes")}
           </p>
         </div>
         <div className="rounded-full border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-3 py-1 text-xs font-semibold text-[var(--color-text-secondary)]">

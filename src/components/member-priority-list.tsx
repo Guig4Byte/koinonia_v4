@@ -5,6 +5,7 @@ import type { BadgeTone } from "@/components/ui/badge";
 import { ProgressiveList } from "@/components/progressive-list";
 import { MEMBERS_FILTERS, membersFilterHref, type MembersFilter } from "@/features/people/member-filters";
 import { cn } from "@/lib/cn";
+import { countLabel } from "@/lib/format";
 
 export type MemberPriorityCardTone = BadgeTone | "stable" | "muted";
 
@@ -77,7 +78,7 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
               <div>
                 <p className="text-sm font-semibold text-[var(--color-text-primary)]">Quem merece proximidade</p>
                 <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-                  {priorityMembers.length} {priorityMembers.length === 1 ? "pessoa no radar" : "pessoas no radar"}
+                  {countLabel(priorityMembers.length, "pessoa no radar", "pessoas no radar")}
                 </p>
               </div>
               <ProgressiveList
@@ -107,7 +108,7 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
                 <div>
                   <p className="text-sm font-semibold text-[var(--color-text-primary)]">Ativos</p>
                   <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-                    {regularMembers.length} {regularMembers.length === 1 ? "membro sem sinal aberto" : "membros sem sinal aberto"}
+                    {countLabel(regularMembers.length, "membro sem sinal aberto", "membros sem sinal aberto")}
                   </p>
                 </div>
               ) : null}

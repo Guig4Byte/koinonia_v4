@@ -9,7 +9,7 @@ import {
   recentPresenceTrendLabel,
   type PersonPresenceView,
 } from "@/features/people/person-detail-view";
-import { formatShortDate, formatTime } from "@/lib/format";
+import { countLabel, formatShortDate, formatTime } from "@/lib/format";
 import { ROUTES } from "@/lib/routes";
 
 export function PersonPresenceCard({ view }: { view: PersonPresenceView }) {
@@ -95,7 +95,7 @@ export function PersonPresenceCard({ view }: { view: PersonPresenceView }) {
             </p>
           ) : hiddenAttendancesCount > 0 ? (
             <p className="mt-3 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-              Mais {hiddenAttendancesCount} {hiddenAttendancesCount === 1 ? "encontro recente fica" : "encontros recentes ficam"} fora da lista resumida.
+              Mais {countLabel(hiddenAttendancesCount, "encontro recente fica", "encontros recentes ficam")} fora da lista resumida.
             </p>
           ) : null}
         </div>

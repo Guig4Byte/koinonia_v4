@@ -11,7 +11,8 @@ import { FALLBACK_LEADER_NAME } from "@/features/groups/group-display";
 import { responsibilityNames } from "@/features/groups/responsibility-display";
 import { GroupResponsibilityRole } from "@/generated/prisma/client";
 import { groupAttentionLabel, type SignalBadge } from "@/features/signals/display";
-import { normalizeSearchText } from "@/lib/text";
+import { compareByName, matchesNormalizedQuery, normalizeSearchText } from "@/lib/text";
+import { countLabel } from "@/lib/format";
 import type { CellsFilter } from "@/features/groups/cells-page-filters";
 
 export const CELLS_PAGE_SECTION_LIMIT = 4;
@@ -63,7 +64,7 @@ export function groupLeadershipName(group: SupervisorGroup) {
 }
 
 export function groupSubtitle(group: SupervisorGroup) {
-  const membersLabel = `${group.memberships.length} ${group.memberships.length === 1 ? "membro" : "membros"}`;
+  const membersLabel = countLabel(group.memberships.length, "membro", "membros");
   return `${groupLeadershipName(group)} · ${membersLabel}`;
 }
 
@@ -83,7 +84,7 @@ export function compareGroups(left: SupervisorGroup, right: SupervisorGroup) {
   const scoreDifference = groupPastoralPriorityScore(right) - groupPastoralPriorityScore(left);
   if (scoreDifference !== 0) return scoreDifference;
 
-  return left.name.localeCompare(right.name, "pt-BR");
+  return compareByName(left, right);
 }
 
 export function groupMatchesFilter(group: SupervisorGroup, filter: CellsFilter) {
@@ -95,7 +96,7 @@ export function groupMatchesFilter(group: SupervisorGroup, filter: CellsFilter) 
 export function filterCellsPageGroups(groups: SupervisorGroup[], normalizedQuery: string, filter: CellsFilter) {
   return groups
     .filter((group) => groupMatchesFilter(group, filter))
-    .filter((group) => !normalizedQuery || groupSearchText(group).includes(normalizedQuery))
+    .filter((group) => matchesNormalizedQuery(groupSearchText(group), normalizedQuery))
     .sort(compareGroups);
 }
 

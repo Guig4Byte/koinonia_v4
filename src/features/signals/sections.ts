@@ -3,6 +3,7 @@ import { isInCarePerson as isPersonInCare } from "@/features/people/person-statu
 import { selectBestSignalByPerson } from "./signal-utils";
 import { isAssignedToPastoralRole, isAssignedToSupervisor } from "./escalation";
 import { compareSignalsBySeverityAndRecency } from "./ranking";
+import { comparePtBr } from "@/lib/text";
 
 export type PastoralSectionKey = "urgent" | "support" | "attention" | "care";
 
@@ -90,7 +91,7 @@ function compareSignalsForPastoralSection(
   const sectionOrderDifference = compareSignalsWithinSection(left, right);
   if (sectionOrderDifference !== 0) return sectionOrderDifference;
 
-  return left.id.localeCompare(right.id, "pt-BR");
+  return comparePtBr(left.id, right.id);
 }
 
 export function sortSignalsForPastoralViewer<TSignal extends SectionSignalWithIdentity>(

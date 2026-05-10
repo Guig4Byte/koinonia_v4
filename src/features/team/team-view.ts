@@ -3,7 +3,8 @@ import type { SignalBadgeTone } from "@/features/signals/display";
 import { hasLowPresence } from "@/features/groups/group-pastoral-priority";
 import { weekdayLabel } from "@/features/groups/weekdays";
 import type { TeamFilter } from "@/features/team/team-filters";
-import { normalizeSearchText } from "@/lib/text";
+import { matchesNormalizedQuery } from "@/lib/text";
+import { countLabel } from "@/lib/format";
 
 export const TEAM_SECTION_LIMIT = 4;
 export const SUPERVISOR_SECTION_LIMIT = 4;
@@ -32,24 +33,15 @@ export type TeamPageLists = {
 };
 
 export function groupMatchesQuery(group: TeamGroup, normalizedQuery: string) {
-  if (!normalizedQuery) return true;
-
-  const haystack = normalizeSearchText(`${group.name} ${group.leadershipName}`);
-  return haystack.includes(normalizedQuery);
+  return matchesNormalizedQuery(`${group.name} ${group.leadershipName}`, normalizedQuery);
 }
 
 export function supervisorMatchesQuery(supervisor: SupervisorTeam, normalizedQuery: string) {
-  if (!normalizedQuery) return true;
-
-  const haystack = normalizeSearchText(`${supervisor.name} ${supervisor.email}`);
-  return haystack.includes(normalizedQuery);
+  return matchesNormalizedQuery(`${supervisor.name} ${supervisor.email}`, normalizedQuery);
 }
 
 export function inactiveGroupMatchesQuery(group: InactiveTeamGroup, normalizedQuery: string) {
-  if (!normalizedQuery) return true;
-
-  const haystack = normalizeSearchText(`${group.name} ${group.locationName ?? ""}`);
-  return haystack.includes(normalizedQuery);
+  return matchesNormalizedQuery(`${group.name} ${group.locationName ?? ""}`, normalizedQuery);
 }
 
 export function groupMatchesFilter(group: TeamGroup, filter: TeamFilter) {
@@ -125,7 +117,7 @@ export function buildTeamPageLists({
 }
 
 export function compactGroupSubtitle(group: TeamGroup) {
-  const membersLabel = `${group.membersCount} ${group.membersCount === 1 ? "membro" : "membros"}`;
+  const membersLabel = countLabel(group.membersCount, "membro", "membros");
   return `${group.leadershipName} · ${membersLabel}`;
 }
 
@@ -141,18 +133,18 @@ export function shouldShowGroupBadge(group: TeamGroup) {
 }
 
 export function supervisorSummary(supervisor: SupervisorTeam) {
-  const groupsLabel = `${supervisor.groups.length} ${supervisor.groups.length === 1 ? "célula acompanhada" : "células acompanhadas"}`;
+  const groupsLabel = countLabel(supervisor.groups.length, "célula acompanhada", "células acompanhadas");
 
   if (supervisor.urgentCount > 0) {
-    return `${groupsLabel} · ${supervisor.urgentCount} ${supervisor.urgentCount === 1 ? "urgente" : "urgentes"}.`;
+    return `${groupsLabel} · ${countLabel(supervisor.urgentCount, "urgente", "urgentes")}.`;
   }
 
   if (supervisor.pastoralCasesCount > 0) {
-    return `${groupsLabel} · ${supervisor.pastoralCasesCount} ${supervisor.pastoralCasesCount === 1 ? "caso pastoral" : "casos pastorais"}.`;
+    return `${groupsLabel} · ${countLabel(supervisor.pastoralCasesCount, "caso pastoral", "casos pastorais")}.`;
   }
 
   if (supervisor.groupsNeedingAttentionCount > 0) {
-    return `${groupsLabel} · ${supervisor.groupsNeedingAttentionCount} ${supervisor.groupsNeedingAttentionCount === 1 ? "célula pede" : "células pedem"} atenção.`;
+    return `${groupsLabel} · ${countLabel(supervisor.groupsNeedingAttentionCount, "célula pede", "células pedem")} atenção.`;
   }
 
   if (supervisor.groupsWithoutPresenceCount > 0) {

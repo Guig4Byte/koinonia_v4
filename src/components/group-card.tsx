@@ -6,11 +6,12 @@ import { DEFAULT_PRESENCE_TONE_THRESHOLDS, presenceTone } from "@/features/event
 import type { PresenceTrend } from "@/features/events/presence-summary";
 import { priorityCardClass, type CardPriorityTone } from "@/components/card-priority";
 import { metricTextClass, PresenceTrendDelta } from "@/components/presence-metric";
+import { countLabel } from "@/lib/format";
 
 function groupAttentionLabel(count: number, kind: "default" | "local" | "pastoral") {
-  if (kind === "pastoral") return `${count} ${count === 1 ? "caso pastoral" : "casos pastorais"}`;
-  if (kind === "local") return `${count} ${count === 1 ? "atenção local" : "atenções locais"}`;
-  return `${count} ${count === 1 ? "pessoa em atenção" : "pessoas em atenção"}`;
+  if (kind === "pastoral") return countLabel(count, "caso pastoral", "casos pastorais");
+  if (kind === "local") return countLabel(count, "atenção local", "atenções locais");
+  return countLabel(count, "pessoa em atenção", "pessoas em atenção");
 }
 
 export function GroupCard({

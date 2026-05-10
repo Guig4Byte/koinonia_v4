@@ -11,8 +11,9 @@ import { isInCarePerson } from "@/features/people/person-status";
 import { getPastoralSectionSignalsByPerson, isSupportRequest } from "@/features/signals/sections";
 import { getPastoralSignalsByPerson, getPrimarySignalsByPerson, type AttentionSignalLike } from "@/features/signals/attention";
 import type { PermissionUser } from "@/features/permissions/permissions";
+import { compareByName } from "@/lib/text";
 
-const PT_BR_LOCALE = "pt-BR";
+export { compareByName } from "@/lib/text";
 
 export type DashboardResponsibility = {
   role: GroupResponsibilityRole;
@@ -53,9 +54,6 @@ export function sumBy<T>(items: T[], selector: (item: T) => number) {
   return items.reduce((total, item) => total + selector(item), 0);
 }
 
-export function compareByName<T extends { name: string }>(left: T, right: T) {
-  return left.name.localeCompare(right.name, PT_BR_LOCALE);
-}
 
 export function comparePastoralPriorityThenName<T extends PastoralPriorityItem>(left: T, right: T) {
   const scoreDifference = right.pastoralPriorityScore - left.pastoralPriorityScore;
