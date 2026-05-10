@@ -1,28 +1,74 @@
 import type { ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/cn";
 
-export function Button({ className, ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "dangerSoft" | "supportSoft" | "outline";
+export type ButtonSize = "sm" | "md" | "lg";
+
+type ButtonClassNameOptions = {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  fullWidth?: boolean;
+  className?: string;
+};
+
+const buttonBaseClass =
+  "inline-flex items-center justify-center gap-2 text-center font-semibold leading-tight tracking-[-0.01em] transition active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-brand)]";
+
+const buttonVariantClass: Record<ButtonVariant, string> = {
+  primary: "bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)] shadow-card",
+  secondary:
+    "border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] text-[var(--color-btn-secondary-text)]",
+  ghost: "text-[var(--color-text-secondary)] hover:bg-[var(--surface-alt)]",
+  dangerSoft:
+    "border border-[var(--color-badge-risco-border)] bg-[var(--color-badge-risco-bg)] text-[var(--color-badge-risco-text)]",
+  supportSoft:
+    "border border-[var(--color-badge-apoio-border)] bg-[var(--color-badge-apoio-bg)] text-[var(--color-badge-apoio-text)]",
+  outline: "border border-[var(--color-border-card)] bg-[var(--color-bg-card)] text-[var(--color-text-primary)]",
+};
+
+const buttonSizeClass: Record<ButtonSize, string> = {
+  sm: "min-h-10 rounded-xl px-3 py-2 text-sm",
+  md: "min-h-11 rounded-2xl px-4 py-3 text-sm",
+  lg: "min-h-12 rounded-2xl px-5 py-3 text-base",
+};
+
+export function buttonClassName({
+  variant = "primary",
+  size = "md",
+  fullWidth = false,
+  className,
+}: ButtonClassNameOptions = {}) {
+  return cn(buttonBaseClass, buttonVariantClass[variant], buttonSizeClass[size], fullWidth && "w-full", className);
+}
+
+export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  fullWidth?: boolean;
+  loading?: boolean;
+};
+
+export function Button({
+  className,
+  variant = "primary",
+  size = "md",
+  fullWidth = false,
+  loading = false,
+  disabled,
+  children,
+  ...props
+}: ButtonProps) {
   return (
     <button
-      className={cn(
-        "inline-flex min-h-11 items-center justify-center rounded-2xl px-4 py-2 text-sm font-semibold transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50",
-        "bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)] shadow-card",
-        className,
-      )}
+      className={buttonClassName({ variant, size, fullWidth, className })}
+      disabled={disabled || loading}
       {...props}
-    />
+    >
+      {children}
+    </button>
   );
 }
 
-export function GhostButton({ className, ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
-  return (
-    <button
-      className={cn(
-        "inline-flex min-h-11 items-center justify-center rounded-2xl px-4 py-2 text-sm font-semibold transition active:scale-[0.98]",
-        "border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] text-[var(--color-btn-secondary-text)]",
-        className,
-      )}
-      {...props}
-    />
-  );
+export function GhostButton(props: Omit<ButtonProps, "variant">) {
+  return <Button variant="secondary" {...props} />;
 }

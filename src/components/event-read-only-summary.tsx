@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import {
   buildEventReadOnlyAttendanceView,
   eventAttendanceLabels,
@@ -61,9 +62,9 @@ export function EventReadOnlySummary({
 
   if (emptyMessage) {
     return (
-      <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 text-sm leading-relaxed text-[var(--color-text-secondary)] shadow-card">
+      <Card className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
         {emptyMessage}
-      </section>
+      </Card>
     );
   }
 
@@ -71,7 +72,7 @@ export function EventReadOnlySummary({
 
   return (
     <section className="space-y-3">
-      <div className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
+      <Card>
         <p className="font-semibold text-[var(--color-text-primary)]">Membros</p>
         <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">{attendanceView.memberSummary}</p>
 
@@ -108,10 +109,10 @@ export function EventReadOnlySummary({
             </div>
           </details>
         ) : null}
-      </div>
+      </Card>
 
       {visitors.length > 0 ? (
-        <div className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
+        <Card>
           <p className="font-semibold text-[var(--color-text-primary)]">Visitantes</p>
           <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">
             Pessoas novas ou visitantes marcados neste encontro.
@@ -128,7 +129,7 @@ export function EventReadOnlySummary({
               </Link>
             ))}
           </div>
-        </div>
+        </Card>
       ) : null}
     </section>
   );

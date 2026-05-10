@@ -1,6 +1,9 @@
 import { ArrowLeft, LifeBuoy, SendHorizontal } from "lucide-react";
 import { SIGNAL_COPY } from "@/features/signals/signal-copy";
-import { cn } from "@/lib/cn";
+import { ActionPanel } from "@/components/ui/action-panel";
+import { Button } from "@/components/ui/button";
+import { Feedback } from "@/components/ui/feedback";
+import { TextareaField } from "@/components/ui/field";
 import {
   SIGNAL_SUPPORT_NOTE_MAX_LENGTH,
   SIGNAL_SUPPORT_NOTE_PLACEHOLDER,
@@ -8,12 +11,6 @@ import {
   type SignalSupportFlowStage,
   type SignalSupportFormStage,
 } from "@/features/signals/support-actions-view";
-
-const supportButtonClass =
-  "inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)] transition active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50";
-
-const supportPrimaryButtonClass =
-  "inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-xl bg-[var(--color-btn-primary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-primary-text)] transition active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50";
 
 export function SignalSupportFeedback({
   guidance,
@@ -32,14 +29,14 @@ export function SignalSupportFeedback({
         </p>
       ) : null}
       {assignmentMessage ? (
-        <p className="rounded-2xl border border-[var(--color-badge-apoio-border)] bg-[var(--color-badge-apoio-bg)] px-3 py-2 text-xs font-semibold leading-relaxed text-[var(--color-badge-apoio-text)]">
+        <Feedback tone="support" compact className="font-semibold">
           {assignmentMessage}
-        </p>
+        </Feedback>
       ) : null}
       {errorMessage ? (
-        <p className="rounded-2xl border border-[var(--color-badge-risco-border)] bg-[var(--color-badge-risco-bg)] px-3 py-2 text-xs font-semibold text-[var(--color-badge-risco-text)]">
+        <Feedback tone="error" compact role="alert" ariaLive="assertive" className="font-semibold">
           {errorMessage}
-        </p>
+        </Feedback>
       ) : null}
     </>
   );
@@ -59,22 +56,17 @@ export function SignalSupportStartActions({
   return (
     <>
       {canRequestSupervisor ? (
-        <button type="button" disabled={isPending} onClick={() => onSelectStage("request-supervisor")} className={supportButtonClass}>
+        <Button type="button" variant="secondary" size="sm" fullWidth disabled={isPending} onClick={() => onSelectStage("request-supervisor")}>
           <LifeBuoy className="h-4 w-4" strokeWidth={2.2} />
           {SIGNAL_COPY.support.requestSupervisor.startLabel}
-        </button>
+        </Button>
       ) : null}
 
       {canEscalatePastor ? (
-        <button
-          type="button"
-          disabled={isPending}
-          onClick={() => onSelectStage("escalate-pastor")}
-          className={cn(supportButtonClass, "border-[var(--color-badge-risco-border)] bg-[var(--color-badge-risco-bg)] text-[var(--color-badge-risco-text)]")}
-        >
+        <Button type="button" variant="dangerSoft" size="sm" fullWidth disabled={isPending} onClick={() => onSelectStage("escalate-pastor")}>
           <SendHorizontal className="h-4 w-4" strokeWidth={2.2} />
           {SIGNAL_COPY.support.escalatePastor.startLabel}
-        </button>
+        </Button>
       ) : null}
     </>
   );
@@ -100,37 +92,32 @@ export function SignalSupportDecisionCard({
   onCancel: () => void;
 }) {
   return (
-    <div className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3">
-      <p className="text-sm font-semibold text-[var(--color-text-primary)]">{actionCopy.title}</p>
-      <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">{actionCopy.detail}</p>
-
-      <label className="mt-3 block text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]" htmlFor={noteId}>
-        {SIGNAL_COPY.support.form.noteLabel}
-      </label>
-      <textarea
+    <ActionPanel title={actionCopy.title} description={actionCopy.detail}>
+      <TextareaField
         id={noteId}
+        label={SIGNAL_COPY.support.form.noteLabel}
         value={note}
         onChange={(event) => onNoteChange(event.target.value)}
         rows={3}
         maxLength={SIGNAL_SUPPORT_NOTE_MAX_LENGTH}
         placeholder={SIGNAL_SUPPORT_NOTE_PLACEHOLDER}
-        className="mt-2 w-full resize-none rounded-xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-2 text-sm leading-relaxed text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-secondary)] focus:border-[var(--color-brand)]"
+        className="mb-2"
       />
 
-      <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <button type="button" disabled={isPending} onClick={onConfirm} className={supportPrimaryButtonClass}>
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <Button type="button" size="sm" fullWidth disabled={isPending} onClick={onConfirm}>
           {stage === "request-supervisor" ? (
             <LifeBuoy className="h-4 w-4" strokeWidth={2.2} />
           ) : (
             <SendHorizontal className="h-4 w-4" strokeWidth={2.2} />
           )}
           {isPending ? SIGNAL_COPY.support.form.savingLabel : actionCopy.label}
-        </button>
-        <button type="button" disabled={isPending} onClick={onCancel} className={supportButtonClass}>
+        </Button>
+        <Button type="button" variant="secondary" size="sm" fullWidth disabled={isPending} onClick={onCancel}>
           <ArrowLeft className="h-4 w-4" strokeWidth={2.2} />
           {SIGNAL_COPY.support.form.cancelLabel}
-        </button>
+        </Button>
       </div>
-    </div>
+    </ActionPanel>
   );
 }

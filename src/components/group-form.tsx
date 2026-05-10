@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { CalendarDays } from "lucide-react";
 import { BackLink, InfoCard } from "@/components/base-cards";
+import { Button, buttonClassName } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { GroupMeetingTimeInput } from "@/components/group-meeting-time-input";
 import { GROUP_LOCATION_MAX_LENGTH, GROUP_NAME_MAX_LENGTH, WEEKDAY_OPTIONS, groupFormErrorMessage, type GroupFormValues } from "@/features/groups/group-form";
 
@@ -37,11 +39,11 @@ export function GroupForm({
     <div className="group-form-page space-y-5">
       <BackLink href={backHref}>{backLabel}</BackLink>
 
-      <section className="rounded-[1.35rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-5 shadow-card">
+      <Card padding="lg" className="rounded-[1.35rem]">
         <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">Célula</p>
         <h2 className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-[var(--color-text-primary)]">{title}</h2>
         <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-secondary)]">{description}</p>
-      </section>
+      </Card>
 
       {errorMessage ? (
         <InfoCard>{errorMessage}</InfoCard>
@@ -134,16 +136,13 @@ export function GroupForm({
         <div className="flex flex-col-reverse gap-3 border-t border-[var(--color-border-divider)] pt-4 sm:flex-row sm:justify-end">
           <Link
             href={backHref}
-            className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-4 text-sm font-semibold text-[var(--color-btn-secondary-text)] transition active:scale-[0.98]"
+            className={buttonClassName({ variant: "secondary", size: "lg" })}
           >
             Cancelar
           </Link>
-          <button
-            type="submit"
-            className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[var(--color-btn-primary-bg)] bg-[var(--color-btn-primary-bg)] px-4 text-sm font-semibold text-[var(--color-btn-primary-text)] shadow-card transition active:scale-[0.98]"
-          >
+          <Button type="submit" size="lg">
             {submitLabel}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

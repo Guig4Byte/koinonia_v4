@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button, buttonClassName } from "@/components/ui/button";
 import type { CheckInMode, CheckInSummary } from "@/features/check-in/check-in-view";
 import { cn } from "@/lib/cn";
 
@@ -52,7 +52,7 @@ export function CheckInSaveBar({
           {cancelHref ? (
             <Link
               href={cancelHref}
-              className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)] transition active:scale-[0.98]"
+              className={buttonClassName({ variant: "secondary", size: "md", className: "rounded-full px-3" })}
             >
               {cancelLabel}
             </Link>

@@ -1,6 +1,7 @@
 "use client";
 
 import { Children, type ReactNode, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 export function ProgressiveList({
   children,
@@ -25,22 +26,20 @@ export function ProgressiveList({
     <div className="stagger-children space-y-3">
       {visibleItems}
       {hasHiddenItems ? (
-        <button
+        <Button
           type="button"
-          className="flex min-h-10 w-full items-center justify-center rounded-xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)] shadow-card transition active:scale-[0.98]"
+          variant="secondary"
+          size="sm"
+          fullWidth
           onClick={() => setVisibleCount((current) => Math.min(current + step, items.length))}
         >
           {moreLabel}
-        </button>
+        </Button>
       ) : null}
       {isExpanded ? (
-        <button
-          type="button"
-          className="flex min-h-10 w-full items-center justify-center rounded-xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)] shadow-card transition active:scale-[0.98]"
-          onClick={() => setVisibleCount(initialCount)}
-        >
+        <Button type="button" variant="secondary" size="sm" fullWidth onClick={() => setVisibleCount(initialCount)}>
           {lessLabel}
-        </button>
+        </Button>
       ) : null}
     </div>
   );

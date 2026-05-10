@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { EventActionFeedback } from "@/components/event-action-feedback";
+import { Card } from "@/components/ui/card";
 import { EventCloseAction } from "@/components/event-close-action";
 import { EventLocationAction } from "@/components/event-location-action";
 import { EventRescheduleAction } from "@/components/event-reschedule-action";
@@ -160,7 +161,7 @@ export function EventDetailsActions({
   }
 
   return (
-    <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
+    <Card>
       <p className="font-semibold text-[var(--color-text-primary)]">Ajustes do encontro</p>
       <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">
         Ajuste só o que mudou nesta semana. Estas alterações valem apenas para este encontro.
@@ -204,6 +205,6 @@ export function EventDetailsActions({
       />
 
       <EventActionFeedback message={message} errorMessage={errorMessage} />
-    </section>
+    </Card>
   );
 }

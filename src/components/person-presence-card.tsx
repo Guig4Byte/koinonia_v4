@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import {
   attendanceLabels,
   attendanceTone,
@@ -25,7 +26,7 @@ export function PersonPresenceCard({ view }: { view: PersonPresenceView }) {
   } = view;
 
   return (
-    <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
+    <Card>
       <div className="flex items-center justify-between gap-4">
         <div className="min-w-0">
           <p className="text-sm font-semibold text-[var(--color-text-primary)]">Presença recente</p>
@@ -101,6 +102,6 @@ export function PersonPresenceCard({ view }: { view: PersonPresenceView }) {
           ) : null}
         </div>
       ) : null}
-    </section>
+    </Card>
   );
 }

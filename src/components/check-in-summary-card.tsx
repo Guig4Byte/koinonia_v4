@@ -1,6 +1,8 @@
 "use client";
 
-import { GhostButton } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Feedback } from "@/components/ui/feedback";
 import { formatPresenceRate } from "@/features/events/presence-display";
 import { countLabel } from "@/lib/format";
 import type { CheckInSummary } from "@/features/check-in/check-in-view";
@@ -23,7 +25,7 @@ export function CheckInSummaryCard({
   onMarkAllAsPresent,
 }: CheckInSummaryCardProps) {
   return (
-    <div className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
+    <Card>
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm text-[var(--color-text-secondary)]">Presença do encontro</p>
@@ -44,30 +46,33 @@ export function CheckInSummaryCard({
       <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">{helperText}</p>
 
       {!allMembersPresent ? (
-        <GhostButton
+        <Button
           type="button"
+          variant="secondary"
+          size="sm"
+          fullWidth
           onClick={onMarkAllAsPresent}
           disabled={isPending}
-          className="mt-4 min-h-10 w-full rounded-xl px-3 text-xs"
+          className="mt-4 text-xs"
         >
           Marcar todos como presentes
-        </GhostButton>
+        </Button>
       ) : null}
 
       {summary.pending > 0 ? (
-        <div className="mt-4 rounded-2xl border border-[var(--color-badge-atencao-border)] bg-[var(--color-badge-atencao-bg)] p-3 text-sm text-[var(--color-badge-atencao-text)]">
+        <Feedback tone="warning" className="mt-4">
           <p className="font-semibold">
             {summary.pending === 1 ? "Falta marcar 1 pessoa." : `Falta marcar ${summary.pending} pessoas.`}
           </p>
           <p className="mt-1 text-xs leading-relaxed">Se todos vieram, use o atalho acima e ajuste só exceções.</p>
-        </div>
+        </Feedback>
       ) : null}
 
       {errorMessage ? (
-        <div aria-live="polite" className="mt-4 rounded-2xl border border-[var(--color-badge-atencao-border)] bg-[var(--color-badge-atencao-bg)] p-3 text-sm font-medium text-[var(--color-badge-atencao-text)]">
+        <Feedback tone="error" ariaLive="polite" className="mt-4 font-medium">
           {errorMessage}
-        </div>
+        </Feedback>
       ) : null}
-    </div>
+    </Card>
   );
 }

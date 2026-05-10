@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { ContextSummary } from "@/components/base-cards";
 import type { BadgeTone } from "@/components/ui/badge";
 import { formatPresenceRate, type PresenceTone } from "@/features/events/presence-display";
@@ -38,7 +39,7 @@ export function EventDetailHeaderCard({
   showGroupLink: boolean;
 }) {
   return (
-    <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
+    <Card>
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">
@@ -86,6 +87,6 @@ export function EventDetailHeaderCard({
           ]}
         />
       </div>
-    </section>
+    </Card>
   );
 }

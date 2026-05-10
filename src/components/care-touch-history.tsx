@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 export type CareTouchHistoryItem = {
   id: string;
@@ -18,7 +20,7 @@ export function CareTouchHistory({ items }: { items: CareTouchHistoryItem[] }) {
   const hasHiddenItems = items.length > INITIAL_VISIBLE_COUNT;
 
   return (
-    <section className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
+    <Card>
       <div className="divide-y divide-[var(--color-border-divider)]">
         {visibleItems.map((item) => {
           const note = item.note?.trim();
@@ -38,14 +40,17 @@ export function CareTouchHistory({ items }: { items: CareTouchHistoryItem[] }) {
       </div>
 
       {hasHiddenItems ? (
-        <button
+        <Button
           type="button"
-          className="mt-3 flex min-h-10 w-full items-center justify-center rounded-xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)] shadow-card transition active:scale-[0.98]"
+          variant="secondary"
+          size="sm"
+          fullWidth
+          className="mt-3"
           onClick={() => setIsExpanded((current) => !current)}
         >
           {isExpanded ? "Mostrar menos" : "Ver histórico"}
-        </button>
+        </Button>
       ) : null}
-    </section>
+    </Card>
   );
 }

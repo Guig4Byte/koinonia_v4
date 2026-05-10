@@ -2,31 +2,27 @@ import type { MouseEvent } from "react";
 import { ArrowLeft, CheckCircle2, MessageCircleMore, NotebookPen, Phone } from "lucide-react";
 import { CARE_NOTE_MAX_LENGTH, type CareContactLinks } from "@/features/care/care-actions-view";
 import { CARE_COPY } from "@/features/care/care-copy";
+import { ActionPanel } from "@/components/ui/action-panel";
+import { Button, buttonClassName } from "@/components/ui/button";
+import { Feedback } from "@/components/ui/feedback";
+import { TextareaField } from "@/components/ui/field";
 import { cn } from "@/lib/cn";
 
-const buttonBase =
-  "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-center text-sm font-semibold leading-tight tracking-[-0.01em] shadow-card transition active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-brand)]";
-const secondaryButton =
-  "inline-flex min-h-10 w-full items-center justify-center rounded-xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-4 py-3 text-center text-sm font-semibold leading-tight text-[var(--color-btn-secondary-text)] transition active:scale-[0.98]";
-const disabled = "pointer-events-none cursor-not-allowed opacity-50";
+const disabledLinkClass = "pointer-events-none cursor-not-allowed opacity-50";
 
 export function CareDoneMessage({ savedMessage, resolvedMessage }: { savedMessage: string; resolvedMessage?: string }) {
   return (
-    <div aria-live="polite" className="mt-3 rounded-2xl border border-[var(--color-badge-cuidado-border)] bg-[var(--color-badge-cuidado-bg)] p-3 text-sm text-[var(--color-text-primary)]">
-      <div className="flex items-center gap-2 font-semibold text-[var(--color-badge-cuidado-text)]">
-        <CheckCircle2 className="h-4 w-4" strokeWidth={2.2} />
-        {savedMessage}
-      </div>
-      <p className="mt-1 text-[var(--color-text-secondary)]">{resolvedMessage || CARE_COPY.feedback.recentCareRegistered}</p>
-    </div>
+    <Feedback tone="care" title={savedMessage} ariaLive="polite" className="mt-3">
+      {resolvedMessage || CARE_COPY.feedback.recentCareRegistered}
+    </Feedback>
   );
 }
 
 export function CareErrorMessage({ message }: { message: string }) {
   return (
-    <div aria-live="assertive" className="rounded-2xl border border-[var(--color-badge-risco-border)] bg-[var(--color-badge-risco-bg)] p-3 text-sm font-semibold text-[var(--color-badge-risco-text)]">
+    <Feedback tone="error" role="alert" ariaLive="assertive" className="font-semibold">
       {message}
-    </div>
+    </Feedback>
   );
 }
 
@@ -60,7 +56,7 @@ export function CareContactStart({
         <a
           href={links.tel}
           aria-disabled={!hasPhone}
-          className={cn(buttonBase, "border", !hasPhone && disabled)}
+          className={cn(buttonClassName({ fullWidth: true }), "border", !hasPhone && disabledLinkClass)}
           style={{
             backgroundColor: "var(--color-action-call-bg)",
             borderColor: "var(--color-action-call-border)",
@@ -77,7 +73,7 @@ export function CareContactStart({
           target={hasPhone ? "_blank" : undefined}
           rel={hasPhone ? "noreferrer" : undefined}
           aria-disabled={!hasPhone}
-          className={cn(buttonBase, "border", !hasPhone && disabled)}
+          className={cn(buttonClassName({ fullWidth: true }), "border", !hasPhone && disabledLinkClass)}
           style={{
             backgroundColor: "var(--color-action-whatsapp-bg)",
             borderColor: "var(--color-action-whatsapp-border)",
@@ -91,9 +87,9 @@ export function CareContactStart({
       </div>
 
       {canRegisterCare ? (
-        <button type="button" disabled={isPending} onClick={onExistingContact} className={cn(secondaryButton, isPending && disabled)}>
+        <Button type="button" variant="secondary" fullWidth disabled={isPending} onClick={onExistingContact}>
           {CARE_COPY.contactActions.existingContactLabel}
-        </button>
+        </Button>
       ) : null}
     </>
   );
@@ -115,24 +111,17 @@ export function CareConfirmCard({
   const content = variant === "contact" ? CARE_COPY.confirmContact : CARE_COPY.confirmExistingContact;
 
   return (
-    <div className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3">
-      <p className="text-sm font-semibold text-[var(--color-text-primary)]">{content.title}</p>
-      <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">{content.description}</p>
-      <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <button
-          type="button"
-          disabled={!canRegisterCare || isPending}
-          onClick={onConfirm}
-          className={cn(buttonBase, "bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)]", (!canRegisterCare || isPending) && disabled)}
-        >
+    <ActionPanel title={content.title} description={content.description}>
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <Button type="button" fullWidth disabled={!canRegisterCare || isPending} onClick={onConfirm}>
           <CheckCircle2 className="h-4 w-4" strokeWidth={2.2} />
           {content.confirmLabel}
-        </button>
-        <button type="button" disabled={isPending} onClick={onCancel} className={cn(secondaryButton, isPending && disabled)}>
+        </Button>
+        <Button type="button" variant="secondary" fullWidth disabled={isPending} onClick={onCancel}>
           {content.cancelLabel}
-        </button>
+        </Button>
       </div>
-    </div>
+    </ActionPanel>
   );
 }
 
@@ -148,27 +137,20 @@ export function CareAskNoteCard({
   onCancel: () => void;
 }) {
   return (
-    <div className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3">
-      <p className="text-sm font-semibold text-[var(--color-text-primary)]">{CARE_COPY.notePrompt.title}</p>
-      <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">{CARE_COPY.notePrompt.description}</p>
-      <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <button type="button" disabled={isPending} onClick={onAddNote} className={cn(buttonBase, "bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)]", isPending && disabled)}>
+    <ActionPanel title={CARE_COPY.notePrompt.title} description={CARE_COPY.notePrompt.description}>
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <Button type="button" fullWidth disabled={isPending} onClick={onAddNote}>
           <NotebookPen className="h-4 w-4" strokeWidth={2.2} />
           {CARE_COPY.notePrompt.addNoteLabel}
-        </button>
-        <button type="button" disabled={isPending} onClick={onSaveWithoutNote} className={cn(secondaryButton, isPending && disabled)}>
+        </Button>
+        <Button type="button" variant="secondary" fullWidth disabled={isPending} onClick={onSaveWithoutNote}>
           {isPending ? CARE_COPY.noteForm.savingLabel : CARE_COPY.notePrompt.saveWithoutNoteLabel}
-        </button>
+        </Button>
       </div>
-      <button
-        type="button"
-        disabled={isPending}
-        onClick={onCancel}
-        className={cn("mt-2 min-h-9 w-full text-center text-xs font-semibold leading-relaxed text-[var(--color-text-secondary)] transition active:scale-[0.98]", isPending && disabled)}
-      >
+      <Button type="button" variant="ghost" size="sm" fullWidth disabled={isPending} onClick={onCancel} className="mt-2 text-xs">
         {CARE_COPY.notePrompt.cancelLabel}
-      </button>
-    </div>
+      </Button>
+    </ActionPanel>
   );
 }
 
@@ -190,28 +172,26 @@ export function CareNoteCard({
   const hasNote = Boolean(note.trim());
 
   return (
-    <div className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3">
-      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]" htmlFor={noteId}>
-        {CARE_COPY.noteForm.label}
-      </label>
-      <textarea
+    <ActionPanel title={CARE_COPY.notePrompt.title}>
+      <TextareaField
         id={noteId}
+        label={CARE_COPY.noteForm.label}
         value={note}
         onChange={(event) => onNoteChange(event.target.value)}
         rows={3}
         maxLength={CARE_NOTE_MAX_LENGTH}
         placeholder={CARE_COPY.noteForm.placeholder}
-        className="w-full resize-none rounded-xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-2 text-sm leading-relaxed text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-secondary)] focus:border-[var(--color-brand)]"
+        className="mb-2"
       />
-      <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <button type="button" disabled={isPending} onClick={onBack} className={cn(secondaryButton, isPending && disabled)}>
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <Button type="button" variant="secondary" fullWidth disabled={isPending} onClick={onBack}>
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           {CARE_COPY.noteForm.backLabel}
-        </button>
-        <button type="button" disabled={!hasNote || isPending} onClick={onSave} className={cn(buttonBase, "bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)]", (!hasNote || isPending) && disabled)}>
+        </Button>
+        <Button type="button" fullWidth disabled={!hasNote || isPending} onClick={onSave}>
           {isPending ? CARE_COPY.noteForm.savingLabel : CARE_COPY.noteForm.saveLabel}
-        </button>
+        </Button>
       </div>
-    </div>
+    </ActionPanel>
   );
 }
