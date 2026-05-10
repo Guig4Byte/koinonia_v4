@@ -447,25 +447,32 @@ Fontes principais:
 
 ```txt
 src/components/structure-search.tsx
+src/components/structure-search-config.ts
 src/components/cells-structure-search.tsx
 src/components/team-structure-search.tsx
 src/components/member-priority-list.tsx
-src/components/cards.tsx
+src/components/base-cards.tsx
+src/components/person-cards.tsx
 src/components/pastoral-list-cards.tsx
 src/components/progressive-list.tsx
+src/components/ui
 src/features/people/member-filters.ts
+src/lib/filter-param.ts
 src/lib/search-params.ts
 src/lib/text.ts
+src/lib/format.ts
 ```
 
 Regras:
 
-- `StructureSearch` centraliza busca e chips de filtro das superfícies estruturais; wrappers por tela mantêm labels e filtros específicos.
+- `StructureSearch` centraliza busca e chips de filtro das superfícies estruturais; `structure-search-config.ts` guarda base path, placeholder e labels por superfície.
 - `MemberPriorityList` centraliza a lista pastoral de membros, separando pessoas no radar e ativos sem reimplementar `ProgressiveList + PersonMiniCard` em páginas.
-- `member-filters.ts` guarda filtros oficiais de membros e diferenças explícitas por superfície, como limite de prioridade em `Atenção` e recorte de `Em cuidado`.
+- `member-filters.ts`, `cells-page-filters.ts` e `team-filters.ts` devem usar `src/lib/filter-param.ts` para valores, labels comuns e parsing de query param.
 - `firstParam()` deve ser usado para leitura simples de `searchParams` em páginas server-side.
-- `normalizeSearchText()` deve ser usado para busca local sem acento/case-insensitive.
-- Cards devem calcular apresentação visual localmente ou por helpers compartilhados; páginas não devem duplicar iniciais, tons de presença ou composição básica de card.
+- `normalizeSearchText()` e `matchesNormalizedQuery()` devem ser usados para busca local sem acento/case-insensitive.
+- `countLabel()`, datas curtas e horários devem sair de `src/lib/format.ts`; código de app não deve importar `brasilia-time.ts` diretamente sem motivo específico.
+- Cards, botões, fields, feedbacks e painéis de ação devem usar `src/components/ui` antes de criar novas classes locais ou variantes soltas.
+- Cards pastorais devem calcular apresentação visual localmente ou por helpers compartilhados; páginas não devem duplicar iniciais, tons de presença ou composição básica de card.
 
 ## Cadastro mínimo de célula
 
