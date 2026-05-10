@@ -1,9 +1,8 @@
 "use client";
 
 import { StructureSearch } from "@/components/structure-search";
-import { CELLS_FILTERS, type CellsFilter } from "@/features/groups/cells-page-filters";
-import { FILTER_ALL } from "@/lib/filter-param";
-import { ROUTES } from "@/lib/routes";
+import { STRUCTURE_SEARCH_CONFIG } from "@/components/structure-search-config";
+import type { CellsFilter } from "@/features/groups/cells-page-filters";
 
 type CellsStructureSearchProps = {
   query: string;
@@ -12,14 +11,5 @@ type CellsStructureSearchProps = {
 };
 
 export function CellsStructureSearch(props: CellsStructureSearchProps) {
-  return (
-    <StructureSearch
-      {...props}
-      basePath={ROUTES.cells}
-      defaultFilter={FILTER_ALL}
-      filters={CELLS_FILTERS}
-      ariaLabel="Buscar célula ou liderança"
-      placeholder="Buscar célula ou liderança..."
-    />
-  );
+  return <StructureSearch {...STRUCTURE_SEARCH_CONFIG.cells} {...props} />;
 }

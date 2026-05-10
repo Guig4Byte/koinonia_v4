@@ -6,12 +6,12 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/cn";
 
-type StructureSearchOption<TFilter extends string> = {
+export type StructureSearchOption<TFilter extends string> = {
   value: TFilter;
   label: string;
 };
 
-type StructureSearchProps<TFilter extends string> = {
+export type StructureSearchProps<TFilter extends string> = {
   basePath: string;
   query: string;
   filter: TFilter;
@@ -21,6 +21,11 @@ type StructureSearchProps<TFilter extends string> = {
   ariaLabel: string;
   placeholder: string;
 };
+
+export type StructureSearchConfig<TFilter extends string> = Pick<
+  StructureSearchProps<TFilter>,
+  "basePath" | "defaultFilter" | "filters" | "ariaLabel" | "placeholder"
+>;
 
 function structurePath<TFilter extends string>({
   basePath,

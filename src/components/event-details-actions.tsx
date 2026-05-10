@@ -22,7 +22,6 @@ import {
   initialEventCalendarMonth,
 } from "@/features/events/event-actions-view";
 import type { EventActionStatus, EventPatchPayload, OpenEventPicker } from "@/features/events/event-actions-view";
-import { timeOptionsWithCurrent } from "@/features/events/time-options";
 import { readJsonResponse } from "@/lib/json";
 import { API_ROUTES } from "@/lib/api-routes";
 
@@ -56,7 +55,6 @@ export function EventDetailsActions({
 
   const { canReschedule, isClosedWithoutPresence } = eventActionsAvailability(status, hasPresenceData);
   const selectedDateParts = parseBrasiliaDateValue(localDate);
-  const timeOptions = timeOptionsWithCurrent(localTime);
 
   async function patchEvent(payload: EventPatchPayload, successMessage: string) {
     setMessage(null);
@@ -183,7 +181,6 @@ export function EventDetailsActions({
           openPicker={openPicker}
           calendarMonth={calendarMonth}
           selectedDateParts={selectedDateParts}
-          timeOptions={timeOptions}
           disabled={isPending}
           onDateChange={updateLocalDate}
           onTimeChange={setLocalTime}

@@ -10,7 +10,6 @@ export function EventRescheduleAction({
   openPicker,
   calendarMonth,
   selectedDateParts,
-  timeOptions,
   disabled,
   onDateChange,
   onTimeChange,
@@ -25,7 +24,6 @@ export function EventRescheduleAction({
   openPicker: OpenEventPicker;
   calendarMonth: CalendarMonth;
   selectedDateParts: DateParts | null;
-  timeOptions: string[];
   disabled: boolean;
   onDateChange: (value: string) => void;
   onTimeChange: (value: string) => void;
@@ -55,7 +53,6 @@ export function EventRescheduleAction({
         <EventTimePickerField
           value={localTime}
           isOpen={openPicker === "time"}
-          timeOptions={timeOptions}
           onChange={onTimeChange}
           onOpenChange={(isOpen) => onOpenPickerChange(isOpen ? "time" : null)}
           onTimeSelect={onTimeSelect}

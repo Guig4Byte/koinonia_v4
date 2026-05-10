@@ -1,9 +1,8 @@
 "use client";
 
 import { StructureSearch } from "@/components/structure-search";
-import { TEAM_FILTERS, type TeamFilter } from "@/features/team/team-filters";
-import { FILTER_ALL } from "@/lib/filter-param";
-import { ROUTES } from "@/lib/routes";
+import { STRUCTURE_SEARCH_CONFIG } from "@/components/structure-search-config";
+import type { TeamFilter } from "@/features/team/team-filters";
 
 type TeamStructureSearchProps = {
   query: string;
@@ -12,14 +11,5 @@ type TeamStructureSearchProps = {
 };
 
 export function TeamStructureSearch(props: TeamStructureSearchProps) {
-  return (
-    <StructureSearch
-      {...props}
-      basePath={ROUTES.team}
-      defaultFilter={FILTER_ALL}
-      filters={TEAM_FILTERS}
-      ariaLabel="Buscar supervisor ou célula"
-      placeholder="Buscar supervisor ou célula..."
-    />
-  );
+  return <StructureSearch {...STRUCTURE_SEARCH_CONFIG.team} {...props} />;
 }
