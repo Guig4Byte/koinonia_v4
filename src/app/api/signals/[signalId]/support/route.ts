@@ -1,21 +1,19 @@
 import { NextRequest } from "next/server";
-import { CareKind, GroupResponsibilityRole, SignalStatus, UserRole } from "@/generated/prisma/client";
+import { CareKind, SignalStatus } from "@/generated/prisma/client";
 import { activeGroupResponsibilitiesInclude } from "@/features/groups/group-query";
 import { canViewGroup } from "@/features/permissions/permissions";
 import { canEscalateSignalToPastor, canRequestSupervisorSupport } from "@/features/signals/escalation";
+import {
+  assignSignalWithCareTouch,
+  findPastoralAssignee,
+  supervisorAssigneeIdFromGroup,
+} from "@/features/signals/signal-assignment";
 import { SIGNAL_COPY } from "@/features/signals/signal-copy";
-import { getCurrentUser } from "@/lib/auth/current-user";
 import { parseSignalSupportPayload } from "@/features/signals/support-payload";
+import { getCurrentUser } from "@/lib/auth/current-user";
 import { apiError, apiOk } from "@/lib/api-response";
 import { readJsonBody } from "@/lib/json";
 import { prisma } from "@/lib/prisma";
-
-async function findPastoralAssignee(churchId: string) {
-  return prisma.user.findFirst({
-    where: { churchId, role: { in: [UserRole.PASTOR, UserRole.ADMIN] } },
-    orderBy: { createdAt: "asc" },
-  });
-}
 
 export async function PATCH(request: NextRequest, context: { params: Promise<{ signalId: string }> }) {
   const user = await getCurrentUser();
@@ -53,34 +51,20 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
       return apiError(SIGNAL_COPY.errors.leaderOnlySupervisorRequest, 403);
     }
 
-    const supervisorAssigneeId = signal.group?.responsibilities.find(
-      (responsibility) => responsibility.role === GroupResponsibilityRole.SUPERVISOR,
-    )?.userId;
+    const supervisorAssigneeId = supervisorAssigneeIdFromGroup(signal.group);
 
     if (!supervisorAssigneeId) {
       return apiError(SIGNAL_COPY.errors.noSupervisor, 400);
     }
 
-    const updated = await prisma.$transaction(async (tx) => {
-      const updatedSignal = await tx.careSignal.update({
-        where: { id: signal.id },
-        data: { assignedToId: supervisorAssigneeId },
-        include: { assignedTo: true },
-      });
-
-      await tx.careTouch.create({
-        data: {
-          churchId: user.churchId,
-          personId: signal.personId,
-          groupId: signal.groupId,
-          actorId: user.id,
-          kind: CareKind.REQUESTED_SUPPORT,
-          note,
-        },
-      });
-
-      return updatedSignal;
-    });
+    const updated = await prisma.$transaction((tx) => assignSignalWithCareTouch({
+      tx,
+      signal,
+      actorId: user.id,
+      assignedToId: supervisorAssigneeId,
+      kind: CareKind.REQUESTED_SUPPORT,
+      note,
+    }));
 
     return apiOk({
       assignedToId: updated.assignedToId,
@@ -99,26 +83,14 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
     return apiError(SIGNAL_COPY.errors.noPastoralAssignee, 400);
   }
 
-  const updated = await prisma.$transaction(async (tx) => {
-    const updatedSignal = await tx.careSignal.update({
-      where: { id: signal.id },
-      data: { assignedToId: pastoralAssignee.id },
-      include: { assignedTo: true },
-    });
-
-    await tx.careTouch.create({
-      data: {
-        churchId: user.churchId,
-        personId: signal.personId,
-        groupId: signal.groupId,
-        actorId: user.id,
-        kind: CareKind.ESCALATED_TO_PASTOR,
-        note,
-      },
-    });
-
-    return updatedSignal;
-  });
+  const updated = await prisma.$transaction((tx) => assignSignalWithCareTouch({
+    tx,
+    signal,
+    actorId: user.id,
+    assignedToId: pastoralAssignee.id,
+    kind: CareKind.ESCALATED_TO_PASTOR,
+    note,
+  }));
 
   return apiOk({
     assignedToId: updated.assignedToId,

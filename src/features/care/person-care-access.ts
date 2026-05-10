@@ -8,7 +8,7 @@ export type PersonCareAccessOptions = {
   forbiddenMessage?: string;
 };
 
-export async function findPersonForCareAction(
+export async function requireCareVisiblePerson(
   user: PermissionUser,
   personId: string,
   options: PersonCareAccessOptions = {},
@@ -51,3 +51,5 @@ export async function findPersonForCareAction(
     visibleGroupIds: getVisibleGroupIdsForPerson(user, person),
   };
 }
+
+export const findPersonForCareAction = requireCareVisiblePerson;
