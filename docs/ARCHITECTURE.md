@@ -79,6 +79,12 @@ Loading states
   Rotas de lista devem ter loading.tsx próprio quando a tela depende de consulta server-side perceptível.
   Rotas de detalhe também devem ter loading.tsx quando carregam pessoa, célula ou encontro por id.
   O skeleton deve imitar o shape real dos cards, filtros, resumos e blocos de detalhe sem introduzir lógica de domínio.
+
+Check-in seguro
+  Ação em massa não deve sobrescrever ausências ou justificativas sem confirmação explícita na própria UI.
+  Durante salvamento, marcações, visitantes, cancelamento e novo envio devem ficar bloqueados para evitar estado concorrente.
+  Erros de salvamento precisam aparecer no resumo e na barra fixa, pois o usuário pode estar no fim da lista.
+  Falhas de rede devem ter mensagem própria e recuperável, sem depender apenas de resposta JSON da API.
 ```
 
 ## Entidades principais

@@ -43,7 +43,10 @@ export function CheckInList({
         helperText={checkInHelperText(mode)}
         allMembersPresent={checkIn.allMembersPresent}
         isPending={checkIn.isPending}
+        bulkConfirmationOpen={checkIn.bulkConfirmationOpen}
         errorMessage={checkIn.errorMessage}
+        onCancelMarkAllAsPresent={checkIn.cancelMarkAllAsPresent}
+        onConfirmMarkAllAsPresent={checkIn.confirmMarkAllAsPresent}
         onMarkAllAsPresent={checkIn.markAllAsPresent}
       />
 
@@ -55,11 +58,12 @@ export function CheckInList({
         onVisitorNameChange={checkIn.setVisitorName}
         onAddVisitor={checkIn.addVisitor}
         onRemoveVisitor={checkIn.removeVisitor}
+        disabled={checkIn.isPending}
       />
 
       <div className="space-y-3">
         {checkIn.items.map((item) => (
-          <CheckInMemberCard key={item.personId} item={item} onSetStatus={checkIn.setStatus} />
+          <CheckInMemberCard key={item.personId} item={item} onSetStatus={checkIn.setStatus} disabled={checkIn.isPending} />
         ))}
       </div>
 
@@ -70,6 +74,7 @@ export function CheckInList({
         cancelLabel={cancelLabel}
         canSave={checkIn.canSave}
         isPending={checkIn.isPending}
+        errorMessage={checkIn.errorMessage}
         submitLabel={submitLabel}
         saveBarOffset={saveBarOffset}
         onSave={checkIn.save}

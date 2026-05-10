@@ -12,7 +12,10 @@ type CheckInSummaryCardProps = {
   helperText: string;
   allMembersPresent: boolean;
   isPending: boolean;
+  bulkConfirmationOpen: boolean;
   errorMessage: string | null;
+  onCancelMarkAllAsPresent: () => void;
+  onConfirmMarkAllAsPresent: () => void;
   onMarkAllAsPresent: () => void;
 };
 
@@ -21,7 +24,10 @@ export function CheckInSummaryCard({
   helperText,
   allMembersPresent,
   isPending,
+  bulkConfirmationOpen,
   errorMessage,
+  onCancelMarkAllAsPresent,
+  onConfirmMarkAllAsPresent,
   onMarkAllAsPresent,
 }: CheckInSummaryCardProps) {
   return (
@@ -52,11 +58,45 @@ export function CheckInSummaryCard({
           size="sm"
           fullWidth
           onClick={onMarkAllAsPresent}
-          disabled={isPending}
+          disabled={isPending || bulkConfirmationOpen}
           className="mt-4 text-[length:var(--text-xs)]"
         >
           Marcar todos como presentes
         </Button>
+      ) : null}
+
+      {bulkConfirmationOpen ? (
+        <Feedback
+          tone="warning"
+          role="alert"
+          ariaLive="assertive"
+          className="mt-4"
+          title="Substituir marcações?"
+        >
+          <p>
+            Isso vai trocar ausentes e justificativas para presentes. Use apenas se a célula inteira esteve presente.
+          </p>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={onCancelMarkAllAsPresent}
+              disabled={isPending}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              variant="attentionSoft"
+              size="sm"
+              onClick={onConfirmMarkAllAsPresent}
+              disabled={isPending}
+            >
+              Sim, marcar todos
+            </Button>
+          </div>
+        </Feedback>
       ) : null}
 
       {summary.pending > 0 ? (
@@ -69,7 +109,7 @@ export function CheckInSummaryCard({
       ) : null}
 
       {errorMessage ? (
-        <Feedback tone="error" ariaLive="polite" className="mt-4 font-medium">
+        <Feedback tone="error" role="alert" ariaLive="assertive" className="mt-4 font-medium">
           {errorMessage}
         </Feedback>
       ) : null}

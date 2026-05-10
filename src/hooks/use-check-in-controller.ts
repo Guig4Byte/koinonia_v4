@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useState } from "react";
 import {
   ATTENDANCE,
   checkInConfirmationParam,
@@ -72,8 +72,9 @@ export function useCheckInController({
   mode,
 }: UseCheckInControllerOptions) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [bulkConfirmationOpen, setBulkConfirmationOpen] = useState(false);
   const [visitorName, setVisitorName] = useState("");
   const [savedVisitors] = useState<CheckInVisitorRecord[]>(initialVisitors);
   const [visitors, setVisitors] = useState<VisitorDraft[]>([]);
@@ -83,19 +84,34 @@ export function useCheckInController({
   const visitorTotal = savedVisitorCount + visitors.length;
   const summary = useMemo(() => summarizeCheckInItems(items, visitorTotal), [items, visitorTotal]);
 
-  const canSave = summary.pending === 0 && !isPending;
+  const canSave = summary.pending === 0 && !isSaving;
   const allMembersPresent = summary.totalMembers > 0 && summary.present === summary.totalMembers;
 
   function clearTransientState() {
     setErrorMessage(null);
   }
 
+  function closeBulkConfirmation() {
+    setBulkConfirmationOpen(false);
+  }
+
+  function applyMarkAllAsPresent() {
+    clearTransientState();
+    closeBulkConfirmation();
+    setItems((current) => current.map((item) => ({ ...item, status: ATTENDANCE.PRESENT })));
+  }
+
   function setStatus(personId: string, status: MemberAttendanceStatus) {
+    if (isSaving) return;
+
+    closeBulkConfirmation();
     clearTransientState();
     setItems((current) => current.map((item) => (item.personId === personId ? { ...item, status } : item)));
   }
 
   function markAllAsPresent() {
+    if (isSaving) return;
+
     const hasNonPresentStatus = items.some((item) => item.status !== ATTENDANCE.PRESENT);
     if (!hasNonPresentStatus) return;
 
@@ -103,18 +119,27 @@ export function useCheckInController({
       (item) => item.status === ATTENDANCE.ABSENT || item.status === ATTENDANCE.JUSTIFIED,
     );
 
-    if (
-      hasAbsenceOrJustification
-      && !window.confirm("Isso vai trocar ausentes e justificativas para presentes. Continuar?")
-    ) {
+    if (hasAbsenceOrJustification) {
+      clearTransientState();
+      setBulkConfirmationOpen(true);
       return;
     }
 
-    clearTransientState();
-    setItems((current) => current.map((item) => ({ ...item, status: ATTENDANCE.PRESENT })));
+    applyMarkAllAsPresent();
+  }
+
+  function cancelMarkAllAsPresent() {
+    closeBulkConfirmation();
+  }
+
+  function confirmMarkAllAsPresent() {
+    if (isSaving) return;
+    applyMarkAllAsPresent();
   }
 
   function addVisitor() {
+    if (isSaving) return;
+
     const name = visitorName.trim();
     if (!name) return;
 
@@ -124,25 +149,33 @@ export function useCheckInController({
       return;
     }
 
+    closeBulkConfirmation();
     clearTransientState();
     setVisitors((current) => [...current, { id: makeVisitorId(), fullName: name }]);
     setVisitorName("");
   }
 
   function removeVisitor(id: string) {
+    if (isSaving) return;
+
+    closeBulkConfirmation();
     clearTransientState();
     setVisitors((current) => current.filter((visitor) => visitor.id !== id));
   }
 
-  function save() {
+  async function save() {
+    if (isSaving) return;
+
     if (summary.pending > 0) {
       setErrorMessage("Ainda falta marcar algumas pessoas antes de salvar a presença.");
       return;
     }
 
-    startTransition(async () => {
-      setErrorMessage(null);
+    closeBulkConfirmation();
+    setErrorMessage(null);
+    setIsSaving(true);
 
+    try {
       const response = await fetch(API_ROUTES.eventCheckIn(eventId), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -157,18 +190,23 @@ export function useCheckInController({
 
       if (!response.ok) {
         setErrorMessage(responseBody?.error ?? "Não foi possível salvar a presença.");
+        setIsSaving(false);
         return;
       }
 
       router.replace(ROUTES.eventPresenceConfirmation(eventId, checkInConfirmationParam(mode)));
-    });
+    } catch {
+      setErrorMessage("Não foi possível salvar agora. Verifique sua conexão e tente novamente.");
+      setIsSaving(false);
+    }
   }
 
   return {
     allMembersPresent,
+    bulkConfirmationOpen,
     canSave,
     errorMessage,
-    isPending,
+    isPending: isSaving,
     items,
     savedVisitorCount,
     savedVisitors,
@@ -176,6 +214,8 @@ export function useCheckInController({
     visitorName,
     visitors,
     addVisitor,
+    cancelMarkAllAsPresent,
+    confirmMarkAllAsPresent,
     markAllAsPresent,
     removeVisitor,
     save,

@@ -35,9 +35,10 @@ function statusBadgeTone(status: AttendanceSelection) {
 type CheckInMemberCardProps = {
   item: CheckInItem;
   onSetStatus: (personId: string, status: MemberAttendanceStatus) => void;
+  disabled?: boolean;
 };
 
-export function CheckInMemberCard({ item, onSetStatus }: CheckInMemberCardProps) {
+export function CheckInMemberCard({ item, onSetStatus, disabled = false }: CheckInMemberCardProps) {
   return (
     <article
       className={cn("check-in-member-card rounded-2xl border p-3", memberCardTone(item.status))}
@@ -62,6 +63,7 @@ export function CheckInMemberCard({ item, onSetStatus }: CheckInMemberCardProps)
             size="sm"
             aria-pressed={item.status === status}
             onClick={() => onSetStatus(item.personId, status)}
+            disabled={disabled}
             className="min-h-10 rounded-xl px-2 text-[length:var(--text-xs)]"
           >
             {ATTENDANCE_LABELS[status]}
