@@ -1,24 +1,12 @@
 import Link from "next/link";
-import { isAfter } from "date-fns";
-import { notFound } from "next/navigation";
-import { AttendanceStatus, MembershipRole } from "@/generated/prisma/client";
 import { AppShell } from "@/components/app-shell";
-import { appNavForRole } from "@/features/navigation/app-nav";
+import { BackLink, InfoCard, SectionTitle } from "@/components/base-cards";
 import { CheckInList } from "@/components/check-in-list";
 import { EventDetailsActions } from "@/components/event-details-actions";
 import { EventDetailHeaderCard } from "@/components/event-detail-header-card";
 import { EventReadOnlySummary } from "@/components/event-read-only-summary";
-import { BackLink, InfoCard, SectionTitle } from "@/components/base-cards";
-import { eventEffectiveLocation, isClosedWithoutPresenceStatus, closedWithoutPresenceLabel } from "@/features/events/event-display";
-import { presenceTone } from "@/features/events/presence-display";
-import { summarizeEventPresence } from "@/features/events/presence-summary";
-import { buildEventDetailState, savedPresenceMessage } from "@/features/events/event-detail-view";
-import { activeGroupResponsibilitiesScopeInclude } from "@/features/groups/group-query";
-import { canCheckInEvent, canManageEventDetails, canViewEvent } from "@/features/permissions/permissions";
+import { getEventDetailPageData } from "@/app/(app)/eventos/[eventId]/page-data";
 import { getCurrentUser } from "@/lib/auth/current-user";
-import { prisma } from "@/lib/prisma";
-import { firstParam } from "@/lib/search-params";
-import { ROUTES } from "@/lib/routes";
 
 type EventDetailPageProps = {
   params: Promise<{ eventId: string }>;
@@ -29,68 +17,40 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
   const user = await getCurrentUser();
   const { eventId } = await params;
   const queryParams = searchParams ? await searchParams : {};
-  const mode = firstParam(queryParams.modo);
-  const savedMessage = savedPresenceMessage(firstParam(queryParams.presenca));
-
-  const event = await prisma.event.findUnique({
-    where: { id: eventId },
-    include: {
-      group: {
-        include: {
-          responsibilities: activeGroupResponsibilitiesScopeInclude,
-          memberships: {
-            where: { leftAt: null, role: { not: MembershipRole.VISITOR } },
-            include: { person: true },
-          },
-        },
-      },
-      attendances: { include: { person: true } },
-    },
-  });
-
-  if (!event || event.churchId !== user.churchId) notFound();
-  if (!canViewEvent(user, event)) notFound();
-
-  const isCancelledEvent = isClosedWithoutPresenceStatus(event.status);
-  const canEditCheckIn = !isCancelledEvent && canCheckInEvent(user, event);
-  const canEditEventDetails = canManageEventDetails(user, event);
-  const presence = summarizeEventPresence(event);
-  const visitors = event.attendances.filter((attendance) => attendance.status === AttendanceStatus.VISITOR);
-  const completed = presence.hasPresenceData;
-  const isFutureEvent = isAfter(event.startsAt, new Date());
-  const showCheckInForm = !isCancelledEvent && canEditCheckIn && (!completed || mode === "ajuste");
-  const canOfferAdjustment = canEditCheckIn && completed && !showCheckInForm;
-  const locationName = eventEffectiveLocation(event);
-  const detailState = buildEventDetailState({
-    status: event.status,
+  const {
+    adjustmentHref,
+    backHref,
+    backLabel,
+    canEditEventDetails,
+    canOfferAdjustment,
+    cancelHref,
+    cancelLabel,
+    checkInMode,
+    closedLabel,
     completed,
+    detailState,
+    event,
+    isCancelledEvent,
     isFutureEvent,
-    canEditCheckIn,
+    locationName,
+    members,
+    nav,
+    presence,
+    presenceTone,
+    savedMessage,
     showCheckInForm,
-  });
-
-  const members = event.group?.memberships.map((membership) => ({
-    personId: membership.personId,
-    fullName: membership.person.fullName,
-    currentStatus: event.attendances.find((attendance) => attendance.personId === membership.personId)?.status,
-  })) ?? [];
-
-  const visitorRows = visitors.map((attendance) => ({
-    id: attendance.id,
-    personId: attendance.personId,
-    fullName: attendance.person.fullName,
-  }));
+    visitorRows,
+    visitorsCount,
+  } = await getEventDetailPageData({ user, eventId, queryParams });
 
   return (
     <AppShell
       userName={user.name}
       role={user.role}
-      nav={appNavForRole(user, { active: "events" })}
+      nav={nav}
       hideBottomNav={showCheckInForm}
     >
-      <BackLink href={showCheckInForm && completed ? ROUTES.event(event.id) : ROUTES.events}>
-        {showCheckInForm && completed ? "Voltar ao resumo" : "Encontros"}
-      </BackLink>
+      <BackLink href={backHref}>{backLabel}</BackLink>
 
       {savedMessage ? <InfoCard tone="success">{savedMessage}</InfoCard> : null}
 
@@ -105,8 +65,8 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
         eventStatusTone={detailState.eventStatusTone}
         hasPresenceData={presence.hasPresenceData}
         presenceRate={presence.presenceRate}
-        presenceTone={presenceTone(presence.hasPresenceData, presence.presenceRate)}
-        visitorsCount={visitors.length}
+        presenceTone={presenceTone}
+        visitorsCount={visitorsCount}
         membersCount={members.length}
         showGroupLink={!showCheckInForm}
       />
@@ -119,9 +79,9 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
             members={members}
             initialVisitors={visitorRows}
             submitLabel={detailState.checkInSubmitLabel}
-            mode={completed ? "adjust" : "register"}
-            cancelHref={completed ? ROUTES.event(event.id) : ROUTES.events}
-            cancelLabel={completed ? "Cancelar" : "Voltar"}
+            mode={checkInMode}
+            cancelHref={cancelHref}
+            cancelLabel={cancelLabel}
             saveBarOffset="page"
           />
         ) : (
@@ -130,7 +90,7 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
               completed={completed}
               isFutureEvent={isFutureEvent}
               isCancelled={isCancelledEvent}
-              closedLabel={closedWithoutPresenceLabel(event.status)}
+              closedLabel={closedLabel}
               members={members}
               visitors={visitorRows}
             />
@@ -147,7 +107,7 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
             ) : null}
             {canOfferAdjustment ? (
               <Link
-                href={ROUTES.eventCheckInAdjustment(event.id)}
+                href={adjustmentHref}
                 className="k-primary-action inline-flex w-full items-center justify-center rounded-full px-4 py-3 text-sm font-semibold transition active:scale-[0.99]"
               >
                 Ajustar presença →
