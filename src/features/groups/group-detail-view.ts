@@ -9,6 +9,7 @@ import { signalTitleForViewer, type SignalBadgeTone, type SignalDetailLike, type
 import { isSupportRequest, isUrgentOrPastoralCase, type SectionSignalWithIdentity } from "@/features/signals/sections";
 import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features/pastoral-pulse";
 import { countLabel } from "@/lib/format";
+import { FILTER_ALL } from "@/lib/filter-param";
 import { compareByName } from "@/lib/text";
 
 export const GROUP_MEMBER_ATTENTION_MAX_PRIORITY = 4;
@@ -150,7 +151,7 @@ export function groupMembersSectionDetail({
   visibleCount: number;
   activeFilter: MembersFilter;
 }) {
-  if (activeFilter === "todos") {
+  if (activeFilter === FILTER_ALL) {
     return `${countLabel(totalCount, "membro", "membros")}${priorityCount > 0 ? ` · ${priorityCount} em atenção` : ""}`;
   }
 
@@ -163,7 +164,7 @@ export function buildGroupMembersView(members: MemberDisplay[], activeFilter: Me
   }));
   const priorityMembers = members.filter((member) => member.priorityRank <= GROUP_MEMBER_ATTENTION_MAX_PRIORITY);
   const activeMembers = members.filter((member) => member.priorityRank > GROUP_MEMBER_ATTENTION_MAX_PRIORITY);
-  const regularMembers = activeFilter === "todos" ? activeMembers : visibleMembers;
+  const regularMembers = activeFilter === FILTER_ALL ? activeMembers : visibleMembers;
 
   return {
     members,

@@ -6,6 +6,7 @@ import { ProgressiveList } from "@/components/progressive-list";
 import { MEMBERS_FILTERS, membersFilterHref, type MembersFilter } from "@/features/people/member-filters";
 import { cn } from "@/lib/cn";
 import { countLabel } from "@/lib/format";
+import { FILTER_ALL } from "@/lib/filter-param";
 
 export type MemberPriorityCardTone = BadgeTone | "stable" | "muted";
 
@@ -71,7 +72,7 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
         })}
       </div>
 
-      {activeFilter === "todos" ? (
+      {activeFilter === FILTER_ALL ? (
         <div className="group-detail-list">
           {priorityMembers.length > 0 ? (
             <div className="space-y-2">

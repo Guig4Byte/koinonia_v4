@@ -1,11 +1,20 @@
 import { isActiveStatus, isInCareStatus } from "@/features/people/person-status";
-export type MembersFilter = "todos" | "atencao" | "em-cuidado" | "ativos";
+import {
+  FILTER_ACTIVE,
+  FILTER_ALL,
+  FILTER_ATTENTION,
+  FILTER_IN_CARE,
+  readFilterParam,
+  type FilterOption,
+} from "@/lib/filter-param";
 
-export const MEMBERS_FILTERS: Array<{ value: MembersFilter; label: string }> = [
-  { value: "todos", label: "Todos" },
-  { value: "atencao", label: "Atenção" },
-  { value: "em-cuidado", label: "Em cuidado" },
-  { value: "ativos", label: "Ativos" },
+export type MembersFilter = typeof FILTER_ALL | typeof FILTER_ATTENTION | typeof FILTER_IN_CARE | typeof FILTER_ACTIVE;
+
+export const MEMBERS_FILTERS: ReadonlyArray<FilterOption<MembersFilter>> = [
+  { value: FILTER_ALL, label: "Todos" },
+  { value: FILTER_ATTENTION, label: "Atenção" },
+  { value: FILTER_IN_CARE, label: "Em cuidado" },
+  { value: FILTER_ACTIVE, label: "Ativos" },
 ];
 
 type MemberFilterable = {
@@ -21,12 +30,12 @@ type MemberFilterOptions = {
 
 const careCardTones = new Set(["risk", "support", "warn", "care"]);
 
-export function readMembersFilter(value: string): MembersFilter {
-  return MEMBERS_FILTERS.some((filter) => filter.value === value) ? value as MembersFilter : "todos";
+export function readMembersFilter(value: string | null | undefined): MembersFilter {
+  return readFilterParam(MEMBERS_FILTERS, value, FILTER_ALL);
 }
 
 export function membersFilterHref(basePath: string, filter: MembersFilter) {
-  if (filter === "todos") return `${basePath}#membros`;
+  if (filter === FILTER_ALL) return `${basePath}#membros`;
   return `${basePath}?membros=${filter}#membros`;
 }
 
@@ -39,16 +48,16 @@ export function memberMatchesFilter(
   filter: MembersFilter,
   options: MemberFilterOptions,
 ) {
-  if (filter === "atencao") return member.priorityRank <= options.attentionMaxPriorityRank;
+  if (filter === FILTER_ATTENTION) return member.priorityRank <= options.attentionMaxPriorityRank;
 
-  if (filter === "em-cuidado") {
+  if (filter === FILTER_IN_CARE) {
     const isInCare = isInCareStatus(member.status);
     return options.inCarePriorityRank === undefined
       ? isInCare
       : isInCare && member.priorityRank === options.inCarePriorityRank;
   }
 
-  if (filter === "ativos") {
+  if (filter === FILTER_ACTIVE) {
     return isActiveStatus(member.status) && member.priorityRank >= (options.activeMinPriorityRank ?? 5);
   }
 

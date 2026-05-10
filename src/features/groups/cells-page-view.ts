@@ -14,6 +14,7 @@ import { groupAttentionLabel, type SignalBadge } from "@/features/signals/displa
 import { compareByName, matchesNormalizedQuery, normalizeSearchText } from "@/lib/text";
 import { countLabel } from "@/lib/format";
 import type { CellsFilter } from "@/features/groups/cells-page-filters";
+import { FILTER_ALL, FILTER_ATTENTION, FILTER_NO_RECENT_PRESENCE, NO_RECENT_PRESENCE_LABEL } from "@/lib/filter-param";
 
 export const CELLS_PAGE_SECTION_LIMIT = 4;
 
@@ -88,8 +89,8 @@ export function compareGroups(left: SupervisorGroup, right: SupervisorGroup) {
 }
 
 export function groupMatchesFilter(group: SupervisorGroup, filter: CellsFilter) {
-  if (filter === "atencao") return groupNeedsPastoralAttention(group);
-  if (filter === "sem-presenca") return !group.hasPresenceData;
+  if (filter === FILTER_ATTENTION) return groupNeedsPastoralAttention(group);
+  if (filter === FILTER_NO_RECENT_PRESENCE) return !group.hasPresenceData;
   return true;
 }
 
@@ -121,7 +122,7 @@ export function groupBadge(group: SupervisorGroup): SignalBadge | null {
   }
 
   if (!group.hasPresenceData) {
-    return { label: "Sem presença recente", tone: "neutral" };
+    return { label: NO_RECENT_PRESENCE_LABEL, tone: "neutral" };
   }
 
   if (hasLowPresence(group)) {
@@ -168,6 +169,6 @@ export function buildCellsPageView({
     groupsNeedingAttentionCount,
     groupsWithoutPresenceCount,
     navIndicator,
-    isFiltered: Boolean(query) || filter !== "todos",
+    isFiltered: Boolean(query) || filter !== FILTER_ALL,
   };
 }

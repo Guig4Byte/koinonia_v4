@@ -15,6 +15,7 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { firstParam } from "@/lib/search-params";
 import { normalizeSearchText } from "@/lib/text";
 import { UserRole } from "@/generated/prisma/client";
+import { NO_RECENT_PRESENCE_LABEL } from "@/lib/filter-param";
 import { ROUTES } from "@/lib/routes";
 
 type CellsPageProps = {
@@ -91,7 +92,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
                 tone: view.groupsNeedingAttentionCount > 0 ? "warn" : "ok",
               },
               {
-                label: "Sem presença recente",
+                label: NO_RECENT_PRESENCE_LABEL,
                 value: String(view.groupsWithoutPresenceCount),
                 detail: view.groupsWithoutPresenceCount > 0
                   ? "Pode haver encontro realizado sem marcação ainda."

@@ -1,5 +1,6 @@
 import { SignalSeverity, UserRole } from "@/generated/prisma/client";
 import { countLabel } from "@/lib/format";
+import { NO_RECENT_PRESENCE_LABEL } from "@/lib/filter-param";
 
 export const LOW_PRESENCE_THRESHOLD = 70;
 export const NO_RECENT_PRESENCE_PRIORITY = 25;
@@ -124,7 +125,7 @@ export function teamGroupStatusLabel({
 }) {
   if (urgentCount > 0) return countLabel(urgentCount, "urgente", "urgentes");
   if (pastoralCasesCount > 0) return countLabel(pastoralCasesCount, "caso pastoral", "casos pastorais");
-  if (hasNoPresenceData) return "Sem presença recente";
+  if (hasNoPresenceData) return NO_RECENT_PRESENCE_LABEL;
   if (lowPresence) return "Presença baixa";
 
   return "Estável";

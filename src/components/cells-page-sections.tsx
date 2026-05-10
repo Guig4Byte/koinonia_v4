@@ -9,6 +9,7 @@ import {
   type GroupSectionKey,
   type SupervisorGroup,
 } from "@/features/groups/cells-page-view";
+import { NO_RECENT_PRESENCE_LABEL } from "@/lib/filter-param";
 import { ROUTES } from "@/lib/routes";
 
 function CellsGroupCard({ group, sectionKey }: { group: SupervisorGroup; sectionKey: GroupSectionKey }) {
@@ -27,7 +28,7 @@ function CellsGroupCard({ group, sectionKey }: { group: SupervisorGroup; section
       href={ROUTES.group(group.id)}
       hasPresenceData={group.hasPresenceData}
       presenceTrend={group.presenceTrend}
-      noPresenceLabel="Sem presença recente"
+      noPresenceLabel={NO_RECENT_PRESENCE_LABEL}
     />
   );
 }

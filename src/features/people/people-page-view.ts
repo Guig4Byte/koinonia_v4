@@ -5,6 +5,7 @@ import { personEffectiveBadgeForViewer } from "@/features/people/status-display"
 import { signalTitleForViewer, type SignalBadgeTone, type SignalDetailLike } from "@/features/signals/display";
 import { isSupportRequest, isUrgentOrPastoralCase, type SectionSignalWithIdentity } from "@/features/signals/sections";
 import { countLabel } from "@/lib/format";
+import { FILTER_ALL } from "@/lib/filter-param";
 import { compareByName } from "@/lib/text";
 
 export const PEOPLE_PAGE_ATTENTION_SIGNAL_QUERY_LIMIT = 80;
@@ -145,7 +146,7 @@ export function peoplePageMembersSectionDetail({
   priorityMembersCount: number;
   visibleMembersForFilterCount: number;
 }): string {
-  if (activeFilter !== "todos") {
+  if (activeFilter !== FILTER_ALL) {
     return countLabel(visibleMembersForFilterCount, "pessoa neste recorte", "pessoas neste recorte");
   }
 
@@ -170,7 +171,7 @@ export function buildPeoplePageView({
   const visibleMembersForFilter = members.filter((member) => memberMatchesFilter(member, activeFilter, memberFilterOptions));
   const priorityMembers = members.filter((member) => member.priorityRank <= 4);
   const activeMembers = members.filter((member) => member.priorityRank >= 5);
-  const regularMembers = activeFilter === "todos" ? activeMembers : visibleMembersForFilter;
+  const regularMembers = activeFilter === FILTER_ALL ? activeMembers : visibleMembersForFilter;
 
   return {
     navIndicator: peoplePageNavIndicator({ attentionCount: attentionSignals.length, inCareCount: inCarePeople.length }),

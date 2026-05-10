@@ -1,11 +1,20 @@
-export type TeamFilter = "todos" | "atencao" | "sem-presenca";
+import {
+  FILTER_ALL,
+  FILTER_ATTENTION,
+  FILTER_NO_RECENT_PRESENCE,
+  NO_RECENT_PRESENCE_FILTER_LABEL,
+  readFilterParam,
+  type FilterOption,
+} from "@/lib/filter-param";
 
-export const TEAM_FILTERS: Array<{ value: TeamFilter; label: string }> = [
-  { value: "todos", label: "Todos" },
-  { value: "atencao", label: "Pedem atenção" },
-  { value: "sem-presenca", label: "Sem presença recente" },
+export type TeamFilter = typeof FILTER_ALL | typeof FILTER_ATTENTION | typeof FILTER_NO_RECENT_PRESENCE;
+
+export const TEAM_FILTERS: ReadonlyArray<FilterOption<TeamFilter>> = [
+  { value: FILTER_ALL, label: "Todos" },
+  { value: FILTER_ATTENTION, label: "Pedem atenção" },
+  { value: FILTER_NO_RECENT_PRESENCE, label: NO_RECENT_PRESENCE_FILTER_LABEL },
 ];
 
-export function readTeamFilter(value: string): TeamFilter {
-  return TEAM_FILTERS.some((filter) => filter.value === value) ? value as TeamFilter : "todos";
+export function readTeamFilter(value: string | null | undefined): TeamFilter {
+  return readFilterParam(TEAM_FILTERS, value, FILTER_ALL);
 }

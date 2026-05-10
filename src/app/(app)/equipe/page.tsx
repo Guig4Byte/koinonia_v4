@@ -23,6 +23,7 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/search-params";
 import { normalizeSearchText } from "@/lib/text";
+import { NO_RECENT_PRESENCE_LABEL } from "@/lib/filter-param";
 import { ROUTES } from "@/lib/routes";
 
 type TeamPageProps = {
@@ -112,7 +113,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
                 tone: needsAttentionCount > 0 ? "warn" : "ok",
               },
               {
-                label: "Sem presença recente",
+                label: NO_RECENT_PRESENCE_LABEL,
                 value: String(team.summary.groupsWithoutPresenceCount),
                 detail: team.summary.groupsWithoutPresenceCount > 0
                   ? "Ainda não há presença recente registrada. Talvez o encontro tenha acontecido, mas a presença ainda não foi marcada."

@@ -17,7 +17,7 @@ type StructureSearchProps<TFilter extends string> = {
   filter: TFilter;
   defaultFilter: TFilter;
   sectionId: string;
-  filters: Array<StructureSearchOption<TFilter>>;
+  filters: ReadonlyArray<StructureSearchOption<TFilter>>;
   ariaLabel: string;
   placeholder: string;
 };

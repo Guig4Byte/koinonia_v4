@@ -3,6 +3,7 @@ import type { SignalBadgeTone } from "@/features/signals/display";
 import { hasLowPresence } from "@/features/groups/group-pastoral-priority";
 import { weekdayLabel } from "@/features/groups/weekdays";
 import type { TeamFilter } from "@/features/team/team-filters";
+import { FILTER_ALL, FILTER_ATTENTION, FILTER_NO_RECENT_PRESENCE } from "@/lib/filter-param";
 import { matchesNormalizedQuery } from "@/lib/text";
 import { countLabel } from "@/lib/format";
 
@@ -45,8 +46,8 @@ export function inactiveGroupMatchesQuery(group: InactiveTeamGroup, normalizedQu
 }
 
 export function groupMatchesFilter(group: TeamGroup, filter: TeamFilter) {
-  if (filter === "atencao") return group.pastoralPriorityScore > 0;
-  if (filter === "sem-presenca") return group.hasNoPresenceData;
+  if (filter === FILTER_ATTENTION) return group.pastoralPriorityScore > 0;
+  if (filter === FILTER_NO_RECENT_PRESENCE) return group.hasNoPresenceData;
   return true;
 }
 
@@ -87,7 +88,7 @@ export function filterSupervisors(supervisors: SupervisorTeam[], normalizedQuery
     // Na visão padrão, Equipe é estrutura pastoral: todos os supervisores ativos aparecem,
     // mesmo quando não têm célula ativa vinculada. Os filtros continuam mostrando só
     // supervisores que possuem células no recorte escolhido.
-    if (filter === "todos" && supervisorMatchesQuery(supervisor, normalizedQuery)) {
+    if (filter === FILTER_ALL && supervisorMatchesQuery(supervisor, normalizedQuery)) {
       return [withFilteredGroups(supervisor, [])];
     }
 
@@ -109,10 +110,10 @@ export function buildTeamPageLists({
   return {
     filteredSupervisors: filterSupervisors(team.supervisors, normalizedQuery, activeFilter),
     filteredUnassignedGroups: filterGroups(team.unassignedGroups, normalizedQuery, activeFilter),
-    filteredInactiveGroups: activeFilter === "todos"
+    filteredInactiveGroups: activeFilter === FILTER_ALL
       ? inactiveGroups.filter((group) => inactiveGroupMatchesQuery(group, normalizedQuery))
       : [],
-    isFiltered: Boolean(normalizedQuery) || activeFilter !== "todos",
+    isFiltered: Boolean(normalizedQuery) || activeFilter !== FILTER_ALL,
   };
 }
 

@@ -2,6 +2,7 @@
 
 import { StructureSearch } from "@/components/structure-search";
 import { CELLS_FILTERS, type CellsFilter } from "@/features/groups/cells-page-filters";
+import { FILTER_ALL } from "@/lib/filter-param";
 import { ROUTES } from "@/lib/routes";
 
 type CellsStructureSearchProps = {
@@ -15,7 +16,7 @@ export function CellsStructureSearch(props: CellsStructureSearchProps) {
     <StructureSearch
       {...props}
       basePath={ROUTES.cells}
-      defaultFilter="todos"
+      defaultFilter={FILTER_ALL}
       filters={CELLS_FILTERS}
       ariaLabel="Buscar célula ou liderança"
       placeholder="Buscar célula ou liderança..."
