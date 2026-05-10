@@ -72,6 +72,12 @@ Tipografia em TSX
   Tamanhos de texto devem usar tokens: text-[length:var(--text-*)].
   Cores arbitrárias de texto devem declarar tipo: text-[color:var(--color-*)].
   Evitar text-xs/text-sm/text-[11px] porque ignoram o controle data-text-size.
+
+Loading states
+  Skeletons reutilizáveis ficam em components/ui/skeleton.tsx.
+  Skeletons com formato de tela ficam em components/page-loading-skeletons.tsx.
+  Rotas de lista devem ter loading.tsx próprio quando a tela depende de consulta server-side perceptível.
+  O skeleton deve imitar o shape real dos cards, filtros e resumos sem introduzir lógica de domínio.
 ```
 
 ## Entidades principais
