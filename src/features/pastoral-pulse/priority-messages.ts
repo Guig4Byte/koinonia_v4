@@ -1,8 +1,8 @@
 import { UserRole } from "@/generated/prisma/client";
-import type { PastoralPulseMessage, PastoralPulseScope, PastoralPulseSubject } from "./pastoral-pulse";
+import type { PastoralPulseMessage, PastoralPulseScope, PastoralPulseSubject } from ".";
 import { isPastoralRole } from "@/features/permissions/permissions";
-import { groupPrefix } from "./pastoral-pulse-message-utils";
-import { SIGNAL_COPY } from "./signals/signal-copy";
+import { groupPrefix } from "@/features/pastoral-pulse/message-utils";
+import { SIGNAL_COPY } from "@/features/signals/signal-copy";
 
 export function mixedCareMessage(role: UserRole, scope: PastoralPulseScope, urgentOrPastoral: number): PastoralPulseMessage {
   if (scope === "pastorDashboard") {

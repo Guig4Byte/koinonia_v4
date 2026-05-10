@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Feedback } from "@/components/ui/feedback";
 import { CARE_COPY } from "@/features/care/care-copy";
-import { useApiAction } from "@/lib/use-api-action";
+import { useApiAction } from "@/hooks/use-api-action";
 import { API_ROUTES } from "@/lib/api-routes";
 
 export function PersonStatusActions({ personId }: { personId: string }) {

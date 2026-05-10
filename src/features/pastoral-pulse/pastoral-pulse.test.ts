@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { UserRole } from "@/generated/prisma/client";
-import { buildPastoralPulseMessage } from "./pastoral-pulse";
+import { buildPastoralPulseMessage } from ".";
 
 describe("pastoral pulse", () => {
   it("uses a collective leader message when more than one urgent care exists", () => {

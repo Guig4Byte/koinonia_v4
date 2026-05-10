@@ -17,7 +17,7 @@ import {
   type SignalSupportFlowStage,
 } from "@/features/signals/support-actions-view";
 import { SIGNAL_COPY } from "@/features/signals/signal-copy";
-import { useApiAction } from "@/lib/use-api-action";
+import { useApiAction } from "@/hooks/use-api-action";
 import { API_ROUTES } from "@/lib/api-routes";
 
 type SignalSupportActionsProps = {

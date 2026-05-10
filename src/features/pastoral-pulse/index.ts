@@ -4,12 +4,12 @@ import {
   mixedCareMessage,
   supportMessage,
   urgentMessage,
-} from "./pastoral-pulse-priority-messages";
+} from "./priority-messages";
 import {
   groupPresenceMessage,
   inCareMessage,
   stableMessage,
-} from "./pastoral-pulse-state-messages";
+} from "./state-messages";
 
 export type PastoralPulseTone = "calm" | "attention" | "ok";
 
