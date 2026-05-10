@@ -3,7 +3,6 @@ import {
   AttendanceStatus,
   CareKind,
   EventStatus,
-  GroupResponsibilityRole,
   MembershipRole,
   PersonStatus,
   SignalSeverity,
@@ -12,6 +11,18 @@ import {
   UserRole,
 } from "../src/generated/prisma/client";
 import { prisma } from "../src/lib/prisma";
+import { createSeedCareTouch } from "./seed-helpers/care";
+import { clearDatabase } from "./seed-helpers/cleanup";
+import {
+  createSeedAttendanceRecords,
+  createSeedEvent,
+} from "./seed-helpers/events";
+import {
+  createSeedGroupMemberships,
+  createSeedGroupWithResponsibilities,
+} from "./seed-helpers/groups";
+import type { SeedMember, SeedUser } from "./seed-helpers/types";
+import { createSeedUserWithPerson } from "./seed-helpers/users";
 
 function daysFromNow(days: number, hour = 20): Date {
   const date = new Date();
@@ -34,18 +45,6 @@ function nextSeedPhone(): string {
   return `+558199${String(seedPhoneCounter).padStart(6, "0")}`;
 }
 
-type SeedUser = {
-  id: string;
-  personId: string | null;
-  name: string;
-  email: string;
-  role: UserRole;
-};
-
-type SeedMember = {
-  id: string;
-  fullName: string;
-};
 
 type SeedGroup = {
   id: string;
@@ -307,24 +306,15 @@ async function createUserWithPerson({
   passwordHash: string;
   personName?: string;
 }): Promise<SeedUser> {
-  const person = await prisma.person.create({
-    data: {
-      churchId,
-      fullName: personName ?? name,
-      phone: nextSeedPhone(),
-      status: PersonStatus.ACTIVE,
-    },
-  });
-
-  return prisma.user.create({
-    data: {
-      churchId,
-      personId: person.id,
-      name,
-      email,
-      passwordHash,
-      role,
-    },
+  return createSeedUserWithPerson({
+    prisma,
+    churchId,
+    name,
+    email,
+    role,
+    passwordHash,
+    personName,
+    phone: nextSeedPhone(),
   });
 }
 
@@ -347,36 +337,15 @@ async function createGroupWithMembers({
   meetingTime: string;
   locationName: string;
 }): Promise<SeedGroup> {
-  const group = await prisma.smallGroup.create({
-    data: {
-      churchId,
-      name,
-      kind: "CELL",
-      meetingDayOfWeek,
-      meetingTime,
-      locationName,
-    },
-  });
-
-  await prisma.groupResponsibility.createMany({
-    data: [
-      {
-        churchId,
-        groupId: group.id,
-        userId: leader.id,
-        role: GroupResponsibilityRole.LEADER,
-      },
-      ...(supervisor
-        ? [
-            {
-              churchId,
-              groupId: group.id,
-              userId: supervisor.id,
-              role: GroupResponsibilityRole.SUPERVISOR,
-            },
-          ]
-        : []),
-    ],
+  const group = await createSeedGroupWithResponsibilities({
+    prisma,
+    churchId,
+    name,
+    leader,
+    supervisor,
+    meetingDayOfWeek,
+    meetingTime,
+    locationName,
   });
 
   const members = await Promise.all(
@@ -402,12 +371,10 @@ async function createGroupWithMembers({
     ),
   );
 
-  await prisma.groupMembership.createMany({
-    data: members.map((member) => ({
-      groupId: group.id,
-      personId: member.id,
-      role: MembershipRole.MEMBER,
-    })),
+  await createSeedGroupMemberships({
+    prisma,
+    groupId: group.id,
+    members,
   });
 
   const visitor = await prisma.person.create({
@@ -418,12 +385,11 @@ async function createGroupWithMembers({
     },
   });
 
-  await prisma.groupMembership.create({
-    data: {
-      groupId: group.id,
-      personId: visitor.id,
-      role: MembershipRole.VISITOR,
-    },
+  await createSeedGroupMemberships({
+    prisma,
+    groupId: group.id,
+    members: [visitor],
+    role: MembershipRole.VISITOR,
   });
 
   return {
@@ -458,17 +424,15 @@ async function createEvent({
   hour?: number;
   locationName?: string;
 }) {
-  return prisma.event.create({
-    data: {
-      churchId,
-      groupId: group.id,
-      createdById,
-      title: group.name,
-      startsAt: daysFromNow(days, hour),
-      status,
-      locationName: locationName ?? group.locationName,
-      generatedFromSchedule: true,
-    },
+  return createSeedEvent({
+    prisma,
+    churchId,
+    groupId: group.id,
+    createdById,
+    title: group.name,
+    startsAt: daysFromNow(days, hour),
+    status,
+    locationName: locationName ?? group.locationName,
   });
 }
 
@@ -533,30 +497,20 @@ async function createCareTouch({
   days: number;
   hour: number;
 }) {
-  return prisma.careTouch.create({
-    data: {
-      churchId,
-      personId: group.members[personIndex].id,
-      groupId: group.id,
-      actorId: actorId ?? null,
-      kind,
-      note: note?.trim() ? note.trim() : null,
-      happenedAt: daysFromNow(days, hour),
-    },
+  return createSeedCareTouch({
+    prisma,
+    churchId,
+    personId: group.members[personIndex].id,
+    groupId: group.id,
+    actorId: actorId ?? null,
+    kind,
+    note,
+    happenedAt: daysFromNow(days, hour),
   });
 }
 
 async function main() {
-  await prisma.careTouch.deleteMany();
-  await prisma.careSignal.deleteMany();
-  await prisma.attendance.deleteMany();
-  await prisma.event.deleteMany();
-  await prisma.groupMembership.deleteMany();
-  await prisma.groupResponsibility.deleteMany();
-  await prisma.smallGroup.deleteMany();
-  await prisma.user.deleteMany();
-  await prisma.person.deleteMany();
-  await prisma.church.deleteMany();
+  await clearDatabase(prisma);
 
   const passwordHash = await hash("koinonia123", 10);
 
@@ -880,17 +834,17 @@ async function main() {
     [betelWeek, betel, currentWeekEventIndex, false],
     [gracaWeek, graca, currentWeekEventIndex, false],
   ] as const) {
-    await prisma.attendance.createMany({
-      data: [
+    await createSeedAttendanceRecords({
+      prisma,
+      eventId: event.id,
+      records: [
         ...group.members.map((member, memberIndex) => ({
-          eventId: event.id,
           personId: member.id,
           status: memberStatus(group.key, memberIndex, eventIndex),
         })),
         ...(hasVisitor
           ? [
               {
-                eventId: event.id,
                 personId: group.visitor.id,
                 status: AttendanceStatus.VISITOR,
               },
@@ -1077,16 +1031,15 @@ async function main() {
     },
   });
 
-  await prisma.careTouch.create({
-    data: {
-      churchId,
-      personId: caminho.members[1].id,
-      groupId: caminho.id,
-      actorId: pastor.id,
-      kind: CareKind.MARKED_CARED,
-      note: "Conversa pastoral realizada. Família acolhida e sem novo sinal aberto.",
-      happenedAt: daysFromNow(-1, 18),
-    },
+  await createSeedCareTouch({
+    prisma,
+    churchId,
+    personId: caminho.members[1].id,
+    groupId: caminho.id,
+    actorId: pastor.id,
+    kind: CareKind.MARKED_CARED,
+    note: "Conversa pastoral realizada. Família acolhida e sem novo sinal aberto.",
+    happenedAt: daysFromNow(-1, 18),
   });
 
   await prisma.person.update({
@@ -1094,33 +1047,16 @@ async function main() {
     data: { status: PersonStatus.COOLING_AWAY },
   });
 
-  const inactiveGroup = await prisma.smallGroup.create({
-    data: {
-      churchId,
-      name: "Célula Arquivada",
-      kind: "CELL",
-      meetingDayOfWeek: 5,
-      meetingTime: "20:00",
-      locationName: "Endereço antigo",
-      isActive: false,
-    },
-  });
-
-  await prisma.groupResponsibility.createMany({
-    data: [
-      {
-        churchId,
-        groupId: inactiveGroup.id,
-        userId: bruno.id,
-        role: GroupResponsibilityRole.LEADER,
-      },
-      {
-        churchId,
-        groupId: inactiveGroup.id,
-        userId: ana.id,
-        role: GroupResponsibilityRole.SUPERVISOR,
-      },
-    ],
+  const inactiveGroup = await createSeedGroupWithResponsibilities({
+    prisma,
+    churchId,
+    name: "Célula Arquivada",
+    leader: bruno,
+    supervisor: ana,
+    meetingDayOfWeek: 5,
+    meetingTime: "20:00",
+    locationName: "Endereço antigo",
+    isActive: false,
   });
 
   const inactivePerson = await prisma.person.create({
@@ -1134,12 +1070,10 @@ async function main() {
     },
   });
 
-  await prisma.groupMembership.create({
-    data: {
-      groupId: inactiveGroup.id,
-      personId: inactivePerson.id,
-      role: MembershipRole.MEMBER,
-    },
+  await createSeedGroupMemberships({
+    prisma,
+    groupId: inactiveGroup.id,
+    members: [inactivePerson],
   });
 
   await prisma.careSignal.create({
@@ -1235,22 +1169,21 @@ async function createCompletedEventWithChurch(
   eventIndex: number,
   hour = 20,
 ) {
-  const event = await prisma.event.create({
-    data: {
-      churchId,
-      groupId: group.id,
-      createdById,
-      title: group.name,
-      startsAt: daysFromNow(days, hour),
-      status: EventStatus.COMPLETED,
-      locationName: group.locationName,
-      generatedFromSchedule: true,
-    },
+  const event = await createSeedEvent({
+    prisma,
+    churchId,
+    groupId: group.id,
+    createdById,
+    title: group.name,
+    startsAt: daysFromNow(days, hour),
+    status: EventStatus.COMPLETED,
+    locationName: group.locationName,
   });
 
-  await prisma.attendance.createMany({
-    data: group.members.map((member, memberIndex) => ({
-      eventId: event.id,
+  await createSeedAttendanceRecords({
+    prisma,
+    eventId: event.id,
+    records: group.members.map((member, memberIndex) => ({
       personId: member.id,
       status: memberStatus(group.key, memberIndex, eventIndex),
     })),
@@ -1267,30 +1200,28 @@ async function createCompletedEventAtDate(
   eventIndex: number,
   hasVisitor = false,
 ) {
-  const event = await prisma.event.create({
-    data: {
-      churchId,
-      groupId: group.id,
-      createdById,
-      title: group.name,
-      startsAt,
-      status: EventStatus.COMPLETED,
-      locationName: group.locationName,
-      generatedFromSchedule: true,
-    },
+  const event = await createSeedEvent({
+    prisma,
+    churchId,
+    groupId: group.id,
+    createdById,
+    title: group.name,
+    startsAt,
+    status: EventStatus.COMPLETED,
+    locationName: group.locationName,
   });
 
-  await prisma.attendance.createMany({
-    data: [
+  await createSeedAttendanceRecords({
+    prisma,
+    eventId: event.id,
+    records: [
       ...group.members.map((member, memberIndex) => ({
-        eventId: event.id,
         personId: member.id,
         status: memberStatus(group.key, memberIndex, eventIndex),
       })),
       ...(hasVisitor
         ? [
             {
-              eventId: event.id,
               personId: group.visitor.id,
               status: AttendanceStatus.VISITOR,
             },
