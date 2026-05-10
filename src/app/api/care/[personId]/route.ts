@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { SignalStatus } from "@/generated/prisma/client";
+import { CARE_COPY } from "@/features/care/care-copy";
 import { findPersonForCareAction } from "@/features/care/person-care-access";
 import { parseCarePayload, resolvedAttentionMessage } from "@/features/care/care-validation";
 import { ATTENTION_ELIGIBLE_PERSON_STATUSES, IN_CARE_STATUS } from "@/features/people/person-status";
@@ -18,7 +19,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pe
   const parsedBody = parseCarePayload(await readJsonBody(request));
 
   if (!parsedBody.success) {
-    return apiError("Dados de cuidado inválidos", 400);
+    return apiError(CARE_COPY.errors.invalidPayload, 400);
   }
 
   const body = parsedBody.data;
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pe
   const visibleGroupId = visibleGroupIds[0];
 
   if (!hasWholeChurchScope(user) && visibleGroupIds.length === 0) {
-    return apiError("Sem célula visível para registrar este cuidado", 403);
+    return apiError(CARE_COPY.errors.noVisibleGroup, 403);
   }
 
   const result = await prisma.$transaction(async (tx) => {

@@ -11,6 +11,7 @@ import {
   CareNoteCard,
 } from "@/components/care-action-cards";
 import { careContactInfo, careNoteId, careSavedMessage, type CareFlowStage } from "@/features/care/care-actions-view";
+import { CARE_COPY } from "@/features/care/care-copy";
 import { useApiAction } from "@/lib/use-api-action";
 import { API_ROUTES } from "@/lib/api-routes";
 
@@ -47,10 +48,10 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
           }),
         }),
       {
-        fallbackErrorMessage: "Não foi possível registrar o cuidado agora.",
+        fallbackErrorMessage: CARE_COPY.errors.registerFallback,
         onSuccess: (responseBody) => {
           setSavedMessage(careSavedMessage(Boolean(trimmedNote)));
-          setResolvedMessage(responseBody?.message ?? "A atenção ficou em dia sem criar acompanhamento formal.");
+          setResolvedMessage(responseBody?.message ?? CARE_COPY.feedback.noFormalFollowUp);
           setStage("done");
           setNote("");
           router.refresh();

@@ -1,7 +1,8 @@
 import type { MouseEvent } from "react";
 import { ArrowLeft, CheckCircle2, MessageCircleMore, NotebookPen, Phone } from "lucide-react";
-import { cn } from "@/lib/cn";
 import { CARE_NOTE_MAX_LENGTH, type CareContactLinks } from "@/features/care/care-actions-view";
+import { CARE_COPY } from "@/features/care/care-copy";
+import { cn } from "@/lib/cn";
 
 const buttonBase =
   "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-center text-sm font-semibold leading-tight tracking-[-0.01em] shadow-card transition active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-brand)]";
@@ -16,7 +17,7 @@ export function CareDoneMessage({ savedMessage, resolvedMessage }: { savedMessag
         <CheckCircle2 className="h-4 w-4" strokeWidth={2.2} />
         {savedMessage}
       </div>
-      <p className="mt-1 text-[var(--color-text-secondary)]">{resolvedMessage || "Registrado no cuidado recente."}</p>
+      <p className="mt-1 text-[var(--color-text-secondary)]">{resolvedMessage || CARE_COPY.feedback.recentCareRegistered}</p>
     </div>
   );
 }
@@ -68,7 +69,7 @@ export function CareContactStart({
           onClick={handleContactClick}
         >
           <Phone className="h-4 w-4" strokeWidth={2.3} />
-          Ligar
+          {CARE_COPY.contactActions.callLabel}
         </a>
 
         <a
@@ -85,13 +86,13 @@ export function CareContactStart({
           onClick={handleContactClick}
         >
           <MessageCircleMore className="h-4 w-4" strokeWidth={2.3} />
-          WhatsApp
+          {CARE_COPY.contactActions.whatsappLabel}
         </a>
       </div>
 
       {canRegisterCare ? (
         <button type="button" disabled={isPending} onClick={onExistingContact} className={cn(secondaryButton, isPending && disabled)}>
-          Já houve contato?
+          {CARE_COPY.contactActions.existingContactLabel}
         </button>
       ) : null}
     </>
@@ -111,20 +112,7 @@ export function CareConfirmCard({
   onConfirm: () => void;
   onCancel: () => void;
 }) {
-  const content =
-    variant === "contact"
-      ? {
-          title: "O contato aconteceu?",
-          description: "Nada será registrado se você ainda não conseguiu falar com a pessoa.",
-          confirmLabel: "Sim, houve contato",
-          cancelLabel: "Ainda não",
-        }
-      : {
-          title: "O cuidado já aconteceu?",
-          description: "Use quando você já ligou, mandou mensagem ou conversou fora do Koinonia. A atenção só será fechada depois da próxima confirmação.",
-          confirmLabel: "Sim, já houve",
-          cancelLabel: "Cancelar",
-        };
+  const content = variant === "contact" ? CARE_COPY.confirmContact : CARE_COPY.confirmExistingContact;
 
   return (
     <div className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3">
@@ -161,15 +149,15 @@ export function CareAskNoteCard({
 }) {
   return (
     <div className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3">
-      <p className="text-sm font-semibold text-[var(--color-text-primary)]">Quer deixar uma anotação?</p>
-      <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">Salvar sem anotação também registra o cuidado e mantém a pessoa no radar certo.</p>
+      <p className="text-sm font-semibold text-[var(--color-text-primary)]">{CARE_COPY.notePrompt.title}</p>
+      <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">{CARE_COPY.notePrompt.description}</p>
       <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
         <button type="button" disabled={isPending} onClick={onAddNote} className={cn(buttonBase, "bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)]", isPending && disabled)}>
           <NotebookPen className="h-4 w-4" strokeWidth={2.2} />
-          Anotar
+          {CARE_COPY.notePrompt.addNoteLabel}
         </button>
         <button type="button" disabled={isPending} onClick={onSaveWithoutNote} className={cn(secondaryButton, isPending && disabled)}>
-          {isPending ? "Salvando..." : "Salvar sem anotação"}
+          {isPending ? CARE_COPY.noteForm.savingLabel : CARE_COPY.notePrompt.saveWithoutNoteLabel}
         </button>
       </div>
       <button
@@ -178,7 +166,7 @@ export function CareAskNoteCard({
         onClick={onCancel}
         className={cn("mt-2 min-h-9 w-full text-center text-xs font-semibold leading-relaxed text-[var(--color-text-secondary)] transition active:scale-[0.98]", isPending && disabled)}
       >
-        Cancelar e não registrar agora
+        {CARE_COPY.notePrompt.cancelLabel}
       </button>
     </div>
   );
@@ -204,7 +192,7 @@ export function CareNoteCard({
   return (
     <div className="rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3">
       <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]" htmlFor={noteId}>
-        Observação opcional
+        {CARE_COPY.noteForm.label}
       </label>
       <textarea
         id={noteId}
@@ -212,16 +200,16 @@ export function CareNoteCard({
         onChange={(event) => onNoteChange(event.target.value)}
         rows={3}
         maxLength={CARE_NOTE_MAX_LENGTH}
-        placeholder="Ex.: Orei com ele. Está melhor. Pediu ajuda pela família."
+        placeholder={CARE_COPY.noteForm.placeholder}
         className="w-full resize-none rounded-xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-2 text-sm leading-relaxed text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-secondary)] focus:border-[var(--color-brand)]"
       />
       <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
         <button type="button" disabled={isPending} onClick={onBack} className={cn(secondaryButton, isPending && disabled)}>
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          Voltar
+          {CARE_COPY.noteForm.backLabel}
         </button>
         <button type="button" disabled={!hasNote || isPending} onClick={onSave} className={cn(buttonBase, "bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)]", (!hasNote || isPending) && disabled)}>
-          {isPending ? "Salvando..." : "Salvar cuidado"}
+          {isPending ? CARE_COPY.noteForm.savingLabel : CARE_COPY.noteForm.saveLabel}
         </button>
       </div>
     </div>

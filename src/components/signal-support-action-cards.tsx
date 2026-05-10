@@ -1,4 +1,5 @@
 import { ArrowLeft, LifeBuoy, SendHorizontal } from "lucide-react";
+import { SIGNAL_COPY } from "@/features/signals/signal-copy";
 import { cn } from "@/lib/cn";
 import {
   SIGNAL_SUPPORT_NOTE_MAX_LENGTH,
@@ -60,7 +61,7 @@ export function SignalSupportStartActions({
       {canRequestSupervisor ? (
         <button type="button" disabled={isPending} onClick={() => onSelectStage("request-supervisor")} className={supportButtonClass}>
           <LifeBuoy className="h-4 w-4" strokeWidth={2.2} />
-          Pedir apoio
+          {SIGNAL_COPY.support.requestSupervisor.startLabel}
         </button>
       ) : null}
 
@@ -72,7 +73,7 @@ export function SignalSupportStartActions({
           className={cn(supportButtonClass, "border-[var(--color-badge-risco-border)] bg-[var(--color-badge-risco-bg)] text-[var(--color-badge-risco-text)]")}
         >
           <SendHorizontal className="h-4 w-4" strokeWidth={2.2} />
-          Encaminhar ao pastor
+          {SIGNAL_COPY.support.escalatePastor.startLabel}
         </button>
       ) : null}
     </>
@@ -104,7 +105,7 @@ export function SignalSupportDecisionCard({
       <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">{actionCopy.detail}</p>
 
       <label className="mt-3 block text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]" htmlFor={noteId}>
-        Contexto opcional
+        {SIGNAL_COPY.support.form.noteLabel}
       </label>
       <textarea
         id={noteId}
@@ -123,11 +124,11 @@ export function SignalSupportDecisionCard({
           ) : (
             <SendHorizontal className="h-4 w-4" strokeWidth={2.2} />
           )}
-          {isPending ? "Salvando..." : actionCopy.label}
+          {isPending ? SIGNAL_COPY.support.form.savingLabel : actionCopy.label}
         </button>
         <button type="button" disabled={isPending} onClick={onCancel} className={supportButtonClass}>
           <ArrowLeft className="h-4 w-4" strokeWidth={2.2} />
-          Cancelar
+          {SIGNAL_COPY.support.form.cancelLabel}
         </button>
       </div>
     </div>

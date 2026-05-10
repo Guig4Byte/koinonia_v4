@@ -1,5 +1,5 @@
 import { GroupResponsibilityRole, SignalSeverity, UserRole } from "@/generated/prisma/client";
-import { isPastoralRole } from "@/features/permissions/permissions";
+import { SIGNAL_COPY, pastoralEscalationCopy, supervisorEscalationCopy } from "./signal-copy";
 import {
   hasAnyGroupResponsibilityScope,
   hasGroupResponsibilityScope,
@@ -76,27 +76,15 @@ function emptyEscalationDisplay(): EscalationDisplay {
 }
 
 function supervisorEscalationDisplay(viewer: EscalationViewerLike): EscalationDisplay {
-  const isSupervisorViewer = viewer.role === UserRole.SUPERVISOR;
-
   return {
-    label: isSupervisorViewer ? "Pedido de apoio" : "Apoio solicitado",
-    detail: isSupervisorViewer
-      ? "Essa célula pediu apoio da supervisão."
-      : "Apoio solicitado à supervisão.",
-    chip: isSupervisorViewer ? "Pedido de apoio" : "Apoio solicitado",
+    ...supervisorEscalationCopy(viewer),
     visible: true,
   };
 }
 
 function pastoralEscalationDisplay(viewer: EscalationViewerLike): EscalationDisplay {
-  const isPastoralRoleViewer = isPastoralRole(viewer);
-
   return {
-    label: "Encaminhado ao pastor",
-    detail: isPastoralRoleViewer
-      ? "Encaminhado ao cuidado pastoral."
-      : "Encaminhado ao pastor.",
-    chip: isPastoralRoleViewer ? "Cuidado pastoral" : "Encaminhado",
+    ...pastoralEscalationCopy(viewer),
     visible: true,
   };
 }
@@ -116,8 +104,8 @@ export function isPastoralEscalation(signal: EscalationSignalLike): boolean {
 export function escalationStatusLabel(signal: EscalationSignalLike): string | null {
   const assignmentKind = escalationAssignmentKind(signal);
 
-  if (assignmentKind === "pastoral") return "Encaminhado ao pastor";
-  if (assignmentKind === "supervisor") return "Apoio solicitado";
+  if (assignmentKind === "pastoral") return SIGNAL_COPY.pastoralEscalation.label;
+  if (assignmentKind === "supervisor") return SIGNAL_COPY.support.requested.label;
   return null;
 }
 

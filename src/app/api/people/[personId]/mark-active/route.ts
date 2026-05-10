@@ -1,3 +1,4 @@
+import { CARE_COPY } from "@/features/care/care-copy";
 import { findPersonForCareAction } from "@/features/care/person-care-access";
 import { ACTIVE_STATUS, IN_CARE_STATUS } from "@/features/people/person-status";
 import { getOpenSignalInActiveGroupWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
@@ -10,7 +11,7 @@ export async function POST(_request: Request, context: { params: Promise<{ perso
   const { personId } = await context.params;
 
   const personAccess = await findPersonForCareAction(user, personId, {
-    forbiddenMessage: "Sem permissão para atualizar esta pessoa",
+    forbiddenMessage: CARE_COPY.errors.noUpdatePermission,
   });
 
   if (!personAccess.ok) {
@@ -29,8 +30,8 @@ export async function POST(_request: Request, context: { params: Promise<{ perso
 
   if (openSignalsCount > 0) {
     const error = visibleOpenSignalsCount > 0
-      ? "Ainda há motivo de atenção aberto para esta pessoa. Registre o cuidado antes de marcar como ativo."
-      : "Ainda há motivo de atenção aberto fora do seu recorte atual. Peça apoio antes de marcar como ativo.";
+      ? CARE_COPY.statusActions.openSignalInVisibleScope
+      : CARE_COPY.statusActions.openSignalOutsideScope;
 
     return apiError(error, 409);
   }

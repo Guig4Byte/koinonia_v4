@@ -3,6 +3,7 @@
 import { CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { CARE_COPY } from "@/features/care/care-copy";
 import { cn } from "@/lib/cn";
 import { useApiAction } from "@/lib/use-api-action";
 import { API_ROUTES } from "@/lib/api-routes";
@@ -20,7 +21,7 @@ export function PersonStatusActions({ personId }: { personId: string }) {
           headers: { "Content-Type": "application/json" },
         }),
       {
-        fallbackErrorMessage: "Não foi possível marcar como ativo agora.",
+        fallbackErrorMessage: CARE_COPY.errors.markActiveFallback,
         onSuccess: () => {
           setIsConfirming(false);
           router.refresh();
@@ -34,9 +35,9 @@ export function PersonStatusActions({ personId }: { personId: string }) {
 
   return (
     <div className="mt-3 rounded-2xl border border-[var(--color-badge-cuidado-border)] bg-[var(--color-badge-cuidado-bg)] p-3 text-sm text-[var(--color-text-primary)]">
-      <p className="font-semibold text-[var(--color-badge-cuidado-text)]">Esta pessoa está em cuidado.</p>
+      <p className="font-semibold text-[var(--color-badge-cuidado-text)]">{CARE_COPY.statusActions.title}</p>
       <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-        Use quando a pessoa respondeu bem ao contato ou quando não precisa mais ficar em destaque.
+        {CARE_COPY.statusActions.description}
       </p>
 
       {errorMessage ? (
@@ -54,7 +55,7 @@ export function PersonStatusActions({ personId }: { personId: string }) {
             className={cn(buttonBase, "bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)]")}
           >
             <CheckCircle2 className="h-4 w-4" strokeWidth={2.2} />
-            Sim, marcar como ativo
+            {CARE_COPY.statusActions.confirmLabel}
           </button>
           <button
             type="button"
@@ -62,7 +63,7 @@ export function PersonStatusActions({ personId }: { personId: string }) {
             onClick={() => setIsConfirming(false)}
             className={cn(buttonBase, "border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] text-[var(--color-btn-secondary-text)]")}
           >
-            Manter em cuidado
+            {CARE_COPY.statusActions.keepInCareLabel}
           </button>
         </div>
       ) : (
@@ -72,7 +73,7 @@ export function PersonStatusActions({ personId }: { personId: string }) {
           onClick={() => setIsConfirming(true)}
           className={cn(buttonBase, "mt-3 border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] text-[var(--color-btn-secondary-text)]")}
         >
-          Marcar como ativo
+          {CARE_COPY.statusActions.startLabel}
         </button>
       )}
     </div>

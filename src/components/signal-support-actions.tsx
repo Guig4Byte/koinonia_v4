@@ -16,6 +16,7 @@ import {
   type SignalSupportAction,
   type SignalSupportFlowStage,
 } from "@/features/signals/support-actions-view";
+import { SIGNAL_COPY } from "@/features/signals/signal-copy";
 import { useApiAction } from "@/lib/use-api-action";
 import { API_ROUTES } from "@/lib/api-routes";
 
@@ -55,7 +56,7 @@ export function SignalSupportActions({
           body: JSON.stringify(signalSupportRequestPayload(action, note)),
         }),
       {
-        fallbackErrorMessage: "Não foi possível pedir apoio agora.",
+        fallbackErrorMessage: SIGNAL_COPY.errors.supportFallback,
         onSuccess: () => {
           resetFlow();
           router.refresh();

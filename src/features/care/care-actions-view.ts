@@ -6,6 +6,7 @@ export type CareContactLinks = {
 };
 
 export { CARE_NOTE_MAX_LENGTH } from "./care-note";
+export { careSavedMessage } from "./care-copy";
 
 export const CARE_PHONE_MIN_DIGITS = 10;
 
@@ -29,8 +30,4 @@ export function careContactInfo(phone?: string | null) {
 
 export function careNoteId(personId?: string) {
   return `note-${personId ?? "person"}`;
-}
-
-export function careSavedMessage(hasNote: boolean) {
-  return hasNote ? "Contato feito com anotação." : "Contato feito.";
 }

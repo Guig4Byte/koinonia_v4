@@ -1,4 +1,5 @@
 import { canRegisterCare, getVisibleGroupIdsForPerson, type PermissionUser } from "@/features/permissions/permissions";
+import { CARE_COPY } from "@/features/care/care-copy";
 import { activeGroupResponsibilitiesScopeInclude } from "@/features/groups/group-query";
 import { prisma } from "@/lib/prisma";
 
@@ -32,7 +33,7 @@ export async function findPersonForCareAction(
     return {
       ok: false as const,
       status: 404,
-      message: options.notFoundMessage ?? "Pessoa não encontrada",
+      message: options.notFoundMessage ?? CARE_COPY.errors.personNotFound,
     };
   }
 
@@ -40,7 +41,7 @@ export async function findPersonForCareAction(
     return {
       ok: false as const,
       status: 403,
-      message: options.forbiddenMessage ?? "Sem permissão para registrar cuidado",
+      message: options.forbiddenMessage ?? CARE_COPY.errors.noPermission,
     };
   }
 

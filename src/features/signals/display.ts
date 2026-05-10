@@ -7,6 +7,7 @@ import {
   type SignalAssigneeLike,
 } from "./escalation";
 import { signalPastoralMessageForViewer } from "./display-messages";
+import { SIGNAL_COPY } from "./signal-copy";
 
 export { signalPastoralMessageForViewer } from "./display-messages";
 
@@ -47,31 +48,31 @@ export type SignalPastoralMessage = {
  */
 export function signalBadgeForViewer(signal: SignalDisplayLike, viewer?: SignalDisplayViewerLike | null): SignalBadge {
   if (signal.severity === SignalSeverity.URGENT) {
-    return { label: "Urgente", tone: "risk" };
+    return { label: SIGNAL_COPY.badges.urgent, tone: "risk" };
   }
 
   if (isAssignedToSupervisor(signal)) {
     if (isPastoralRole(viewer)) {
-      return { label: "Atenção local", tone: "warn" };
+      return { label: SIGNAL_COPY.badges.localAttention, tone: "warn" };
     }
 
     const escalationLabel = viewer ? escalationStatusLabelForViewer(signal, viewer) : null;
-    return { label: escalationLabel ?? "Pedido de apoio", tone: "support" };
+    return { label: escalationLabel ?? SIGNAL_COPY.badges.supportRequest, tone: "support" };
   }
 
   if (isAssignedToPastoralRole(signal)) {
-    return { label: isPastoralRole(viewer) ? "Caso pastoral" : "Encaminhado", tone: "risk" };
+    return { label: isPastoralRole(viewer) ? SIGNAL_COPY.badges.pastoralCase : SIGNAL_COPY.badges.escalated, tone: "risk" };
   }
 
   if (signal.severity === SignalSeverity.INFO) {
-    return { label: "Informativo", tone: "info" };
+    return { label: SIGNAL_COPY.badges.informational, tone: "info" };
   }
 
   if (isPastoralRole(viewer)) {
-    return { label: "Atenção local", tone: "warn" };
+    return { label: SIGNAL_COPY.badges.localAttention, tone: "warn" };
   }
 
-  return { label: "Em atenção", tone: "warn" };
+  return { label: SIGNAL_COPY.badges.attention, tone: "warn" };
 }
 
 export function groupAttentionLabel(count: number, singular: string, plural: string): string {
@@ -80,7 +81,7 @@ export function groupAttentionLabel(count: number, singular: string, plural: str
 
 export function signalReasonForViewer(reason: string, viewer: { role: UserRole }): string {
   if (viewer.role !== UserRole.LEADER) return reason;
-  return reason.replace("Líder pediu apoio da supervisão", "Apoio solicitado à supervisão");
+  return reason.replace(SIGNAL_COPY.support.requested.rawLeaderReason, SIGNAL_COPY.support.requested.leaderReasonReplacement);
 }
 
 export function signalTitleForViewer(signal: SignalDetailLike, viewer: SignalDisplayViewerLike): string {

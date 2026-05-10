@@ -1,4 +1,5 @@
-import { AttendanceStatus, CareKind } from "@/generated/prisma/client";
+import { AttendanceStatus } from "@/generated/prisma/client";
+export { careKindLabels } from "@/features/care/care-copy";
 import { presenceTone, type PresenceTone } from "@/features/events/presence-display";
 import {
   summarizePresenceFromAttendances,
@@ -15,17 +16,6 @@ export const attendanceLabels: Record<AttendanceStatus, string> = {
   ABSENT: "Ausente",
   JUSTIFIED: "Justificou",
   VISITOR: "Visitante",
-};
-
-export const careKindLabels: Record<CareKind, string> = {
-  CALL: "Contato feito",
-  WHATSAPP: "Contato feito",
-  VISIT: "Contato feito",
-  PRAYER: "Contato feito",
-  MARKED_CARED: "Contato feito",
-  NOTE: "Anotação",
-  REQUESTED_SUPPORT: "Pedido de apoio à supervisão",
-  ESCALATED_TO_PASTOR: "Encaminhado ao cuidado pastoral",
 };
 
 export type PersonRecentAttendance = {

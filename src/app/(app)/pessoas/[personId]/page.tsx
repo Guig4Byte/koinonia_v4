@@ -3,6 +3,7 @@ import { CareKind, GroupResponsibilityRole, UserRole } from "@/generated/prisma/
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole, homeHrefForRole, secondaryNavHrefForRole, secondaryNavLabelForRole } from "@/features/navigation/app-nav";
 import { CareActions } from "@/components/care-actions";
+import { CARE_COPY } from "@/features/care/care-copy";
 import { PersonStatusActions } from "@/components/person-status-actions";
 import { BackLink, DetailLinkCard, EmptyState, SectionTitle } from "@/components/base-cards";
 import { priorityCardClass } from "@/components/card-priority";
@@ -207,7 +208,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       {careTouchHistoryItems.length > 0 ? (
         <CareTouchHistory items={careTouchHistoryItems} />
       ) : (
-        <EmptyState>Nenhum cuidado registrado ainda. Use “Já houve contato?” quando houver um contato real para guardar.</EmptyState>
+        <EmptyState>{CARE_COPY.history.empty}</EmptyState>
       )}
 
       {primaryGroup ? (

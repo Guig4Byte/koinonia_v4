@@ -1,4 +1,5 @@
 import { AttendanceStatus, SignalSeverity } from "@/generated/prisma/client";
+import { SIGNAL_COPY } from "@/features/signals/signal-copy";
 import { formatShortDate } from "@/lib/format";
 
 export const ATTENDANCE_SIGNAL_EVENT_LOOKBACK_COUNT = 4;
@@ -76,8 +77,8 @@ export function describeAttendanceSignal(absences: number, evidence?: string | n
     return {
       kind: "attendance-urgent" as const,
       severity: SignalSeverity.URGENT,
-      reason: "Ausência recorrente percebida.",
-      evidence: evidence ?? "Presença recente pede cuidado mais próximo.",
+      reason: SIGNAL_COPY.messages.attendanceRecurring.title,
+      evidence: evidence ?? SIGNAL_COPY.messages.attendanceRecurring.evidenceFallback,
     };
   }
 
@@ -85,8 +86,8 @@ export function describeAttendanceSignal(absences: number, evidence?: string | n
     return {
       kind: "attendance-attention" as const,
       severity: SignalSeverity.ATTENTION,
-      reason: "Ausência recente percebida.",
-      evidence: evidence ?? "Presença recente pede atenção.",
+      reason: SIGNAL_COPY.messages.attendanceRecent.title,
+      evidence: evidence ?? SIGNAL_COPY.messages.attendanceRecent.evidenceFallback,
     };
   }
 

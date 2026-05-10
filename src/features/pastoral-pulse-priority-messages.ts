@@ -2,6 +2,7 @@ import { UserRole } from "@/generated/prisma/client";
 import type { PastoralPulseMessage, PastoralPulseScope, PastoralPulseSubject } from "./pastoral-pulse";
 import { isPastoralRole } from "@/features/permissions/permissions";
 import { groupPrefix } from "./pastoral-pulse-message-utils";
+import { SIGNAL_COPY } from "./signals/signal-copy";
 
 export function mixedCareMessage(role: UserRole, scope: PastoralPulseScope, urgentOrPastoral: number): PastoralPulseMessage {
   if (scope === "pastorDashboard") {
@@ -139,8 +140,8 @@ export function supportMessage(
   if (scope === "groupDetail") {
     if (role === UserRole.LEADER) {
       return {
-        title: support === 1 ? "Apoio solicitado à supervisão." : "Há apoios solicitados à supervisão.",
-        subtitle: "Você continua perto da célula, com a supervisão caminhando junto.",
+        title: support === 1 ? SIGNAL_COPY.support.pulse.leaderSingleTitle : SIGNAL_COPY.support.pulse.leaderPluralTitle,
+        subtitle: SIGNAL_COPY.support.pulse.leaderGroupSubtitle,
         tone: "attention",
       };
     }
@@ -148,16 +149,16 @@ export function supportMessage(
     if (role === UserRole.SUPERVISOR) {
       return {
         title: support === 1
-          ? "Esta célula pediu apoio da supervisão."
-          : "Há pedidos de apoio nesta célula.",
-        subtitle: "Veja o contexto e caminhe junto com a liderança.",
+          ? SIGNAL_COPY.support.pulse.supervisorGroupSingleTitle
+          : SIGNAL_COPY.support.pulse.supervisorGroupPluralTitle,
+        subtitle: SIGNAL_COPY.support.pulse.supervisorGroupSubtitle,
         tone: "attention",
       };
     }
 
     return {
-      title: "Há apoio em andamento nesta célula.",
-      subtitle: "Esse cuidado segue com liderança e supervisão.",
+      title: SIGNAL_COPY.support.pulse.inProgressGroupTitle,
+      subtitle: SIGNAL_COPY.support.pulse.inProgressGroupSubtitle,
       tone: "calm",
     };
   }
@@ -165,30 +166,30 @@ export function supportMessage(
   if (role === UserRole.SUPERVISOR) {
     if (support === 1 && subject?.personName) {
       return {
-        title: `${subject.personName} tem um pedido de apoio da supervisão.`,
-        subtitle: `${groupPrefix(subject)}apoie a liderança com calma, sem assumir a operação da célula.`,
+        title: SIGNAL_COPY.support.pulse.supervisorPersonTitle(subject.personName),
+        subtitle: SIGNAL_COPY.support.pulse.supervisorPersonSubtitle(groupPrefix(subject)),
         tone: "attention",
       };
     }
 
     return {
-      title: `${support} pedidos de apoio chegaram à supervisão.`,
-      subtitle: "Veja o contexto de cada célula e apoie a liderança com calma.",
+      title: SIGNAL_COPY.support.pulse.supervisorDashboardTitle(support),
+      subtitle: SIGNAL_COPY.support.pulse.supervisorDashboardSubtitle,
       tone: "attention",
     };
   }
 
   if (role === UserRole.LEADER) {
     return {
-      title: support === 1 ? "Apoio solicitado à supervisão." : "Há apoios solicitados à supervisão.",
-      subtitle: "Você continua perto das pessoas, com a supervisão caminhando junto.",
+      title: support === 1 ? SIGNAL_COPY.support.pulse.leaderSingleTitle : SIGNAL_COPY.support.pulse.leaderPluralTitle,
+      subtitle: SIGNAL_COPY.support.pulse.leaderDashboardSubtitle,
       tone: "attention",
     };
   }
 
   return {
-    title: "Há apoio em andamento.",
-    subtitle: "Esse cuidado segue com liderança e supervisão.",
+    title: SIGNAL_COPY.support.pulse.inProgressDashboardTitle,
+    subtitle: SIGNAL_COPY.support.pulse.inProgressGroupSubtitle,
     tone: "calm",
   };
 }
