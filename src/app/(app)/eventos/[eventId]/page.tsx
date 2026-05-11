@@ -50,6 +50,7 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
       role={user.role}
       nav={nav}
       hideBottomNav={showCheckInForm}
+      headerVariant="compact"
     >
       <BackLink href={backHref}>{backLabel}</BackLink>
 

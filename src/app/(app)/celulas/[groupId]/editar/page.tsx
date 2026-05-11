@@ -48,6 +48,7 @@ export default async function EditCellPage({ params, searchParams }: EditCellPag
       userName={user.name}
       role={user.role}
       nav={appNavForRole(user, { active: "secondary" })}
+      headerVariant="compact"
     >
       <GroupForm
         title="Editar célula"

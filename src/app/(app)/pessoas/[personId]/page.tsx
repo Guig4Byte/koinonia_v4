@@ -125,6 +125,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       userName={user.name}
       role={user.role}
       nav={appNavForRole(user, { active: isLeader ? "secondary" : "none", indicator: navIndicator })}
+      headerVariant="compact"
     >
       <BackLink href={backHref}>{backLabel}</BackLink>
 

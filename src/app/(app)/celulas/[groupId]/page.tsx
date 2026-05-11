@@ -46,6 +46,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
       userName={user.name}
       role={user.role}
       nav={nav}
+      headerVariant="compact"
     >
       <div className="group-detail-page">
         <BackLink href={backHref}>{backLabel}</BackLink>

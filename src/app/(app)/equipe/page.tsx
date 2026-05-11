@@ -66,6 +66,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
       userName={user.name}
       role={user.role}
       nav={appNavForRole(user, { active: "secondary", indicator: teamNavIndicator(team.summary) })}
+      headerVariant="compact"
     >
       <div className="team-page">
         <div className="team-page-header flex items-center justify-between gap-3">

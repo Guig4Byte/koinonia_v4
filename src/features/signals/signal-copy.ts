@@ -100,7 +100,7 @@ export const SIGNAL_COPY = {
     title: "Encaminhado ao pastor.",
     requestedTitle: "Cuidado pastoral solicitado.",
     requestedDescriptionWithActor: (actorName: string) => `${actorName} compartilhou este cuidado para um olhar mais próximo. Um contato pode ajudar a entender melhor o momento.`,
-    requestedDescription: "Há um contexto que pede um olhar mais próximo. Um contato pode ajudar a entender melhor o momento.",
+    requestedDescription: "Há um contexto que pede um olhar mais próximo.",
     leaderDescription: "Você compartilhou este cuidado para um olhar pastoral mais próximo.",
     teamDescription: "Esse cuidado foi compartilhado para acompanhamento pastoral.",
   },

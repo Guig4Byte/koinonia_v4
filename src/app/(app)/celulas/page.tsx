@@ -47,6 +47,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
       userName={user.name}
       role={user.role}
       nav={appNavForRole(user, { active: "secondary", indicator: view.navIndicator })}
+      headerVariant="compact"
     >
       <div className="team-page">
         <div className="flex items-center justify-between gap-3">

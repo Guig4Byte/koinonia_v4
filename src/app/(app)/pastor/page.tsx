@@ -26,12 +26,13 @@ export default async function PastorPage() {
       role={user.role}
       nav={appNavForRole(user, { active: "home", indicator: view.navIndicator })}
     >
-      <SearchBox placeholder="Buscar qualquer pessoa..." />
       <PulseCard
         title={view.pastoralPulse.title}
         subtitle={view.pastoralPulse.subtitle}
         tone={view.pastoralPulse.tone}
       />
+
+      <SearchBox placeholder="Buscar qualquer pessoa..." />
 
       <PastoralSignalSection
         title="Irmãos que precisam de um olhar especial"

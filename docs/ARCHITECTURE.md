@@ -91,6 +91,11 @@ Busca de pessoas
   Toda nova consulta deve cancelar a requisição anterior para evitar resultado antigo sobrescrevendo resultado novo.
   O componente precisa mostrar estados visuais para carregando, vazio e erro.
   A lista de resultados deve expor semântica básica de combobox/listbox e permitir navegação por teclado com setas, Enter e Escape.
+
+Hierarquia mobile
+  A saudação grande do AppShell deve ficar reservada para as telas de Visão/Home.
+  Telas secundárias, detalhes, eventos e formulários devem usar headerVariant="compact" para preservar área útil no mobile.
+  Em Visões de supervisor e pastor, o PulseCard deve aparecer antes da busca para reforçar a leitura pastoral antes da consulta manual.
 ```
 
 ## Entidades principais

@@ -21,6 +21,7 @@ export default async function PeoplePage({ searchParams }: PeoplePageProps) {
       userName={user.name}
       role={user.role}
       nav={appNavForRole(user, { active: "secondary", indicator: peopleView.navIndicator })}
+      headerVariant="compact"
     >
       <SearchBox placeholder="Buscar membro..." />
 

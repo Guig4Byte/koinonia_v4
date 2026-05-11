@@ -403,6 +403,12 @@
   box-shadow: var(--color-shadow-header);
 }
 
+.app-header-compact {
+  margin-bottom: 14px;
+  border-radius: 22px;
+  padding: 12px;
+}
+
 .header-action-button {
   display: inline-flex;
   align-items: center;
@@ -423,6 +429,12 @@
 .header-action-button:focus-visible {
   outline: 2px solid var(--color-brand-accent);
   outline-offset: 2px;
+}
+
+.app-header-compact .header-action-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 14px;
 }
 
 

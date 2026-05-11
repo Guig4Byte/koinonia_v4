@@ -27,6 +27,7 @@ export default async function NewCellPage({ searchParams }: NewCellPageProps) {
       userName={user.name}
       role={user.role}
       nav={appNavForRole(user, { active: "secondary" })}
+      headerVariant="compact"
     >
       <GroupForm
         title="Nova célula"

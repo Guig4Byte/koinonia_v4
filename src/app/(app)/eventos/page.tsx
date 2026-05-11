@@ -56,6 +56,7 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
       userName={user.name}
       role={user.role}
       nav={appNavForRole(user, { active: "events" })}
+      headerVariant="compact"
     >
       <div className="events-page">
         {mode ? (
