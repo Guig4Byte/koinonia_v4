@@ -19,6 +19,51 @@ export type MemberPriorityListItem = {
   priorityRank: number;
 };
 
+
+type MemberCardsProps<TMember extends MemberPriorityListItem> = {
+  members: TMember[];
+  keyForMember: (member: TMember) => string;
+  hrefForMember: (member: TMember) => string;
+  contextForMember?: (member: TMember) => string | undefined;
+  cardToneForMember?: (member: TMember) => MemberPriorityCardTone | undefined;
+  compactForMember?: (member: TMember) => boolean;
+};
+
+function MemberCards<TMember extends MemberPriorityListItem>({
+  members,
+  keyForMember,
+  hrefForMember,
+  contextForMember,
+  cardToneForMember,
+  compactForMember,
+}: MemberCardsProps<TMember>) {
+  return (
+    <>
+      {members.map((member) => (
+        <PersonMiniCard
+          key={keyForMember(member)}
+          href={hrefForMember(member)}
+          name={member.name}
+          context={contextForMember?.(member)}
+          badgeLabel={member.badgeLabel}
+          badgeTone={member.badgeTone}
+          cardTone={cardToneForMember?.(member) ?? member.cardTone}
+          compact={compactForMember?.(member) ?? false}
+        />
+      ))}
+    </>
+  );
+}
+
+function MemberSectionHeader({ title, detail }: { title: string; detail: string }) {
+  return (
+    <div>
+      <p className="k-item-title-sm">{title}</p>
+      <p className="k-item-detail-tight">{detail}</p>
+    </div>
+  );
+}
+
 type MemberPriorityListProps<TMember extends MemberPriorityListItem> = {
   basePath: string;
   activeFilter: MembersFilter;
@@ -77,29 +122,22 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
         <div>
           {priorityMembers.length > 0 ? (
             <div className="space-y-2">
-              <div>
-                <p className="k-item-title-sm">Quem merece proximidade</p>
-                <p className="k-item-detail-tight">
-                  {countLabel(priorityMembers.length, "pessoa no radar", "pessoas no radar")}
-                </p>
-              </div>
+              <MemberSectionHeader
+                title="Quem merece proximidade"
+                detail={countLabel(priorityMembers.length, "pessoa no radar", "pessoas no radar")}
+              />
               <ProgressiveList
                 initialCount={4}
                 step={4}
                 moreLabel={priorityMoreLabel}
                 lessLabel={priorityLessLabel}
               >
-                {priorityMembers.map((member) => (
-                  <PersonMiniCard
-                    key={keyForMember(member)}
-                    href={hrefForMember(member)}
-                    name={member.name}
-                    context={priorityContextForMember?.(member)}
-                    badgeLabel={member.badgeLabel}
-                    badgeTone={member.badgeTone}
-                    cardTone={member.cardTone}
-                  />
-                ))}
+                <MemberCards
+                  members={priorityMembers}
+                  keyForMember={keyForMember}
+                  hrefForMember={hrefForMember}
+                  contextForMember={priorityContextForMember}
+                />
               </ProgressiveList>
             </div>
           ) : null}
@@ -107,12 +145,10 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
           {regularMembers.length > 0 ? (
             <div className={cn("space-y-2", priorityMembers.length > 0 && "pt-1")}>
               {priorityMembers.length > 0 ? (
-                <div>
-                  <p className="k-item-title-sm">Ativos</p>
-                  <p className="k-item-detail-tight">
-                    {countLabel(regularMembers.length, "membro sem sinal aberto", "membros sem sinal aberto")}
-                  </p>
-                </div>
+                <MemberSectionHeader
+                  title="Ativos"
+                  detail={countLabel(regularMembers.length, "membro sem sinal aberto", "membros sem sinal aberto")}
+                />
               ) : null}
               <ProgressiveList
                 initialCount={regularInitialCount}
@@ -120,17 +156,13 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
                 moreLabel={regularMoreLabel}
                 lessLabel={regularLessLabel}
               >
-                {regularMembers.map((member) => (
-                  <PersonMiniCard
-                    key={keyForMember(member)}
-                    href={hrefForMember(member)}
-                    name={member.name}
-                    badgeLabel={member.badgeLabel}
-                    badgeTone={member.badgeTone}
-                    cardTone="muted"
-                    compact
-                  />
-                ))}
+                <MemberCards
+                  members={regularMembers}
+                  keyForMember={keyForMember}
+                  hrefForMember={hrefForMember}
+                  cardToneForMember={() => "muted"}
+                  compactForMember={() => true}
+                />
               </ProgressiveList>
             </div>
           ) : null}
@@ -147,18 +179,14 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
             moreLabel={regularMoreLabel}
             lessLabel={regularLessLabel}
           >
-            {regularMembers.map((member) => (
-              <PersonMiniCard
-                key={keyForMember(member)}
-                href={hrefForMember(member)}
-                name={member.name}
-                context={filteredContextForMember?.(member)}
-                badgeLabel={member.badgeLabel}
-                badgeTone={member.badgeTone}
-                cardTone={member.priorityRank >= 5 ? "muted" : member.cardTone}
-                compact={member.priorityRank >= 5}
-              />
-            ))}
+            <MemberCards
+              members={regularMembers}
+              keyForMember={keyForMember}
+              hrefForMember={hrefForMember}
+              contextForMember={filteredContextForMember}
+              cardToneForMember={(member) => member.priorityRank >= 5 ? "muted" : member.cardTone}
+              compactForMember={(member) => member.priorityRank >= 5}
+            />
           </ProgressiveList>
           {regularMembers.length === 0 ? (
             <EmptyState compact>{emptyText}</EmptyState>

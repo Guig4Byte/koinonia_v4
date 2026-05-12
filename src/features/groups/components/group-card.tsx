@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Badge, type BadgeTone } from "@/components/ui/badge";
+import type { BadgeTone } from "@/components/ui/badge";
+import { CardHeader } from "@/components/ui/card-header";
 import { PriorityCard } from "@/components/ui/priority-card";
 import { cn } from "@/lib/cn";
 import { DEFAULT_PRESENCE_TONE_THRESHOLDS, formatPresenceRate, presenceTone } from "@/features/events/presence-display";
@@ -61,13 +62,12 @@ export function GroupCard({
   const presenceToneClass = metricTextClass(tone);
   const content = (
     <PriorityCard priorityTone={priorityTone} padding="sm" interactive>
-      <div className="k-card-header-row">
-        <div>
-          <p className="k-item-title">{name}</p>
-          <p className="mt-0.5 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">{subtitle}</p>
-        </div>
-        {showBadge ? <Badge tone={resolvedBadgeTone} className="max-w-[48%]">{resolvedBadgeLabel}</Badge> : null}
-      </div>
+      <CardHeader
+        title={name}
+        subtitle={subtitle}
+        badgeLabel={showBadge ? resolvedBadgeLabel : undefined}
+        badgeTone={resolvedBadgeTone}
+      />
       <div className="mt-3 flex items-center justify-between gap-3 border-t border-[var(--color-border-divider)] pt-2 text-[length:var(--text-xs)] text-[color:var(--color-text-secondary)]">
         <span className="min-w-0">
           {presenceLabel}:{" "}

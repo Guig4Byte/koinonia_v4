@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useEffect, useId, useState, type KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Search, X } from "lucide-react";
-import { Badge, isBadgeTone, type BadgeTone } from "@/components/ui/badge";
+import { isBadgeTone, type BadgeTone } from "@/components/ui/badge";
+import { CardHeader } from "@/components/ui/card-header";
 import { SEARCH_MIN_QUERY_LENGTH, shouldSearchPeople, normalizeSearchQuery } from "@/features/search/search-view";
 import { isRecord, readJsonResponse } from "@/lib/json";
 import { API_ROUTES } from "@/lib/api-routes";
@@ -246,15 +247,15 @@ export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: 
                     )}
                     onMouseEnter={() => setActiveIndex(index)}
                   >
-                    <div className="k-card-header-row">
-                      <span className="min-w-0">
-                        <span className="k-item-title-sm block truncate">{person.fullName}</span>
-                        <span className="mt-0.5 block truncate text-[length:var(--text-xs)] text-[color:var(--color-text-secondary)]">{person.context}</span>
-                      </span>
-                      <Badge tone={person.statusTone ?? "neutral"} className="max-w-[48%] truncate">
-                        {person.status}
-                      </Badge>
-                    </div>
+                    <CardHeader
+                      title={person.fullName}
+                      subtitle={person.context}
+                      badgeLabel={person.status}
+                      badgeTone={person.statusTone ?? "neutral"}
+                      titleClassName="k-item-title-sm block truncate"
+                      subtitleClassName="mt-0.5 block truncate text-[length:var(--text-xs)] text-[color:var(--color-text-secondary)]"
+                      badgeClassName="truncate"
+                    />
                   </Link>
                 );
               })

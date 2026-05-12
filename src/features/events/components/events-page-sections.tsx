@@ -1,8 +1,8 @@
 import { BackLink, EmptyState, SectionTitle } from "@/components/shared/base-cards";
 import { priorityCardClass } from "@/lib/card-priority";
 import { ProgressiveList } from "@/components/shared/progressive-list";
-import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button-link";
+import { CardHeader } from "@/components/ui/card-header";
 import { CardLink } from "@/components/ui/card-link";
 import { FilterChip } from "@/components/ui/filter-chip";
 import { formatPresenceRate } from "@/features/events/presence-display";
@@ -32,20 +32,14 @@ export function EventCard({ event, user, now }: { event: EventListEvent; user: P
       state.recordedPresence && cn(styles.registered, "priority-card"),
       priorityCardClass(state.isPendingEvent ? "warn" : undefined),
     )}>
-      <div className="k-card-header-row">
-        <div className="min-w-0">
-          <p className="k-item-title">{event.title}</p>
-          <p className="mt-0.5 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">
-            {eventMeta(event)}
-          </p>
-          {state.locationName ? (
-            <p className="k-item-detail-tight">
-              {state.locationName}
-            </p>
-          ) : null}
-        </div>
-        <Badge tone={state.badgeTone} className={cn(styles.badge, "max-w-[48%]")}>{state.label}</Badge>
-      </div>
+      <CardHeader
+        title={event.title}
+        subtitle={eventMeta(event)}
+        detail={state.locationName}
+        badgeLabel={state.label}
+        badgeTone={state.badgeTone}
+        badgeClassName={styles.badge}
+      />
 
       {state.recordedPresence ? (
         <div className={styles.stats}>

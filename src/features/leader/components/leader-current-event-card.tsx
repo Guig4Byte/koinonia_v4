@@ -1,5 +1,5 @@
-import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button-link";
+import { CardHeader } from "@/components/ui/card-header";
 import { PriorityCard } from "@/components/ui/priority-card";
 import { leaderCurrentEventState, type LeaderCurrentEvent } from "@/features/leader/leader-page-view";
 import { formatShortDate, formatTime } from "@/lib/format";
@@ -10,20 +10,13 @@ export function LeaderCurrentEventCard({ event }: { event: LeaderCurrentEvent })
 
   return (
     <PriorityCard as="section" interactive>
-      <div className="k-card-header-row">
-        <div className="min-w-0">
-          <p className="k-item-title">{state.groupName}</p>
-          <p className="mt-0.5 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">
-            {formatShortDate(event.startsAt)}, {formatTime(event.startsAt)}
-          </p>
-          {state.locationName ? (
-            <p className="k-item-detail-tight">
-              {state.locationName}
-            </p>
-          ) : null}
-        </div>
-        <Badge tone={state.badgeTone} className="max-w-[48%]">{state.badgeLabel}</Badge>
-      </div>
+      <CardHeader
+        title={state.groupName}
+        subtitle={`${formatShortDate(event.startsAt)}, ${formatTime(event.startsAt)}`}
+        detail={state.locationName}
+        badgeLabel={state.badgeLabel}
+        badgeTone={state.badgeTone}
+      />
       <p className="mt-3 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">
         {state.description}
       </p>

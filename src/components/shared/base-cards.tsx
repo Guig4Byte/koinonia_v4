@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, AlertCircle, Info, Heart } from "lucide-react";
 import type { ReactNode } from "react";
-import { Badge, type BadgeTone } from "@/components/ui/badge";
+import type { BadgeTone } from "@/components/ui/badge";
+import { CardHeader } from "@/components/ui/card-header";
 import { CardLink } from "@/components/ui/card-link";
 import { MetricRow, SummaryCard } from "@/components/ui/summary-card";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -167,13 +168,14 @@ export function DetailLinkCard({
 }) {
   return (
     <CardLink href={href} priorityTone={badgeTone}>
-      <div className="k-card-header-row">
-        <div className="min-w-0">
-          <p className="k-item-title truncate">{title}</p>
-          {meta ? <p className="k-supporting-copy">{meta}</p> : null}
-        </div>
-        {badgeLabel ? <Badge tone={badgeTone} className="max-w-[48%]">{badgeLabel}</Badge> : null}
-      </div>
+      <CardHeader
+        title={title}
+        subtitle={meta}
+        badgeLabel={badgeLabel}
+        badgeTone={badgeTone}
+        titleClassName="truncate"
+        subtitleClassName="k-supporting-copy"
+      />
       {children ? <div className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{children}</div> : null}
       <p className="mt-3 text-[length:var(--text-sm)] font-semibold text-[color:var(--color-brand)]">{actionLabel} <span className="inline-block transition group-active:translate-x-0.5">→</span></p>
     </CardLink>

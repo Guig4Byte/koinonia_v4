@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { Avatar } from "@/components/ui/avatar";
-import { Badge, type BadgeTone } from "@/components/ui/badge";
+import type { BadgeTone } from "@/components/ui/badge";
+import { ListLinkCard } from "@/components/ui/list-link-card";
 import { ProgressiveList } from "@/components/shared/progressive-list";
 import { EmptyState } from "@/components/shared/base-cards";
 import { priorityCardClass } from "@/lib/card-priority";
@@ -42,21 +42,15 @@ function TeamCellLink({
   className?: string;
 }) {
   return (
-    <Link
+    <ListLinkCard
       href={href}
+      title={name}
+      subtitle={subtitle}
+      badgeLabel={badgeLabel}
+      badgeTone={badgeTone}
+      surface="plain"
       className={cn(styles.cellLink, "card-hover-lift", className)}
-    >
-      <span className="min-w-0">
-        <span className="k-item-title-sm block truncate">{name}</span>
-        <span className="k-item-caption-truncate">{subtitle}</span>
-      </span>
-      <span className="flex shrink-0 items-center gap-2">
-        {badgeLabel ? <Badge tone={badgeTone} className="max-w-[48%]">{badgeLabel}</Badge> : null}
-        <span className="text-[length:var(--text-sm)] font-bold text-[color:var(--color-brand)] opacity-60" aria-hidden="true">
-          →
-        </span>
-      </span>
-    </Link>
+    />
   );
 }
 

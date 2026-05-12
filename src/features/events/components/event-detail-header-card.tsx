@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
+import { CardHeader } from "@/components/ui/card-header";
 import { Card } from "@/components/ui/card";
 import { ContextSummary } from "@/components/shared/base-cards";
 import type { BadgeTone } from "@/components/ui/badge";
@@ -39,26 +39,27 @@ export function EventDetailHeaderCard({
 }) {
   return (
     <Card>
-      <div className="k-card-header-row">
-        <div>
-          <p className="text-[length:var(--text-sm)] font-semibold uppercase tracking-[0.12em] text-[color:var(--color-text-secondary)]">
-            {checkInLabel}
-          </p>
-          <h2 className="mt-1 text-[length:var(--text-2xl)] font-semibold text-[color:var(--color-text-primary)]">{title}</h2>
-          <p className="k-item-meta">
-            {formatShortDate(startsAt)}, {formatTime(startsAt)}
-          </p>
-          {locationName ? (
-            <p className="k-item-meta">{locationName}</p>
-          ) : null}
-          {groupId && showGroupLink ? (
-            <Link href={ROUTES.group(groupId)} className="mt-3 inline-flex text-[length:var(--text-sm)] font-semibold text-[color:var(--color-brand)]">
-              Ver célula →
-            </Link>
-          ) : null}
-        </div>
-        <Badge tone={eventStatusTone} className="max-w-[48%]">{eventStatusLabel}</Badge>
-      </div>
+      <CardHeader
+        as="h2"
+        eyebrow={checkInLabel}
+        title={title}
+        subtitle={`${formatShortDate(startsAt)}, ${formatTime(startsAt)}`}
+        detail={locationName || (groupId && showGroupLink) ? (
+          <>
+            {locationName ? <p className="k-item-meta">{locationName}</p> : null}
+            {groupId && showGroupLink ? (
+              <Link href={ROUTES.group(groupId)} className="mt-3 inline-flex text-[length:var(--text-sm)] font-semibold text-[color:var(--color-brand)]">
+                Ver célula →
+              </Link>
+            ) : null}
+          </>
+        ) : undefined}
+        badgeLabel={eventStatusLabel}
+        badgeTone={eventStatusTone}
+        titleClassName="mt-1 text-[length:var(--text-2xl)]"
+        subtitleClassName="k-item-meta"
+        detailClassName=""
+      />
 
       <div className="mt-4">
         <ContextSummary

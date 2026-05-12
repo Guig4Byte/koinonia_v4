@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
+import { ListLinkCard } from "@/components/ui/list-link-card";
 import { PriorityCard } from "@/components/ui/priority-card";
-import { cn } from "@/lib/cn";
-import { priorityCardClass, type CardPriorityTone } from "@/lib/card-priority";
+import type { CardPriorityTone } from "@/lib/card-priority";
 
 function signalCardPriorityTone(resolvedBadgeTone: BadgeTone, severity: "ok" | "warn" | "risk" | "info"): CardPriorityTone | undefined {
   if (resolvedBadgeTone !== "neutral" && resolvedBadgeTone !== "ok" && resolvedBadgeTone !== "info") {
@@ -36,29 +36,18 @@ export function PersonMiniCard(props: {
     compact = false,
   } = props;
   return (
-    <Link
+    <ListLinkCard
       href={href}
       aria-label={`${ctaLabel}: ${name}`}
-      className={cn(
-        "card-hover-lift group flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] shadow-card transition active:scale-[0.99]",
-        compact ? "min-h-[3.75rem] px-3 py-2.5" : "min-h-[4.25rem] px-3 py-3",
-        priorityCardClass(cardTone ?? badgeTone),
-      )}
-    >
-      <span className="flex min-w-0 items-center gap-3">
-        <Avatar name={name} size={compact ? "sm" : "md"} />
-        <span className="min-w-0">
-          <span className="k-item-title-sm block truncate">{name}</span>
-          {context ? <span className="k-item-caption-truncate">{context}</span> : null}
-        </span>
-      </span>
-      <span className="flex shrink-0 items-center gap-2">
-        {badgeLabel ? <Badge tone={badgeTone} className={compact ? "max-w-[48%] px-2 py-0.5 text-[length:var(--text-xs)]" : "max-w-[48%]"}>{badgeLabel}</Badge> : null}
-        <span className="text-[length:var(--text-sm)] font-bold text-[color:var(--color-brand)] opacity-60 transition group-active:translate-x-0.5" aria-hidden="true">
-          →
-        </span>
-      </span>
-    </Link>
+      title={name}
+      subtitle={context}
+      leading={<Avatar name={name} size={compact ? "sm" : "md"} />}
+      badgeLabel={badgeLabel}
+      badgeTone={badgeTone}
+      badgeClassName={compact ? "px-2 py-0.5 text-[length:var(--text-xs)]" : undefined}
+      priorityTone={cardTone ?? badgeTone}
+      compact={compact}
+    />
   );
 }
 
