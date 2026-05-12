@@ -18,6 +18,13 @@ import {
 } from "@/features/team/team-view";
 import { cn } from "@/lib/cn";
 import { ROUTES } from "@/lib/routes";
+import styles from "./team-structure-cards.module.css";
+
+const cellLinkToneClass: Partial<Record<BadgeTone, string>> = {
+  risk: styles.cellLinkRisk,
+  warn: styles.cellLinkWarn,
+  neutral: styles.cellLinkNeutral,
+};
 
 function TeamCellLink({
   href,
@@ -37,7 +44,7 @@ function TeamCellLink({
   return (
     <Link
       href={href}
-      className={cn("team-cell-link card-hover-lift", className)}
+      className={cn(styles.cellLink, "card-hover-lift", className)}
     >
       <span className="min-w-0">
         <span className="k-item-title-sm block truncate">{name}</span>
@@ -64,7 +71,7 @@ export function TeamGroupLink({ group }: { group: TeamGroup }) {
       subtitle={compactGroupSubtitle(group)}
       badgeLabel={showBadge ? group.statusLabel : undefined}
       badgeTone={tone}
-      className={showBadge ? `team-cell-link-${tone}` : undefined}
+      className={showBadge ? cellLinkToneClass[tone] : undefined}
     />
   );
 }
@@ -79,7 +86,7 @@ export function InactiveTeamGroupLink({ group }: { group: InactiveTeamGroup }) {
       subtitle={`${scheduleText}${group.locationName ? ` · ${group.locationName}` : ""}`}
       badgeLabel="Inativa"
       badgeTone="neutral"
-      className="team-cell-link-neutral"
+      className={styles.cellLinkNeutral}
     />
   );
 }
@@ -88,9 +95,9 @@ export function TeamSupervisorCard({ supervisor }: { supervisor: SupervisorTeam 
   const hasGroups = supervisor.groups.length > 0;
   const badgeTone = supervisorBadgeTone(supervisor);
   return (
-    <section className={cn("team-supervisor-card", priorityCardClass(badgeTone !== "neutral" ? badgeTone : undefined))}>
+    <section className={cn(styles.supervisorCard, styles.supervisorPriorityCard, priorityCardClass(badgeTone !== "neutral" ? badgeTone : undefined))}>
       <div className="flex items-start gap-2.5">
-        <Avatar name={supervisor.name} className="team-avatar" />
+        <Avatar name={supervisor.name} className={styles.avatar} />
         <div className="min-w-0 flex-1">
           <div className="min-w-0">
             <p className="k-item-title">{supervisor.name}</p>
@@ -98,24 +105,24 @@ export function TeamSupervisorCard({ supervisor }: { supervisor: SupervisorTeam 
 
           {!hasGroups ? (
             <>
-              <p className="team-supervisor-summary-text">{supervisorSummary(supervisor)}</p>
+              <p className={styles.supervisorSummaryText}>{supervisorSummary(supervisor)}</p>
               <div className="mt-2">
                 <EmptyState compact>Nenhuma célula ativa vinculada a este supervisor.</EmptyState>
               </div>
             </>
           ) : (
-            <details className="team-supervisor-details group">
-              <summary className="team-supervisor-summary">
-                <span className="team-supervisor-summary-text">
+            <details className={cn(styles.supervisorDetails, "group")}>
+              <summary className={styles.supervisorSummary}>
+                <span className={styles.supervisorSummaryText}>
                   {supervisorSummary(supervisor)}
                 </span>
-                <span className="team-supervisor-summary-action">
+                <span className={styles.supervisorSummaryAction}>
                   <span className="group-open:hidden">Ver células</span>
                   <span className="hidden group-open:inline">Mostrar menos</span>
                   <span className="inline-block transition group-active:translate-x-0.5" aria-hidden="true">→</span>
                 </span>
               </summary>
-              <div className="team-cell-list">
+              <div className={styles.cellList}>
                 <ProgressiveList
                   initialCount={GROUPS_PER_SUPERVISOR_LIMIT}
                   step={GROUPS_PER_SUPERVISOR_LIMIT}

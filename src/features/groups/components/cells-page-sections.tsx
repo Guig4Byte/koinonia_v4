@@ -11,6 +11,7 @@ import {
 } from "@/features/groups/cells-page-view";
 import { NO_RECENT_PRESENCE_LABEL } from "@/lib/filter-param";
 import { ROUTES } from "@/lib/routes";
+import styles from "./cells-page-sections.module.css";
 
 function CellsGroupCard({ group, sectionKey }: { group: SupervisorGroup; sectionKey: GroupSectionKey }) {
   const badge = groupBadge(group);
@@ -35,10 +36,10 @@ function CellsGroupCard({ group, sectionKey }: { group: SupervisorGroup; section
 
 export function CellsPageSections({ sections }: { sections: CellsPageView["groupedSections"] }) {
   return (
-    <div className="cell-priority-sections">
+    <div className={styles.sections}>
       {sections.map((section) => (
-        <div key={section.key} className="cell-priority-section">
-          <div className="cell-priority-heading">
+        <div key={section.key} className={styles.section}>
+          <div className={styles.heading}>
             <h3>{section.title}</h3>
           </div>
           <ProgressiveList

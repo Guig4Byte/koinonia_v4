@@ -12,6 +12,7 @@ import {
 } from "@/features/groups/group-detail-view";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { ROUTES } from "@/lib/routes";
+import styles from "@/features/groups/components/group-detail.module.css";
 
 type GroupDetailPageProps = {
   params: Promise<{ groupId: string }>;
@@ -48,7 +49,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
       nav={nav}
       headerVariant="compact"
     >
-      <div className="group-detail-page">
+      <div className={styles.page}>
         <BackLink href={backHref}>{backLabel}</BackLink>
 
         {savedMessage ? <InfoCard tone="success">{savedMessage}</InfoCard> : null}
@@ -66,7 +67,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
           </div>
         ) : null}
 
-        <section className="group-detail-hero">
+        <section className={styles.hero}>
           <div className="min-w-0">
             <p className="text-[length:var(--text-xs)] font-bold uppercase tracking-[0.14em] text-[color:var(--color-text-secondary)]">Célula</p>
             <h2 className="mt-1 text-[length:var(--text-2xl)] font-extrabold leading-tight tracking-[-0.02em] text-[color:var(--color-text-primary)]">{group.name}</h2>
@@ -75,7 +76,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
               {supervisionName ? ` · Supervisão: ${supervisionName}` : ""}
             </p>
           </div>
-          <p className="group-detail-hero-chip mt-3">
+          <p className={`${styles.heroChip} mt-3`}>
             {groupMeetingText(group.meetingDayOfWeek, group.meetingTime)}
             {group.locationName ? ` · ${group.locationName}` : ""}
           </p>
@@ -89,7 +90,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
           />
         </div>
 
-        <div className="group-detail-summary">
+        <div className={styles.summary}>
           <ContextSummary
             variant="balanced"
             detailTone="strong"

@@ -1,6 +1,7 @@
 import Link, { type LinkProps } from "next/link";
 import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/cn";
+import styles from "./filter-chip.module.css";
 
 export type FilterChipVariant = "team" | "period";
 
@@ -29,7 +30,7 @@ export function filterChipClassName({
     return cn(periodBaseClass, active ? periodActiveClass : periodInactiveClass, className);
   }
 
-  return cn("team-filter-chip", active && "team-filter-chip-active", className);
+  return cn(styles.team, active && styles.teamActive, className);
 }
 
 export function FilterChip({ active = false, variant = "team", className, children, ...props }: FilterChipProps) {

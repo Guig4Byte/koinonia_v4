@@ -9,6 +9,8 @@ import { formatPresenceRate, presenceTone } from "@/features/events/presence-dis
 import { summarizeEventPresence } from "@/features/events/presence-summary";
 import { countLabel, formatShortDate, formatTime } from "@/lib/format";
 import { ROUTES } from "@/lib/routes";
+import { cn } from "@/lib/cn";
+import styles from "./group-detail.module.css";
 
 export type GroupRegisteredEncounter = {
   id: string;
@@ -68,7 +70,7 @@ export function GroupRegisteredEncountersList({ events }: { events: GroupRegiste
               <Link
                 key={event.id}
                 href={ROUTES.event(event.id)}
-                className="group-encounter-card relative min-h-[74px] gap-3 overflow-hidden py-3 pr-4 pl-5"
+                className={cn(styles.encounterCard, "relative min-h-[74px] gap-3 overflow-hidden py-3 pr-4 pl-5")}
                 style={encounterToneVars(presenceBadgeTone)}
               >
                 <span className="absolute inset-y-0 left-0 w-1 bg-[var(--encounter-tone)]" aria-hidden="true" />

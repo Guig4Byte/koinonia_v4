@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Search } from "lucide-react";
 import { FilterChip } from "@/components/ui/filter-chip";
+import styles from "./structure-search.module.css";
 
 export type StructureSearchOption<TFilter extends string> = {
   value: TFilter;
@@ -94,10 +95,10 @@ function StructureSearchContent<TFilter extends string>({
   }
 
   return (
-    <section className="team-tools">
+    <section className={styles.tools}>
       <form
         action={searchPath(draftQuery)}
-        className="team-search-form"
+        className={styles.searchForm}
         onSubmit={(event) => {
           event.preventDefault();
           const formData = new FormData(event.currentTarget);
@@ -121,12 +122,12 @@ function StructureSearchContent<TFilter extends string>({
             }
           }}
         />
-        <button type="submit" className="team-search-submit">
+        <button type="submit" className={styles.searchSubmit}>
           Buscar
         </button>
       </form>
 
-      <div className="team-filter-row">
+      <div className={styles.filterRow}>
         {filters.map((option) => {
           const active = option.value === filter && (option.value !== defaultFilter || !query);
 

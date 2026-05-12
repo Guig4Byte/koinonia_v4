@@ -19,6 +19,8 @@ import {
 import type { PermissionUser } from "@/features/permissions/permissions";
 import { cn } from "@/lib/cn";
 import { ROUTES } from "@/lib/routes";
+import pageStyles from "@/components/shared/consultation-page.module.css";
+import styles from "./events-page-sections.module.css";
 
 export function EventCard({ event, user, now }: { event: EventListEvent; user: PermissionUser; now: Date }) {
   const state = buildEventListCardState(event, user, now);
@@ -26,8 +28,8 @@ export function EventCard({ event, user, now }: { event: EventListEvent; user: P
 
   return (
     <article className={cn(
-      "event-card",
-      state.recordedPresence && "event-card-registered priority-card",
+      styles.card,
+      state.recordedPresence && cn(styles.registered, "priority-card"),
       priorityCardClass(state.isPendingEvent ? "warn" : undefined),
     )}>
       <div className="k-card-header-row">
@@ -42,11 +44,11 @@ export function EventCard({ event, user, now }: { event: EventListEvent; user: P
             </p>
           ) : null}
         </div>
-        <Badge tone={state.badgeTone} className="event-card-badge max-w-[48%]">{state.label}</Badge>
+        <Badge tone={state.badgeTone} className={cn(styles.badge, "max-w-[48%]")}>{state.label}</Badge>
       </div>
 
       {state.recordedPresence ? (
-        <div className="event-card-stats">
+        <div className={styles.stats}>
           <p>
             <strong className="text-[color:var(--color-metric-presenca)]">{formatPresenceRate(metrics.hasPresenceData, metrics.presenceRate)}</strong>
             <span>presença</span>
@@ -152,8 +154,8 @@ export function EventsConsultationView({
   return (
     <>
       <BackLink href={ROUTES.events}>Encontros</BackLink>
-      <h2 className="events-title">{view.title}</h2>
-      <p className="events-description">{view.description}</p>
+      <h2 className={pageStyles.title}>{view.title}</h2>
+      <p className={cn(pageStyles.description, pageStyles.eventsIntro)}>{view.description}</p>
       <PeriodChips mode={mode} activePeriod={period} />
       <SectionTitle>{view.periodLabel}</SectionTitle>
       {view.filteredEvents.length > 0 ? <EventList events={view.filteredEvents} user={user} now={now} /> : <EmptyState>{view.emptyMessage}</EmptyState>}

@@ -16,6 +16,8 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { addBrasiliaDays, endOfBrasiliaWeek, startOfBrasiliaDay } from "@/lib/brasilia-time";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/search-params";
+import { cn } from "@/lib/cn";
+import pageStyles from "@/components/shared/consultation-page.module.css";
 
 type EventsSearchParams = Promise<{
   consulta?: string | string[];
@@ -58,13 +60,13 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
       nav={appNavForRole(user, { active: "events" })}
       headerVariant="compact"
     >
-      <div className="events-page">
+      <div className={cn(pageStyles.page, pageStyles.eventsPage)}>
         {mode ? (
           <EventsConsultationView mode={mode} period={period} events={events} user={user} now={now} />
         ) : (
           <>
-            <h2 className="events-title">Encontros</h2>
-            <p className="events-description">
+            <h2 className={pageStyles.title}>Encontros</h2>
+            <p className={cn(pageStyles.description, pageStyles.eventsIntro)}>
               Acompanhe os encontros das células nesta semana e os registros de presença.
             </p>
 

@@ -7,6 +7,7 @@ import { MEMBERS_FILTERS, membersFilterHref, type MembersFilter } from "@/featur
 import { cn } from "@/lib/cn";
 import { countLabel } from "@/lib/format";
 import { FILTER_ALL } from "@/lib/filter-param";
+import styles from "./member-priority-list.module.css";
 
 export type MemberPriorityCardTone = BadgeTone | "stable" | "muted";
 
@@ -55,7 +56,7 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
 }: MemberPriorityListProps<TMember>) {
   return (
     <>
-      <div className="group-member-filter-row mb-3">
+      <div className={cn(styles.filterRow, "mb-3")}>
         {MEMBERS_FILTERS.map((option) => {
           const active = option.value === activeFilter;
 

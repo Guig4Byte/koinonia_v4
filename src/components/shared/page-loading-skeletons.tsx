@@ -1,6 +1,12 @@
 import type { ReactNode } from "react";
 import { Skeleton, SkeletonCard, SkeletonList, SkeletonSection, SkeletonText } from "@/components/ui/skeleton";
 import { cn } from "@/lib/cn";
+import pageStyles from "./consultation-page.module.css";
+import memberStyles from "@/features/people/components/member-priority-list.module.css";
+import cellsStyles from "@/features/groups/components/cells-page-sections.module.css";
+import groupStyles from "@/features/groups/components/group-detail.module.css";
+import eventStyles from "@/features/events/components/events-page-sections.module.css";
+import teamStyles from "@/features/team/components/team-structure-cards.module.css";
 
 function AppLoadingShell({ children }: { children: ReactNode }) {
   return (
@@ -63,7 +69,7 @@ function SearchSkeleton() {
 
 function FilterChipsSkeleton({ count = 4 }: { count?: number }) {
   return (
-    <div className="group-member-filter-row mb-3" aria-hidden="true">
+    <div className={cn(memberStyles.filterRow, "mb-3")} aria-hidden="true">
       {Array.from({ length: count }).map((_, index) => (
         <Skeleton key={index} className={cn("h-8 rounded-full", index === 0 ? "w-16" : "w-24")} />
       ))}
@@ -125,7 +131,7 @@ function GroupCardSkeleton() {
 
 function EventCardSkeleton() {
   return (
-    <SkeletonCard className="event-card p-4">
+    <SkeletonCard className={cn(eventStyles.card, "p-4")}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <SkeletonText className="h-4 w-40" />
@@ -133,7 +139,7 @@ function EventCardSkeleton() {
         </div>
         <Skeleton className="h-6 w-20 shrink-0 rounded-full" />
       </div>
-      <div className="event-card-stats">
+      <div className={eventStyles.stats}>
         <SkeletonText className="h-8 rounded-xl" />
         <SkeletonText className="h-8 rounded-xl" />
         <SkeletonText className="h-8 rounded-xl" />
@@ -145,7 +151,7 @@ function EventCardSkeleton() {
 
 function TeamSupervisorSkeleton() {
   return (
-    <SkeletonCard className="team-supervisor-card p-3">
+    <SkeletonCard className={cn(teamStyles.supervisorCard, "p-3")}>
       <div className="flex items-start gap-2.5">
         <Skeleton className="h-9 w-9 shrink-0" />
         <div className="min-w-0 flex-1">
@@ -211,7 +217,7 @@ export function PeoplePageSkeleton() {
 export function CellsPageSkeleton() {
   return (
     <AppLoadingShell>
-      <div className="team-page">
+      <div className={pageStyles.page}>
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
             <SkeletonText className="h-8 w-28 rounded-2xl" />
@@ -221,7 +227,7 @@ export function CellsPageSkeleton() {
           <Skeleton className="h-9 w-28 shrink-0 rounded-2xl" />
         </div>
 
-        <div className="team-summary-block">
+        <div className={pageStyles.summaryBlock}>
           <SummarySkeleton />
         </div>
 
@@ -230,9 +236,9 @@ export function CellsPageSkeleton() {
           <div className="mt-3">
             <FilterChipsSkeleton count={5} />
           </div>
-          <div className="cell-priority-sections mt-6">
-            <div className="cell-priority-section">
-              <div className="cell-priority-heading">
+          <div className={cn(cellsStyles.sections, "mt-6")}>
+            <div className={cellsStyles.section}>
+              <div className={cellsStyles.heading}>
                 <SkeletonText className="h-3 w-36" />
               </div>
               <SkeletonList count={3}>{() => <GroupCardSkeleton />}</SkeletonList>
@@ -254,8 +260,8 @@ export function CellsPageSkeleton() {
 export function TeamPageSkeleton() {
   return (
     <AppLoadingShell>
-      <div className="team-page">
-        <div className="team-page-header flex items-center justify-between gap-3">
+      <div className={pageStyles.page}>
+        <div className={cn(pageStyles.header, "flex items-center justify-between gap-3")}>
           <div className="min-w-0 flex-1">
             <SkeletonText className="h-8 w-28 rounded-2xl" />
             <SkeletonText className="mt-3 h-3.5 w-full max-w-80" />
@@ -264,7 +270,7 @@ export function TeamPageSkeleton() {
           <Skeleton className="h-9 w-28 shrink-0 rounded-2xl" />
         </div>
 
-        <div className="team-summary-block">
+        <div className={pageStyles.summaryBlock}>
           <SkeletonText className="mb-2 mt-6 h-4 w-20" />
           <SummarySkeleton balanced />
         </div>
@@ -294,7 +300,7 @@ export function TeamPageSkeleton() {
 export function EventsPageSkeleton() {
   return (
     <AppLoadingShell>
-      <div className="events-page">
+      <div className={cn(pageStyles.page, pageStyles.eventsPage)}>
         <SkeletonText className="h-8 w-36 rounded-2xl" />
         <SkeletonText className="mt-3 h-3.5 w-full max-w-80" />
         <SkeletonText className="mt-2 h-3.5 w-2/3" />
@@ -408,7 +414,7 @@ function HistoryCardSkeleton() {
 
 function GroupDetailHeroSkeleton() {
   return (
-    <SkeletonCard className="group-detail-hero p-5">
+    <SkeletonCard className={cn(groupStyles.hero, "p-5")}>
       <SkeletonText className="h-3 w-16" />
       <SkeletonText className="mt-3 h-8 w-44 rounded-2xl" />
       <SkeletonText className="mt-3 h-3.5 w-full max-w-72" />
@@ -419,7 +425,7 @@ function GroupDetailHeroSkeleton() {
 
 function PendingEventDetailSkeleton() {
   return (
-    <SkeletonCard className="event-card p-4">
+    <SkeletonCard className={cn(eventStyles.card, "p-4")}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <SkeletonText className="h-4 w-40" />
@@ -427,7 +433,7 @@ function PendingEventDetailSkeleton() {
         </div>
         <Skeleton className="h-6 w-20 shrink-0 rounded-full" />
       </div>
-      <div className="event-card-stats">
+      <div className={eventStyles.stats}>
         <SkeletonText className="h-8 rounded-xl" />
         <SkeletonText className="h-8 rounded-xl" />
         <SkeletonText className="h-8 rounded-xl" />
@@ -532,7 +538,7 @@ export function PersonDetailPageSkeleton() {
 export function GroupDetailPageSkeleton() {
   return (
     <AppLoadingShell>
-      <div className="group-detail-page">
+      <div className={groupStyles.page}>
         <BackLinkSkeleton />
 
         <div className="mb-4 flex justify-end">
@@ -550,7 +556,7 @@ export function GroupDetailPageSkeleton() {
           </SkeletonCard>
         </div>
 
-        <div className="group-detail-summary">
+        <div className={groupStyles.summary}>
           <SummarySkeleton balanced />
         </div>
 

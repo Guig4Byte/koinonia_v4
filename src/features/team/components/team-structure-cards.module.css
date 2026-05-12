@@ -1,0 +1,136 @@
+.supervisorCard {
+  border: 1px solid color-mix(in srgb, var(--color-border-card) 70%, transparent);
+  border-radius: 1.15rem;
+  background: color-mix(in srgb, var(--color-bg-card) 94%, transparent);
+  padding: 12px;
+  box-shadow: var(--color-shadow-metric-card);
+}
+
+.supervisorCard.supervisorPriorityCard::before {
+  width: 4px;
+  opacity: 0.92;
+}
+
+.supervisorCard:has(.supervisorDetails[open]) {
+  border-color: color-mix(in srgb, var(--color-border-card) 70%, transparent);
+  background: color-mix(in srgb, var(--color-bg-card) 94%, transparent);
+  box-shadow: var(--color-shadow-metric-card);
+}
+
+.supervisorCard:has(.supervisorDetails[open])::before {
+  opacity: 0;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  background: var(--color-avatar-bg);
+  color: var(--color-avatar-text);
+  font-size: var(--text-sm);
+  font-weight: 800;
+}
+
+.supervisorDetails {
+  margin-top: 0;
+}
+
+.supervisorSummary {
+  display: flex;
+  cursor: pointer;
+  list-style: none;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  border-radius: 10px;
+  border-top: 1px solid var(--color-border-divider);
+  margin-top: 8px;
+  padding-top: 8px;
+  transition:
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.supervisorSummary::-webkit-details-marker {
+  display: none;
+}
+
+.supervisorSummary::marker {
+  content: "";
+}
+
+.supervisorSummary:hover .supervisorSummaryAction {
+  color: color-mix(in srgb, var(--color-brand) 82%, var(--color-text-primary));
+}
+
+.supervisorSummary:active {
+  transform: scale(0.99);
+}
+
+.supervisorSummaryAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-brand);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.supervisorSummaryText {
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  line-height: 1.625;
+}
+
+.cellList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 6px;
+}
+
+.cellLink {
+  display: flex;
+  min-height: 62px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid var(--color-border-divider);
+  padding: 10px 0;
+  transition: transform 150ms ease;
+}
+
+.cellLink:first-child {
+  border-top: 0;
+}
+
+.cellLink:active {
+  transform: scale(0.99);
+}
+
+.cellLink:focus-visible {
+  outline: 2px solid var(--color-brand-accent);
+  outline-offset: 3px;
+}
+
+.cellLinkRisk,
+.cellLinkWarn,
+.cellLinkNeutral {
+  border-top-color: color-mix(in srgb, var(--team-cell-accent) 34%, var(--color-border-divider));
+  border-left: 4px solid var(--team-cell-accent);
+  padding-left: 12px;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--team-cell-accent) 10%, transparent), transparent 64%),
+    transparent;
+}
+
+.cellLinkRisk {
+  --team-cell-accent: var(--color-metric-atencoes);
+}
+
+.cellLinkWarn {
+  --team-cell-accent: var(--color-badge-atencao-text);
+}
+
+.cellLinkNeutral {
+  --team-cell-accent: color-mix(in srgb, var(--color-text-muted) 55%, transparent);
+}

@@ -25,6 +25,8 @@ import { firstParam } from "@/lib/search-params";
 import { normalizeSearchText } from "@/lib/text";
 import { NO_RECENT_PRESENCE_LABEL } from "@/lib/filter-param";
 import { ROUTES } from "@/lib/routes";
+import { cn } from "@/lib/cn";
+import pageStyles from "@/components/shared/consultation-page.module.css";
 
 type TeamPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -67,11 +69,11 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
       nav={appNavForRole(user, { active: "secondary", indicator: teamNavIndicator(team.summary) })}
       headerVariant="compact"
     >
-      <div className="team-page">
-        <div className="team-page-header flex items-center justify-between gap-3">
+      <div className={pageStyles.page}>
+        <div className={cn(pageStyles.header, "flex items-center justify-between gap-3")}>
           <div className="min-w-0">
-            <h2 className="team-title">Equipe</h2>
-            <p className="team-description">
+            <h2 className={pageStyles.title}>Equipe</h2>
+            <p className={pageStyles.description}>
               Supervisores e células em ordem de atenção pastoral, com presença baixa destacada sem duplicar listas.
             </p>
           </div>
@@ -85,7 +87,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
 
         {savedMessage ? <InfoCard tone="success">{savedMessage}</InfoCard> : null}
 
-        <div className="team-summary-block">
+        <div className={pageStyles.summaryBlock}>
           <SectionTitle>Resumo</SectionTitle>
           <ContextSummary
             variant="balanced"

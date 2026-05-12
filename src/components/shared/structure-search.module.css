@@ -1,0 +1,68 @@
+.tools {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 0;
+}
+
+.searchForm {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid color-mix(in srgb, var(--color-border-card) 72%, transparent);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--color-bg-card) 92%, transparent);
+  padding: 0 10px 0 12px;
+  box-shadow: var(--color-shadow-metric-card);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.searchForm:focus-within {
+  border-color: color-mix(in srgb, var(--color-brand) 58%, var(--color-border-card));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand-accent) 18%, transparent);
+}
+
+.searchSubmit {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-brand);
+  padding: 0 6px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  transition:
+    background-color 150ms ease,
+    transform 150ms ease;
+}
+
+.searchSubmit:hover {
+  background: color-mix(in srgb, var(--color-brand-accent) 14%, transparent);
+}
+
+.searchSubmit:active {
+  transform: scale(0.97);
+}
+
+.searchSubmit:focus-visible {
+  outline: 2px solid var(--color-brand-accent);
+  outline-offset: 3px;
+}
+
+.filterRow {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+
+.filterRow::-webkit-scrollbar {
+  display: none;
+}

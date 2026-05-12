@@ -17,6 +17,7 @@ import { normalizeSearchText } from "@/lib/text";
 import { UserRole } from "@/generated/prisma/client";
 import { NO_RECENT_PRESENCE_LABEL } from "@/lib/filter-param";
 import { ROUTES } from "@/lib/routes";
+import pageStyles from "@/components/shared/consultation-page.module.css";
 
 type CellsPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -48,11 +49,11 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
       nav={appNavForRole(user, { active: "secondary", indicator: view.navIndicator })}
       headerVariant="compact"
     >
-      <div className="team-page">
+      <div className={pageStyles.page}>
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <h2 className="team-title">Células</h2>
-            <p className="team-description">
+            <h2 className={pageStyles.title}>Células</h2>
+            <p className={pageStyles.description}>
               Acompanhe as células sob sua supervisão sem duplicar os sinais de pessoas da Visão.
             </p>
           </div>
@@ -64,7 +65,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
           ) : null}
         </div>
 
-        <div className="team-summary-block">
+        <div className={pageStyles.summaryBlock}>
           <ContextSummary
             items={[
               {

@@ -1,0 +1,142 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 18px;
+}
+
+.hero {
+  margin-bottom: 10px;
+  border: 1px solid var(--color-border-card);
+  border-radius: 1.15rem;
+  background: var(--color-bg-card);
+  padding: 16px;
+  box-shadow: var(--color-shadow-card);
+}
+
+.heroChip {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  border-radius: var(--radius-pill);
+  background: var(--metric-card-bg);
+  padding: 8px 12px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.35;
+}
+
+.summary > section {
+  margin-bottom: 0;
+}
+
+.encounterCard {
+  display: flex;
+  min-height: 74px;
+  align-items: center;
+  border: 1px solid var(--color-border-card);
+  border-radius: 16px;
+  background: var(--color-bg-card);
+  padding: 12px 16px 12px 18px;
+  box-shadow: var(--color-shadow-metric-card);
+  transition: transform 150ms ease;
+}
+
+.encounterCard:active {
+  transform: scale(0.99);
+}
+
+.encounterCard:focus-visible {
+  outline: 2px solid var(--color-brand-accent);
+  outline-offset: 3px;
+}
+
+.pendingEventSection {
+  margin-top: 18px;
+}
+
+.pendingEventCard {
+  display: flex;
+  min-height: 124px;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--color-border-card);
+  border-radius: 16px;
+  background: var(--color-bg-card);
+  padding: 0;
+  box-shadow: var(--color-shadow-metric-card);
+  transition: transform 150ms ease;
+}
+
+.pendingEventCard:active {
+  transform: scale(0.99);
+}
+
+.pendingEventCard:focus-visible {
+  outline: 2px solid var(--color-brand-accent);
+  outline-offset: 3px;
+}
+
+.pendingEventCard::before {
+  display: none;
+}
+
+.pendingEventTop {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--color-border-divider);
+  padding: 14px 18px;
+  color: var(--color-brand);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.pendingEventBody {
+  display: flex;
+  width: 100%;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+}
+
+.pendingEventAction {
+  display: inline-flex;
+  min-height: 40px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--color-border-card) 50%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--color-bg-card) 82%, transparent);
+  color: var(--color-brand);
+  font-size: var(--text-sm);
+  font-weight: 800;
+  padding: 0 14px;
+  white-space: nowrap;
+}
+
+@media (max-width: 380px) {
+  .pendingEventCard {
+    min-height: 136px;
+  }
+
+  .pendingEventTop,
+  .pendingEventBody {
+    align-items: flex-start;
+  }
+
+  .pendingEventBody {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pendingEventAction {
+    min-height: 40px;
+  }
+}
