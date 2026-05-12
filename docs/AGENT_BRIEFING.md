@@ -8,8 +8,9 @@ Este é o primeiro arquivo para qualquer pessoa ou IA que vá alterar o projeto.
 2. `docs/PRODUCT.md` — comportamento, escopo e fluxos do MVP.
 3. `docs/GLOSSARY.md` — vocabulário oficial da UI.
 4. `docs/ARCHITECTURE.md` — implementação, permissões, rotas, entidades e helpers.
-5. `docs/Perfil.txt` — sensação mobile/pastoral.
-6. `docs/Koinonia.txt` — visão futura/legada, sem autoridade sobre o MVP atual.
+5. `docs/FRONTEND.md` — organização visual, componentes, CSS e loading states.
+6. `docs/Perfil.txt` — sensação mobile/pastoral.
+7. `docs/Koinonia.txt` — visão futura/legada, sem autoridade sobre o MVP atual.
 
 Quando houver conflito entre docs e código atual, preserve o comportamento do código e atualize os docs depois.
 
@@ -166,6 +167,8 @@ Não implementar sem decisão explícita:
 
 ## Onde implementar
 
+Para organização visual, CSS, primitives e loading states, consulte `docs/FRONTEND.md`.
+
 - Autenticação/sessão: `src/lib/auth`.
 - Middleware: `middleware.ts`.
 - Login/logout: `src/app/login`, `src/app/logout`.
@@ -175,13 +178,13 @@ Não implementar sem decisão explícita:
 - Exibição de célula/liderança/supervisão: `src/features/groups/group-display.ts`, `src/features/groups/responsibility-display.ts`.
 - Includes/where compartilhados de célula/responsabilidades: `src/features/groups/group-query.ts`.
 - Geração de encontros: `src/features/events/schedule.ts`.
-- Cadastro mínimo de célula: `src/app/(app)/celulas/actions.ts`, `src/app/(app)/celulas/nova/page.tsx`, `src/app/(app)/celulas/[groupId]/editar/page.tsx`, `src/components/group-form.tsx`, `src/features/groups/group-form.ts`.
+- Cadastro mínimo de célula: `src/app/(app)/celulas/actions.ts`, `src/app/(app)/celulas/nova/page.tsx`, `src/app/(app)/celulas/[groupId]/editar/page.tsx`, `src/features/groups/components/group-form.tsx`, `src/features/groups/group-form.ts`.
 - Presença: `src/features/events/presence-summary.ts`, `src/features/events/presence-display.ts`, `src/features/dashboard/presence-health.ts`.
 - Local/status visual de encontro: `src/features/events/event-display.ts`.
 - Data/hora de encontro no Horário de Brasília: `src/features/events/brasilia-date-time.ts`, `src/features/events/time-options.ts`, `src/lib/format.ts`, `src/lib/brasilia-time.ts`.
 - Seleção de encontro relevante: `src/features/events/relevant-event.ts`.
-- Ações de encontro: `src/app/api/events/[eventId]/route.ts`, `src/components/event-details-actions.tsx`.
-- Check-in: `src/components/check-in-list.tsx`, `src/features/check-in/check-in-validation.ts`, `src/features/check-in/visitor-validation.ts`.
+- Ações de encontro: `src/app/api/events/[eventId]/route.ts`, `src/features/events/components/event-details-actions.tsx`.
+- Check-in: `src/features/check-in/components/check-in-list.tsx`, `src/features/check-in/check-in-validation.ts`, `src/features/check-in/visitor-validation.ts`.
 - Regras de sinais: `src/features/signals`.
 - Copy e ações de sinais: `src/features/signals/signal-copy.ts`, `src/features/signals/signal-assignment.ts`.
 - Ranking/ordenação de sinais: `src/features/signals/ranking.ts`.
@@ -190,15 +193,15 @@ Não implementar sem decisão explícita:
 - Status de pessoa: `src/features/people/person-status.ts`, `src/features/people/status-display.ts`.
 - Cuidado/copy/acesso: `src/features/care/care-copy.ts`, `src/features/care/person-care-access.ts`, `src/features/care/care-registration.ts`, `src/features/care/person-status-actions.ts`, `src/features/care/care-validation.ts`.
 - Filtros: `src/lib/filter-param.ts`, `src/features/people/member-filters.ts`, `src/features/groups/cells-page-filters.ts`, `src/features/team/team-filters.ts`.
-- Busca/filtros de estrutura: `src/components/structure-search.tsx`, `src/components/structure-search-config.ts`, `src/components/cells-structure-search.tsx`, `src/components/team-structure-search.tsx`.
+- Busca/filtros de estrutura: `src/components/shared/structure-search.tsx`, `src/features/groups/components/cells-structure-search.tsx`, `src/features/team/components/team-structure-search.tsx`.
 - UI primitives: `src/components/ui/button.tsx`, `src/components/ui/card.tsx`, `src/components/ui/field.tsx`, `src/components/ui/feedback.tsx`, `src/components/ui/action-panel.tsx`, `src/components/ui/time-picker-field.tsx`.
-- Cards/listas pastorais: `src/components/base-cards.tsx`, `src/components/pastoral-list-cards.tsx`, `src/components/person-cards.tsx`, `src/components/progressive-list.tsx`.
+- Cards/listas pastorais: `src/components/shared/base-cards.tsx`, `src/components/shared/progressive-list.tsx`, `src/features/pastoral-home/components/pastoral-list-cards.tsx`, `src/features/people/components/person-cards.tsx`.
 - Queries de dashboard: `src/features/dashboard/queries.ts`.
 - Respostas de API: `src/lib/api-response.ts`.
-- Ações client-side com `fetch`: `src/lib/use-api-action.ts`.
+- Ações client-side com `fetch`: `src/hooks/use-api-action.ts`.
 - Helpers de query/texto/formatação: `src/lib/search-params.ts`, `src/lib/text.ts`, `src/lib/format.ts`.
-- Tema: `src/features/theme/theme.ts`, `src/components/theme-init.tsx`, `src/components/theme-toggle.tsx`.
-- Tamanho do texto: `src/features/text-size/text-size.ts`, `src/components/text-size-init.tsx`, `src/components/text-size-toggle.tsx`.
+- Tema: `src/features/theme/theme.ts`, `src/components/layout/theme-init.tsx`, `src/components/layout/theme-toggle.tsx`.
+- Tamanho do texto: `src/features/text-size/text-size.ts`, `src/components/layout/text-size-init.tsx`, `src/components/layout/text-size-toggle.tsx`.
 
 ## Checklist antes de responder ou codar
 

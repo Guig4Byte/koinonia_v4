@@ -12,8 +12,9 @@ Leia os documentos nesta ordem:
 2. `docs/PRODUCT.md` — visão oficial do MVP atual.
 3. `docs/GLOSSARY.md` — vocabulário e rótulos de UI.
 4. `docs/ARCHITECTURE.md` — regras técnicas, autenticação, permissões e onde implementar.
-5. `docs/Perfil.txt` — norte de experiência mobile/pastoral.
-6. `docs/Koinonia.txt` — visão futura/legada; não governa o MVP atual.
+5. `docs/FRONTEND.md` — organização visual, componentes, CSS e loading states.
+6. `docs/Perfil.txt` — norte de experiência mobile/pastoral.
+7. `docs/Koinonia.txt` — visão futura/legada; não governa o MVP atual.
 
 Quando houver conflito, siga a ordem acima. `docs/Koinonia.txt` não autoriza analytics, CRM, SLA, playbooks, mapas, QR Code, gestão avançada de usuários ou acompanhamento formal sem pedido explícito.
 
@@ -162,12 +163,13 @@ npm run db:studio
 ## Estrutura
 
 ```txt
-src/app              Rotas, telas, login/logout e APIs.
-src/components       Componentes visuais reutilizáveis.
-src/features         Regras de domínio por feature.
+src/app              Rotas, telas, login/logout, loading states de rota e APIs.
+src/components       UI primitives, layout global e componentes compartilhados.
+src/features         Regras e componentes de domínio por feature.
+src/styles           Tokens, base, layout, motion e utilitários globais.
 src/lib              Prisma, autenticação, sessão e utilitários.
 prisma               Schema e seed.
-docs                 Produto, vocabulário, arquitetura e briefing.
+docs                 Produto, vocabulário, arquitetura, front-end e briefing.
 ```
 
 ## Rotas principais

@@ -26,13 +26,22 @@ A pessoa é o centro. Presença é fonte de leitura pastoral. A arquitetura deve
 
 ```txt
 src/app
-  Rotas, páginas, login/logout, server actions e API handlers.
+  Rotas, páginas, layouts, loading.tsx, login/logout, server actions e API handlers.
 
-src/components
-  Componentes reutilizáveis de UI. Devem ser majoritariamente burros. Componentes client-side ficam aqui quando dependem de estado, navegação ou interação.
+src/components/ui
+  Primitives visuais reutilizáveis, sem regra de domínio.
+
+src/components/layout
+  Shell, navegação, tema e tamanho de texto.
+
+src/components/shared
+  Componentes compartilhados entre features, sem pertencer a uma única rota.
 
 src/features
-  Regras de domínio por feature. Helpers de apresentação que protegem linguagem/status pastoral também ficam aqui quando são específicos do domínio.
+  Regras, helpers de apresentação e componentes de domínio por feature.
+
+src/styles
+  Fundação visual global: tokens, base, layout, motion e utilitários.
 
 src/lib
   Infraestrutura: Prisma, autenticação, sessão, respostas de API, helpers genéricos de texto/query e utilitários compartilhados.
@@ -41,62 +50,24 @@ prisma
   Schema, client gerado, seed e scripts de manutenção.
 
 docs
-  Produto, vocabulário, arquitetura e briefing para agentes.
+  Produto, vocabulário, arquitetura, front-end e briefing para agentes.
 ```
 
 ## Regra de UI/CSS
 
-A UI deve separar decisão de design, primitivos visuais e componentes de domínio para evitar crescimento de CSS global e conflitos com Tailwind.
+A regra visual detalhada fica em `docs/FRONTEND.md`. Este arquivo mantém apenas os limites arquiteturais que afetam implementação.
 
-```txt
-tokens.css
-  Guarda decisões de design: cores, tipografia, raios, sombras e aliases.
+Regras de fronteira:
 
-components/ui/
-  Primitivos visuais reutilizáveis. Usam Tailwind e CSS variables.
-  Não usam classes k-* nem termos de domínio pastoral.
+- `src/styles` contém somente CSS global de fundação;
+- não recriar `components.css` ou `legacy-components.css`;
+- estilos locais devem ficar como `.module.css` ao lado do componente;
+- `src/components/ui` não deve importar regra de domínio;
+- componentes específicos devem morar em `src/features/*/components`;
+- páginas devem compor dados e componentes, não concentrar markup visual repetido;
+- componente `use client` não deve importar Prisma Client nem helper server-only.
 
-components/
-  Componentes de domínio. Usam Tailwind para layout, espaçamento e composição.
-  Estados visuais simples ficam em variant maps no componente React.
-  CSS global só para pseudo-elementos, efeitos estruturais ou estados difíceis de expressar com Tailwind.
-
-components.css
-  Arquivo controlado/legado. Não deve receber novas classes sem justificativa.
-  Deve encolher conforme estados simples migram para componentes.
-
-utilities.css
-  Utilitários compartilhados pequenos. Quando forem tipográficos, devem consumir tokens --text-*.
-
-Tipografia em TSX
-  Tamanhos de texto devem usar tokens: text-[length:var(--text-*)].
-  Cores arbitrárias de texto devem declarar tipo: text-[color:var(--color-*)].
-  Evitar text-xs/text-sm/text-[11px] porque ignoram o controle data-text-size.
-
-Loading states
-  Skeletons reutilizáveis ficam em components/ui/skeleton.tsx.
-  Skeletons com formato de tela ficam em components/page-loading-skeletons.tsx.
-  Rotas de lista devem ter loading.tsx próprio quando a tela depende de consulta server-side perceptível.
-  Rotas de detalhe também devem ter loading.tsx quando carregam pessoa, célula ou encontro por id.
-  O skeleton deve imitar o shape real dos cards, filtros, resumos e blocos de detalhe sem introduzir lógica de domínio.
-
-Check-in seguro
-  Ação em massa não deve sobrescrever ausências ou justificativas sem confirmação explícita na própria UI.
-  Durante salvamento, marcações, visitantes, cancelamento e novo envio devem ficar bloqueados para evitar estado concorrente.
-  Erros de salvamento precisam aparecer no resumo e na barra fixa, pois o usuário pode estar no fim da lista.
-  Falhas de rede devem ter mensagem própria e recuperável, sem depender apenas de resposta JSON da API.
-
-Busca de pessoas
-  A busca/autocomplete deve esperar debounce curto antes de consultar a API.
-  Toda nova consulta deve cancelar a requisição anterior para evitar resultado antigo sobrescrevendo resultado novo.
-  O componente precisa mostrar estados visuais para carregando, vazio e erro.
-  A lista de resultados deve expor semântica básica de combobox/listbox e permitir navegação por teclado com setas, Enter e Escape.
-
-Hierarquia mobile
-  A saudação grande do AppShell deve ficar reservada para as telas de Visão/Home.
-  Telas secundárias, detalhes, eventos e formulários devem usar headerVariant="compact" para preservar área útil no mobile.
-  Em Visões de supervisor e pastor, o PulseCard deve aparecer antes da busca para reforçar a leitura pastoral antes da consulta manual.
-```
+Consulte `docs/FRONTEND.md` para primitives, CSS Modules, loading states, tokens e checklist visual.
 
 ## Entidades principais
 
@@ -307,7 +278,7 @@ Fontes:
 
 ```txt
 src/app/api/events/[eventId]/route.ts
-src/components/event-details-actions.tsx
+src/features/events/components/event-details-actions.tsx
 src/features/events/event-display.ts
 src/features/events/brasilia-date-time.ts
 src/features/events/time-options.ts
@@ -381,7 +352,7 @@ src/app/api/events/[eventId]/check-in/route.ts
 Componentes:
 
 ```txt
-src/components/check-in-list.tsx
+src/features/check-in/components/check-in-list.tsx
 ```
 
 Regras:
@@ -455,7 +426,7 @@ Regras:
 
 `Já houve contato?` só chama a rota depois de confirmação explícita. O detalhe da pessoa mostra poucos itens em `Cuidado recente` e revela o restante com `Ver histórico`.
 
-Componentes client-side que chamam APIs devem preferir `src/lib/use-api-action.ts` para manter o padrão de `useTransition`, leitura de erro e `router.refresh()`. Rotas de API devem preferir `src/lib/api-response.ts` para respostas JSON simples sem mudar o contrato de payload.
+Componentes client-side que chamam APIs devem preferir `src/hooks/use-api-action.ts` para manter o padrão de `useTransition`, leitura de erro e `router.refresh()`. Rotas de API devem preferir `src/lib/api-response.ts` para respostas JSON simples sem mudar o contrato de payload.
 
 ### Apoio e encaminhamento
 
@@ -495,22 +466,18 @@ Regras:
 
 ## Componentes e helpers compartilhados
 
-Componentes reutilizáveis devem preservar linguagem pastoral e evitar duplicar regras de domínio em páginas.
+Componentes reutilizáveis devem preservar linguagem pastoral e evitar duplicar regras de domínio em páginas. A organização visual completa fica em `docs/FRONTEND.md`.
 
 Fontes principais:
 
 ```txt
-src/components/structure-search.tsx
-src/components/structure-search-config.ts
-src/components/cells-structure-search.tsx
-src/components/team-structure-search.tsx
-src/components/member-priority-list.tsx
-src/components/base-cards.tsx
-src/components/person-cards.tsx
-src/components/pastoral-list-cards.tsx
-src/components/progressive-list.tsx
 src/components/ui
+src/components/layout
+src/components/shared
+src/features/*/components
 src/features/people/member-filters.ts
+src/features/groups/cells-page-filters.ts
+src/features/team/team-filters.ts
 src/lib/filter-param.ts
 src/lib/search-params.ts
 src/lib/text.ts
@@ -519,13 +486,13 @@ src/lib/format.ts
 
 Regras:
 
-- `StructureSearch` centraliza busca e chips de filtro das superfícies estruturais; `structure-search-config.ts` guarda base path, placeholder e labels por superfície.
-- `MemberPriorityList` centraliza a lista pastoral de membros, separando pessoas no radar e ativos sem reimplementar `ProgressiveList + PersonMiniCard` em páginas.
+- `src/components/ui` concentra primitives visuais genéricos antes de novas classes locais ou variantes soltas.
+- `src/components/shared/structure-search.tsx` centraliza busca e chips de superfícies estruturais; wrappers de feature ficam em `features/groups` e `features/team`.
+- `src/features/people/components/member-priority-list.tsx` centraliza a lista pastoral de membros, separando pessoas no radar e ativos.
 - `member-filters.ts`, `cells-page-filters.ts` e `team-filters.ts` devem usar `src/lib/filter-param.ts` para valores, labels comuns e parsing de query param.
 - `firstParam()` deve ser usado para leitura simples de `searchParams` em páginas server-side.
 - `normalizeSearchText()` e `matchesNormalizedQuery()` devem ser usados para busca local sem acento/case-insensitive.
 - `countLabel()`, datas curtas e horários devem sair de `src/lib/format.ts`; código de app não deve importar `brasilia-time.ts` diretamente sem motivo específico.
-- Cards, botões, fields, feedbacks e painéis de ação devem usar `src/components/ui` antes de criar novas classes locais ou variantes soltas.
 - Cards pastorais devem calcular apresentação visual localmente ou por helpers compartilhados; páginas não devem duplicar iniciais, tons de presença ou composição básica de card.
 
 ## Cadastro mínimo de célula
@@ -536,7 +503,7 @@ Fontes:
 src/app/(app)/celulas/actions.ts
 src/app/(app)/celulas/nova/page.tsx
 src/app/(app)/celulas/[groupId]/editar/page.tsx
-src/components/group-form.tsx
+src/features/groups/components/group-form.tsx
 src/features/groups/group-form.ts
 ```
 
@@ -576,8 +543,8 @@ Fontes de tema:
 
 ```txt
 src/features/theme/theme.ts
-src/components/theme-init.tsx
-src/components/theme-toggle.tsx
+src/components/layout/theme-init.tsx
+src/components/layout/theme-toggle.tsx
 src/app/globals.css
 ```
 
@@ -585,8 +552,8 @@ Fontes de tamanho do texto:
 
 ```txt
 src/features/text-size/text-size.ts
-src/components/text-size-init.tsx
-src/components/text-size-toggle.tsx
+src/components/layout/text-size-init.tsx
+src/components/layout/text-size-toggle.tsx
 src/app/globals.css
 ```
 
