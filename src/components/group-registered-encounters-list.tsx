@@ -51,7 +51,7 @@ export function GroupRegisteredEncountersList({ events }: { events: GroupRegiste
   return (
     <section>
       <SectionTitle>Últimos encontros registrados</SectionTitle>
-      <div className="group-detail-list">
+      <div>
         <ProgressiveList
           initialCount={4}
           step={4}

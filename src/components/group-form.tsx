@@ -36,7 +36,7 @@ export function GroupForm({
   const errorMessage = groupFormErrorMessage(errorCode);
 
   return (
-    <div className="group-form-page space-y-5">
+    <div className="space-y-5">
       <BackLink href={backHref}>{backLabel}</BackLink>
 
       <Card padding="lg" className="rounded-[1.35rem]">

@@ -40,7 +40,7 @@ export function EventDatePickerField({
           <CalendarDays className="h-4 w-4" aria-hidden="true" />
         </button>
         {isOpen ? (
-          <div className="event-picker-popover event-calendar-popover">
+          <div className="event-picker-popover">
             <div className="event-calendar-header">
               <button type="button" onClick={() => onCalendarMonthChange(shiftCalendarMonth(calendarMonth, -1))} aria-label="Mês anterior">
                 ‹

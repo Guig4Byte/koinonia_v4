@@ -73,7 +73,7 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
       </div>
 
       {activeFilter === FILTER_ALL ? (
-        <div className="group-detail-list">
+        <div>
           {priorityMembers.length > 0 ? (
             <div className="space-y-2">
               <div>
@@ -139,7 +139,7 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
           ) : null}
         </div>
       ) : (
-        <div className="group-detail-list">
+        <div>
           <ProgressiveList
             initialCount={6}
             step={6}

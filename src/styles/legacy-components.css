@@ -1,4 +1,11 @@
-/* Legacy global component classes that have not yet moved to React UI primitives. */
+/*
+ * LEGACY GLOBAL COMPONENT CLASSES.
+ *
+ * This file is kept for backward-compatible screen/component styles that have
+ * not yet moved to feature-local styles or reusable React UI primitives.
+ * Avoid adding new selectors here; prefer src/components/ui primitives,
+ * feature-local components, or a dedicated style module for new work.
+ */
 
 .check-in-save-bar {
   position: sticky;

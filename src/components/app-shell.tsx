@@ -72,10 +72,10 @@ export function AppShell({
               </div>
             </div>
 
-            <div className="app-header-greeting mt-5 flex items-end justify-between gap-4">
+            <div className="mt-5 flex items-end justify-between gap-4">
               <div>
                 <p className="text-[length:var(--text-sm)] text-[color:var(--color-text-on-header)] opacity-80">Olá,</p>
-                <h1 className="app-header-name font-serif-display mt-1 text-[length:var(--text-hero)] font-semibold leading-none text-[color:var(--color-text-on-header)]">
+                <h1 className="font-serif-display mt-1 text-[length:var(--text-hero)] font-semibold leading-none text-[color:var(--color-text-on-header)]">
                   {firstName}.
                 </h1>
               </div>

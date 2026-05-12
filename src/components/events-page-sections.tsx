@@ -26,7 +26,7 @@ export function EventCard({ event, user, now }: { event: EventListEvent; user: P
   return (
     <article className={cn(
       "event-card",
-      state.recordedPresence && "event-card-registered priority-card event-card-registered-ok",
+      state.recordedPresence && "event-card-registered priority-card",
       priorityCardClass(state.isPendingEvent ? "warn" : undefined),
     )}>
       <div className="k-card-header-row">

@@ -59,7 +59,6 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
       <EventDetailHeaderCard
         title={event.title}
         groupId={event.group?.id}
-        groupName={event.group?.name}
         startsAt={event.startsAt}
         locationName={locationName}
         checkInLabel={detailState.checkInLabel}

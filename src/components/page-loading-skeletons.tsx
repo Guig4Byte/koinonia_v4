@@ -187,7 +187,7 @@ export function PeoplePageSkeleton() {
       <SearchSkeleton />
       <SkeletonSection titleWidth="w-28" detailWidth="w-56">
         <FilterChipsSkeleton />
-        <div className="group-detail-list">
+        <div>
           <div className="space-y-2">
             <div>
               <SkeletonText className="h-4 w-44" />
@@ -541,7 +541,7 @@ export function GroupDetailPageSkeleton() {
 
         <GroupDetailHeroSkeleton />
 
-        <div className="group-detail-pulse">
+        <div>
           <SkeletonCard className="relative overflow-hidden rounded-[1.35rem] p-5">
             <Skeleton className="absolute inset-x-0 top-0 h-1 rounded-none bg-[var(--color-brand-accent)]" />
             <SkeletonText className="h-6 w-full max-w-72 rounded-2xl" />
@@ -558,7 +558,7 @@ export function GroupDetailPageSkeleton() {
 
         <SkeletonSection titleWidth="w-20" detailWidth="w-52">
           <FilterChipsSkeleton />
-          <div className="group-detail-list">
+          <div>
             <div className="space-y-2">
               <SkeletonText className="h-4 w-44" />
               <SkeletonList count={3}>{() => <PersonCardSkeleton />}</SkeletonList>

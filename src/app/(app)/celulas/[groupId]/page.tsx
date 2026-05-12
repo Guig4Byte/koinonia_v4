@@ -80,7 +80,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
           </p>
         </section>
 
-        <div className="group-detail-pulse">
+        <div>
           <PulseCard
             title={pastoralPulse.title}
             subtitle={pastoralPulse.subtitle}
