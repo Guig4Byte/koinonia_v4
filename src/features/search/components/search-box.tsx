@@ -195,7 +195,7 @@ export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: 
             type="button"
             aria-label="Limpar busca"
             onClick={clearSearch}
-            className="-mr-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[color:var(--color-text-secondary)] transition hover:bg-[var(--surface-alt)] active:scale-[0.96]"
+            className="-mr-2 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[color:var(--color-text-secondary)] transition hover:bg-[var(--surface-alt)] active:scale-[0.96]"
           >
             <X className="h-4 w-4" aria-hidden="true" />
           </button>

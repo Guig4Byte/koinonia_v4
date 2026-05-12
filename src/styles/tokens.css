@@ -91,7 +91,7 @@ html[data-theme="light"] {
   /* Texto */
   --color-text-primary: #1c1008;
   --color-text-secondary: #725f4d;
-  --color-text-muted: #7d6b5a;
+  --color-text-muted: #6f5b49;
   --color-text-on-header: #f0e0c0;
   --color-text-on-banner: #f0d8a8;
 
@@ -117,7 +117,7 @@ html[data-theme="light"] {
   /* Tab bar */
   --color-tab-inactive: #e8e0d6;
   --color-tab-label-active: #2c1a0a;
-  --color-tab-label-inactive: #7d6b5a;
+  --color-tab-label-inactive: #6f5b49;
 
   /* Métricas */
   --color-metric-presenca: #2e6b2e;
@@ -165,10 +165,10 @@ html[data-theme="light"] {
   --login-title: var(--color-text-primary);
   --login-text: var(--color-text-secondary);
   --login-muted: var(--color-text-muted);
-  --login-brand-kicker: var(--color-brand-accent);
+  --login-brand-kicker: var(--color-badge-atencao-text);
   --login-logo-bg: var(--color-bg-metric-card);
   --login-logo-border: var(--color-border-card);
-  --login-logo-icon: var(--color-brand-accent);
+  --login-logo-icon: var(--color-badge-atencao-text);
   --login-divider: var(--color-border-divider);
   --login-input-bg: var(--color-bg-page);
   --login-input-border: var(--color-border-card);
@@ -202,7 +202,7 @@ html[data-theme="parchment"] {
 
   --color-text-primary: #3a2008;
   --color-text-secondary: #563716;
-  --color-text-muted: #68451f;
+  --color-text-muted: #5e3d18;
   --color-text-on-header: #fdf0d0;
   --color-text-on-banner: #f5dfa0;
 
@@ -265,8 +265,8 @@ html[data-theme="parchment"] {
   --login-card-border: #c4a474;
   --login-title: #3b1d0c;
   --login-text: #6b4a2b;
-  --login-muted: #7f5b35;
-  --login-brand-kicker: #9a6a2a;
+  --login-muted: #5a3515;
+  --login-brand-kicker: #663d14;
   --login-logo-bg: #d8c09b;
   --login-logo-border: #ba9660;
   --login-logo-icon: #9b6422;
@@ -275,7 +275,7 @@ html[data-theme="parchment"] {
   --login-input-border: #b88949;
   --login-input-hover-border: #9b6422;
   --login-input-text: #3b1d0c;
-  --login-input-placeholder: #7f5b35;
+  --login-input-placeholder: #5a3515;
   --login-input-focus-border: #8a541b;
   --login-input-focus-shadow: rgba(138, 84, 27, 0.18);
   --login-button-bg: #7a430c;

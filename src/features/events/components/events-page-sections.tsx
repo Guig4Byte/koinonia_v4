@@ -69,8 +69,8 @@ export function EventCard({ event, user, now }: { event: EventListEvent; user: P
         variant={state.canRegisterPresence ? "primaryFlat" : "secondary"}
         size="sm"
         className={cn(
-          "mt-3 min-h-9 rounded-full px-4 py-0 text-[length:var(--text-sm)] font-extrabold",
-          state.recordedPresence && "mt-2 min-h-8",
+          "mt-3 rounded-full px-4 py-0 text-[length:var(--text-sm)] font-extrabold",
+          state.recordedPresence && "mt-2",
         )}
       >
         {state.actionLabel} <span aria-hidden="true">→</span>

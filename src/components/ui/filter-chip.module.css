@@ -1,6 +1,6 @@
 .team {
   display: inline-flex;
-  min-height: 40px;
+  min-height: 44px;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
@@ -8,7 +8,7 @@
   border-radius: var(--radius-pill);
   background: var(--surface-alt);
   color: var(--color-text-secondary);
-  padding: 0 12px;
+  padding: 0 14px;
   font-size: var(--text-sm);
   font-weight: 700;
   transition:

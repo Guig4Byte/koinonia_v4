@@ -25,10 +25,10 @@ function AttendancePersonRow({
   return (
     <Link
       href={href}
-      className="flex items-center justify-between gap-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 transition active:scale-[0.99]"
+      className="flex min-h-11 items-center justify-between gap-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 transition active:scale-[0.99]"
     >
-      <span className="min-w-0 text-[length:var(--text-sm)] font-medium text-[color:var(--color-text-primary)]">{name}</span>
-      <Badge tone={badgeTone} size="sm">{badgeLabel}</Badge>
+      <span className="min-w-0 truncate text-[length:var(--text-sm)] font-medium text-[color:var(--color-text-primary)]">{name}</span>
+      <Badge tone={badgeTone} size="sm" className="max-w-[7.5rem]">{badgeLabel}</Badge>
     </Link>
   );
 }
