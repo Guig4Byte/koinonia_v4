@@ -1,12 +1,13 @@
 import { Children, type ReactNode } from "react";
 import { EmptyState } from "@/components/shared/base-cards";
 import { buttonClassName } from "@/components/ui/button";
+import styles from "./pastoral-section.module.css";
 
 export function PastoralSectionTitle({ children, detail }: { children: ReactNode; detail?: string }) {
   return (
     <div className="mb-3 mt-7">
-      <h2 className="pastoral-section-title">{children}</h2>
-      {detail ? <p className="pastoral-section-detail">{detail}</p> : null}
+      <h2 className={styles.title}>{children}</h2>
+      {detail ? <p className={styles.detail}>{detail}</p> : null}
     </div>
   );
 }

@@ -32,7 +32,7 @@ src/components/layout
 
 src/components/shared
   Componentes compartilhados entre features, mas ainda ligados à apresentação do produto.
-  Exemplos: ProgressiveList, PresenceMetric, StructureSearch, base cards e loading skeletons.
+  Exemplos: ProgressiveList, PresenceMetric, StructureSearch, base cards, person cards e loading skeletons.
 
 src/features/*/components
   Componentes visuais de domínio. Podem usar linguagem e dados da feature.
@@ -92,7 +92,7 @@ Use Tailwind para layout, espaçamento, grid, flex e composição simples.
 
 Use tokens CSS para decisões de design:
 
-```tsx
+```txt
 className="text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]"
 ```
 
@@ -186,12 +186,12 @@ import { GroupForm } from "@/features/groups/components/group-form";
 
 Evite:
 
-```tsx
+```txt
 // componente de domínio antigo em src/components
 import { GroupForm } from "@/components/group-form";
 
 // feature importando visual específico de outra feature sem passar por shared/ui
-import { PersonCards } from "@/features/people/components/person-cards";
+import { GroupPendingEventCard } from "@/features/groups/components/group-pending-event-card";
 ```
 
 ## Checklist antes de alterar UI

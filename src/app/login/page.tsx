@@ -48,7 +48,7 @@ export default async function LoginPage({
             <h1 className="font-serif-display mt-2 max-w-[15ch] text-[length:var(--text-3xl)] font-bold leading-[0.98] tracking-normal text-[color:var(--login-title)] sm:text-[length:var(--text-display)]">
               Cuidado pastoral em suas mãos.
             </h1>
-            <p className="mt-3 max-w-[34rem] text-[length:var(--text-sm)] leading-[1.5] text-[color:var(--login-text)] sm:text-[length:var(--text-sm)]">
+            <p className="mt-3 max-w-[34rem] text-[length:var(--text-sm)] leading-[1.5] text-[color:var(--login-text)]">
               Entre com seu e-mail e sua senha para acessar sua visão pastoral.
             </p>
           </div>

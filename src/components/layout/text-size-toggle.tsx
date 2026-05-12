@@ -9,6 +9,7 @@ import {
   textSizeLabel,
   type TextSize,
 } from "@/features/text-size/text-size";
+import { cn } from "@/lib/cn";
 
 function subscribe(callback: () => void) {
   const handler = (event: StorageEvent) => {
@@ -52,7 +53,7 @@ export function TextSizeToggle({ className }: { className?: string }) {
       className={className}
     >
       <span className="flex items-baseline leading-none">
-        <span className={`font-extrabold ${visual.letterSize}`}>A</span>
+        <span className={cn("font-extrabold", visual.letterSize)}>A</span>
         {visual.plus ? (
           <span className="ml-[1px] text-[length:var(--text-xs)] font-bold">{visual.plus}</span>
         ) : null}

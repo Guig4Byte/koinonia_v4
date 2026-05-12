@@ -11,8 +11,9 @@ import {
   GROUP_REGULAR_MEMBER_STEP,
 } from "@/features/groups/group-detail-view";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { cn } from "@/lib/cn";
 import { ROUTES } from "@/lib/routes";
-import styles from "@/features/groups/components/group-detail.module.css";
+import styles from "./group-detail-page.module.css";
 
 type GroupDetailPageProps = {
   params: Promise<{ groupId: string }>;
@@ -76,7 +77,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
               {supervisionName ? ` · Supervisão: ${supervisionName}` : ""}
             </p>
           </div>
-          <p className={`${styles.heroChip} mt-3`}>
+          <p className={cn(styles.heroChip, "mt-3")}>
             {groupMeetingText(group.meetingDayOfWeek, group.meetingTime)}
             {group.locationName ? ` · ${group.locationName}` : ""}
           </p>

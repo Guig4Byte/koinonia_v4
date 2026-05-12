@@ -1,0 +1,30 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 18px;
+}
+
+.hero {
+  margin-bottom: 10px;
+  border: 1px solid var(--color-border-card);
+  border-radius: 1.15rem;
+  background: var(--color-bg-card);
+  padding: 16px;
+  box-shadow: var(--color-shadow-card);
+}
+
+.heroChip {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  border-radius: var(--radius-pill);
+  background: var(--metric-card-bg);
+  padding: 8px 12px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.35;
+}
+
+.summary > section {
+  margin-bottom: 0;
+}

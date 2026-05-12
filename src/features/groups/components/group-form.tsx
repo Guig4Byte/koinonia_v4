@@ -15,6 +15,10 @@ function FormSectionTitle({ children }: { children: string }) {
   );
 }
 
+const groupTextInputClassName = "min-h-12 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-4 text-[length:var(--text-sm)] font-medium text-[color:var(--color-text-primary)] outline-none transition focus:border-[var(--color-brand)] focus:bg-[var(--color-bg-card)]";
+const groupSelectClassName = "min-h-12 w-full appearance-none rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-4 pr-12 text-[length:var(--text-sm)] font-medium text-[color:var(--color-text-primary)] outline-none transition focus:border-[var(--color-brand)] focus:bg-[var(--color-bg-card)]";
+const helperTextClassName = "block text-[length:var(--text-xs)] leading-relaxed text-[color:var(--color-text-secondary)]";
+
 export function GroupForm({
   title,
   description,
@@ -62,7 +66,7 @@ export function GroupForm({
               maxLength={GROUP_NAME_MAX_LENGTH}
               required
               placeholder="Ex.: Célula Central"
-              className="min-h-12 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-4 text-[length:var(--text-sm)] font-medium text-[color:var(--color-text-primary)] outline-none transition focus:border-[var(--color-brand)] focus:bg-[var(--color-bg-card)]"
+              className={groupTextInputClassName}
             />
           </label>
 
@@ -73,9 +77,9 @@ export function GroupForm({
               defaultValue={initialValues.locationName ?? ""}
               maxLength={GROUP_LOCATION_MAX_LENGTH}
               placeholder="Casa, bairro ou referência"
-              className="min-h-12 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-4 text-[length:var(--text-sm)] font-medium text-[color:var(--color-text-primary)] outline-none transition focus:border-[var(--color-brand)] focus:bg-[var(--color-bg-card)]"
+              className={groupTextInputClassName}
             />
-            <span className="block text-[length:var(--text-xs)] leading-relaxed text-[color:var(--color-text-secondary)]">
+            <span className={helperTextClassName}>
               O local padrão é copiado para novos encontros, mas cada encontro pode ter local próprio.
             </span>
           </label>
@@ -91,7 +95,7 @@ export function GroupForm({
                 <select
                   name="meetingDayOfWeek"
                   defaultValue={initialValues.meetingDayOfWeek ?? ""}
-                  className="min-h-12 w-full appearance-none rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-4 pr-12 text-[length:var(--text-sm)] font-medium text-[color:var(--color-text-primary)] outline-none transition focus:border-[var(--color-brand)] focus:bg-[var(--color-bg-card)]"
+                  className={groupSelectClassName}
                 >
                   <option value="">Sem dia fixo</option>
                   {WEEKDAY_OPTIONS.map((option) => (
@@ -110,7 +114,7 @@ export function GroupForm({
             </label>
           </div>
 
-          <span className="block text-[length:var(--text-xs)] leading-relaxed text-[color:var(--color-text-secondary)]">
+          <span className={helperTextClassName}>
             Informe dia e horário juntos para gerar encontros automaticamente.
           </span>
         </section>

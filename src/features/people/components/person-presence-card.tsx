@@ -11,6 +11,7 @@ import {
   type PersonPresenceView,
 } from "@/features/people/person-detail-view";
 import { formatPresenceRate } from "@/features/events/presence-display";
+import { cn } from "@/lib/cn";
 import { countLabel, formatShortDate, formatTime } from "@/lib/format";
 import { ROUTES } from "@/lib/routes";
 
@@ -36,18 +37,18 @@ export function PersonPresenceCard({ view }: { view: PersonPresenceView }) {
               : "Ainda sem presença registrada em encontros recentes."}
           </p>
           {trend ? (
-            <p className={`mt-1 text-[length:var(--text-xs)] leading-relaxed ${presenceTrendToneClass(trend.direction, tone)}`}>
+            <p className={cn("mt-1 text-[length:var(--text-xs)] leading-relaxed", presenceTrendToneClass(trend.direction, tone))}>
               {recentPresenceTrendLabel(trend, tone)}
             </p>
           ) : null}
         </div>
         <div className="shrink-0 text-right">
-          <p className={`text-[length:var(--text-xl)] font-bold leading-none tracking-[-0.02em] ${presenceToneClass(tone)}`}>
+          <p className={cn("text-[length:var(--text-xl)] font-bold leading-none tracking-[-0.02em]", presenceToneClass(tone))}>
             {formatPresenceRate(recentPresence.hasPresenceData, recentPresence.presenceRate)}
           </p>
           {trend ? (
             <p
-              className={`mt-1 text-[length:var(--text-sm)] font-bold leading-none ${presenceTrendToneClass(trend.direction, tone)}`}
+              className={cn("mt-1 text-[length:var(--text-sm)] font-bold leading-none", presenceTrendToneClass(trend.direction, tone))}
               aria-label={`${trend.direction === "up" ? "subiu" : "caiu"} ${trend.delta} pontos em relação aos encontros anteriores`}
               title={`${trend.direction === "up" ? "Subiu" : "Caiu"} ${trend.delta} pontos em relação aos encontros anteriores`}
             >

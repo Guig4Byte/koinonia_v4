@@ -1,5 +1,5 @@
 import { EmptyState } from "@/components/shared/base-cards";
-import { PersonMiniCard } from "@/features/people/components/person-cards";
+import { PersonMiniCard } from "@/components/shared/person-cards";
 import type { BadgeTone } from "@/components/ui/badge";
 import { FilterChip } from "@/components/ui/filter-chip";
 import { ProgressiveList } from "@/components/shared/progressive-list";

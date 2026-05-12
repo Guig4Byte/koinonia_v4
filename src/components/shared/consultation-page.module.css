@@ -44,10 +44,6 @@
   margin-bottom: 0;
 }
 
-.summaryBlock + section.space-y-3 > div:first-child {
-  margin-top: 24px;
-}
-
 .eventsIntro {
   margin: 0;
 }

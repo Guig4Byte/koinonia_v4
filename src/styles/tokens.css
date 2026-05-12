@@ -41,6 +41,7 @@
   --on-accent: var(--color-btn-primary-text);
   --accent-muted: var(--color-text-on-banner);
   --accent-soft: color-mix(in srgb, var(--color-brand-accent) 28%, transparent);
+  --color-brand-soft: var(--accent-soft);
   --risk: var(--color-metric-atencoes);
   --risk-soft: var(--color-badge-risco-bg);
   --ok: var(--color-metric-presenca);

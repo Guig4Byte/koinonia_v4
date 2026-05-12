@@ -195,7 +195,7 @@ Para organização visual, CSS, primitives e loading states, consulte `docs/FRON
 - Filtros: `src/lib/filter-param.ts`, `src/features/people/member-filters.ts`, `src/features/groups/cells-page-filters.ts`, `src/features/team/team-filters.ts`.
 - Busca/filtros de estrutura: `src/components/shared/structure-search.tsx`, `src/features/groups/components/cells-structure-search.tsx`, `src/features/team/components/team-structure-search.tsx`.
 - UI primitives: `src/components/ui/button.tsx`, `src/components/ui/card.tsx`, `src/components/ui/field.tsx`, `src/components/ui/feedback.tsx`, `src/components/ui/action-panel.tsx`, `src/components/ui/time-picker-field.tsx`.
-- Cards/listas pastorais: `src/components/shared/base-cards.tsx`, `src/components/shared/progressive-list.tsx`, `src/features/pastoral-home/components/pastoral-list-cards.tsx`, `src/features/people/components/person-cards.tsx`.
+- Cards/listas pastorais: `src/components/shared/base-cards.tsx`, `src/components/shared/progressive-list.tsx`, `src/components/shared/person-cards.tsx`, `src/features/pastoral-home/components/pastoral-list-cards.tsx`.
 - Queries de dashboard: `src/features/dashboard/queries.ts`.
 - Respostas de API: `src/lib/api-response.ts`.
 - Ações client-side com `fetch`: `src/hooks/use-api-action.ts`.
