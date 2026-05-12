@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { Button, buttonClassName } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 import type { CheckInMode, CheckInSummary } from "@/features/check-in/check-in-view";
 import { cn } from "@/lib/cn";
 
@@ -73,17 +73,15 @@ export function CheckInSaveBar({
         </div>
         <div className="flex flex-col gap-2 min-[390px]:flex-row min-[390px]:shrink-0 min-[390px]:items-center">
           {cancelHref ? (
-            <Link
+            <ButtonLink
               href={cancelHref}
               aria-disabled={isPending}
-              className={buttonClassName({
-                variant: "secondary",
-                size: "md",
-                className: cn("w-full rounded-full px-3 min-[390px]:w-auto", isPending && "pointer-events-none saturate-75"),
-              })}
+              variant="secondary"
+              size="md"
+              className={cn("w-full rounded-full px-3 min-[390px]:w-auto", isPending && "pointer-events-none saturate-75")}
             >
               {cancelLabel}
-            </Link>
+            </ButtonLink>
           ) : null}
           <Button disabled={!canSave} loading={isPending} onClick={onSave} className="w-full min-w-28 min-[390px]:w-auto">
             {isPending ? "Salvando..." : submitLabel}

@@ -1,10 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Search } from "lucide-react";
-import { cn } from "@/lib/cn";
+import { FilterChip } from "@/components/ui/filter-chip";
 
 export type StructureSearchOption<TFilter extends string> = {
   value: TFilter;
@@ -132,16 +131,13 @@ function StructureSearchContent<TFilter extends string>({
           const active = option.value === filter && (option.value !== defaultFilter || !query);
 
           return (
-            <Link
+            <FilterChip
               key={option.value}
               href={filterPath(option.value)}
-              className={cn(
-                "team-filter-chip",
-                active && "team-filter-chip-active",
-              )}
+              active={active}
             >
               {option.label}
-            </Link>
+            </FilterChip>
           );
         })}
       </div>

@@ -2,9 +2,11 @@ import Link from "next/link";
 import { ArrowLeft, CheckCircle2, AlertCircle, Info, Heart } from "lucide-react";
 import type { ReactNode } from "react";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
+import { CardLink } from "@/components/ui/card-link";
+import { MetricRow, SummaryCard } from "@/components/ui/summary-card";
+import { SectionHeader } from "@/components/ui/section-header";
 import { cn } from "@/lib/cn";
-import { priorityCardClass } from "@/lib/card-priority";
-import { metricTextClass, PresenceTrendDelta, type PresenceTrend } from "@/components/presence-metric";
+import { PresenceTrendDelta, type PresenceTrend } from "@/components/presence-metric";
 
 export function PulseCard({
   title,
@@ -43,60 +45,41 @@ export function ContextSummary({
   variant?: "default" | "compact" | "prominent" | "balanced";
   surface?: "card" | "inset";
 }) {
-  const toneClass = {
-    ok: metricTextClass("ok"),
-    warn: metricTextClass("warn"),
-    risk: metricTextClass("risk"),
-    neutral: "text-[color:var(--color-text-primary)]",
-  };
-  const detailClass = detailTone === "strong" ? "context-summary-detail-strong" : undefined;
-  const surfaceClass = surface === "inset"
-    ? "context-summary-inset border border-[var(--color-border-divider)] bg-[var(--metric-card-bg)] px-4 py-2 shadow-none"
-    : "border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card";
-
   return (
-    <section className={cn("context-summary mb-5 rounded-[1.15rem]", `context-summary-${variant}`, surfaceClass)}>
-      <div className={surface === "inset" ? "space-y-0" : "space-y-3"}>
-        {items.map((item) => (
-          <div key={item.label} className="context-summary-row flex items-center justify-between gap-4 border-b border-[var(--color-border-divider)] pb-3 last:border-0 last:pb-0">
-            <div className="min-w-0">
-              <p className="context-summary-label k-item-title">{item.label}</p>
-              {item.detail ? <p className={cn("context-summary-detail leading-relaxed", detailClass)}>{item.detail}</p> : null}
-            </div>
-            <div className="shrink-0 text-right">
-              <p className={cn("context-summary-value font-bold tracking-[-0.02em]", toneClass[item.tone ?? "neutral"])}>
-                {item.value}
-              {item.trend && trendLayout === "inline" ? (
-                <PresenceTrendDelta
-                  trend={item.trend}
-                  tone={item.tone ?? "neutral"}
-                  className="ml-1 align-middle text-[length:var(--text-xs)]"
-                />
-              ) : null}
-              </p>
-              {item.trend && trendLayout === "stacked" ? (
-                <PresenceTrendDelta
-                  trend={item.trend}
-                  tone={item.tone ?? "neutral"}
-                  className="mt-1 block text-[length:var(--text-sm)] leading-none"
-                />
-              ) : null}
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
+    <SummaryCard variant={variant} surface={surface}>
+      {items.map((item) => (
+        <MetricRow
+          key={item.label}
+          label={item.label}
+          detail={item.detail}
+          value={item.value}
+          tone={item.tone ?? "neutral"}
+          detailStrong={detailTone === "strong"}
+          valueInlineAdornment={item.trend && trendLayout === "inline" ? (
+            <PresenceTrendDelta
+              trend={item.trend}
+              tone={item.tone ?? "neutral"}
+              className="ml-1 align-middle text-[length:var(--text-xs)]"
+            />
+          ) : null}
+          valueStackedAdornment={item.trend && trendLayout === "stacked" ? (
+            <PresenceTrendDelta
+              trend={item.trend}
+              tone={item.tone ?? "neutral"}
+              className="mt-1 block text-[length:var(--text-sm)] leading-none"
+            />
+          ) : null}
+        />
+      ))}
+    </SummaryCard>
   );
 }
+
 
 export function SectionTitle({ children, detail }: { children: ReactNode; detail?: string }) {
-  return (
-    <div className="mb-2 mt-6">
-      <h2 className="k-section-kicker">{children}</h2>
-      {detail ? <p className="k-supporting-copy">{detail}</p> : null}
-    </div>
-  );
+  return <SectionHeader title={children} detail={detail} />;
 }
+
 
 export function BackLink({
   href,
@@ -183,7 +166,7 @@ export function DetailLinkCard({
   children?: ReactNode;
 }) {
   return (
-    <Link href={href} className={cn("card-hover-lift block rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]", priorityCardClass(badgeTone))}>
+    <CardLink href={href} priorityTone={badgeTone}>
       <div className="k-card-header-row">
         <div className="min-w-0">
           <p className="k-item-title truncate">{title}</p>
@@ -193,6 +176,6 @@ export function DetailLinkCard({
       </div>
       {children ? <div className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{children}</div> : null}
       <p className="mt-3 text-[length:var(--text-sm)] font-semibold text-[color:var(--color-brand)]">{actionLabel} <span className="inline-block transition group-active:translate-x-0.5">→</span></p>
-    </Link>
+    </CardLink>
   );
 }

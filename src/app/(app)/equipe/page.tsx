@@ -1,9 +1,8 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Plus } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { ContextSummary, EmptyState, InfoCard, SectionTitle } from "@/components/base-cards";
-import { buttonClassName } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 import { ProgressiveList } from "@/components/progressive-list";
 import { TeamStructureSearch } from "@/components/team-structure-search";
 import { InactiveTeamGroupLink, TeamGroupLink, TeamSupervisorCard } from "@/components/team-structure-cards";
@@ -77,13 +76,10 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
             </p>
           </div>
           {canCreateGroup ? (
-            <Link
-              href={ROUTES.newCell}
-              className={buttonClassName({ size: "sm", className: "shrink-0 rounded-2xl px-3 font-bold" })}
-            >
+            <ButtonLink href={ROUTES.newCell} size="sm" className="shrink-0 rounded-2xl px-3 font-bold">
               <Plus className="h-4 w-4" aria-hidden="true" />
               Nova célula
-            </Link>
+            </ButtonLink>
           ) : null}
         </div>
 

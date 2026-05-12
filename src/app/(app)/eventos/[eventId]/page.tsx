@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { BackLink, InfoCard, SectionTitle } from "@/components/base-cards";
-import { buttonClassName } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 import { CheckInList } from "@/components/check-in-list";
 import { EventDetailsActions } from "@/components/event-details-actions";
 import { EventDetailHeaderCard } from "@/components/event-detail-header-card";
@@ -107,12 +106,9 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
               />
             ) : null}
             {canOfferAdjustment ? (
-              <Link
-                href={adjustmentHref}
-                className={buttonClassName({ fullWidth: true, size: "md", className: "rounded-full" })}
-              >
+              <ButtonLink href={adjustmentHref} fullWidth size="md" className="rounded-full">
                 Ajustar presença →
-              </Link>
+              </ButtonLink>
             ) : null}
           </div>
         )

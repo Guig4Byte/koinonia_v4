@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
+import { PriorityCard } from "@/components/ui/priority-card";
 import { cn } from "@/lib/cn";
 import { DEFAULT_PRESENCE_TONE_THRESHOLDS, formatPresenceRate, presenceTone } from "@/features/events/presence-display";
-import { priorityCardClass, type CardPriorityTone } from "@/lib/card-priority";
+import type { CardPriorityTone } from "@/lib/card-priority";
 import { metricTextClass, PresenceTrendDelta, type PresenceTrend } from "@/components/presence-metric";
 import { countLabel } from "@/lib/format";
 
@@ -59,7 +60,7 @@ export function GroupCard({
     : presenceRate < DEFAULT_PRESENCE_TONE_THRESHOLDS.risk ? "Presença baixa" : "Presença recente";
   const presenceToneClass = metricTextClass(tone);
   const content = (
-    <article className={cn("card-hover-lift rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card transition active:scale-[0.99]", priorityCardClass(priorityTone))}>
+    <PriorityCard priorityTone={priorityTone} padding="sm" interactive>
       <div className="k-card-header-row">
         <div>
           <p className="k-item-title">{name}</p>
@@ -77,7 +78,7 @@ export function GroupCard({
         </span>
         {href ? <span className="font-semibold text-[color:var(--color-brand)]">Ver célula →</span> : null}
       </div>
-    </article>
+    </PriorityCard>
   );
 
   return href ? <Link href={href} className="block">{content}</Link> : content;

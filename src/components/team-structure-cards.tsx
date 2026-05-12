@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Avatar } from "@/components/ui/avatar";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { ProgressiveList } from "@/components/progressive-list";
 import { EmptyState } from "@/components/base-cards";
@@ -16,7 +17,6 @@ import {
   type TeamGroup,
 } from "@/features/team/team-view";
 import { cn } from "@/lib/cn";
-import { avatarColorForName, initials } from "@/lib/text";
 import { ROUTES } from "@/lib/routes";
 
 function TeamCellLink({
@@ -87,17 +87,10 @@ export function InactiveTeamGroupLink({ group }: { group: InactiveTeamGroup }) {
 export function TeamSupervisorCard({ supervisor }: { supervisor: SupervisorTeam }) {
   const hasGroups = supervisor.groups.length > 0;
   const badgeTone = supervisorBadgeTone(supervisor);
-  const avatarColors = avatarColorForName(supervisor.name);
-
   return (
     <section className={cn("team-supervisor-card", priorityCardClass(badgeTone !== "neutral" ? badgeTone : undefined))}>
       <div className="flex items-start gap-2.5">
-        <div
-          className="team-avatar"
-          style={{ backgroundColor: avatarColors.bg, color: avatarColors.text }}
-        >
-          {initials(supervisor.name)}
-        </div>
+        <Avatar name={supervisor.name} className="team-avatar" />
         <div className="min-w-0 flex-1">
           <div className="min-w-0">
             <p className="k-item-title">{supervisor.name}</p>

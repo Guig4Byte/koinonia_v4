@@ -1,9 +1,10 @@
-import Link from "next/link";
 import { BackLink, EmptyState, SectionTitle } from "@/components/base-cards";
 import { priorityCardClass } from "@/lib/card-priority";
 import { ProgressiveList } from "@/components/progressive-list";
 import { Badge } from "@/components/ui/badge";
-import { buttonClassName } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
+import { CardLink } from "@/components/ui/card-link";
+import { FilterChip } from "@/components/ui/filter-chip";
 import { formatPresenceRate } from "@/features/events/presence-display";
 import {
   buildEventListCardState,
@@ -61,19 +62,17 @@ export function EventCard({ event, user, now }: { event: EventListEvent; user: P
         </div>
       ) : null}
 
-      <Link
+      <ButtonLink
         href={ROUTES.event(event.id)}
-        className={buttonClassName({
-          variant: state.canRegisterPresence ? "primaryFlat" : "secondary",
-          size: "sm",
-          className: cn(
-            "mt-2 min-h-8 rounded-full px-3.5 py-0 text-[length:var(--text-sm)] font-extrabold",
-            state.recordedPresence && "mt-1.5 min-h-7",
-          ),
-        })}
+        variant={state.canRegisterPresence ? "primaryFlat" : "secondary"}
+        size="sm"
+        className={cn(
+          "mt-2 min-h-8 rounded-full px-3.5 py-0 text-[length:var(--text-sm)] font-extrabold",
+          state.recordedPresence && "mt-1.5 min-h-7",
+        )}
       >
         {state.actionLabel} <span aria-hidden="true">→</span>
-      </Link>
+      </ButtonLink>
     </article>
   );
 }
@@ -88,11 +87,11 @@ export function EventList({ events, user, now, limit = EVENT_LIST_LIMIT }: { eve
 
 function ConsultationCard({ href, title, description }: { href: string; title: string; description: string }) {
   return (
-    <Link href={href} className="card-hover-lift block rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card transition active:scale-[0.99]">
+    <CardLink href={href}>
       <p className="k-item-title">{title}</p>
       <p className="k-supporting-copy">{description}</p>
       <p className="mt-3 text-[length:var(--text-sm)] font-semibold text-[color:var(--color-brand)]">Consultar →</p>
-    </Link>
+    </CardLink>
   );
 }
 
@@ -121,18 +120,14 @@ function PeriodChips({ mode, activePeriod }: { mode: EventConsultationMode; acti
       {periods.map((period) => {
         const active = period === activePeriod;
         return (
-          <Link
+          <FilterChip
             key={period}
             href={ROUTES.eventsConsultation(mode, period)}
-            className={cn(
-              "rounded-full border px-3 py-2 text-[length:var(--text-xs)] font-semibold transition active:scale-[0.98]",
-              active
-                ? "border-[var(--color-brand)] bg-[var(--color-brand-soft)] text-[color:var(--color-brand)]"
-                : "border-[var(--color-border-card)] bg-[var(--surface-alt)] text-[color:var(--color-text-secondary)]",
-            )}
+            active={active}
+            variant="period"
           >
             {eventPeriodLabel(period)}
-          </Link>
+          </FilterChip>
         );
       })}
     </div>

@@ -1,23 +1,9 @@
 import Link from "next/link";
+import { Avatar } from "@/components/ui/avatar";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
+import { PriorityCard } from "@/components/ui/priority-card";
 import { cn } from "@/lib/cn";
-import { avatarColorForName, initials } from "@/lib/text";
 import { priorityCardClass, type CardPriorityTone } from "@/lib/card-priority";
-
-function Avatar({ name, compact = false }: { name: string; compact?: boolean }) {
-  const colors = avatarColorForName(name);
-  return (
-    <span
-      className={cn(
-        "flex shrink-0 items-center justify-center rounded-full font-bold",
-        compact ? "h-8 w-8 text-[length:var(--text-xs)]" : "h-9 w-9 text-[length:var(--text-xs)]",
-      )}
-      style={{ backgroundColor: colors.bg, color: colors.text }}
-    >
-      {initials(name)}
-    </span>
-  );
-}
 
 function signalCardPriorityTone(resolvedBadgeTone: BadgeTone, severity: "ok" | "warn" | "risk" | "info"): CardPriorityTone | undefined {
   if (resolvedBadgeTone !== "neutral" && resolvedBadgeTone !== "ok" && resolvedBadgeTone !== "info") {
@@ -60,7 +46,7 @@ export function PersonMiniCard(props: {
       )}
     >
       <span className="flex min-w-0 items-center gap-3">
-        <Avatar name={name} compact={compact} />
+        <Avatar name={name} size={compact ? "sm" : "md"} />
         <span className="min-w-0">
           <span className="k-item-title-sm block truncate">{name}</span>
           {context ? <span className="k-item-caption-truncate">{context}</span> : null}
@@ -104,7 +90,7 @@ export function PersonSignalCard(props: {
   const priorityTone = signalCardPriorityTone(resolvedBadgeTone, severity);
 
   const content = (
-    <article className={cn("card-hover-lift group rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card transition active:scale-[0.99]", priorityCardClass(priorityTone))}>
+    <PriorityCard priorityTone={priorityTone} padding="sm" interactive className="group">
       <div className="flex items-start gap-2.5">
         <Avatar name={name} />
         <div className="min-w-0 flex-1">
@@ -123,7 +109,7 @@ export function PersonSignalCard(props: {
           ) : null}
         </div>
       </div>
-    </article>
+    </PriorityCard>
   );
 
   return cardHref ? (

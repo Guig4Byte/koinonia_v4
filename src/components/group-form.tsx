@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { CalendarDays } from "lucide-react";
 import { BackLink, InfoCard } from "@/components/base-cards";
-import { Button, buttonClassName } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 import { Card } from "@/components/ui/card";
 import { GroupMeetingTimeInput } from "@/components/group-meeting-time-input";
 import { GROUP_LOCATION_MAX_LENGTH, GROUP_NAME_MAX_LENGTH, WEEKDAY_OPTIONS, groupFormErrorMessage, type GroupFormValues } from "@/features/groups/group-form";
@@ -134,12 +134,9 @@ export function GroupForm({
         </section>
 
         <div className="flex flex-col-reverse gap-3 border-t border-[var(--color-border-divider)] pt-4 sm:flex-row sm:justify-end">
-          <Link
-            href={backHref}
-            className={buttonClassName({ variant: "secondary", size: "lg" })}
-          >
+          <ButtonLink href={backHref} variant="secondary" size="lg">
             Cancelar
-          </Link>
+          </ButtonLink>
           <Button type="submit" size="lg">
             {submitLabel}
           </Button>

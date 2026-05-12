@@ -1,10 +1,9 @@
-import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { BackLink, ContextSummary, InfoCard, PulseCard, SectionTitle } from "@/components/base-cards";
 import { GroupPendingEventCard } from "@/components/group-pending-event-card";
 import { GroupRegisteredEncountersList } from "@/components/group-registered-encounters-list";
 import { MemberPriorityList } from "@/components/member-priority-list";
-import { buttonClassName } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 import { getGroupDetailPageData } from "@/app/(app)/celulas/[groupId]/page-data";
 import {
   groupMeetingText,
@@ -56,12 +55,14 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
 
         {canEditGroup ? (
           <div className="mb-4 flex justify-end">
-            <Link
+            <ButtonLink
               href={ROUTES.editGroup(group.id)}
-              className={buttonClassName({ variant: "secondary", size: "sm", className: "rounded-2xl px-3" })}
+              variant="secondary"
+              size="sm"
+              className="rounded-2xl px-3"
             >
               Editar célula
-            </Link>
+            </ButtonLink>
           </div>
         ) : null}
 

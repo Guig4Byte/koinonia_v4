@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { EmptyState } from "@/components/base-cards";
 import { PersonMiniCard } from "@/components/person-cards";
 import type { BadgeTone } from "@/components/ui/badge";
+import { FilterChip } from "@/components/ui/filter-chip";
 import { ProgressiveList } from "@/components/progressive-list";
 import { MEMBERS_FILTERS, membersFilterHref, type MembersFilter } from "@/features/people/member-filters";
 import { cn } from "@/lib/cn";
@@ -60,14 +60,14 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
           const active = option.value === activeFilter;
 
           return (
-            <Link
+            <FilterChip
               key={option.value}
               href={membersFilterHref(basePath, option.value)}
               aria-current={active ? "page" : undefined}
-              className={cn("team-filter-chip", active && "team-filter-chip-active")}
+              active={active}
             >
               {option.label}
-            </Link>
+            </FilterChip>
           );
         })}
       </div>

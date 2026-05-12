@@ -6,11 +6,12 @@ import { CareActions } from "@/components/care-actions";
 import { CARE_COPY } from "@/features/care/care-copy";
 import { PersonStatusActions } from "@/components/person-status-actions";
 import { BackLink, DetailLinkCard, EmptyState, SectionTitle } from "@/components/base-cards";
-import { priorityCardClass } from "@/lib/card-priority";
 import { SignalSupportActions } from "@/components/signal-support-actions";
 import { CareTouchHistory, type CareTouchHistoryItem } from "@/components/care-touch-history";
 import { PersonPresenceCard } from "@/components/person-presence-card";
+import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { PriorityCard } from "@/components/ui/priority-card";
 import { canRegisterCare, canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { PERSON_DETAIL_ATTENDANCE_HISTORY_LIMIT, buildPersonPresenceView, careKindLabels } from "@/features/people/person-detail-view";
@@ -24,7 +25,6 @@ import { isInCarePerson } from "@/features/people/person-status";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
-import { avatarColorForName, initials } from "@/lib/text";
 import { ROUTES } from "@/lib/routes";
 
 export default async function PersonDetailPage({ params }: { params: Promise<{ personId: string }> }) {
@@ -129,14 +129,9 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
     >
       <BackLink href={backHref}>{backLabel}</BackLink>
 
-      <section className={`card-hover-lift rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card ${priorityCardClass(personBadge.tone)}`}>
+      <PriorityCard as="section" priorityTone={personBadge.tone} className="card-hover-lift">
         <div className="flex items-start gap-3">
-          <div
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-[length:var(--text-sm)] font-bold"
-            style={{ backgroundColor: avatarColorForName(person.fullName).bg, color: avatarColorForName(person.fullName).text }}
-          >
-            {initials(person.fullName)}
-          </div>
+          <Avatar name={person.fullName} size="xl" />
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-2">
               <div>
@@ -159,7 +154,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
 
         <CareActions personId={person.id} phone={person.phone} />
         {canMarkActive ? <PersonStatusActions personId={person.id} /> : null}
-      </section>
+      </PriorityCard>
 
       <SectionTitle>Ritmo de presença</SectionTitle>
       <PersonPresenceCard view={presenceView} />
@@ -178,7 +173,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           const canEscalatePastor = canEscalateSignalToPastor(user, signal);
 
           return (
-            <article key={signal.id} className={`card-hover-lift rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card ${priorityCardClass(signalTone)}`}>
+            <PriorityCard key={signal.id} priorityTone={signalTone} className="card-hover-lift">
               <div className="min-w-0">
                 <p className="k-item-title">{signalTitleForViewer(signalForDisplay, user)}</p>
                 <p className="k-item-meta">
@@ -192,7 +187,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
                 canRequestSupervisor={canRequestSupervisor}
                 canEscalatePastor={canEscalatePastor}
               />
-            </article>
+            </PriorityCard>
           );
         })}
 
