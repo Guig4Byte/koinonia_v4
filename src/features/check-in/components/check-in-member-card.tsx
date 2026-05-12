@@ -10,12 +10,13 @@ import {
   type MemberAttendanceStatus,
 } from "@/features/check-in/check-in-view";
 import { cn } from "@/lib/cn";
+import styles from "./check-in.module.css";
 
 function memberCardTone(status: AttendanceSelection) {
-  if (status === ATTENDANCE.PRESENT) return "check-in-member-card-present";
-  if (status === ATTENDANCE.ABSENT) return "check-in-member-card-absent";
-  if (status === ATTENDANCE.JUSTIFIED) return "check-in-member-card-justified";
-  return "check-in-member-card-pending";
+  if (status === ATTENDANCE.PRESENT) return styles.memberCardPresent;
+  if (status === ATTENDANCE.ABSENT) return styles.memberCardAbsent;
+  if (status === ATTENDANCE.JUSTIFIED) return styles.memberCardJustified;
+  return styles.memberCardPending;
 }
 
 function statusButtonVariant(status: MemberAttendanceStatus, selected: boolean): ButtonVariant {
@@ -26,10 +27,10 @@ function statusButtonVariant(status: MemberAttendanceStatus, selected: boolean):
 }
 
 function statusBadgeTone(status: AttendanceSelection) {
-  if (status === ATTENDANCE.PRESENT) return "check-in-status-badge-present";
-  if (status === ATTENDANCE.ABSENT) return "check-in-status-badge-absent";
-  if (status === ATTENDANCE.JUSTIFIED) return "check-in-status-badge-justified";
-  return "check-in-status-badge-pending";
+  if (status === ATTENDANCE.PRESENT) return styles.statusBadgePresent;
+  if (status === ATTENDANCE.ABSENT) return styles.statusBadgeAbsent;
+  if (status === ATTENDANCE.JUSTIFIED) return styles.statusBadgeJustified;
+  return styles.statusBadgePending;
 }
 
 type CheckInMemberCardProps = {
@@ -41,13 +42,14 @@ type CheckInMemberCardProps = {
 export function CheckInMemberCard({ item, onSetStatus, disabled = false }: CheckInMemberCardProps) {
   return (
     <article
-      className={cn("check-in-member-card rounded-2xl border p-3", memberCardTone(item.status))}
+      className={cn(styles.memberCard, "rounded-2xl border p-3", memberCardTone(item.status))}
     >
       <div className="mb-3 flex items-center justify-between gap-2">
         <p className="k-item-title">{item.fullName}</p>
         <span
           className={cn(
-            "check-in-status-badge rounded-full border px-2.5 py-1 text-[length:var(--text-xs)] font-semibold",
+            styles.statusBadge,
+            "rounded-full border px-2.5 py-1 text-[length:var(--text-xs)] font-semibold",
             statusBadgeTone(item.status),
           )}
         >

@@ -1,0 +1,46 @@
+.scheduleFields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.selectField {
+  position: relative;
+}
+
+.selectField select {
+  min-width: 0;
+}
+
+.selectField select:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand) 18%, transparent);
+}
+
+.selectIcon {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: var(--color-text-secondary);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.timeField {
+  margin-top: 0;
+}
+
+.timePopover {
+  width: min(236px, calc(100vw - 48px));
+}
+
+@media (max-width: 430px) {
+  .scheduleFields {
+    grid-template-columns: 1fr;
+  }
+}

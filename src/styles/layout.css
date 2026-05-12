@@ -14,6 +14,52 @@
   padding-bottom: calc(112px + env(safe-area-inset-bottom));
 }
 
+
+.app-header {
+  position: relative;
+  margin-bottom: 18px;
+  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 18%, transparent);
+  border-radius: 28px;
+  background: var(--color-bg-header);
+  color: var(--color-text-on-header);
+  padding: 14px;
+  box-shadow: var(--color-shadow-header);
+}
+
+.app-header-compact {
+  margin-bottom: 14px;
+  border-radius: 22px;
+  padding: 12px;
+}
+
+.header-action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--color-theme-icon-active-border) 72%, transparent);
+  background: color-mix(in srgb, var(--color-theme-icon-active-bg) 58%, transparent);
+  color: var(--color-text-on-header);
+  opacity: 0.88;
+}
+
+.header-action-button:hover {
+  opacity: 1;
+}
+
+.header-action-button:focus-visible {
+  outline: 2px solid var(--color-brand-accent);
+  outline-offset: 2px;
+}
+
+.app-header-compact .header-action-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 14px;
+}
+
 @media (min-width: 768px) {
   .safe-page {
     max-width: 560px;

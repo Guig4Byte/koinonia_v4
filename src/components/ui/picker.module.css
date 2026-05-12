@@ -1,0 +1,58 @@
+.field {
+  position: relative;
+  margin-top: 8px;
+}
+
+.input {
+  min-width: 0;
+  padding-left: 14px;
+  padding-right: 50px;
+  text-align: left;
+}
+
+.input:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand) 18%, transparent);
+}
+
+.trigger {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  z-index: 1;
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border-divider);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--color-bg-card) 78%, transparent);
+  color: var(--color-text-secondary);
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+  transform: translateY(-50%);
+}
+
+.trigger:hover {
+  background: var(--color-btn-secondary-bg);
+  color: var(--color-brand);
+}
+
+.trigger:active {
+  transform: translateY(-50%) scale(0.96);
+}
+
+.popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 30;
+  width: min(292px, calc(100vw - 48px));
+  border: 1px solid var(--color-border-card);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--color-bg-card) 96%, transparent);
+  padding: 12px;
+  box-shadow: 0 18px 42px color-mix(in srgb, #000 28%, transparent);
+}

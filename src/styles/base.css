@@ -23,7 +23,7 @@ body {
   font-family: var(--font-body);
 }
 
-body:has(.login-page) {
+body:has([data-page="login"]) {
   background:
     radial-gradient(circle at top left, var(--page-glow), transparent 28rem),
     var(--login-page-bg);

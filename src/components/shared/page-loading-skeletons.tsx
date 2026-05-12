@@ -71,9 +71,9 @@ function FilterChipsSkeleton({ count = 4 }: { count?: number }) {
   );
 }
 
-function SummarySkeleton({ items = 4, balanced = false }: { items?: number; balanced?: boolean }) {
+function SummarySkeleton({ items = 4 }: { items?: number; balanced?: boolean }) {
   return (
-    <SkeletonCard className={cn("context-summary mb-5 rounded-[1.15rem] p-4", balanced && "context-summary-balanced")}>
+    <SkeletonCard className="mb-5 rounded-[1.15rem] p-4">
       <div className="space-y-3">
         {Array.from({ length: items }).map((_, index) => (
           <div key={index} className="flex items-center justify-between gap-4 border-b border-[var(--color-border-divider)] pb-3 last:border-0 last:pb-0">

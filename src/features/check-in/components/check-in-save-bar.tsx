@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import type { CheckInMode, CheckInSummary } from "@/features/check-in/check-in-view";
 import { cn } from "@/lib/cn";
+import styles from "./check-in.module.css";
 
 type CheckInSaveBarProps = {
   summary: CheckInSummary;
@@ -58,8 +59,9 @@ export function CheckInSaveBar({
   return (
     <div
       className={cn(
-        "check-in-save-bar rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card backdrop-blur-xl",
-        saveBarOffset === "page" ? "check-in-save-bar-page" : "check-in-save-bar-nav",
+        styles.saveBar,
+        "rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card backdrop-blur-xl",
+        saveBarOffset === "page" ? styles.saveBarPage : styles.saveBarNav,
       )}
     >
       <div className="flex flex-col gap-3 min-[390px]:flex-row min-[390px]:items-center min-[390px]:justify-between">

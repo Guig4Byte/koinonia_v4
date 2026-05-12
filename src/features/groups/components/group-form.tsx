@@ -5,6 +5,7 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { Card } from "@/components/ui/card";
 import { GroupMeetingTimeInput } from "@/features/groups/components/group-meeting-time-input";
 import { GROUP_LOCATION_MAX_LENGTH, GROUP_NAME_MAX_LENGTH, WEEKDAY_OPTIONS, groupFormErrorMessage, type GroupFormValues } from "@/features/groups/group-form";
+import styles from "./group-form.module.css";
 
 type GroupFormInitialValues = GroupFormValues;
 
@@ -83,10 +84,10 @@ export function GroupForm({
         <section className="space-y-4 border-t border-[var(--color-border-divider)] pt-4">
           <FormSectionTitle>Agenda padrão</FormSectionTitle>
 
-          <div className="group-schedule-fields">
+          <div className={styles.scheduleFields}>
             <label className="block min-w-0 space-y-1.5">
               <span className="k-item-title-sm">Dia padrão</span>
-              <div className="group-select-field">
+              <div className={styles.selectField}>
                 <select
                   name="meetingDayOfWeek"
                   defaultValue={initialValues.meetingDayOfWeek ?? ""}
@@ -97,7 +98,7 @@ export function GroupForm({
                     <option key={option.value} value={option.value}>{option.label}</option>
                   ))}
                 </select>
-                <span className="group-select-icon" aria-hidden="true">
+                <span className={styles.selectIcon} aria-hidden="true">
                   <CalendarDays className="h-4 w-4" />
                 </span>
               </div>

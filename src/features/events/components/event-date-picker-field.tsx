@@ -2,6 +2,8 @@ import { CalendarDays } from "lucide-react";
 import { calendarDays, MONTH_NAMES_PT_BR, shiftCalendarMonth, WEEKDAY_LABELS_PT_BR } from "@/features/events/brasilia-date-time";
 import type { CalendarMonth, DateParts } from "@/features/events/brasilia-date-time";
 import { cn } from "@/lib/cn";
+import pickerStyles from "@/components/ui/picker.module.css";
+import styles from "./event-date-picker-field.module.css";
 
 export function EventDatePickerField({
   value,
@@ -27,21 +29,24 @@ export function EventDatePickerField({
       <label className="block text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.12em] text-[color:var(--color-text-secondary)]" htmlFor="event-start-date">
         Nova data
       </label>
-      <div className="event-picker-field">
+      <div className={pickerStyles.field}>
         <input
           id="event-start-date"
           value={value}
           onChange={(event) => onChange(event.target.value)}
           inputMode="numeric"
           placeholder="dd/mm/aaaa"
-          className="event-picker-input min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)] focus:border-[var(--color-brand)]"
+          className={cn(
+            pickerStyles.input,
+            "min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)] focus:border-[var(--color-brand)]",
+          )}
         />
-        <button type="button" className="event-picker-trigger" aria-label="Escolher data" aria-expanded={isOpen} onClick={() => onOpenChange(!isOpen)}>
+        <button type="button" className={pickerStyles.trigger} aria-label="Escolher data" aria-expanded={isOpen} onClick={() => onOpenChange(!isOpen)}>
           <CalendarDays className="h-4 w-4" aria-hidden="true" />
         </button>
         {isOpen ? (
-          <div className="event-picker-popover">
-            <div className="event-calendar-header">
+          <div className={pickerStyles.popover}>
+            <div className={styles.header}>
               <button type="button" onClick={() => onCalendarMonthChange(shiftCalendarMonth(calendarMonth, -1))} aria-label="Mês anterior">
                 ‹
               </button>
@@ -52,12 +57,12 @@ export function EventDatePickerField({
                 ›
               </button>
             </div>
-            <div className="event-calendar-weekdays">
+            <div className={styles.weekdays}>
               {WEEKDAY_LABELS_PT_BR.map((label, index) => (
                 <span key={`${label}-${index}`}>{label}</span>
               ))}
             </div>
-            <div className="event-calendar-grid">
+            <div className={styles.grid}>
               {calendarDays(calendarMonth).map((day, index) => {
                 const selected = Boolean(
                   day &&
@@ -70,13 +75,13 @@ export function EventDatePickerField({
                   <button
                     key={`${calendarMonth.year}-${calendarMonth.monthIndex}-${day}`}
                     type="button"
-                    className={cn("event-calendar-day", selected && "event-calendar-day-selected")}
+                    className={cn(styles.day, selected && styles.daySelected)}
                     onClick={() => onCalendarDaySelect(day)}
                   >
                     {day}
                   </button>
                 ) : (
-                  <span key={`empty-${index}`} className="event-calendar-empty" aria-hidden="true" />
+                  <span key={`empty-${index}`} className={styles.empty} aria-hidden="true" />
                 );
               })}
             </div>

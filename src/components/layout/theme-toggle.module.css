@@ -1,0 +1,19 @@
+
+.card {
+  border-color: var(--theme-toggle-border);
+  background: var(--theme-toggle-bg);
+  color: var(--theme-toggle-icon);
+}
+
+.card:hover {
+  background: var(--theme-toggle-hover-bg);
+}
+
+.card:active {
+  background: var(--theme-toggle-active-bg);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--login-input-focus-border);
+  outline-offset: 3px;
+}

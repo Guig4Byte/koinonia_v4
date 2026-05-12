@@ -3,6 +3,8 @@
 import { Moon, ScrollText, Sun, type LucideIcon } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import { applyTheme, getNextTheme, isTheme, THEME_STORAGE_KEY, type Theme } from "@/features/theme/theme";
+import { cn } from "@/lib/cn";
+import styles from "./theme-toggle.module.css";
 
 type ThemeToggleVariant = "header" | "card";
 
@@ -62,7 +64,7 @@ export function ThemeToggle({
   const nextLabel = themeMeta[getNextTheme(theme)].label;
   const variantClass =
     variant === "card"
-      ? "theme-toggle-card"
+      ? styles.card
       : "border-[var(--color-theme-icon-active-border)] bg-[var(--color-theme-icon-active-bg)] text-[color:var(--color-text-on-header)]";
 
   return (
@@ -71,9 +73,12 @@ export function ThemeToggle({
       onClick={toggleTheme}
       aria-label={`Tema atual: ${label}. Alternar para ${nextLabel}.`}
       title={`Tema: ${label}`}
-      className={`inline-flex h-10 items-center justify-center gap-2 rounded-2xl border transition active:scale-95 ${
-        showLabel ? "px-3" : "w-10"
-      } ${variantClass} ${className}`}
+      className={cn(
+        "inline-flex h-10 items-center justify-center gap-2 rounded-2xl border transition active:scale-95",
+        showLabel ? "px-3" : "w-10",
+        variantClass,
+        className,
+      )}
     >
       <Icon className="h-4 w-4" />
       {showLabel ? <span className="text-[length:var(--text-xs)] font-bold">{label}</span> : null}

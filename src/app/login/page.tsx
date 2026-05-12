@@ -6,6 +6,7 @@ import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { getAuthenticatedUser } from "@/lib/auth/current-user";
 import { homeForRole } from "@/lib/auth/redirects";
 import { ROUTES } from "@/lib/routes";
+import styles from "./login.module.css";
 
 function safeNextParam(value: string | undefined) {
   if (!value) return null;
@@ -30,18 +31,18 @@ export default async function LoginPage({
   const nextPath = safeNextParam(params.next);
 
   return (
-    <main className="safe-page login-page flex min-h-screen items-center">
+    <main data-page="login" className={`${styles.page} safe-page flex min-h-screen items-center`}>
       <section className="w-full">
-        <div className="login-card rounded-[24px] border p-5 shadow-card">
+        <div className={`${styles.card} rounded-[24px] border p-5 shadow-card`}>
           <div className="k-card-header-row">
-            <div className="login-logo inline-flex h-10 w-10 items-center justify-center rounded-[12px] border">
+            <div className={`${styles.logo} inline-flex h-10 w-10 items-center justify-center rounded-[12px] border`}>
               <HeartHandshake className="h-5 w-5" aria-hidden="true" />
             </div>
             <ThemeToggle variant="card" />
           </div>
 
           <div className="mt-6 border-b border-[var(--login-divider)] pb-5">
-            <p className="login-brand-kicker text-[length:var(--text-xs)] font-extrabold uppercase tracking-[0.18em]">
+            <p className={`${styles.brandKicker} text-[length:var(--text-xs)] font-extrabold uppercase tracking-[0.18em]`}>
               Koinonia
             </p>
             <h1 className="font-serif-display mt-2 max-w-[15ch] text-[length:var(--text-3xl)] font-bold leading-[0.98] tracking-normal text-[color:var(--login-title)] sm:text-[length:var(--text-display)]">
@@ -62,7 +63,7 @@ export default async function LoginPage({
                 type="email"
                 autoComplete="email"
                 required
-                className="login-input min-h-[48px] w-full rounded-[16px] border px-4 text-[length:var(--text-base)] font-medium outline-none transition"
+                className={`${styles.input} min-h-[48px] w-full rounded-[16px] border px-4 text-[length:var(--text-base)] font-medium outline-none transition`}
                 placeholder="nome@igreja.com"
               />
             </label>
@@ -73,7 +74,7 @@ export default async function LoginPage({
 
             <button
               type="submit"
-              className="login-submit mt-1 inline-flex min-h-[48px] w-full items-center justify-center rounded-[16px] px-4 text-[length:var(--text-sm)] font-bold transition"
+              className={`${styles.submit} mt-1 inline-flex min-h-[48px] w-full items-center justify-center rounded-[16px] px-4 text-[length:var(--text-sm)] font-bold transition`}
             >
               Entrar
             </button>

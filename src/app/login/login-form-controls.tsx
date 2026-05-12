@@ -2,6 +2,7 @@
 
 import { Eye, EyeOff } from "lucide-react";
 import { useEffect, useState } from "react";
+import styles from "./login.module.css";
 
 export function LoginErrorMessage({ show }: { show: boolean }) {
   useEffect(() => {
@@ -42,12 +43,12 @@ export function PasswordField() {
           type={isVisible ? "text" : "password"}
           autoComplete="current-password"
           required
-          className="login-input min-h-[48px] w-full rounded-[16px] border px-4 pr-14 text-[length:var(--text-base)] font-medium outline-none transition"
+          className={`${styles.input} min-h-[48px] w-full rounded-[16px] border px-4 pr-14 text-[length:var(--text-base)] font-medium outline-none transition`}
           placeholder="Sua senha"
         />
         <button
           type="button"
-          className="login-password-toggle"
+          className={styles.passwordToggle}
           aria-label={label}
           aria-pressed={isVisible}
           title={label}

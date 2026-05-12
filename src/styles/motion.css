@@ -47,3 +47,7 @@
 .stagger-children > *:nth-child(10) { animation-delay: 360ms; }
 .stagger-children > *:nth-child(11) { animation-delay: 400ms; }
 .stagger-children > *:nth-child(12) { animation-delay: 440ms; }
+
+.content-flow {
+  animation: content-in 180ms ease-out both;
+}

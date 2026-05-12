@@ -3,6 +3,7 @@ import type { OpenEventPicker } from "@/features/events/event-actions-view";
 import { GhostButton } from "@/components/ui/button";
 import { EventDatePickerField } from "@/features/events/components/event-date-picker-field";
 import { EventTimePickerField } from "@/features/events/components/event-time-picker-field";
+import styles from "./event-reschedule-action.module.css";
 
 export function EventRescheduleAction({
   localDate,
@@ -39,7 +40,7 @@ export function EventRescheduleAction({
       <p className="k-item-detail">
         Use quando a célula vai se reunir em outro dia ou horário. O local informado acima será salvo junto.
       </p>
-      <div className="event-reschedule-fields mt-3">
+      <div className={`${styles.fields} mt-3`}>
         <EventDatePickerField
           value={localDate}
           isOpen={openPicker === "date"}

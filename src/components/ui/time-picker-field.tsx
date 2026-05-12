@@ -8,9 +8,11 @@ import {
   CLOCK_TIME_PATTERN,
 } from "@/features/events/time-validation";
 import { cn } from "@/lib/cn";
+import pickerStyles from "./picker.module.css";
+import styles from "./time-picker-field.module.css";
 
 const defaultTimePickerInputClassName =
-  "event-picker-input min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)] focus:border-[var(--color-brand)]";
+  "min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)] focus:border-[var(--color-brand)]";
 
 type TimePickerFieldProps = {
   id: string;
@@ -105,7 +107,7 @@ export function TimePickerField({
         </label>
       ) : null}
 
-      <div className={cn("event-picker-field", fieldClassName)}>
+      <div className={cn(pickerStyles.field, fieldClassName)}>
         <input
           id={id}
           name={name}
@@ -120,11 +122,11 @@ export function TimePickerField({
           disabled={disabled}
           required={required}
           onChange={(event) => updateValue(event.target.value)}
-          className={cn(defaultTimePickerInputClassName, inputClassName)}
+          className={cn(pickerStyles.input, defaultTimePickerInputClassName, inputClassName)}
         />
         <button
           type="button"
-          className="event-picker-trigger"
+          className={pickerStyles.trigger}
           aria-label={ariaLabel}
           aria-expanded={open}
           disabled={disabled}
@@ -133,15 +135,15 @@ export function TimePickerField({
           <Clock3 className="h-4 w-4" aria-hidden="true" />
         </button>
         {open ? (
-          <div className={cn("event-picker-popover event-time-popover", popoverClassName)}>
+          <div className={cn(pickerStyles.popover, styles.popover, popoverClassName)}>
             {resolvedTimeOptions.map((time) => (
               <button
                 key={time}
                 type="button"
                 className={cn(
-                  "event-time-option",
+                  styles.option,
                   optionClassName,
-                  currentValue === time && cn("event-time-option-selected", selectedOptionClassName),
+                  currentValue === time && cn(styles.optionSelected, selectedOptionClassName),
                 )}
                 onClick={() => selectTime(time)}
               >
