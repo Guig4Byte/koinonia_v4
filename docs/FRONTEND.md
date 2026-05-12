@@ -90,19 +90,19 @@ Evite CSS Module para um componente pequeno que fica claro com Tailwind no `clas
 
 Use Tailwind para layout, espaçamento, grid, flex e composição simples.
 
-Use tokens CSS para decisões de design:
-
-```txt
-className="text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]"
-```
+Use tokens CSS para decisões de design. Em JSX real, classes arbitrárias com variável devem declarar o tipo do valor, como `length:` para texto e `color:` para cor, sempre apontando para um token completo.
 
 Regras:
 
-- tamanho de texto deve usar `--text-*`, não `text-xs`, `text-sm` ou `text-[11px]`;
-- cor arbitrária com variável deve declarar o tipo `color:` e usar um token completo, por exemplo `text-[color:var(--color-text-secondary)]`;
+- tamanho de texto deve usar `--text-*`, não classes nativas de tamanho ou valores fixos em pixel;
+- cor arbitrária com variável deve declarar o tipo `color:` e usar um token completo, como `--color-text-secondary`;
 - superfície, borda, sombra e radius devem reutilizar tokens ou primitives existentes;
 - classes condicionais devem usar `cn()`;
 - variantes visuais devem ficar em maps tipados ou em primitives, não como strings soltas espalhadas.
+
+### Documentação e Tailwind
+
+O Tailwind v4 pode detectar classes dentro de Markdown. Em documentação, evite exemplos literais de classes arbitrárias, principalmente com placeholders. Descreva a regra em texto ou use tokens isolados. Nunca escreva exemplos com `...` dentro de uma classe arbitrária.
 
 ## Primitives de UI
 
@@ -113,7 +113,7 @@ Primitives atuais de uso preferencial:
 ```txt
 ActionPanel
 Avatar
-Badge
+Badge (`size="md" | "sm"`)
 Button
 ButtonLink
 Card

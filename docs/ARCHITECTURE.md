@@ -1,6 +1,6 @@
 # Arquitetura — Koinonia Lite
 
-Este documento é a fonte técnica do MVP: organização do código, entidades, autenticação, permissões, rotas e limites de implementação. Para comportamento de produto, use `PRODUCT.md`. Para linguagem de UI, use `GLOSSARY.md`.
+Este documento é a fonte técnica do MVP: organização do código, entidades, autenticação, permissões, rotas e limites de implementação. Para comportamento de produto, use `PRODUCT.md`. Para linguagem de UI, use `GLOSSARY.md`. Para regras visuais de front-end, use `FRONTEND.md`.
 
 ## Âncoras que a arquitetura deve proteger
 

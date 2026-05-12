@@ -4,19 +4,21 @@ Koinonia Lite é um radar pastoral mobile-first para células.
 
 > O Koinonia não registra cuidado por obrigação. Ele ajuda a não esquecer pessoas.
 
-## Fonte de verdade
+## Mapa da documentação
+
+O `README.md` é a porta de entrada do projeto. Ele resume contexto, stack, execução local e rotas principais; não substitui os documentos de decisão abaixo.
 
 Leia os documentos nesta ordem:
 
-1. `docs/AGENT_BRIEFING.md` — entrada rápida para qualquer IA/agente.
-2. `docs/PRODUCT.md` — visão oficial do MVP atual.
-3. `docs/GLOSSARY.md` — vocabulário e rótulos de UI.
-4. `docs/ARCHITECTURE.md` — regras técnicas, autenticação, permissões e onde implementar.
-5. `docs/FRONTEND.md` — organização visual, componentes, CSS e loading states.
+1. `docs/AGENT_BRIEFING.md` — entrada operacional para qualquer IA/agente antes de alterar código.
+2. `docs/PRODUCT.md` — fonte de verdade para comportamento, escopo e fluxos do MVP.
+3. `docs/GLOSSARY.md` — fonte de verdade para vocabulário, rótulos e tons de UI.
+4. `docs/ARCHITECTURE.md` — fonte técnica para entidades, autenticação, permissões, rotas e helpers.
+5. `docs/FRONTEND.md` — fonte visual para componentes, CSS, Tailwind, CSS Modules e loading states.
 6. `docs/Perfil.txt` — norte de experiência mobile/pastoral.
 7. `docs/Koinonia.txt` — visão futura/legada; não governa o MVP atual.
 
-Quando houver conflito, siga a ordem acima. `docs/Koinonia.txt` não autoriza analytics, CRM, SLA, playbooks, mapas, QR Code, gestão avançada de usuários ou acompanhamento formal sem pedido explícito.
+Quando documentos entrarem em conflito, siga a responsabilidade de cada arquivo acima. Quando o código atual divergir dos documentos, preserve o comportamento existente e atualize a documentação na mesma mudança. `docs/Koinonia.txt` não autoriza analytics, CRM, SLA, playbooks, mapas, QR Code, gestão avançada de usuários ou acompanhamento formal sem pedido explícito.
 
 ## MVP atual
 

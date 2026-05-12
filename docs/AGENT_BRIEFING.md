@@ -1,6 +1,8 @@
 # Koinonia — briefing para agentes
 
-Este é o primeiro arquivo para qualquer pessoa ou IA que vá alterar o projeto. Ele resume o que deve ser preservado e aponta onde cada assunto mora.
+Este é o primeiro arquivo para qualquer pessoa ou IA que vá alterar o projeto. Ele é um briefing operacional: resume invariantes que não devem quebrar e aponta onde cada assunto mora.
+
+Ele não substitui os documentos de assunto. Para uma decisão específica, use o documento responsável: produto em `PRODUCT.md`, linguagem em `GLOSSARY.md`, técnica em `ARCHITECTURE.md` e front-end visual em `FRONTEND.md`.
 
 ## Ordem de leitura e autoridade
 
@@ -194,7 +196,7 @@ Para organização visual, CSS, primitives e loading states, consulte `docs/FRON
 - Cuidado/copy/acesso: `src/features/care/care-copy.ts`, `src/features/care/person-care-access.ts`, `src/features/care/care-registration.ts`, `src/features/care/person-status-actions.ts`, `src/features/care/care-validation.ts`.
 - Filtros: `src/lib/filter-param.ts`, `src/features/people/member-filters.ts`, `src/features/groups/cells-page-filters.ts`, `src/features/team/team-filters.ts`.
 - Busca/filtros de estrutura: `src/components/shared/structure-search.tsx`, `src/features/groups/components/cells-structure-search.tsx`, `src/features/team/components/team-structure-search.tsx`.
-- UI primitives: `src/components/ui/button.tsx`, `src/components/ui/card.tsx`, `src/components/ui/field.tsx`, `src/components/ui/feedback.tsx`, `src/components/ui/action-panel.tsx`, `src/components/ui/time-picker-field.tsx`.
+- UI primitives: `src/components/ui`. Consulte `docs/FRONTEND.md` para a lista e as regras de uso.
 - Cards/listas compartilhados: `src/components/shared/base-cards.tsx`, `src/components/shared/progressive-list.tsx`, `src/components/shared/person-cards.tsx`.
 - Cards/listas pastorais específicos: `src/features/pastoral-home/components/pastoral-list-cards.tsx`, `src/features/pastoral-home/components/person-signal-card.tsx`.
 - Queries de dashboard: `src/features/dashboard/queries.ts`.
