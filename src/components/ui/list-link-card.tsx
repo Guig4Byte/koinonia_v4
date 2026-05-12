@@ -70,10 +70,10 @@ export function ListLinkCard({
         </span>
       </span>
       <span className={cn("flex shrink-0 items-center gap-2", trailingClassName)}>
-        {badgeLabel ? <Badge tone={badgeTone} size={badgeSize} className={cn("max-w-[48%]", badgeClassName)}>{badgeLabel}</Badge> : null}
+        {badgeLabel ? <Badge tone={badgeTone} size={badgeSize} className={cn("max-w-[7.25rem]", badgeClassName)}>{badgeLabel}</Badge> : null}
         {trailing}
         {showArrow ? (
-          <span className={cn("text-[length:var(--text-sm)] font-bold text-[color:var(--color-brand)] opacity-60 transition group-active:translate-x-0.5", arrowClassName)} aria-hidden="true">
+          <span className={cn("text-[length:var(--text-sm)] font-bold text-[color:var(--color-brand)] opacity-80 transition group-hover:opacity-100 group-active:translate-x-0.5", arrowClassName)} aria-hidden="true">
             →
           </span>
         ) : null}
