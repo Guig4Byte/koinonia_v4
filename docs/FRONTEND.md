@@ -99,7 +99,7 @@ className="text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]
 Regras:
 
 - tamanho de texto deve usar `--text-*`, não `text-xs`, `text-sm` ou `text-[11px]`;
-- cor arbitrária com variável deve declarar o tipo: `text-[color:var(--color-...)]`;
+- cor arbitrária com variável deve declarar o tipo `color:` e usar um token completo, por exemplo `text-[color:var(--color-text-secondary)]`;
 - superfície, borda, sombra e radius devem reutilizar tokens ou primitives existentes;
 - classes condicionais devem usar `cn()`;
 - variantes visuais devem ficar em maps tipados ou em primitives, não como strings soltas espalhadas.
