@@ -22,6 +22,12 @@ import { ROUTES } from "@/lib/routes";
 import pageStyles from "@/components/shared/consultation-page.module.css";
 import styles from "./events-page-sections.module.css";
 
+const EVENTS_CONSULTATION_SECTION_ID = "eventos-consulta";
+
+function eventsConsultationSectionHref(mode: EventConsultationMode, period: EventPeriod) {
+  return `${ROUTES.eventsConsultation(mode, period)}#${EVENTS_CONSULTATION_SECTION_ID}`;
+}
+
 export function EventCard({ event, user, now }: { event: EventListEvent; user: PermissionUser; now: Date }) {
   const state = buildEventListCardState(event, user, now);
   const { metrics } = state;
@@ -63,8 +69,8 @@ export function EventCard({ event, user, now }: { event: EventListEvent; user: P
         variant={state.canRegisterPresence ? "primaryFlat" : "secondary"}
         size="sm"
         className={cn(
-          "mt-2 min-h-8 rounded-full px-3.5 py-0 text-[length:var(--text-sm)] font-extrabold",
-          state.recordedPresence && "mt-1.5 min-h-7",
+          "mt-3 min-h-9 rounded-full px-4 py-0 text-[length:var(--text-sm)] font-extrabold",
+          state.recordedPresence && "mt-2 min-h-8",
         )}
       >
         {state.actionLabel} <span aria-hidden="true">→</span>
@@ -95,12 +101,12 @@ export function EventConsultationCards() {
   return (
     <div className="space-y-3">
       <ConsultationCard
-        href={ROUTES.eventsConsultation("sem-presenca", "semana")}
+        href={eventsConsultationSectionHref("sem-presenca", "semana")}
         title="Sem presença registrada"
         description="Alguns encontros podem já ter acontecido, mas ainda não têm presença marcada."
       />
       <ConsultationCard
-        href={ROUTES.eventsConsultation("historico", "semana")}
+        href={eventsConsultationSectionHref("historico", "semana")}
         title="Histórico de presença"
         description="Consulte encontros já registrados por período."
       />
@@ -118,7 +124,7 @@ function PeriodChips({ mode, activePeriod }: { mode: EventConsultationMode; acti
         return (
           <FilterChip
             key={period}
-            href={ROUTES.eventsConsultation(mode, period)}
+            href={eventsConsultationSectionHref(mode, period)}
             active={active}
             variant="period"
           >
@@ -150,9 +156,11 @@ export function EventsConsultationView({
       <BackLink href={ROUTES.events}>Encontros</BackLink>
       <h2 className={pageStyles.title}>{view.title}</h2>
       <p className={cn(pageStyles.description, pageStyles.eventsIntro)}>{view.description}</p>
-      <PeriodChips mode={mode} activePeriod={period} />
-      <SectionTitle>{view.periodLabel}</SectionTitle>
-      {view.filteredEvents.length > 0 ? <EventList events={view.filteredEvents} user={user} now={now} /> : <EmptyState>{view.emptyMessage}</EmptyState>}
+      <section id={EVENTS_CONSULTATION_SECTION_ID} className="scroll-mt-6">
+        <PeriodChips mode={mode} activePeriod={period} />
+        <SectionTitle>{view.periodLabel}</SectionTitle>
+        {view.filteredEvents.length > 0 ? <EventList events={view.filteredEvents} user={user} now={now} /> : <EmptyState>{view.emptyMessage}</EmptyState>}
+      </section>
     </>
   );
 }
