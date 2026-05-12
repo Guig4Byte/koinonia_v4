@@ -39,15 +39,17 @@ export function ContextSummary({
   trendLayout = "inline",
   variant = "default",
   surface = "card",
+  className,
 }: {
   items: Array<{ label: string; value: string; detail?: string; tone?: "ok" | "warn" | "risk" | "neutral"; trend?: PresenceTrend | null }>;
   detailTone?: "default" | "strong";
   trendLayout?: "inline" | "stacked";
   variant?: "default" | "compact" | "prominent" | "balanced";
   surface?: "card" | "inset";
+  className?: string;
 }) {
   return (
-    <SummaryCard variant={variant} surface={surface}>
+    <SummaryCard variant={variant} surface={surface} className={className}>
       {items.map((item) => (
         <MetricRow
           key={item.label}

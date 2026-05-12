@@ -91,14 +91,13 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
           />
         </div>
 
-        <div className={styles.summary}>
-          <ContextSummary
-            variant="balanced"
-            detailTone="strong"
-            trendLayout="stacked"
-            items={summaryItems}
-          />
-        </div>
+        <ContextSummary
+          variant="balanced"
+          detailTone="strong"
+          trendLayout="stacked"
+          className="mb-0"
+          items={summaryItems}
+        />
 
         {pendingEvent ? (
           <GroupPendingEventCard

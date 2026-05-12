@@ -1,4 +1,5 @@
-import { PersonMiniCard, PersonSignalCard } from "@/components/shared/person-cards";
+import { PersonMiniCard } from "@/components/shared/person-cards";
+import { PersonSignalCard } from "@/features/pastoral-home/components/person-signal-card";
 import { PastoralListSection } from "@/features/pastoral-home/components/pastoral-section";
 import { groupNameOrFallback } from "@/features/groups/group-display";
 import { signalBadgeForViewer, signalDescriptionForViewer } from "@/features/signals/display";
