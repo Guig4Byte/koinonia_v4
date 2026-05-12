@@ -1,5 +1,5 @@
 import { BRASILIA_UTC_OFFSET_HOURS, BRASILIA_UTC_OFFSET_MS, padZero } from "@/lib/brasilia-time";
-import { parseClockTime } from "./time-validation";
+import { parseClockTime } from "@/lib/clock-time";
 
 export type DateParts = { year: number; month: number; day: number };
 export type CalendarMonth = { year: number; monthIndex: number };

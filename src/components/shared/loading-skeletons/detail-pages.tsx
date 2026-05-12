@@ -1,5 +1,5 @@
 import { Skeleton, SkeletonCard, SkeletonList, SkeletonSection, SkeletonText } from "@/components/ui/skeleton";
-import groupStyles from "@/features/groups/components/group-detail.module.css";
+import styles from "./loading-skeletons.module.css";
 import {
   BackLinkSkeleton,
   EventCardSkeleton,
@@ -167,7 +167,7 @@ export function PersonDetailPageSkeleton() {
 export function GroupDetailPageSkeleton() {
   return (
     <AppLoadingShell>
-      <div className={groupStyles.page}>
+      <div className={styles.groupPage}>
         <BackLinkSkeleton />
 
         <div className="mb-4 flex justify-end">
@@ -185,7 +185,7 @@ export function GroupDetailPageSkeleton() {
           </SkeletonCard>
         </div>
 
-        <div className={groupStyles.summary}>
+        <div className={styles.groupSummary}>
           <SummarySkeleton />
         </div>
 

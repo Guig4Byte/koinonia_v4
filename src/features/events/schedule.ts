@@ -4,7 +4,7 @@ import { DAYS_PER_WEEK, isValidWeekday } from "@/features/groups/weekdays";
 import { getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { addBrasiliaDays, dateFromBrasiliaParts, getBrasiliaDateParts, startOfBrasiliaDay } from "@/lib/brasilia-time";
 import { prisma } from "@/lib/prisma";
-import { parseClockTime } from "./time-validation";
+import { parseClockTime } from "@/lib/clock-time";
 
 export const DEFAULT_CELL_MEETING_GENERATION_WEEKS = 12;
 

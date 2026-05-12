@@ -1,4 +1,4 @@
-import { parseClockTime } from "@/features/events/time-validation";
+import { parseClockTime } from "@/lib/clock-time";
 import { isValidWeekday, WEEKDAY_OPTIONS } from "@/features/groups/weekdays";
 
 export { WEEKDAY_OPTIONS };

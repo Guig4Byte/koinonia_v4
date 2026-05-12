@@ -6,7 +6,7 @@ import {
   CLOCK_TIME_FORMAT_HINT,
   CLOCK_TIME_INPUT_MAX_LENGTH,
   CLOCK_TIME_PATTERN,
-} from "@/features/events/time-validation";
+} from "@/lib/clock-time";
 import { cn } from "@/lib/cn";
 import pickerStyles from "./picker.module.css";
 import styles from "./time-picker-field.module.css";

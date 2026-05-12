@@ -1,7 +1,7 @@
 import { SkeletonCard, SkeletonList, SkeletonSection, SkeletonText } from "@/components/ui/skeleton";
 import { cn } from "@/lib/cn";
 import pageStyles from "@/components/shared/consultation-page.module.css";
-import cellsStyles from "@/features/groups/components/cells-page-sections.module.css";
+import styles from "./loading-skeletons.module.css";
 import {
   ConsultationCardsSkeleton,
   EventCardSkeleton,
@@ -57,9 +57,9 @@ export function CellsPageSkeleton() {
           <div className="mt-3">
             <FilterChipsSkeleton count={5} />
           </div>
-          <div className={cn(cellsStyles.sections, "mt-6")}>
-            <div className={cellsStyles.section}>
-              <div className={cellsStyles.heading}>
+          <div className={cn(styles.cellsSections, "mt-6")}>
+            <div className={styles.cellsSection}>
+              <div className={styles.cellsHeading}>
                 <SkeletonText className="h-3 w-36" />
               </div>
               <SkeletonList count={3}>{() => <GroupCardSkeleton />}</SkeletonList>

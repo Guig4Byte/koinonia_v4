@@ -1,9 +1,6 @@
 import { Skeleton, SkeletonCard, SkeletonText } from "@/components/ui/skeleton";
 import { cn } from "@/lib/cn";
-import memberStyles from "@/features/people/components/member-priority-list.module.css";
-import eventStyles from "@/features/events/components/events-page-sections.module.css";
-import teamStyles from "@/features/team/components/team-structure-cards.module.css";
-import groupStyles from "@/features/groups/components/group-detail.module.css";
+import styles from "./loading-skeletons.module.css";
 
 export function PageIntroSkeleton({ action = false }: { action?: boolean }) {
   return (
@@ -29,7 +26,7 @@ export function SearchSkeleton() {
 
 export function FilterChipsSkeleton({ count = 4 }: { count?: number }) {
   return (
-    <div className={cn(memberStyles.filterRow, "mb-3")} aria-hidden="true">
+    <div className={cn(styles.filterRow, "mb-3")} aria-hidden="true">
       {Array.from({ length: count }).map((_, index) => (
         <Skeleton key={index} className={cn("h-8 rounded-full", index === 0 ? "w-16" : "w-24")} />
       ))}
@@ -91,7 +88,7 @@ export function GroupCardSkeleton() {
 
 export function EventCardSkeleton({ action = "pill" }: { action?: "full" | "pill" }) {
   return (
-    <SkeletonCard className={cn(eventStyles.card, "p-4")}>
+    <SkeletonCard className={cn(styles.eventCard, "p-4")}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <SkeletonText className="h-4 w-40" />
@@ -99,7 +96,7 @@ export function EventCardSkeleton({ action = "pill" }: { action?: "full" | "pill
         </div>
         <Skeleton className="h-6 w-20 shrink-0 rounded-full" />
       </div>
-      <div className={eventStyles.stats}>
+      <div className={styles.eventStats}>
         <SkeletonText className="h-8 rounded-xl" />
         <SkeletonText className="h-8 rounded-xl" />
         <SkeletonText className="h-8 rounded-xl" />
@@ -111,7 +108,7 @@ export function EventCardSkeleton({ action = "pill" }: { action?: "full" | "pill
 
 export function TeamSupervisorSkeleton() {
   return (
-    <SkeletonCard className={cn(teamStyles.supervisorCard, "p-3")}>
+    <SkeletonCard className={cn(styles.supervisorCard, "p-3")}>
       <div className="flex items-start gap-2.5">
         <Skeleton className="h-9 w-9 shrink-0" />
         <div className="min-w-0 flex-1">
@@ -154,7 +151,7 @@ export function BackLinkSkeleton() {
 
 export function GroupDetailHeroSkeleton() {
   return (
-    <SkeletonCard className={cn(groupStyles.hero, "p-5")}>
+    <SkeletonCard className={cn(styles.groupHero, "p-5")}>
       <SkeletonText className="h-3 w-16" />
       <SkeletonText className="mt-3 h-8 w-44 rounded-2xl" />
       <SkeletonText className="mt-3 h-3.5 w-full max-w-72" />
