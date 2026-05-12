@@ -13,3 +13,19 @@
   font-size: var(--text-sm);
   line-height: 1.45;
 }
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.section + .section {
+  margin-top: 1.25rem;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}

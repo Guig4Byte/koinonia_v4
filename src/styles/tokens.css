@@ -90,8 +90,8 @@ html[data-theme="light"] {
 
   /* Texto */
   --color-text-primary: #1c1008;
-  --color-text-secondary: #725f4d;
-  --color-text-muted: #6f5b49;
+  --color-text-secondary: #67513f;
+  --color-text-muted: #604c3b;
   --color-text-on-header: #f0e0c0;
   --color-text-on-banner: #f0d8a8;
 
@@ -117,7 +117,7 @@ html[data-theme="light"] {
   /* Tab bar */
   --color-tab-inactive: #e8e0d6;
   --color-tab-label-active: #2c1a0a;
-  --color-tab-label-inactive: #6f5b49;
+  --color-tab-label-inactive: #604c3b;
 
   /* Métricas */
   --color-metric-presenca: #2e6b2e;
@@ -146,8 +146,8 @@ html[data-theme="light"] {
   --color-border-divider: #e8dccd;
   --color-border-tab: rgba(60, 30, 10, 0.12);
   --color-shadow-card: 0 10px 26px rgba(60, 30, 10, 0.07), 0 1px 2px rgba(60, 30, 10, 0.05);
-  --color-shadow-nav: 0 12px 30px rgba(60, 30, 10, 0.12), 0 1px 2px rgba(60, 30, 10, 0.05);
-  --color-shadow-nav-active: 0 2px 10px rgba(60, 30, 10, 0.10);
+  --color-shadow-nav: 0 10px 24px rgba(60, 30, 10, 0.10), 0 1px 2px rgba(60, 30, 10, 0.04);
+  --color-shadow-nav-active: none;
   --color-shadow-header: 0 18px 48px rgba(44, 26, 10, 0.12);
 
   /* Avatar */
@@ -201,8 +201,8 @@ html[data-theme="parchment"] {
   --color-shadow-metric-card: 0 1px 2px rgba(92, 54, 13, 0.08);
 
   --color-text-primary: #3a2008;
-  --color-text-secondary: #563716;
-  --color-text-muted: #5e3d18;
+  --color-text-secondary: #4f3214;
+  --color-text-muted: #4f3214;
   --color-text-on-header: #fdf0d0;
   --color-text-on-banner: #f5dfa0;
 
@@ -224,7 +224,7 @@ html[data-theme="parchment"] {
 
   --color-tab-inactive: rgba(0, 0, 0, 0.12);
   --color-tab-label-active: #3a2008;
-  --color-tab-label-inactive: #5e3d18;
+  --color-tab-label-inactive: #4f3214;
 
   --color-metric-presenca: #2a5c2a;
   --color-metric-atencoes: #8a2a10;
@@ -250,8 +250,8 @@ html[data-theme="parchment"] {
   --color-border-divider: rgba(92, 54, 13, 0.26);
   --color-border-tab: rgba(92, 54, 13, 0.18);
   --color-shadow-card: 0 10px 24px rgba(74, 39, 9, 0.10), 0 1px 2px rgba(74, 39, 9, 0.06);
-  --color-shadow-nav: 0 12px 30px rgba(74, 39, 9, 0.14), 0 1px 2px rgba(74, 39, 9, 0.07);
-  --color-shadow-nav-active: 0 2px 10px rgba(74, 39, 9, 0.10);
+  --color-shadow-nav: 0 10px 24px rgba(74, 39, 9, 0.12), 0 1px 2px rgba(74, 39, 9, 0.06);
+  --color-shadow-nav-active: none;
   --color-shadow-header: 0 14px 34px rgba(74, 39, 9, 0.12);
 
   --color-avatar-bg: #6b4010;
@@ -264,7 +264,7 @@ html[data-theme="parchment"] {
   --login-card-bg: #eadabb;
   --login-card-border: #c4a474;
   --login-title: #3b1d0c;
-  --login-text: #6b4a2b;
+  --login-text: #5a3515;
   --login-muted: #5a3515;
   --login-brand-kicker: #663d14;
   --login-logo-bg: #d8c09b;

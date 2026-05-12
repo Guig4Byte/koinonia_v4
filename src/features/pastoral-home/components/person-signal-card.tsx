@@ -55,8 +55,8 @@ export function PersonSignalCard(props: {
           </div>
           {reason ? <p className="mt-2 whitespace-pre-line border-t border-[var(--color-border-divider)] pt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-primary)]">{reason}</p> : null}
           {cardHref ? (
-            <p className="mt-2 text-[length:var(--text-sm)] font-semibold text-[color:var(--color-brand)]">
-              {ctaLabel} <span className="inline-block transition group-active:translate-x-0.5">→</span>
+            <p className="mt-2 inline-flex min-h-9 items-center rounded-full pr-1 text-[length:var(--text-sm)] font-bold text-[color:var(--color-brand)]">
+              {ctaLabel} <span className="ml-1 inline-block transition group-active:translate-x-0.5">→</span>
             </p>
           ) : null}
         </div>

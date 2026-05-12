@@ -81,9 +81,9 @@
   --priority-soft: transparent;
   position: relative;
   overflow: hidden;
-  border-color: color-mix(in srgb, var(--priority-accent) 34%, var(--color-border-card));
+  border-color: color-mix(in srgb, var(--priority-accent) 26%, var(--color-border-card));
   background:
-    linear-gradient(90deg, var(--priority-soft), transparent 68%),
+    linear-gradient(90deg, var(--priority-soft), transparent 72%),
     var(--color-bg-card);
 }
 
@@ -92,45 +92,45 @@
   position: absolute;
   inset-block: 0;
   inset-inline-start: 0;
-  width: 4px;
+  width: 3px;
   background: var(--priority-accent);
-  opacity: 0.92;
+  opacity: 0.78;
 }
 
 .priority-card-risk {
   --priority-accent: var(--color-metric-atencoes);
-  --priority-soft: color-mix(in srgb, var(--color-badge-risco-bg) 64%, transparent);
+  --priority-soft: color-mix(in srgb, var(--color-badge-risco-bg) 44%, transparent);
   box-shadow:
-    0 14px 34px color-mix(in srgb, var(--color-metric-atencoes) 16%, transparent),
+    0 10px 24px color-mix(in srgb, var(--color-metric-atencoes) 10%, transparent),
     var(--color-shadow-card);
 }
 
 .priority-card-warn {
   --priority-accent: var(--color-badge-atencao-text);
-  --priority-soft: color-mix(in srgb, var(--color-badge-atencao-bg) 58%, transparent);
+  --priority-soft: color-mix(in srgb, var(--color-badge-atencao-bg) 40%, transparent);
   box-shadow:
-    0 12px 28px color-mix(in srgb, var(--color-badge-atencao-text) 12%, transparent),
+    0 10px 22px color-mix(in srgb, var(--color-badge-atencao-text) 8%, transparent),
     var(--color-shadow-card);
 }
 
 .priority-card-support {
   --priority-accent: var(--color-badge-apoio-text);
-  --priority-soft: color-mix(in srgb, var(--color-badge-apoio-bg) 58%, transparent);
+  --priority-soft: color-mix(in srgb, var(--color-badge-apoio-bg) 40%, transparent);
   box-shadow:
-    0 12px 28px color-mix(in srgb, var(--color-badge-apoio-text) 12%, transparent),
+    0 10px 22px color-mix(in srgb, var(--color-badge-apoio-text) 8%, transparent),
     var(--color-shadow-card);
 }
 
 .priority-card-care {
   --priority-accent: var(--color-badge-cuidado-text);
-  --priority-soft: color-mix(in srgb, var(--color-badge-cuidado-bg) 45%, transparent);
+  --priority-soft: color-mix(in srgb, var(--color-badge-cuidado-bg) 34%, transparent);
 }
 
 .priority-card-stable {
   --priority-accent: var(--color-metric-presenca);
-  --priority-soft: color-mix(in srgb, var(--color-metric-presenca) 13%, transparent);
+  --priority-soft: color-mix(in srgb, var(--color-metric-presenca) 10%, transparent);
   box-shadow:
-    0 12px 28px color-mix(in srgb, var(--color-metric-presenca) 8%, transparent),
+    0 10px 22px color-mix(in srgb, var(--color-metric-presenca) 6%, transparent),
     var(--color-shadow-card);
 }
 
@@ -150,12 +150,12 @@
 .card-hover-lift:hover {
   transform: translateY(-1px);
   box-shadow:
-    0 16px 36px rgba(60, 30, 10, 0.10),
-    0 2px 4px rgba(60, 30, 10, 0.04);
+    0 12px 28px rgba(60, 30, 10, 0.08),
+    0 1px 3px rgba(60, 30, 10, 0.04);
 }
 
 html[data-theme="dark"] .card-hover-lift:hover {
   box-shadow:
-    0 16px 36px rgba(0, 0, 0, 0.28),
-    0 2px 4px rgba(0, 0, 0, 0.12);
+    0 12px 28px rgba(0, 0, 0, 0.24),
+    0 1px 3px rgba(0, 0, 0, 0.12);
 }

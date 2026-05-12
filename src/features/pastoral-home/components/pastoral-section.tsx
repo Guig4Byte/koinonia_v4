@@ -31,9 +31,9 @@ export function PastoralListSection({
   const hasHiddenChildren = Children.count(hiddenChildren) > 0;
 
   return (
-    <section className="space-y-3">
+    <section className={styles.section}>
       <PastoralSectionTitle detail={detail}>{title}</PastoralSectionTitle>
-      <div className="stagger-children space-y-2.5">
+      <div className={`stagger-children ${styles.cards}`}>
         {children}
       </div>
       {hasHiddenChildren ? (
@@ -49,7 +49,7 @@ export function PastoralListSection({
             <span className="group-open:hidden">{moreLabel}</span>
             <span className="hidden group-open:inline">Mostrar menos</span>
           </summary>
-          <div className="stagger-children mt-3 space-y-2.5">{hiddenChildren}</div>
+          <div className={`stagger-children mt-3 ${styles.cards}`}>{hiddenChildren}</div>
         </details>
       ) : null}
       {!hasChildren && emptyMessage ? <EmptyState>{emptyMessage}</EmptyState> : null}

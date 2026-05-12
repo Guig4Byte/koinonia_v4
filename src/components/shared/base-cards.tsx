@@ -40,12 +40,12 @@ export function PulseCard({
 
   return (
     <section
-      className={cn("relative mb-4 overflow-hidden rounded-[1.35rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-5 shadow-card", className)}
+      className={cn("relative mb-4 overflow-hidden rounded-[1.25rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card", className)}
       style={toneStyles.surfaceStyle}
     >
       <div className={cn("absolute inset-x-0 top-0 h-[3px]", toneStyles.accentClass)} />
-      <p className="text-[length:var(--text-xl)] font-semibold leading-snug tracking-[-0.02em] text-[color:var(--color-text-primary)] text-balance">{title}</p>
-      {subtitle ? <p className="mt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{subtitle}</p> : null}
+      <p className="text-[length:var(--text-lg)] font-semibold leading-snug tracking-[-0.02em] text-[color:var(--color-text-primary)] text-balance">{title}</p>
+      {subtitle ? <p className="mt-1.5 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{subtitle}</p> : null}
     </section>
   );
 }

@@ -45,7 +45,7 @@ export function BottomNav({ items }: { items: NavItem[] }) {
       }}
     >
       <div
-        className="grid h-[var(--bottom-nav-height)] gap-1 rounded-[1.35rem] border border-[var(--color-border-tab)] bg-[var(--color-bg-tab)] p-1 shadow-[var(--color-shadow-nav)] backdrop-blur-xl"
+        className="grid h-[var(--bottom-nav-height)] gap-0.5 rounded-[1.35rem] border border-[var(--color-border-tab)] bg-[var(--color-bg-tab)] p-1 shadow-[var(--color-shadow-nav)] backdrop-blur-xl"
         style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
       >
         {items.map((item) => {
@@ -63,7 +63,7 @@ export function BottomNav({ items }: { items: NavItem[] }) {
               className={cn(
                 "relative flex min-h-12 flex-col items-center justify-center rounded-[1rem] px-2 py-1 text-[length:var(--text-xs)] font-semibold transition active:scale-[0.98]",
                 item.active
-                  ? "bg-[var(--color-bg-tab-active)] text-[color:var(--color-tab-label-active)] shadow-[var(--color-shadow-nav-active)] ring-1 ring-[var(--color-border-tab)]"
+                  ? "bg-[var(--color-bg-tab-active)] text-[color:var(--color-tab-label-active)] shadow-[var(--color-shadow-nav-active)]"
                   : "text-[color:var(--color-tab-label-inactive)] hover:bg-[var(--surface-alt)]",
               )}
             >
@@ -72,7 +72,7 @@ export function BottomNav({ items }: { items: NavItem[] }) {
                   <span
                     className={cn(
                       "absolute rounded-full ring-2 ring-[var(--color-bg-tab)]",
-                      item.active ? "-right-2 -top-1 h-2 w-2" : "-right-1.5 -top-0.5 h-1.5 w-1.5",
+                      "-right-1.5 -top-0.5 h-1.5 w-1.5",
                       indicatorClassName,
                     )}
                     aria-hidden="true"
