@@ -13,20 +13,37 @@ export function PulseCard({
   title,
   subtitle,
   tone = "calm",
+  className,
 }: {
   title: string;
   subtitle?: string;
   tone?: "calm" | "attention" | "ok";
+  className?: string;
 }) {
-  const accentClass = {
-    calm: "bg-[var(--color-brand-accent)]",
-    attention: "bg-[var(--color-metric-atencoes)]",
-    ok: "bg-[var(--color-metric-presenca)]",
+  const toneStyles = {
+    calm: {
+      accentClass: "bg-[var(--color-brand-accent)]",
+      surfaceStyle: undefined,
+    },
+    attention: {
+      accentClass: "bg-[var(--color-metric-atencoes)]",
+      surfaceStyle: {
+        borderColor: "color-mix(in srgb, var(--color-metric-atencoes) 22%, var(--color-border-card) 78%)",
+        background: "color-mix(in srgb, var(--color-bg-card) 94%, var(--color-metric-atencoes) 6%)",
+      },
+    },
+    ok: {
+      accentClass: "bg-[var(--color-metric-presenca)]",
+      surfaceStyle: undefined,
+    },
   }[tone];
 
   return (
-    <section className="relative mb-4 overflow-hidden rounded-[1.35rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-5 shadow-card">
-      <div className={cn("absolute inset-x-0 top-0 h-1", accentClass)} />
+    <section
+      className={cn("relative mb-4 overflow-hidden rounded-[1.35rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-5 shadow-card", className)}
+      style={toneStyles.surfaceStyle}
+    >
+      <div className={cn("absolute inset-x-0 top-0 h-[3px]", toneStyles.accentClass)} />
       <p className="text-[length:var(--text-xl)] font-semibold leading-snug tracking-[-0.02em] text-[color:var(--color-text-primary)] text-balance">{title}</p>
       {subtitle ? <p className="mt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{subtitle}</p> : null}
     </section>
