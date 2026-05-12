@@ -22,7 +22,7 @@ export function LeaderCurrentEventCard({ event }: { event: LeaderCurrentEvent })
             </p>
           ) : null}
         </div>
-        <Badge tone={state.badgeTone}>{state.badgeLabel}</Badge>
+        <Badge tone={state.badgeTone} className="max-w-[48%]">{state.badgeLabel}</Badge>
       </div>
       <p className="mt-3 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">
         {state.description}

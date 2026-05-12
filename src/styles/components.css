@@ -202,7 +202,7 @@
 
 .event-calendar-day,
 .event-calendar-empty {
-  min-height: 32px;
+  min-height: 40px;
   border-radius: 12px;
 }
 
@@ -238,7 +238,7 @@
 }
 
 .event-time-option {
-  min-height: 36px;
+  min-height: 44px;
   border: 1px solid var(--color-border-divider);
   border-radius: 13px;
   background: var(--surface-alt);
@@ -267,7 +267,7 @@
   color: var(--color-btn-primary-text);
 }
 
-@media (max-width: 360px) {
+@media (max-width: 430px) {
   .event-reschedule-fields {
     grid-template-columns: 1fr;
   }
@@ -479,7 +479,7 @@
   width: min(236px, calc(100vw - 48px));
 }
 
-@media (max-width: 380px) {
+@media (max-width: 430px) {
   .group-schedule-fields {
     grid-template-columns: 1fr;
   }
@@ -568,7 +568,7 @@
 
 .team-search-submit {
   display: inline-flex;
-  min-height: 30px;
+  min-height: 40px;
   align-items: center;
   justify-content: center;
   border: 0;
@@ -605,7 +605,7 @@
 
 .team-filter-chip {
   display: inline-flex;
-  min-height: 32px;
+  min-height: 40px;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
@@ -755,7 +755,7 @@
 
 .team-inline-action {
   display: inline-flex;
-  min-height: 34px;
+  min-height: 40px;
   cursor: pointer;
   list-style: none;
   align-items: center;
@@ -843,7 +843,7 @@
 }
 
 .team-page > section.space-y-3 > details.group > summary {
-  min-height: 34px;
+  min-height: 40px;
   justify-content: flex-start;
   border: 0;
   background: transparent;
@@ -879,7 +879,7 @@
 
 .group-detail-hero-chip {
   display: inline-flex;
-  min-height: 34px;
+  min-height: 40px;
   align-items: center;
   border-radius: var(--radius-pill);
   background: var(--metric-card-bg);
@@ -1046,7 +1046,7 @@
 
 .group-pending-event-action {
   display: inline-flex;
-  min-height: 32px;
+  min-height: 40px;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
@@ -1076,7 +1076,7 @@
   }
 
   .group-pending-event-action {
-    min-height: 30px;
+    min-height: 40px;
   }
 }
 
@@ -1162,4 +1162,3 @@
   font-size: var(--text-xs);
   line-height: 1.2;
 }
-

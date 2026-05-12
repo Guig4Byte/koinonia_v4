@@ -40,6 +40,7 @@ export function appNavForRole(
   const role = typeof userOrRole === "string" ? userOrRole : userOrRole.role;
   const active = options.active ?? "none";
   const secondaryNav = secondaryNavForRole(role);
+  const indicatorTarget = active === "none" ? "home" : active;
 
   return [
     {
@@ -47,19 +48,19 @@ export function appNavForRole(
       label: "Visão",
       icon: "home",
       active: active === "home",
-      indicator: active === "home" ? options.indicator : undefined,
+      indicator: indicatorTarget === "home" ? options.indicator : undefined,
     },
     {
       ...secondaryNav,
       active: active === "secondary",
-      indicator: active === "secondary" ? options.indicator : undefined,
+      indicator: indicatorTarget === "secondary" ? options.indicator : undefined,
     },
     {
       href: ROUTES.events,
       label: "Encontros",
       icon: "calendar",
       active: active === "events",
-      indicator: active === "events" ? options.indicator : undefined,
+      indicator: indicatorTarget === "events" ? options.indicator : undefined,
     },
   ];
 }

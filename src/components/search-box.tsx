@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useId, useState, type KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { Badge, isBadgeTone, type BadgeTone } from "@/components/ui/badge";
 import { SEARCH_MIN_QUERY_LENGTH, shouldSearchPeople, normalizeSearchQuery } from "@/features/search/search-view";
 import { isRecord, readJsonResponse } from "@/lib/json";
@@ -59,7 +59,7 @@ function getSearchMessage({
 }) {
   const normalizedQuery = normalizeSearchQuery(query);
 
-  if (normalizedQuery.length === 0) return "Digite para buscar uma pessoa.";
+  if (normalizedQuery.length === 0) return "Busque por nome ou sobrenome.";
   if (!shouldSearchPeople(normalizedQuery)) return `Digite pelo menos ${SEARCH_MIN_QUERY_LENGTH} letras.`;
   if (status === "loading") return "Buscando pessoas...";
   if (status === "error") return "Não foi possível buscar agora. Tente novamente.";
@@ -112,6 +112,12 @@ export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: 
     };
   }, [canSearch, normalizedQuery]);
 
+  function clearSearch() {
+    setQuery("");
+    setResults([]);
+    setStatus("idle");
+    setActiveIndex(NO_ACTIVE_OPTION);
+  }
 
   function handleQueryChange(value: string) {
     const nextNormalizedQuery = normalizeSearchQuery(value);
@@ -160,17 +166,14 @@ export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: 
 
     if (event.key === "Escape") {
       event.preventDefault();
-      setQuery("");
-      setResults([]);
-      setStatus("idle");
-      setActiveIndex(NO_ACTIVE_OPTION);
+      clearSearch();
     }
   }
 
   return (
     <div id="buscar" className="relative mb-4">
-      <div className="flex min-h-12 items-center gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-4 shadow-card">
-        <Search className="h-4 w-4 text-[color:var(--color-text-secondary)]" />
+      <div className="flex min-h-12 items-center gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-4 shadow-card focus-within:border-[var(--color-brand)] focus-within:ring-2 focus-within:ring-[var(--color-brand-accent)]">
+        <Search className="h-4 w-4 shrink-0 text-[color:var(--color-text-secondary)]" />
         <input
           id="search-input"
           value={query}
@@ -184,20 +187,33 @@ export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: 
           aria-describedby={statusId}
           aria-expanded={showPanel}
           aria-activedescendant={activeOptionId}
-          className="w-full bg-transparent text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)]"
+          className="w-full min-w-0 bg-transparent text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)]"
         />
+        {query ? (
+          <button
+            type="button"
+            aria-label="Limpar busca"
+            onClick={clearSearch}
+            className="-mr-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[color:var(--color-text-secondary)] transition hover:bg-[var(--surface-alt)] active:scale-[0.96]"
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
+        ) : null}
       </div>
 
-      <p id={statusId} aria-live="polite" className="sr-only">
-        {searchMessage}
-      </p>
+      {!showPanel ? (
+        <p className="mt-2 px-1 text-[length:var(--text-xs)] leading-relaxed text-[color:var(--color-text-secondary)]">
+          {searchMessage}
+        </p>
+      ) : null}
 
       {showPanel ? (
         <div
           id={listboxId}
           role="listbox"
           aria-label="Resultados da busca de pessoas"
-          className="absolute left-0 right-0 top-14 z-30 overflow-hidden rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] shadow-card"
+          className="absolute left-0 right-0 top-14 z-30 overflow-y-auto rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] shadow-card"
+          style={{ maxHeight: "min(48svh, 22rem)" }}
         >
           {status === "loading" ? (
             <div className="px-4 py-3 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">Buscando pessoas...</div>
@@ -225,17 +241,17 @@ export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: 
                     role="option"
                     aria-selected={isActive}
                     className={cn(
-                      "block border-b border-[var(--color-border-divider)] px-4 py-3 outline-none last:border-0 focus:bg-[var(--color-btn-secondary-bg)]",
-                      isActive && "bg-[var(--color-btn-secondary-bg)]",
+                      "block border-b border-[var(--color-border-divider)] px-4 py-3 outline-none last:border-0 focus:bg-[var(--surface-alt)]",
+                      isActive && "bg-[var(--surface-alt)]",
                     )}
                     onMouseEnter={() => setActiveIndex(index)}
                   >
                     <div className="k-card-header-row">
                       <span className="min-w-0">
-                        <span className="k-item-title-sm block">{person.fullName}</span>
-                        <span className="mt-0.5 block text-[length:var(--text-xs)] text-[color:var(--color-text-secondary)]">{person.context}</span>
+                        <span className="k-item-title-sm block truncate">{person.fullName}</span>
+                        <span className="mt-0.5 block truncate text-[length:var(--text-xs)] text-[color:var(--color-text-secondary)]">{person.context}</span>
                       </span>
-                      <Badge tone={person.statusTone ?? "neutral"} className="shrink-0">
+                      <Badge tone={person.statusTone ?? "neutral"} className="max-w-[48%] truncate">
                         {person.status}
                       </Badge>
                     </div>

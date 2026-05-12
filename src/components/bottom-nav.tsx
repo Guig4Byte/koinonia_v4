@@ -10,10 +10,7 @@ export type NavItem = {
   label: string;
   icon: NavIcon;
   active?: boolean;
-  /**
-   * Legacy flag kept for existing callers. The indicator is only rendered
-   * for the active tab so it never looks like another area is also selected.
-   */
+  /** Legacy flag kept for existing callers. */
   attention?: boolean;
   indicator?: NavIndicatorTone;
 };
@@ -31,6 +28,12 @@ const indicatorClass: Record<NavIndicatorTone, string> = {
   care: "bg-[var(--color-badge-cuidado-border)]",
 };
 
+const indicatorLabel: Record<NavIndicatorTone, string> = {
+  risk: "há algo urgente",
+  attention: "há algo que pede atenção",
+  care: "há cuidado em andamento",
+};
+
 export function BottomNav({ items }: { items: NavItem[] }) {
   return (
     <nav
@@ -42,29 +45,38 @@ export function BottomNav({ items }: { items: NavItem[] }) {
       }}
     >
       <div
-        className="grid h-[var(--bottom-nav-height)] gap-1 rounded-[1.35rem] border border-[var(--color-border-tab)] bg-[var(--color-bg-tab)] p-1 shadow-[var(--color-shadow-nav)] backdrop-blur-[2px]"
+        className="grid h-[var(--bottom-nav-height)] gap-1 rounded-[1.35rem] border border-[var(--color-border-tab)] bg-[var(--color-bg-tab)] p-1 shadow-[var(--color-shadow-nav)] backdrop-blur-xl"
         style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
       >
         {items.map((item) => {
           const Icon = iconMap[item.icon];
           const indicatorTone: NavIndicatorTone | null = item.indicator ?? (item.attention ? "attention" : null);
-          const indicatorClassName = item.active && indicatorTone ? indicatorClass[indicatorTone] : null;
+          const indicatorClassName = indicatorTone ? indicatorClass[indicatorTone] : null;
+          const ariaLabel = indicatorTone ? `${item.label}: ${indicatorLabel[indicatorTone]}` : item.label;
 
           return (
             <Link
               key={`${item.href}-${item.label}`}
               href={item.href}
+              aria-label={ariaLabel}
               aria-current={item.active ? "page" : undefined}
               className={cn(
                 "relative flex min-h-12 flex-col items-center justify-center rounded-[1rem] px-2 py-1 text-[length:var(--text-xs)] font-semibold transition active:scale-[0.98]",
                 item.active
-                  ? "bg-[var(--color-bg-tab-active)] text-[color:var(--color-tab-label-active)] shadow-[var(--color-shadow-nav-active)]"
-                  : "text-[color:var(--color-tab-label-inactive)]",
+                  ? "bg-[var(--color-bg-tab-active)] text-[color:var(--color-tab-label-active)] shadow-[var(--color-shadow-nav-active)] ring-1 ring-[var(--color-border-tab)]"
+                  : "text-[color:var(--color-tab-label-inactive)] hover:bg-[var(--surface-alt)]",
               )}
             >
               <span className="relative">
                 {indicatorClassName ? (
-                  <span className={cn("absolute -right-1.5 -top-0.5 h-1.5 w-1.5 rounded-full", indicatorClassName)} />
+                  <span
+                    className={cn(
+                      "absolute rounded-full ring-2 ring-[var(--color-bg-tab)]",
+                      item.active ? "-right-2 -top-1 h-2 w-2" : "-right-1.5 -top-0.5 h-1.5 w-1.5",
+                      indicatorClassName,
+                    )}
+                    aria-hidden="true"
+                  />
                 ) : null}
                 <Icon
                   className={cn(
@@ -74,7 +86,7 @@ export function BottomNav({ items }: { items: NavItem[] }) {
                   strokeWidth={2.25}
                 />
               </span>
-              <span className="mt-0.5">{item.label}</span>
+              <span className="mt-0.5 truncate">{item.label}</span>
             </Link>
           );
         })}

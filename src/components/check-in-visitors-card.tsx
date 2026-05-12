@@ -86,7 +86,7 @@ export function CheckInVisitorsCard({
                 type="button"
                 onClick={() => onRemoveVisitor(visitor.id)}
                 disabled={disabled}
-                className="text-[length:var(--text-xs)] font-semibold text-[color:var(--color-text-secondary)] disabled:cursor-not-allowed disabled:opacity-50"
+                className="text-[length:var(--text-xs)] font-semibold text-[color:var(--color-text-secondary)] disabled:cursor-not-allowed disabled:saturate-75"
               >
                 remover
               </button>

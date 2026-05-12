@@ -1,6 +1,6 @@
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
-import { PulseCard } from "@/components/base-cards";
+import { EmptyState, PulseCard } from "@/components/base-cards";
 import { InCareSection, PastoralSignalSection } from "@/components/pastoral-list-cards";
 import { SearchBox } from "@/components/search-box";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
@@ -20,6 +20,10 @@ export default async function SupervisorPage() {
 
   const dashboard = await getSupervisorDashboard(user);
   const view = buildSupervisorPageView({ dashboard, user });
+  const hasPastoralRadar = view.urgentSignals.length > 0
+    || view.supportSignals.length > 0
+    || view.attentionSignals.length > 0
+    || view.inCarePeople.length > 0;
 
   return (
     <AppShell
@@ -35,40 +39,56 @@ export default async function SupervisorPage() {
 
       <SearchBox placeholder="Buscar pessoa..." />
 
-      <PastoralSignalSection
-        title="Irmãos que precisam de um olhar especial"
-        detail="Urgentes ou encaminhados ao pastor aparecem com mais destaque."
-        emptyMessage="Nenhum caso urgente ou encaminhado agora."
-        signals={view.urgentSignals}
-        viewer={user}
-        contextForSignal={(signal) => groupNameOrFallback(signal.group)}
-      />
+      {hasPastoralRadar ? (
+        <>
+          {view.urgentSignals.length > 0 ? (
+            <PastoralSignalSection
+              title="Irmãos que precisam de um olhar especial"
+              detail="Urgentes ou encaminhados ao pastor aparecem com mais destaque."
+              emptyMessage="Nenhum caso urgente ou encaminhado agora."
+              signals={view.urgentSignals}
+              viewer={user}
+              contextForSignal={(signal) => groupNameOrFallback(signal.group)}
+            />
+          ) : null}
 
-      <PastoralSignalSection
-        title="Pedidos de apoio"
-        detail="Pedidos trazidos pelos líderes aparecem separados, para apoiar sem virar operador da célula."
-        emptyMessage="Nenhum líder pediu apoio agora."
-        signals={view.supportSignals}
-        viewer={user}
-        contextForSignal={(signal) => groupNameOrFallback(signal.group)}
-        ctaLabelForSignal={() => "Abrir apoio"}
-      />
+          {view.supportSignals.length > 0 ? (
+            <PastoralSignalSection
+              title="Pedidos de apoio"
+              detail="Pedidos trazidos pelos líderes aparecem separados, para apoiar sem virar operador da célula."
+              emptyMessage="Nenhum líder pediu apoio agora."
+              signals={view.supportSignals}
+              viewer={user}
+              contextForSignal={(signal) => groupNameOrFallback(signal.group)}
+              ctaLabelForSignal={() => "Abrir apoio"}
+            />
+          ) : null}
 
-      <PastoralSignalSection
-        title="Acompanhar de perto"
-        detail="Atenções locais das células supervisionadas."
-        emptyMessage="Nenhum outro caso em atenção agora."
-        signals={view.attentionSignals}
-        viewer={user}
-        contextForSignal={(signal) => groupNameOrFallback(signal.group)}
-      />
+          {view.attentionSignals.length > 0 ? (
+            <PastoralSignalSection
+              title="Acompanhar de perto"
+              detail="Atenções locais das células supervisionadas."
+              emptyMessage="Nenhum outro caso em atenção agora."
+              signals={view.attentionSignals}
+              viewer={user}
+              contextForSignal={(signal) => groupNameOrFallback(signal.group)}
+            />
+          ) : null}
 
-      <InCareSection
-        title="Acolhidos em cuidado"
-        detail="Pessoas que já receberam cuidado e seguem no radar."
-        emptyMessage="Nenhuma pessoa em cuidado agora."
-        people={view.inCarePeople}
-      />
+          {view.inCarePeople.length > 0 ? (
+            <InCareSection
+              title="Acolhidos em cuidado"
+              detail="Pessoas que já receberam cuidado e seguem no radar."
+              emptyMessage="Nenhuma pessoa em cuidado agora."
+              people={view.inCarePeople}
+            />
+          ) : null}
+        </>
+      ) : (
+        <EmptyState>
+          Tudo tranquilo agora. Nenhum pedido urgente, apoio pendente ou cuidado pastoral aberto.
+        </EmptyState>
+      )}
     </AppShell>
   );
 }

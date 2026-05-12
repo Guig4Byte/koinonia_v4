@@ -64,7 +64,7 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
             aria-pressed={item.status === status}
             onClick={() => onSetStatus(item.personId, status)}
             disabled={disabled}
-            className="min-h-10 rounded-xl px-2 text-[length:var(--text-xs)]"
+            className="min-h-11 rounded-xl px-2 text-[length:var(--text-sm)]"
           >
             {ATTENDANCE_LABELS[status]}
           </Button>

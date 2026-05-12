@@ -11,7 +11,6 @@ import { ROUTES } from "@/lib/routes";
 export function EventDetailHeaderCard({
   title,
   groupId,
-  groupName,
   startsAt,
   locationName,
   checkInLabel,
@@ -26,7 +25,6 @@ export function EventDetailHeaderCard({
 }: {
   title: string;
   groupId?: string | null;
-  groupName?: string | null;
   startsAt: Date;
   locationName?: string | null;
   checkInLabel: string;
@@ -48,7 +46,7 @@ export function EventDetailHeaderCard({
           </p>
           <h2 className="mt-1 text-[length:var(--text-2xl)] font-semibold text-[color:var(--color-text-primary)]">{title}</h2>
           <p className="k-item-meta">
-            {groupName ?? "Encontro geral"} · {formatShortDate(startsAt)}, {formatTime(startsAt)}
+            {formatShortDate(startsAt)}, {formatTime(startsAt)}
           </p>
           {locationName ? (
             <p className="k-item-meta">{locationName}</p>
@@ -59,7 +57,7 @@ export function EventDetailHeaderCard({
             </Link>
           ) : null}
         </div>
-        <Badge tone={eventStatusTone}>{eventStatusLabel}</Badge>
+        <Badge tone={eventStatusTone} className="max-w-[48%]">{eventStatusLabel}</Badge>
       </div>
 
       <div className="mt-4">

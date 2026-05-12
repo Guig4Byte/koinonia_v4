@@ -25,4 +25,11 @@ describe("app navigation", () => {
     expect(nav.map((item) => item.active)).toEqual([false, true, false]);
     expect(nav.map((item) => item.indicator)).toEqual([undefined, "attention", undefined]);
   });
+
+  it("keeps a pastoral indicator visible on Visão when no tab is active", () => {
+    const nav = appNavForRole(UserRole.PASTOR, { active: "none", indicator: "risk" });
+
+    expect(nav.map((item) => item.active)).toEqual([false, false, false]);
+    expect(nav.map((item) => item.indicator)).toEqual(["risk", undefined, undefined]);
+  });
 });

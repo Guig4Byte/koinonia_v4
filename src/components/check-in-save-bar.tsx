@@ -58,11 +58,11 @@ export function CheckInSaveBar({
   return (
     <div
       className={cn(
-        "check-in-save-bar rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-tab)] p-3 shadow-card backdrop-blur-xl",
+        "check-in-save-bar rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card backdrop-blur-xl",
         saveBarOffset === "page" ? "check-in-save-bar-page" : "check-in-save-bar-nav",
       )}
     >
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-col gap-3 min-[390px]:flex-row min-[390px]:items-center min-[390px]:justify-between">
         <div className="min-w-0">
           <p className="k-item-title-sm">
             {saveBarTitle({ pending: summary.pending, isPending, errorMessage })}
@@ -71,7 +71,7 @@ export function CheckInSaveBar({
             {saveBarDescription({ pending: summary.pending, isPending, errorMessage, mode })}
           </p>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex flex-col gap-2 min-[390px]:flex-row min-[390px]:shrink-0 min-[390px]:items-center">
           {cancelHref ? (
             <Link
               href={cancelHref}
@@ -79,13 +79,13 @@ export function CheckInSaveBar({
               className={buttonClassName({
                 variant: "secondary",
                 size: "md",
-                className: cn("rounded-full px-3", isPending && "pointer-events-none opacity-50"),
+                className: cn("w-full rounded-full px-3 min-[390px]:w-auto", isPending && "pointer-events-none saturate-75"),
               })}
             >
               {cancelLabel}
             </Link>
           ) : null}
-          <Button disabled={!canSave} loading={isPending} onClick={onSave} className="min-w-28">
+          <Button disabled={!canSave} loading={isPending} onClick={onSave} className="w-full min-w-28 min-[390px]:w-auto">
             {isPending ? "Salvando..." : submitLabel}
           </Button>
         </div>

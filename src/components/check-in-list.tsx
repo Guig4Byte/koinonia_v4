@@ -36,6 +36,15 @@ export function CheckInList({
     mode,
   });
 
+  const displayItems = checkIn.items
+    .map((item, index) => ({ item, index }))
+    .sort((a, b) => {
+      if (a.item.status === null && b.item.status !== null) return -1;
+      if (a.item.status !== null && b.item.status === null) return 1;
+      return a.index - b.index;
+    })
+    .map(({ item }) => item);
+
   return (
     <section className="space-y-3">
       <CheckInSummaryCard
@@ -62,7 +71,7 @@ export function CheckInList({
       />
 
       <div className="space-y-3">
-        {checkIn.items.map((item) => (
+        {displayItems.map((item) => (
           <CheckInMemberCard key={item.personId} item={item} onSetStatus={checkIn.setStatus} disabled={checkIn.isPending} />
         ))}
       </div>

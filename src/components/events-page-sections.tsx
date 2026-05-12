@@ -41,7 +41,7 @@ export function EventCard({ event, user, now }: { event: EventListEvent; user: P
             </p>
           ) : null}
         </div>
-        <Badge tone={state.badgeTone} className="event-card-badge">{state.label}</Badge>
+        <Badge tone={state.badgeTone} className="event-card-badge max-w-[48%]">{state.label}</Badge>
       </div>
 
       {state.recordedPresence ? (

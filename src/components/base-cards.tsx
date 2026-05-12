@@ -108,7 +108,7 @@ export function BackLink({
   return (
     <Link
       href={href}
-      className="mb-4 inline-flex min-h-10 items-center gap-1.5 rounded-xl px-2.5 text-[length:var(--text-sm)] font-semibold text-[color:var(--color-brand)] transition active:scale-[0.98]"
+      className="mb-4 inline-flex min-h-11 items-center gap-1.5 rounded-xl px-2.5 text-[length:var(--text-sm)] font-semibold text-[color:var(--color-brand)] transition active:scale-[0.98]"
     >
       <ArrowLeft className="h-4 w-4" aria-hidden="true" />
       {children}
@@ -189,7 +189,7 @@ export function DetailLinkCard({
           <p className="k-item-title truncate">{title}</p>
           {meta ? <p className="k-supporting-copy">{meta}</p> : null}
         </div>
-        {badgeLabel ? <Badge tone={badgeTone}>{badgeLabel}</Badge> : null}
+        {badgeLabel ? <Badge tone={badgeTone} className="max-w-[48%]">{badgeLabel}</Badge> : null}
       </div>
       {children ? <div className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{children}</div> : null}
       <p className="mt-3 text-[length:var(--text-sm)] font-semibold text-[color:var(--color-brand)]">{actionLabel} <span className="inline-block transition group-active:translate-x-0.5">→</span></p>

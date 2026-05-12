@@ -1,5 +1,6 @@
 import { Children, type ReactNode } from "react";
 import { EmptyState } from "@/components/base-cards";
+import { buttonClassName } from "@/components/ui/button";
 
 export function PastoralSectionTitle({ children, detail }: { children: ReactNode; detail?: string }) {
   return (
@@ -36,7 +37,14 @@ export function PastoralListSection({
       </div>
       {hasHiddenChildren ? (
         <details className="group rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card">
-          <summary className="flex min-h-10 cursor-pointer list-none items-center justify-center rounded-xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-[length:var(--text-sm)] font-semibold text-[color:var(--color-btn-secondary-text)] transition active:scale-[0.98] [&::-webkit-details-marker]:hidden">
+          <summary
+            className={buttonClassName({
+              variant: "secondary",
+              size: "sm",
+              fullWidth: true,
+              className: "cursor-pointer list-none rounded-xl [&::-webkit-details-marker]:hidden",
+            })}
+          >
             <span className="group-open:hidden">{moreLabel}</span>
             <span className="hidden group-open:inline">Mostrar menos</span>
           </summary>

@@ -8,7 +8,7 @@ import { Button, buttonClassName } from "@/components/ui/button";
 import { Feedback } from "@/components/ui/feedback";
 import { cn } from "@/lib/cn";
 
-const disabledLinkClass = "pointer-events-none cursor-not-allowed opacity-50";
+const disabledLinkClass = "pointer-events-none cursor-not-allowed saturate-75";
 
 export function CareDoneMessage({ savedMessage, resolvedMessage }: { savedMessage: string; resolvedMessage?: string }) {
   return (

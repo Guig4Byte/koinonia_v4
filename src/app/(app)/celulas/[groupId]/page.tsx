@@ -4,6 +4,7 @@ import { BackLink, ContextSummary, InfoCard, PulseCard, SectionTitle } from "@/c
 import { GroupPendingEventCard } from "@/components/group-pending-event-card";
 import { GroupRegisteredEncountersList } from "@/components/group-registered-encounters-list";
 import { MemberPriorityList } from "@/components/member-priority-list";
+import { buttonClassName } from "@/components/ui/button";
 import { getGroupDetailPageData } from "@/app/(app)/celulas/[groupId]/page-data";
 import {
   groupMeetingText,
@@ -57,7 +58,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
           <div className="mb-4 flex justify-end">
             <Link
               href={ROUTES.editGroup(group.id)}
-              className="inline-flex min-h-10 items-center justify-center rounded-2xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-[length:var(--text-sm)] font-semibold text-[color:var(--color-btn-secondary-text)] transition active:scale-[0.98]"
+              className={buttonClassName({ variant: "secondary", size: "sm", className: "rounded-2xl px-3" })}
             >
               Editar célula
             </Link>

@@ -1,6 +1,6 @@
 import { AppShell } from "@/components/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
-import { ContextSummary, PulseCard, SectionTitle } from "@/components/base-cards";
+import { ContextSummary, EmptyState, PulseCard, SectionTitle } from "@/components/base-cards";
 import { InCareSection, PastoralSignalSection } from "@/components/pastoral-list-cards";
 import { SearchBox } from "@/components/search-box";
 import { getPastorDashboard } from "@/features/dashboard/queries";
@@ -19,6 +19,7 @@ export default async function PastorPage() {
 
   const dashboard = await getPastorDashboard(user);
   const view = buildPastorPageView({ dashboard, user });
+  const hasPastoralRadar = view.urgentOrPastoralCases.length > 0 || view.inCarePeople.length > 0;
 
   return (
     <AppShell
@@ -34,20 +35,32 @@ export default async function PastorPage() {
 
       <SearchBox placeholder="Buscar qualquer pessoa..." />
 
-      <PastoralSignalSection
-        title="Irmãos que precisam de um olhar especial"
-        detail="Urgentes ou encaminhados ao pastor aparecem com mais destaque."
-        emptyMessage="Nada grave ou encaminhado chegou para o pastor agora."
-        signals={view.urgentOrPastoralCases}
-        viewer={user}
-      />
+      {hasPastoralRadar ? (
+        <>
+          {view.urgentOrPastoralCases.length > 0 ? (
+            <PastoralSignalSection
+              title="Irmãos que precisam de um olhar especial"
+              detail="Urgentes ou encaminhados ao pastor aparecem com mais destaque."
+              emptyMessage="Nada grave ou encaminhado chegou para o pastor agora."
+              signals={view.urgentOrPastoralCases}
+              viewer={user}
+            />
+          ) : null}
 
-      <InCareSection
-        title="Acolhidos em cuidado pastoral"
-        detail="Pessoas que receberam cuidado pastoral e seguem no radar."
-        emptyMessage="Nenhuma pessoa em cuidado pastoral para destacar agora."
-        people={view.inCarePeople}
-      />
+          {view.inCarePeople.length > 0 ? (
+            <InCareSection
+              title="Acolhidos em cuidado pastoral"
+              detail="Pessoas que receberam cuidado pastoral e seguem no radar."
+              emptyMessage="Nenhuma pessoa em cuidado pastoral para destacar agora."
+              people={view.inCarePeople}
+            />
+          ) : null}
+        </>
+      ) : (
+        <EmptyState>
+          Tudo tranquilo agora. Nenhum caso grave, encaminhamento ou cuidado pastoral aberto.
+        </EmptyState>
+      )}
 
       <SectionTitle>Presença geral</SectionTitle>
       <ContextSummary items={view.presenceSummary} />

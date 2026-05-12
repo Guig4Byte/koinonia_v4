@@ -67,7 +67,7 @@ export function PersonMiniCard(props: {
         </span>
       </span>
       <span className="flex shrink-0 items-center gap-2">
-        {badgeLabel ? <Badge tone={badgeTone} className={compact ? "px-2 py-0.5 text-[length:var(--text-xs)]" : undefined}>{badgeLabel}</Badge> : null}
+        {badgeLabel ? <Badge tone={badgeTone} className={compact ? "max-w-[48%] px-2 py-0.5 text-[length:var(--text-xs)]" : "max-w-[48%]"}>{badgeLabel}</Badge> : null}
         <span className="text-[length:var(--text-sm)] font-bold text-[color:var(--color-brand)] opacity-60 transition group-active:translate-x-0.5" aria-hidden="true">
           →
         </span>
@@ -113,7 +113,7 @@ export function PersonSignalCard(props: {
               <p className="k-item-title">{name}</p>
               <p className="mt-0.5 text-[length:var(--text-sm)] leading-snug text-[color:var(--color-text-secondary)]">{context}</p>
             </div>
-            <Badge tone={resolvedBadgeTone} className="px-2 py-0.5 text-[length:var(--text-xs)]">{resolvedBadgeLabel}</Badge>
+            <Badge tone={resolvedBadgeTone} className="max-w-[48%] px-2 py-0.5 text-[length:var(--text-xs)]">{resolvedBadgeLabel}</Badge>
           </div>
           {reason ? <p className="mt-2 whitespace-pre-line border-t border-[var(--color-border-divider)] pt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-primary)]">{reason}</p> : null}
           {cardHref ? (

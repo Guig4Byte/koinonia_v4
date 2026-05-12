@@ -44,7 +44,7 @@ function TeamCellLink({
         <span className="k-item-caption-truncate">{subtitle}</span>
       </span>
       <span className="flex shrink-0 items-center gap-2">
-        {badgeLabel ? <Badge tone={badgeTone}>{badgeLabel}</Badge> : null}
+        {badgeLabel ? <Badge tone={badgeTone} className="max-w-[48%]">{badgeLabel}</Badge> : null}
         <span className="text-[length:var(--text-sm)] font-bold text-[color:var(--color-brand)] opacity-60" aria-hidden="true">
           →
         </span>
