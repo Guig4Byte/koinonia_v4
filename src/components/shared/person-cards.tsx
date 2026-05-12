@@ -44,7 +44,7 @@ export function PersonMiniCard(props: {
       leading={<Avatar name={name} size={compact ? "sm" : "md"} />}
       badgeLabel={badgeLabel}
       badgeTone={badgeTone}
-      badgeClassName={compact ? "px-2 py-0.5 text-[length:var(--text-xs)]" : undefined}
+      badgeSize={compact ? "sm" : undefined}
       priorityTone={cardTone ?? badgeTone}
       compact={compact}
     />
@@ -88,7 +88,7 @@ export function PersonSignalCard(props: {
               <p className="k-item-title">{name}</p>
               <p className="mt-0.5 text-[length:var(--text-sm)] leading-snug text-[color:var(--color-text-secondary)]">{context}</p>
             </div>
-            <Badge tone={resolvedBadgeTone} className="max-w-[48%] px-2 py-0.5 text-[length:var(--text-xs)]">{resolvedBadgeLabel}</Badge>
+            <Badge tone={resolvedBadgeTone} size="sm" className="max-w-[48%]">{resolvedBadgeLabel}</Badge>
           </div>
           {reason ? <p className="mt-2 whitespace-pre-line border-t border-[var(--color-border-divider)] pt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-primary)]">{reason}</p> : null}
           {cardHref ? (

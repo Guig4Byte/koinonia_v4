@@ -1,6 +1,6 @@
 import Link, { type LinkProps } from "next/link";
 import type { AnchorHTMLAttributes, ReactNode } from "react";
-import { Badge, type BadgeTone } from "@/components/ui/badge";
+import { Badge, type BadgeSize, type BadgeTone } from "@/components/ui/badge";
 import { priorityCardClass, type CardPriorityTone } from "@/lib/card-priority";
 import { cn } from "@/lib/cn";
 
@@ -13,6 +13,7 @@ type ListLinkCardProps = LinkProps &
     leading?: ReactNode;
     badgeLabel?: ReactNode;
     badgeTone?: BadgeTone;
+    badgeSize?: BadgeSize;
     badgeClassName?: string;
     priorityTone?: CardPriorityTone;
     compact?: boolean;
@@ -33,6 +34,7 @@ export function ListLinkCard({
   leading,
   badgeLabel,
   badgeTone = "neutral",
+  badgeSize,
   badgeClassName,
   priorityTone,
   compact = false,
@@ -68,7 +70,7 @@ export function ListLinkCard({
         </span>
       </span>
       <span className={cn("flex shrink-0 items-center gap-2", trailingClassName)}>
-        {badgeLabel ? <Badge tone={badgeTone} className={cn("max-w-[48%]", badgeClassName)}>{badgeLabel}</Badge> : null}
+        {badgeLabel ? <Badge tone={badgeTone} size={badgeSize} className={cn("max-w-[48%]", badgeClassName)}>{badgeLabel}</Badge> : null}
         {trailing}
         {showArrow ? (
           <span className={cn("text-[length:var(--text-sm)] font-bold text-[color:var(--color-brand)] opacity-60 transition group-active:translate-x-0.5", arrowClassName)} aria-hidden="true">

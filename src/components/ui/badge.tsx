@@ -4,6 +4,7 @@ import { cn } from "@/lib/cn";
 const badgeTones = ["neutral", "ok", "warn", "risk", "info", "care", "support"] as const;
 
 export type BadgeTone = (typeof badgeTones)[number];
+export type BadgeSize = "md" | "sm";
 
 const badgeToneValues = new Set<string>(badgeTones);
 
@@ -21,12 +22,28 @@ const badgeToneClass: Record<BadgeTone, string> = {
   support: "border border-[var(--color-badge-apoio-border)] bg-[var(--color-badge-apoio-bg)] text-[color:var(--color-badge-apoio-text)]",
 };
 
-export function Badge({ tone = "neutral", className, children }: { tone?: BadgeTone; className?: string; children: ReactNode }) {
+const badgeSizeClass: Record<BadgeSize, string> = {
+  md: "px-2.5 py-1 text-[length:var(--text-xs)]",
+  sm: "px-2 py-0.5 text-[length:var(--text-xs)]",
+};
+
+export function Badge({
+  tone = "neutral",
+  size = "md",
+  className,
+  children,
+}: {
+  tone?: BadgeTone;
+  size?: BadgeSize;
+  className?: string;
+  children: ReactNode;
+}) {
   return (
     <span
       className={cn(
-        "inline-flex max-w-full shrink-0 items-center justify-center overflow-hidden rounded-full px-2.5 py-1 text-center text-[length:var(--text-xs)] font-semibold leading-tight whitespace-nowrap",
+        "inline-flex max-w-full shrink-0 items-center justify-center overflow-hidden rounded-full text-center font-semibold leading-tight whitespace-nowrap",
         badgeToneClass[tone],
+        badgeSizeClass[size],
         className,
       )}
     >

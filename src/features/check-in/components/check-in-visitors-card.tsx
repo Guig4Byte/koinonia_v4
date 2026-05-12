@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Plus } from "lucide-react";
 import { GhostButton } from "@/components/ui/button";
 import { countLabel } from "@/lib/format";
@@ -25,6 +26,23 @@ type CheckInVisitorsCardProps = {
   disabled?: boolean;
 };
 
+function VisitorSectionTitle({ children }: { children: string }) {
+  return (
+    <p className="text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.12em] text-[color:var(--color-text-secondary)]">
+      {children}
+    </p>
+  );
+}
+
+function VisitorRow({ name, trailing }: { name: string; trailing: ReactNode }) {
+  return (
+    <div className="flex items-center justify-between rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 text-[length:var(--text-sm)]">
+      <span className="font-medium text-[color:var(--color-text-primary)]">{name}</span>
+      {trailing}
+    </div>
+  );
+}
+
 export function CheckInVisitorsCard({
   savedVisitors,
   fallbackSavedVisitorCount,
@@ -40,12 +58,15 @@ export function CheckInVisitorsCard({
       <p className="k-item-title">Visitantes do encontro</p>
       {savedVisitors.length > 0 ? (
         <div className="mt-3 space-y-2">
-          <p className="text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.12em] text-[color:var(--color-text-secondary)]">Já salvos</p>
+          <VisitorSectionTitle>Já salvos</VisitorSectionTitle>
           {savedVisitors.map((visitor) => (
-            <div key={visitor.id} className="flex items-center justify-between rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 text-[length:var(--text-sm)]">
-              <span className="font-medium text-[color:var(--color-text-primary)]">{visitor.fullName}</span>
-              <span className="text-[length:var(--text-xs)] font-semibold text-[color:var(--color-text-secondary)]">salvo</span>
-            </div>
+            <VisitorRow
+              key={visitor.id}
+              name={visitor.fullName}
+              trailing={
+                <span className="text-[length:var(--text-xs)] font-semibold text-[color:var(--color-text-secondary)]">salvo</span>
+              }
+            />
           ))}
         </div>
       ) : fallbackSavedVisitorCount > 0 ? (
@@ -78,19 +99,22 @@ export function CheckInVisitorsCard({
 
       {visitors.length > 0 ? (
         <div className="mt-3 space-y-2">
-          <p className="text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.12em] text-[color:var(--color-text-secondary)]">Para incluir ao salvar</p>
+          <VisitorSectionTitle>Para incluir ao salvar</VisitorSectionTitle>
           {visitors.map((visitor) => (
-            <div key={visitor.id} className="flex items-center justify-between rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 text-[length:var(--text-sm)]">
-              <span className="font-medium text-[color:var(--color-text-primary)]">{visitor.fullName}</span>
-              <button
-                type="button"
-                onClick={() => onRemoveVisitor(visitor.id)}
-                disabled={disabled}
-                className="text-[length:var(--text-xs)] font-semibold text-[color:var(--color-text-secondary)] disabled:cursor-not-allowed disabled:saturate-75"
-              >
-                remover
-              </button>
-            </div>
+            <VisitorRow
+              key={visitor.id}
+              name={visitor.fullName}
+              trailing={
+                <button
+                  type="button"
+                  onClick={() => onRemoveVisitor(visitor.id)}
+                  disabled={disabled}
+                  className="text-[length:var(--text-xs)] font-semibold text-[color:var(--color-text-secondary)] disabled:cursor-not-allowed disabled:saturate-75"
+                >
+                  remover
+                </button>
+              }
+            />
           ))}
         </div>
       ) : null}

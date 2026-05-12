@@ -82,7 +82,7 @@ export function PersonPresenceCard({ view }: { view: PersonPresenceView }) {
                     {attendance.event.group?.name ?? "Encontro"}
                   </span>
                 </span>
-                <Badge tone={attendanceTone(attendance.status)} className="px-2 py-0.5 text-[length:var(--text-xs)]">
+                <Badge tone={attendanceTone(attendance.status)} size="sm">
                   {attendanceLabels[attendance.status]}
                 </Badge>
               </Link>

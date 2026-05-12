@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
+import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
   buildEventReadOnlyAttendanceView,
@@ -11,17 +11,36 @@ import {
 import type { EventAttendanceGroup, EventReadOnlyMember, EventReadOnlyVisitor } from "@/features/events/event-detail-view";
 import { ROUTES } from "@/lib/routes";
 
-function AttendanceMemberRow({ member }: { member: EventReadOnlyMember }) {
+function AttendancePersonRow({
+  href,
+  name,
+  badgeTone,
+  badgeLabel,
+}: {
+  href: string;
+  name: string;
+  badgeTone: BadgeTone;
+  badgeLabel: string;
+}) {
   return (
     <Link
-      href={ROUTES.person(member.personId)}
+      href={href}
       className="flex items-center justify-between gap-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 transition active:scale-[0.99]"
     >
-      <span className="min-w-0 text-[length:var(--text-sm)] font-medium text-[color:var(--color-text-primary)]">{member.fullName}</span>
-      <Badge tone={eventAttendanceStatusTone(member.currentStatus)} className="px-2 py-0.5 text-[length:var(--text-xs)]">
-        {member.currentStatus ? eventAttendanceLabels[member.currentStatus] : "Pendente"}
-      </Badge>
+      <span className="min-w-0 text-[length:var(--text-sm)] font-medium text-[color:var(--color-text-primary)]">{name}</span>
+      <Badge tone={badgeTone} size="sm">{badgeLabel}</Badge>
     </Link>
+  );
+}
+
+function AttendanceMemberRow({ member }: { member: EventReadOnlyMember }) {
+  return (
+    <AttendancePersonRow
+      href={ROUTES.person(member.personId)}
+      name={member.fullName}
+      badgeTone={eventAttendanceStatusTone(member.currentStatus)}
+      badgeLabel={member.currentStatus ? eventAttendanceLabels[member.currentStatus] : "Pendente"}
+    />
   );
 }
 
@@ -119,14 +138,13 @@ export function EventReadOnlySummary({
           </p>
           <div className="mt-3 space-y-1.5">
             {sortPeopleByName(visitors).map((visitor) => (
-              <Link
+              <AttendancePersonRow
                 key={visitor.id}
                 href={ROUTES.person(visitor.personId)}
-                className="flex items-center justify-between gap-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 transition active:scale-[0.99]"
-              >
-                <span className="min-w-0 text-[length:var(--text-sm)] font-medium text-[color:var(--color-text-primary)]">{visitor.fullName}</span>
-                <Badge tone="info" className="px-2 py-0.5 text-[length:var(--text-xs)]">Visitante</Badge>
-              </Link>
+                name={visitor.fullName}
+                badgeTone="info"
+                badgeLabel="Visitante"
+              />
             ))}
           </div>
         </Card>
