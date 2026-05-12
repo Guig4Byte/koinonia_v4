@@ -1,10 +1,10 @@
-import { AppShell } from "@/components/app-shell";
-import { BackLink, InfoCard, SectionTitle } from "@/components/base-cards";
+import { AppShell } from "@/components/layout/app-shell";
+import { BackLink, InfoCard, SectionTitle } from "@/components/shared/base-cards";
 import { ButtonLink } from "@/components/ui/button-link";
-import { CheckInList } from "@/components/check-in-list";
-import { EventDetailsActions } from "@/components/event-details-actions";
-import { EventDetailHeaderCard } from "@/components/event-detail-header-card";
-import { EventReadOnlySummary } from "@/components/event-read-only-summary";
+import { CheckInList } from "@/features/check-in/components/check-in-list";
+import { EventDetailsActions } from "@/features/events/components/event-details-actions";
+import { EventDetailHeaderCard } from "@/features/events/components/event-detail-header-card";
+import { EventReadOnlySummary } from "@/features/events/components/event-read-only-summary";
 import { getEventDetailPageData } from "@/app/(app)/eventos/[eventId]/page-data";
 import { getCurrentUser } from "@/lib/auth/current-user";
 

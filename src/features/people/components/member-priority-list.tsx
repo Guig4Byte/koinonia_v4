@@ -1,8 +1,8 @@
-import { EmptyState } from "@/components/base-cards";
-import { PersonMiniCard } from "@/components/person-cards";
+import { EmptyState } from "@/components/shared/base-cards";
+import { PersonMiniCard } from "@/features/people/components/person-cards";
 import type { BadgeTone } from "@/components/ui/badge";
 import { FilterChip } from "@/components/ui/filter-chip";
-import { ProgressiveList } from "@/components/progressive-list";
+import { ProgressiveList } from "@/components/shared/progressive-list";
 import { MEMBERS_FILTERS, membersFilterHref, type MembersFilter } from "@/features/people/member-filters";
 import { cn } from "@/lib/cn";
 import { countLabel } from "@/lib/format";

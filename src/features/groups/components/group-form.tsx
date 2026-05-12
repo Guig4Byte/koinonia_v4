@@ -1,9 +1,9 @@
 import { CalendarDays } from "lucide-react";
-import { BackLink, InfoCard } from "@/components/base-cards";
+import { BackLink, InfoCard } from "@/components/shared/base-cards";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Card } from "@/components/ui/card";
-import { GroupMeetingTimeInput } from "@/components/group-meeting-time-input";
+import { GroupMeetingTimeInput } from "@/features/groups/components/group-meeting-time-input";
 import { GROUP_LOCATION_MAX_LENGTH, GROUP_NAME_MAX_LENGTH, WEEKDAY_OPTIONS, groupFormErrorMessage, type GroupFormValues } from "@/features/groups/group-form";
 
 type GroupFormInitialValues = GroupFormValues;

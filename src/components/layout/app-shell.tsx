@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import { LogOut } from "lucide-react";
-import { BottomNav, type NavItem } from "@/components/bottom-nav";
-import { TextSizeToggle } from "@/components/text-size-toggle";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { BottomNav, type NavItem } from "@/components/layout/bottom-nav";
+import { TextSizeToggle } from "@/components/layout/text-size-toggle";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { UserRole } from "@/generated/prisma/client";
 import { cn } from "@/lib/cn";
 import { ROUTES } from "@/lib/routes";

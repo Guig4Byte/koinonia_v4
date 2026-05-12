@@ -4,7 +4,7 @@ import { PriorityCard } from "@/components/ui/priority-card";
 import { cn } from "@/lib/cn";
 import { DEFAULT_PRESENCE_TONE_THRESHOLDS, formatPresenceRate, presenceTone } from "@/features/events/presence-display";
 import type { CardPriorityTone } from "@/lib/card-priority";
-import { metricTextClass, PresenceTrendDelta, type PresenceTrend } from "@/components/presence-metric";
+import { metricTextClass, PresenceTrendDelta, type PresenceTrend } from "@/components/shared/presence-metric";
 import { countLabel } from "@/lib/format";
 
 function groupAttentionLabel(count: number, kind: "default" | "local" | "pastoral") {

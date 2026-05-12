@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import { AppShell } from "@/components/app-shell";
-import { GroupForm } from "@/components/group-form";
+import { AppShell } from "@/components/layout/app-shell";
+import { GroupForm } from "@/features/groups/components/group-form";
 import { createCellAction } from "@/app/(app)/celulas/actions";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { canManageGroups } from "@/features/permissions/permissions";

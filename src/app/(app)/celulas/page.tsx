@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 import { Plus } from "lucide-react";
-import { AppShell } from "@/components/app-shell";
-import { CellsPageSections } from "@/components/cells-page-sections";
-import { CellsStructureSearch } from "@/components/cells-structure-search";
+import { AppShell } from "@/components/layout/app-shell";
+import { CellsPageSections } from "@/features/groups/components/cells-page-sections";
+import { CellsStructureSearch } from "@/features/groups/components/cells-structure-search";
 import { ButtonLink } from "@/components/ui/button-link";
-import { ContextSummary, EmptyState, InfoCard, SectionTitle } from "@/components/base-cards";
+import { ContextSummary, EmptyState, InfoCard, SectionTitle } from "@/components/shared/base-cards";
 import { buildWeeklyPresenceSummaryItem } from "@/features/dashboard/presence-health";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { CELLS_SECTION_ID, readCellsFilter } from "@/features/groups/cells-page-filters";

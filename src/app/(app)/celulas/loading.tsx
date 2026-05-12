@@ -1,4 +1,4 @@
-import { CellsPageSkeleton } from "@/components/page-loading-skeletons";
+import { CellsPageSkeleton } from "@/components/shared/page-loading-skeletons";
 
 export default function Loading() {
   return <CellsPageSkeleton />;

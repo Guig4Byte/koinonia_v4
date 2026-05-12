@@ -1,10 +1,10 @@
 "use client";
 
-import { EventActionFeedback } from "@/components/event-action-feedback";
+import { EventActionFeedback } from "@/features/events/components/event-action-feedback";
 import { Card } from "@/components/ui/card";
-import { EventCloseAction } from "@/components/event-close-action";
-import { EventLocationAction } from "@/components/event-location-action";
-import { EventRescheduleAction } from "@/components/event-reschedule-action";
+import { EventCloseAction } from "@/features/events/components/event-close-action";
+import { EventLocationAction } from "@/features/events/components/event-location-action";
+import { EventRescheduleAction } from "@/features/events/components/event-reschedule-action";
 import { useEventDetailsActionsController } from "@/hooks/use-event-details-actions-controller";
 import { eventLocationActionLabel, type EventActionStatus } from "@/features/events/event-actions-view";
 

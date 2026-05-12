@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
-import { ProgressiveList } from "@/components/progressive-list";
-import { EmptyState } from "@/components/base-cards";
+import { ProgressiveList } from "@/components/shared/progressive-list";
+import { EmptyState } from "@/components/shared/base-cards";
 import { priorityCardClass } from "@/lib/card-priority";
 import {
   compactGroupSubtitle,

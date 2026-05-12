@@ -1,4 +1,4 @@
-import { TeamPageSkeleton } from "@/components/page-loading-skeletons";
+import { TeamPageSkeleton } from "@/components/shared/page-loading-skeletons";
 
 export default function Loading() {
   return <TeamPageSkeleton />;

@@ -1,8 +1,8 @@
-import { AppShell } from "@/components/app-shell";
-import { BackLink, ContextSummary, InfoCard, PulseCard, SectionTitle } from "@/components/base-cards";
-import { GroupPendingEventCard } from "@/components/group-pending-event-card";
-import { GroupRegisteredEncountersList } from "@/components/group-registered-encounters-list";
-import { MemberPriorityList } from "@/components/member-priority-list";
+import { AppShell } from "@/components/layout/app-shell";
+import { BackLink, ContextSummary, InfoCard, PulseCard, SectionTitle } from "@/components/shared/base-cards";
+import { GroupPendingEventCard } from "@/features/groups/components/group-pending-event-card";
+import { GroupRegisteredEncountersList } from "@/features/groups/components/group-registered-encounters-list";
+import { MemberPriorityList } from "@/features/people/components/member-priority-list";
 import { ButtonLink } from "@/components/ui/button-link";
 import { getGroupDetailPageData } from "@/app/(app)/celulas/[groupId]/page-data";
 import {

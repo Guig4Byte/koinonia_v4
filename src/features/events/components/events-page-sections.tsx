@@ -1,6 +1,6 @@
-import { BackLink, EmptyState, SectionTitle } from "@/components/base-cards";
+import { BackLink, EmptyState, SectionTitle } from "@/components/shared/base-cards";
 import { priorityCardClass } from "@/lib/card-priority";
-import { ProgressiveList } from "@/components/progressive-list";
+import { ProgressiveList } from "@/components/shared/progressive-list";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button-link";
 import { CardLink } from "@/components/ui/card-link";

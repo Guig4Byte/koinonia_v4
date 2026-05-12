@@ -1,8 +1,8 @@
-import { AppShell } from "@/components/app-shell";
+import { AppShell } from "@/components/layout/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
-import { ContextSummary, EmptyState, PulseCard, SectionTitle } from "@/components/base-cards";
-import { InCareSection, PastoralSignalSection } from "@/components/pastoral-list-cards";
-import { SearchBox } from "@/components/search-box";
+import { ContextSummary, EmptyState, PulseCard, SectionTitle } from "@/components/shared/base-cards";
+import { InCareSection, PastoralSignalSection } from "@/features/pastoral-home/components/pastoral-list-cards";
+import { SearchBox } from "@/features/search/components/search-box";
 import { getPastorDashboard } from "@/features/dashboard/queries";
 import { canUsePastorDashboard } from "@/features/permissions/permissions";
 import { buildPastorPageView } from "@/features/pastoral-home/pastor-page-view";

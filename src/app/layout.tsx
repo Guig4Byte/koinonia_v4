@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { TextSizeInit } from "@/components/text-size-init";
-import { ThemeInit } from "@/components/theme-init";
+import { TextSizeInit } from "@/components/layout/text-size-init";
+import { ThemeInit } from "@/components/layout/theme-init";
 import "./globals.css";
 
 export const metadata: Metadata = {

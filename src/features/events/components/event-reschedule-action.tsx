@@ -1,8 +1,8 @@
 import type { CalendarMonth, DateParts } from "@/features/events/brasilia-date-time";
 import type { OpenEventPicker } from "@/features/events/event-actions-view";
 import { GhostButton } from "@/components/ui/button";
-import { EventDatePickerField } from "@/components/event-date-picker-field";
-import { EventTimePickerField } from "@/components/event-time-picker-field";
+import { EventDatePickerField } from "@/features/events/components/event-date-picker-field";
+import { EventTimePickerField } from "@/features/events/components/event-time-picker-field";
 
 export function EventRescheduleAction({
   localDate,

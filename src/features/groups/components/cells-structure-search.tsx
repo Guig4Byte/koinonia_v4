@@ -1,6 +1,6 @@
 "use client";
 
-import { StructureSearch } from "@/components/structure-search";
+import { StructureSearch } from "@/components/shared/structure-search";
 import { STRUCTURE_SEARCH_CONFIG } from "@/lib/structure-search-config";
 import type { CellsFilter } from "@/features/groups/cells-page-filters";
 

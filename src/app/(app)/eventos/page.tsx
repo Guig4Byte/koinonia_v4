@@ -1,6 +1,6 @@
-import { AppShell } from "@/components/app-shell";
-import { EmptyState, SectionTitle } from "@/components/base-cards";
-import { EventConsultationCards, EventList, EventsConsultationView } from "@/components/events-page-sections";
+import { AppShell } from "@/components/layout/app-shell";
+import { EmptyState, SectionTitle } from "@/components/shared/base-cards";
+import { EventConsultationCards, EventList, EventsConsultationView } from "@/features/events/components/events-page-sections";
 import {
   EVENTS_PAGE_HISTORY_LOOKBACK_DAYS,
   EVENTS_PAGE_QUERY_LIMIT,

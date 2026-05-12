@@ -1,4 +1,4 @@
-import type { StructureSearchConfig } from "@/components/structure-search";
+import type { StructureSearchConfig } from "@/components/shared/structure-search";
 import { CELLS_FILTERS, type CellsFilter } from "@/features/groups/cells-page-filters";
 import { TEAM_FILTERS, type TeamFilter } from "@/features/team/team-filters";
 import { FILTER_ALL } from "@/lib/filter-param";

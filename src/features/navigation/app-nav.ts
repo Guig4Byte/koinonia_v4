@@ -1,4 +1,4 @@
-import type { NavIndicatorTone, NavItem } from "@/components/bottom-nav";
+import type { NavIndicatorTone, NavItem } from "@/components/layout/bottom-nav";
 import { UserRole } from "@/generated/prisma/client";
 import { ROUTES } from "@/lib/routes";
 

@@ -2,7 +2,7 @@ import type { MouseEvent } from "react";
 import { ArrowLeft, CheckCircle2, MessageCircleMore, NotebookPen, Phone } from "lucide-react";
 import { CARE_NOTE_MAX_LENGTH, type CareContactLinks } from "@/features/care/care-actions-view";
 import { CARE_COPY } from "@/features/care/care-copy";
-import { ActionTextareaPanel } from "@/components/action-textarea-panel";
+import { ActionTextareaPanel } from "@/components/shared/action-textarea-panel";
 import { ActionPanel } from "@/components/ui/action-panel";
 import { Button, buttonClassName } from "@/components/ui/button";
 import { Feedback } from "@/components/ui/feedback";

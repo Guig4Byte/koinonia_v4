@@ -1,8 +1,8 @@
-import { AppShell } from "@/components/app-shell";
+import { AppShell } from "@/components/layout/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
-import { SectionTitle } from "@/components/base-cards";
-import { MemberPriorityList } from "@/components/member-priority-list";
-import { SearchBox } from "@/components/search-box";
+import { SectionTitle } from "@/components/shared/base-cards";
+import { MemberPriorityList } from "@/features/people/components/member-priority-list";
+import { SearchBox } from "@/features/search/components/search-box";
 import { getPeoplePageData } from "@/app/(app)/pessoas/page-data";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { ROUTES } from "@/lib/routes";

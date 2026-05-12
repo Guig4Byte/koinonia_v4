@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { ContextSummary } from "@/components/base-cards";
+import { ContextSummary } from "@/components/shared/base-cards";
 import type { BadgeTone } from "@/components/ui/badge";
-import type { MetricTone } from "@/components/presence-metric";
+import type { MetricTone } from "@/components/shared/presence-metric";
 import { formatPresenceRate } from "@/features/events/presence-display";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { ROUTES } from "@/lib/routes";

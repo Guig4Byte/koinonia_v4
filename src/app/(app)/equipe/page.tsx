@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
 import { Plus } from "lucide-react";
-import { AppShell } from "@/components/app-shell";
-import { ContextSummary, EmptyState, InfoCard, SectionTitle } from "@/components/base-cards";
+import { AppShell } from "@/components/layout/app-shell";
+import { ContextSummary, EmptyState, InfoCard, SectionTitle } from "@/components/shared/base-cards";
 import { ButtonLink } from "@/components/ui/button-link";
-import { ProgressiveList } from "@/components/progressive-list";
-import { TeamStructureSearch } from "@/components/team-structure-search";
-import { InactiveTeamGroupLink, TeamGroupLink, TeamSupervisorCard } from "@/components/team-structure-cards";
+import { ProgressiveList } from "@/components/shared/progressive-list";
+import { TeamStructureSearch } from "@/features/team/components/team-structure-search";
+import { InactiveTeamGroupLink, TeamGroupLink, TeamSupervisorCard } from "@/features/team/components/team-structure-cards";
 import { GroupKind } from "@/generated/prisma/client";
 import { getPastorTeamOverview } from "@/features/dashboard/queries";
 import { appNavForRole } from "@/features/navigation/app-nav";

@@ -6,7 +6,7 @@ import { CardLink } from "@/components/ui/card-link";
 import { MetricRow, SummaryCard } from "@/components/ui/summary-card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { cn } from "@/lib/cn";
-import { PresenceTrendDelta, type PresenceTrend } from "@/components/presence-metric";
+import { PresenceTrendDelta, type PresenceTrend } from "@/components/shared/presence-metric";
 
 export function PulseCard({
   title,

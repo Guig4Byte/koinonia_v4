@@ -1,6 +1,6 @@
 import { ArrowLeft, LifeBuoy, SendHorizontal } from "lucide-react";
 import { SIGNAL_COPY } from "@/features/signals/signal-copy";
-import { ActionTextareaPanel } from "@/components/action-textarea-panel";
+import { ActionTextareaPanel } from "@/components/shared/action-textarea-panel";
 import { Button } from "@/components/ui/button";
 import { Feedback } from "@/components/ui/feedback";
 import {

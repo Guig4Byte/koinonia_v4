@@ -1,5 +1,5 @@
 import { Children, type ReactNode } from "react";
-import { EmptyState } from "@/components/base-cards";
+import { EmptyState } from "@/components/shared/base-cards";
 import { buttonClassName } from "@/components/ui/button";
 
 export function PastoralSectionTitle({ children, detail }: { children: ReactNode; detail?: string }) {

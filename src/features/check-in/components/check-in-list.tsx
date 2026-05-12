@@ -1,9 +1,9 @@
 "use client";
 
-import { CheckInMemberCard } from "@/components/check-in-member-card";
-import { CheckInSaveBar } from "@/components/check-in-save-bar";
-import { CheckInSummaryCard } from "@/components/check-in-summary-card";
-import { CheckInVisitorsCard } from "@/components/check-in-visitors-card";
+import { CheckInMemberCard } from "@/features/check-in/components/check-in-member-card";
+import { CheckInSaveBar } from "@/features/check-in/components/check-in-save-bar";
+import { CheckInSummaryCard } from "@/features/check-in/components/check-in-summary-card";
+import { CheckInVisitorsCard } from "@/features/check-in/components/check-in-visitors-card";
 import { useCheckInController, type CheckInMember, type CheckInVisitorRecord } from "@/hooks/use-check-in-controller";
 import { checkInHelperText, type CheckInMode } from "@/features/check-in/check-in-view";
 

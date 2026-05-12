@@ -2,7 +2,7 @@ import { HeartHandshake } from "lucide-react";
 import { redirect } from "next/navigation";
 import { loginAction } from "@/app/login/actions";
 import { LoginErrorMessage, PasswordField } from "@/app/login/login-form-controls";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { getAuthenticatedUser } from "@/lib/auth/current-user";
 import { homeForRole } from "@/lib/auth/redirects";
 import { ROUTES } from "@/lib/routes";

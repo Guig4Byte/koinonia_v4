@@ -9,7 +9,7 @@ import {
   CareDoneMessage,
   CareErrorMessage,
   CareNoteCard,
-} from "@/components/care-action-cards";
+} from "@/features/care/components/care-action-cards";
 import { careContactInfo, careNoteId, careSavedMessage, type CareFlowStage } from "@/features/care/care-actions-view";
 import { CARE_COPY } from "@/features/care/care-copy";
 import { useApiAction } from "@/hooks/use-api-action";

@@ -1,4 +1,4 @@
-import { PeoplePageSkeleton } from "@/components/page-loading-skeletons";
+import { PeoplePageSkeleton } from "@/components/shared/page-loading-skeletons";
 
 export default function Loading() {
   return <PeoplePageSkeleton />;

@@ -1,5 +1,5 @@
-import { GroupCard } from "@/components/group-card";
-import { ProgressiveList } from "@/components/progressive-list";
+import { GroupCard } from "@/features/groups/components/group-card";
+import { ProgressiveList } from "@/components/shared/progressive-list";
 import {
   CELLS_PAGE_SECTION_LIMIT,
   groupBadge,

@@ -6,7 +6,7 @@ import {
   SignalSupportDecisionCard,
   SignalSupportFeedback,
   SignalSupportStartActions,
-} from "@/components/signal-support-action-cards";
+} from "@/features/signals/components/signal-support-action-cards";
 import {
   isSignalSupportFormStage,
   signalSupportActionCopyForStage,
