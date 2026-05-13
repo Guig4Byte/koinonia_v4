@@ -40,7 +40,7 @@ export default async function PastorPage() {
           {view.urgentOrPastoralCases.length > 0 ? (
             <PastoralSignalSection
               title="Irmãos que precisam de um olhar especial"
-              detail="Urgentes ou encaminhados ao pastor aparecem com mais destaque."
+              detail="Urgentes e encaminhados."
               emptyMessage="Nada grave ou encaminhado chegou para o pastor agora."
               signals={view.urgentOrPastoralCases}
               viewer={user}
@@ -50,7 +50,7 @@ export default async function PastorPage() {
           {view.inCarePeople.length > 0 ? (
             <InCareSection
               title="Acolhidos em cuidado pastoral"
-              detail="Pessoas que receberam cuidado pastoral e seguem no radar."
+              detail="Seguimento pastoral ativo."
               emptyMessage="Nenhuma pessoa em cuidado pastoral para destacar agora."
               people={view.inCarePeople}
             />

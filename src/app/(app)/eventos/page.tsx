@@ -67,8 +67,9 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
           <>
             <h2 className={pageStyles.title}>Encontros</h2>
             <p className={cn(pageStyles.description, pageStyles.eventsIntro)}>
-              Acompanhe os encontros das células nesta semana e os registros de presença.
+              Encontros da semana e presença em um só lugar.
             </p>
+            <EventConsultationCards />
 
             <SectionTitle>Hoje</SectionTitle>
             {todayEvents.length > 0 ? <EventList events={todayEvents} user={user} now={now} /> : <EmptyState>Nenhum encontro previsto para hoje.</EmptyState>}
@@ -76,8 +77,6 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
             <SectionTitle>Próximos encontros</SectionTitle>
             {weekEvents.length > 0 ? <EventList events={weekEvents} user={user} now={now} /> : <EmptyState>Nenhum outro encontro agendado para esta semana.</EmptyState>}
 
-            <SectionTitle detail="Veja encontros sem presença registrada ou registros anteriores quando precisar.">Consultar outros encontros</SectionTitle>
-            <EventConsultationCards />
           </>
         )}
       </div>

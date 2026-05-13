@@ -44,7 +44,7 @@ export default async function SupervisorPage() {
           {view.urgentSignals.length > 0 ? (
             <PastoralSignalSection
               title="Irmãos que precisam de um olhar especial"
-              detail="Urgentes ou encaminhados ao pastor aparecem com mais destaque."
+              detail="Urgentes e encaminhados."
               emptyMessage="Nenhum caso urgente ou encaminhado agora."
               signals={view.urgentSignals}
               viewer={user}
@@ -55,7 +55,7 @@ export default async function SupervisorPage() {
           {view.supportSignals.length > 0 ? (
             <PastoralSignalSection
               title="Pedidos de apoio"
-              detail="Pedidos trazidos pelos líderes aparecem separados, para apoiar sem virar operador da célula."
+              detail="Apoios pedidos pelos líderes."
               emptyMessage="Nenhum líder pediu apoio agora."
               signals={view.supportSignals}
               viewer={user}
@@ -67,7 +67,7 @@ export default async function SupervisorPage() {
           {view.attentionSignals.length > 0 ? (
             <PastoralSignalSection
               title="Acompanhar de perto"
-              detail="Atenções locais das células supervisionadas."
+              detail="Casos nas células supervisionadas."
               emptyMessage="Nenhum outro caso em atenção agora."
               signals={view.attentionSignals}
               viewer={user}
@@ -78,7 +78,7 @@ export default async function SupervisorPage() {
           {view.inCarePeople.length > 0 ? (
             <InCareSection
               title="Acolhidos em cuidado"
-              detail="Pessoas que já receberam cuidado e seguem no radar."
+              detail="Seguimento pastoral ativo."
               emptyMessage="Nenhuma pessoa em cuidado agora."
               people={view.inCarePeople}
             />

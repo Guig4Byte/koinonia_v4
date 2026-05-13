@@ -164,11 +164,11 @@ export function buildEventsConsultationView({
     filteredEvents,
     title: mode === "historico" ? "Histórico de presença" : "Sem presença registrada",
     description: mode === "historico"
-      ? "Consulte encontros já registrados por período."
-      : "Alguns encontros ainda não têm presença registrada. Talvez já tenham acontecido, mas a presença ainda não foi marcada.",
+      ? "Presenças registradas por período."
+      : "Encontros que já passaram e ainda precisam de presença.",
     emptyMessage: mode === "historico"
-      ? "Nenhuma presença registrada neste período."
-      : "Nenhum encontro sem presença registrada neste período.",
+      ? "Nenhuma presença registrada neste período. Tente outro período."
+      : "Nenhum encontro pendente neste período.",
     periodLabel: eventPeriodLabel(period),
   };
 }

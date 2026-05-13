@@ -74,7 +74,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
           <div className="min-w-0">
             <h2 className={pageStyles.title}>Equipe</h2>
             <p className={pageStyles.description}>
-              Supervisores e células em ordem de atenção pastoral, com presença baixa destacada sem duplicar listas.
+              Supervisores e células por atenção pastoral.
             </p>
           </div>
           {canCreateGroup ? (
@@ -95,29 +95,29 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
               {
                 label: "Supervisores",
                 value: String(team.summary.supervisorsCount),
-                detail: "Equipe que acompanha líderes e células.",
+                detail: "Acompanhamento pastoral.",
                 tone: "neutral",
               },
               {
                 label: "Células ativas",
                 value: String(team.summary.groupsCount),
-                detail: "Estrutura visível para cuidado pastoral.",
+                detail: "Células em acompanhamento.",
                 tone: "neutral",
               },
               {
                 label: "Pedem atenção",
                 value: String(needsAttentionCount),
                 detail: needsAttentionCount > 0
-                  ? "Por casos pastorais ou presença baixa registrada."
-                  : "Sem caso pastoral ou presença baixa para destacar agora.",
+                  ? "Casos ou presença baixa."
+                  : "Sem destaque agora.",
                 tone: needsAttentionCount > 0 ? "warn" : "ok",
               },
               {
                 label: NO_RECENT_PRESENCE_LABEL,
                 value: String(team.summary.groupsWithoutPresenceCount),
                 detail: team.summary.groupsWithoutPresenceCount > 0
-                  ? "Ainda não há presença recente registrada. Talvez o encontro tenha acontecido, mas a presença ainda não foi marcada."
-                  : "Todas têm presença recente registrada.",
+                  ? "Confira encontros pendentes."
+                  : "Todas com registro recente.",
                 tone: team.summary.groupsWithoutPresenceCount > 0 ? "neutral" : "ok",
               },
             ]}
@@ -125,12 +125,12 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
         </div>
 
         <section id={SUPERVISORS_SECTION_ID} className="scroll-mt-4">
-          <SectionTitle detail="Busque e filtre supervisores e células listadas abaixo.">Estrutura da equipe</SectionTitle>
+          <SectionTitle detail="Busque ou filtre por atenção.">Estrutura da equipe</SectionTitle>
           <TeamStructureSearch query={query} filter={activeFilter} sectionId={SUPERVISORS_SECTION_ID} />
         </section>
 
         <section>
-          <SectionTitle detail="Resumo por supervisor, priorizando casos pastorais e presença baixa.">Supervisores</SectionTitle>
+          <SectionTitle detail="Prioridade e presença por supervisor.">Supervisores</SectionTitle>
           {filteredSupervisors.length > 0 ? (
             <ProgressiveList
               initialCount={SUPERVISOR_SECTION_LIMIT}
@@ -151,7 +151,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
 
         {filteredUnassignedGroups.length > 0 ? (
           <section>
-            <SectionTitle detail="Células ativas que ainda não têm supervisor vinculado.">Sem supervisor</SectionTitle>
+            <SectionTitle detail="Células ativas sem vínculo.">Sem supervisor</SectionTitle>
             <ProgressiveList
               initialCount={TEAM_SECTION_LIMIT}
               step={TEAM_SECTION_LIMIT}
@@ -167,7 +167,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
 
         {filteredInactiveGroups.length > 0 ? (
           <section>
-            <SectionTitle detail="Fora das superfícies padrão, encontros e check-in. Abra para reativar ou ajustar dados básicos.">Células inativas</SectionTitle>
+            <SectionTitle detail="Abra para reativar ou ajustar.">Células inativas</SectionTitle>
             <ProgressiveList
               initialCount={TEAM_SECTION_LIMIT}
               step={TEAM_SECTION_LIMIT}
@@ -181,10 +181,6 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
           </section>
         ) : null}
 
-        <SectionTitle>Consulta</SectionTitle>
-        <InfoCard>
-          Abra uma célula para ver liderança, membros e histórico de presença.
-        </InfoCard>
       </div>
     </AppShell>
   );

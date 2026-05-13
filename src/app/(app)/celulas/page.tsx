@@ -4,7 +4,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { CellsPageSections } from "@/features/groups/components/cells-page-sections";
 import { CellsStructureSearch } from "@/features/groups/components/cells-structure-search";
 import { ButtonLink } from "@/components/ui/button-link";
-import { ContextSummary, EmptyState, InfoCard, SectionTitle } from "@/components/shared/base-cards";
+import { ContextSummary, EmptyState, SectionTitle } from "@/components/shared/base-cards";
 import { buildWeeklyPresenceSummaryItem } from "@/features/dashboard/presence-health";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { CELLS_SECTION_ID, readCellsFilter } from "@/features/groups/cells-page-filters";
@@ -54,7 +54,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
           <div className="min-w-0">
             <h2 className={pageStyles.title}>Células</h2>
             <p className={pageStyles.description}>
-              Acompanhe as células sob sua supervisão sem duplicar os sinais de pessoas da Visão.
+              Células sob sua supervisão, por atenção pastoral.
             </p>
           </div>
           {canCreateGroup ? (
@@ -71,7 +71,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
               {
                 label: "Células acompanhadas",
                 value: String(dashboard.groups.length),
-                detail: "Comunidades que você acompanha de perto.",
+                detail: "Sob sua supervisão.",
                 tone: "neutral",
               },
               buildWeeklyPresenceSummaryItem(dashboard.hasPresenceData, dashboard.presenceRate),
@@ -79,16 +79,16 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
                 label: "Pedem cuidado mais próximo",
                 value: String(view.groupsNeedingAttentionCount),
                 detail: view.groupsNeedingAttentionCount > 0
-                  ? "Células que pedem proximidade, apoio ou discernimento."
-                  : "Nenhuma célula pedindo cuidado próximo agora.",
+                  ? "Prioridade no acompanhamento."
+                  : "Sem alerta aberto agora.",
                 tone: view.groupsNeedingAttentionCount > 0 ? "warn" : "ok",
               },
               {
                 label: NO_RECENT_PRESENCE_LABEL,
                 value: String(view.groupsWithoutPresenceCount),
                 detail: view.groupsWithoutPresenceCount > 0
-                  ? "Pode haver encontro realizado sem marcação ainda."
-                  : "Todas têm presença recente registrada.",
+                  ? "Confira encontros pendentes."
+                  : "Todas com registro recente.",
                 tone: view.groupsWithoutPresenceCount > 0 ? "neutral" : "ok",
               },
             ]}
@@ -96,7 +96,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
         </div>
 
         <section id={CELLS_SECTION_ID} className="scroll-mt-4">
-          <SectionTitle detail="Busque e filtre as células listadas abaixo.">Células supervisionadas</SectionTitle>
+          <SectionTitle detail="Busque ou filtre por atenção.">Células supervisionadas</SectionTitle>
           <CellsStructureSearch query={query} filter={activeFilter} sectionId={CELLS_SECTION_ID} />
 
           <div className="mt-6">
@@ -110,10 +110,6 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
           </div>
         </section>
 
-        <SectionTitle>Consulta</SectionTitle>
-        <InfoCard>
-          Abra uma célula para ver liderança, membros e histórico de presença. Os pedidos de apoio e pessoas em atenção continuam priorizados na Visão.
-        </InfoCard>
       </div>
     </AppShell>
   );

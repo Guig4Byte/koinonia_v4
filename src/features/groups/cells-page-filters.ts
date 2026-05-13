@@ -13,7 +13,7 @@ export type CellsFilter = typeof FILTER_ALL | typeof FILTER_ATTENTION | typeof F
 
 export const CELLS_FILTERS: ReadonlyArray<FilterOption<CellsFilter>> = [
   { value: FILTER_ALL, label: "Todas" },
-  { value: FILTER_ATTENTION, label: "Pedem cuidado próximo" },
+  { value: FILTER_ATTENTION, label: "Cuidado próximo" },
   { value: FILTER_NO_RECENT_PRESENCE, label: NO_RECENT_PRESENCE_FILTER_LABEL },
 ];
 

@@ -28,6 +28,26 @@
   text-transform: none;
 }
 
+.k-section-detail {
+  margin-top: 4px;
+  max-width: 28rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.45;
+}
+
+.k-horizontal-fade {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 40px), transparent 100%);
+  mask-image: linear-gradient(to right, black calc(100% - 40px), transparent 100%);
+}
+
+.k-horizontal-fade::-webkit-scrollbar {
+  display: none;
+}
+
 .k-item-title {
   color: var(--color-text-primary);
   font-weight: 600;

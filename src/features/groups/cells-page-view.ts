@@ -25,7 +25,7 @@ export type GroupSectionKey = "care" | "presence" | "stable";
 export const GROUP_SECTIONS: Array<{ key: GroupSectionKey; title: string }> = [
   {
     key: "care",
-    title: "Pedem cuidado próximo",
+    title: "Cuidado próximo",
   },
   {
     key: "presence",

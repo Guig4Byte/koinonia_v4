@@ -13,7 +13,7 @@ export function SectionHeader({
   return (
     <div className={cn("mb-2 mt-6", className)}>
       <h2 className="k-section-kicker">{title}</h2>
-      {detail ? <p className="k-supporting-copy">{detail}</p> : null}
+      {detail ? <p className="k-section-detail">{detail}</p> : null}
     </div>
   );
 }

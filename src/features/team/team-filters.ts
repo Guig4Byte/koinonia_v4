@@ -11,7 +11,7 @@ export type TeamFilter = typeof FILTER_ALL | typeof FILTER_ATTENTION | typeof FI
 
 export const TEAM_FILTERS: ReadonlyArray<FilterOption<TeamFilter>> = [
   { value: FILTER_ALL, label: "Todos" },
-  { value: FILTER_ATTENTION, label: "Pedem atenção" },
+  { value: FILTER_ATTENTION, label: "Atenção" },
   { value: FILTER_NO_RECENT_PRESENCE, label: NO_RECENT_PRESENCE_FILTER_LABEL },
 ];
 

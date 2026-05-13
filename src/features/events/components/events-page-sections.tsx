@@ -1,4 +1,5 @@
 import { BackLink, EmptyState, SectionTitle } from "@/components/shared/base-cards";
+import { CalendarClock, ClipboardCheck, type LucideIcon } from "lucide-react";
 import { priorityCardClass } from "@/lib/card-priority";
 import { ProgressiveList } from "@/components/shared/progressive-list";
 import { buttonClassName } from "@/components/ui/button";
@@ -94,30 +95,47 @@ export function EventList({ events, user, now, limit = EVENT_LIST_LIMIT }: { eve
   );
 }
 
-function ConsultationCard({ href, title, description }: { href: string; title: string; description: string }) {
+function ConsultationCard({
+  href,
+  title,
+  description,
+  icon: Icon,
+}: {
+  href: string;
+  title: string;
+  description: string;
+  icon: LucideIcon;
+}) {
   return (
-    <CardLink href={href}>
-      <p className="k-item-title">{title}</p>
-      <p className="k-supporting-copy">{description}</p>
-      <p className="mt-3 text-[length:var(--text-sm)] font-semibold text-[color:var(--color-brand)]">Consultar →</p>
+    <CardLink href={href} padding="sm" className={cn(styles.consultationCard, "group")} aria-label={`${title}: ${description}`}>
+      <span className={styles.consultationIcon} aria-hidden="true">
+        <Icon className="h-4 w-4" />
+      </span>
+      <span className="min-w-0">
+        <span className={styles.consultationTitle}>{title}</span>
+        <span className={styles.consultationDescription}>{description}</span>
+      </span>
+      <span className={styles.consultationArrow} aria-hidden="true">→</span>
     </CardLink>
   );
 }
 
 export function EventConsultationCards() {
   return (
-    <div className="space-y-3">
+    <nav className={styles.consultationActions} aria-label="Consultas de encontros">
       <ConsultationCard
         href={eventsConsultationSectionHref("sem-presenca", "semana")}
-        title="Sem presença registrada"
-        description="Alguns encontros podem já ter acontecido, mas ainda não têm presença marcada."
+        title="Sem presença"
+        description="Pendentes da semana"
+        icon={ClipboardCheck}
       />
       <ConsultationCard
         href={eventsConsultationSectionHref("historico", "semana")}
-        title="Histórico de presença"
-        description="Consulte encontros já registrados por período."
+        title="Histórico"
+        description="Presenças registradas"
+        icon={CalendarClock}
       />
-    </div>
+    </nav>
   );
 }
 
@@ -125,7 +143,7 @@ function PeriodChips({ mode, activePeriod }: { mode: EventConsultationMode; acti
   const periods: EventPeriod[] = mode === "historico" ? ["semana", "semana-passada", "30d"] : ["semana", "30d"];
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className={styles.periodChips}>
       {periods.map((period) => {
         const active = period === activePeriod;
         return (

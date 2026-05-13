@@ -42,7 +42,7 @@ export default async function LeaderPage() {
             {view.urgentSignals.length > 0 ? (
               <PastoralSignalSection
                 title="Irmãos que precisam de um olhar especial"
-                detail="Abra a pessoa para entender o contexto com calma."
+                detail="Abra para ver contexto."
                 emptyMessage="Nenhuma pessoa urgente ou encaminhada agora."
                 signals={view.urgentSignals}
                 viewer={user}
@@ -53,7 +53,7 @@ export default async function LeaderPage() {
             {view.supportSignals.length > 0 ? (
               <PastoralSignalSection
                 title="Pedidos de apoio"
-                detail="Pedidos enviados à supervisão continuam visíveis para acompanhamento local."
+                detail="Apoios enviados à supervisão."
                 emptyMessage="Nenhum pedido de apoio aberto agora."
                 signals={view.supportSignals}
                 viewer={user}
@@ -64,7 +64,7 @@ export default async function LeaderPage() {
             {view.attentionSignals.length > 0 ? (
               <PastoralSignalSection
                 title="Acompanhar de perto"
-                detail="Atenções locais que pedem proximidade."
+                detail="Casos para acompanhar de perto."
                 emptyMessage="Nenhum membro da sua célula está em atenção agora."
                 signals={view.attentionSignals}
                 viewer={user}
@@ -75,7 +75,7 @@ export default async function LeaderPage() {
             {view.inCarePeople.length > 0 ? (
               <InCareSection
                 title="Acolhidos em cuidado"
-                detail="Pessoas que já receberam cuidado e seguem no radar."
+                detail="Seguimento pastoral ativo."
                 emptyMessage="Nenhuma pessoa em cuidado agora."
                 people={view.inCarePeople}
               />
@@ -91,7 +91,7 @@ export default async function LeaderPage() {
         )}
 
         <section className={styles.eventSection}>
-          <PastoralSectionTitle detail="A presença completa fica na tela do encontro.">Encontro da célula</PastoralSectionTitle>
+          <PastoralSectionTitle detail="Presença na tela do encontro.">Encontro da célula</PastoralSectionTitle>
           {dashboard.currentEvent ? (
             <LeaderCurrentEventCard event={dashboard.currentEvent} />
           ) : (
