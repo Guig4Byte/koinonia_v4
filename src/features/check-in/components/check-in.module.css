@@ -95,7 +95,7 @@
 
 .statusBadgeButton:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(60, 30, 10, 0.08);
+  box-shadow: var(--color-shadow-hover);
 }
 
 .statusBadgeButton:active:not(:disabled) {
@@ -151,7 +151,7 @@
   position: absolute;
   inset: 0;
   border: 0;
-  background: rgba(26, 16, 8, 0.42);
+  background: var(--color-modal-backdrop);
   cursor: pointer;
 }
 
@@ -165,7 +165,7 @@
   background:
     radial-gradient(ellipse 82% 62% at 50% 0%, color-mix(in srgb, var(--color-brand-accent) 10%, transparent) 0%, transparent 72%),
     var(--color-bg-card);
-  box-shadow: 0 28px 72px rgba(26, 16, 8, 0.28);
+  box-shadow: var(--color-shadow-elevated);
   padding: 0.75rem 1rem 1rem;
   animation: status-sheet-enter 180ms ease-out;
 }

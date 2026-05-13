@@ -179,6 +179,11 @@ html[data-theme="light"] {
   --color-shadow-nav: 0 10px 24px rgba(100, 60, 20, 0.10), 0 1px 2px rgba(100, 60, 20, 0.04);
   --color-shadow-nav-active: none;
   --color-shadow-header: 0 18px 48px rgba(44, 26, 10, 0.12);
+  --color-shadow-hover: 0 8px 18px rgba(60, 30, 10, 0.08);
+  --color-shadow-elevated: 0 28px 72px rgba(26, 16, 8, 0.28);
+  --color-modal-backdrop: rgba(26, 16, 8, 0.42);
+  --color-bg-page-top: var(--cream-100);
+
 
   /* Avatar */
   --color-avatar-bg: var(--brown-900);
@@ -190,10 +195,12 @@ html[data-theme="light"] {
 
   /* Login — hero pastoral escuro */
   --login-page-bg: var(--cream-100);
+  --login-page-bg-top: var(--cream-100);
   --login-card-bg: var(--brown-900);
   --login-card-bg-bottom: var(--brown-950);
   --login-card-glow: rgba(184, 132, 79, 0.22);
   --login-card-border: rgba(232, 213, 188, 0.18);
+  --login-card-shadow: 0 24px 60px rgba(44, 26, 10, 0.20), 0 1px 2px rgba(44, 26, 10, 0.10);
   --login-title: var(--cream-50);
   --login-text: var(--brown-200);
   --login-muted: color-mix(in srgb, var(--brown-200) 82%, var(--cream-50));
@@ -285,6 +292,19 @@ html[data-theme="parchment"] {
   --color-badge-info-border: var(--color-badge-cuidado-border);
   --color-badge-info-text: var(--color-badge-cuidado-text);
 
+  --status-danger-bg: var(--color-badge-risco-bg);
+  --status-danger-text: var(--color-badge-risco-text);
+  --status-danger-border: var(--color-badge-risco-border);
+  --status-warning-bg: var(--color-badge-atencao-bg);
+  --status-warning-text: var(--color-badge-atencao-text);
+  --status-warning-border: var(--color-badge-atencao-border);
+  --status-success-bg: var(--color-badge-estavel-bg);
+  --status-success-text: var(--color-badge-estavel-text);
+  --status-success-border: var(--color-badge-estavel-border);
+  --status-info-bg: var(--color-badge-info-bg);
+  --status-info-text: var(--color-badge-info-text);
+  --status-info-border: var(--color-badge-info-border);
+
   --color-border-card: rgba(92, 54, 13, 0.26);
   --color-border-divider: rgba(92, 54, 13, 0.26);
   --color-border-tab: rgba(92, 54, 13, 0.18);
@@ -292,6 +312,11 @@ html[data-theme="parchment"] {
   --color-shadow-nav: 0 10px 24px rgba(74, 39, 9, 0.12), 0 1px 2px rgba(74, 39, 9, 0.06);
   --color-shadow-nav-active: none;
   --color-shadow-header: 0 14px 34px rgba(74, 39, 9, 0.12);
+  --color-shadow-hover: 0 8px 18px rgba(74, 39, 9, 0.10);
+  --color-shadow-elevated: 0 28px 72px rgba(74, 39, 9, 0.24);
+  --color-modal-backdrop: rgba(58, 32, 8, 0.44);
+  --color-bg-page-top: #ead6b3;
+
 
   --color-avatar-bg: #6b4010;
   --color-avatar-text: #f5dfa0;
@@ -300,8 +325,11 @@ html[data-theme="parchment"] {
   --color-theme-icon-active-border: rgba(245, 223, 160, 0.34);
 
   --login-page-bg: #d7b37a;
+  --login-page-bg-top: #ead6b3;
   --login-card-bg: #eadabb;
+  --login-card-bg-bottom: #dfc79e;
   --login-card-border: #c4a474;
+  --login-card-shadow: 0 24px 60px rgba(74, 39, 9, 0.18), 0 1px 2px rgba(74, 39, 9, 0.10);
   --login-title: #3b1d0c;
   --login-text: #5a3515;
   --login-muted: #5a3515;
@@ -330,116 +358,139 @@ html[data-theme="parchment"] {
 }
 
 html[data-theme="dark"] {
-  /* Dark theme restaurado para a estética anterior: espresso, creme e dourado suave. */
-  --color-bg-page: #14110e;
-  --color-bg-card: #241f19;
-  --color-bg-header: #241f19;
-  --color-bg-tab: color-mix(in srgb, var(--color-bg-card) 92%, transparent);
-  --color-bg-tab-active: color-mix(in srgb, var(--color-brand-accent) 16%, var(--color-bg-card));
-  --color-bg-metric-card: #302820;
-  --color-bg-subtle-card: #2b251f;
-  --color-border-metric-card: #40362e;
-  --color-shadow-metric-card: 0 1px 2px rgba(0, 0, 0, 0.16);
+  /* Dark theme — espresso pastoral com contraste AA para textos e estados. */
+  --color-bg-page: #120c07;
+  --color-bg-card: #211811;
+  --color-bg-header: var(--brown-950);
+  --color-bg-tab: color-mix(in srgb, var(--color-bg-card) 90%, transparent);
+  --color-bg-tab-active: color-mix(in srgb, var(--brown-400) 18%, var(--color-bg-card));
+  --color-bg-metric-card: #2b2119;
+  --color-bg-subtle-card: #2a2018;
+  --color-border-metric-card: rgba(232, 213, 188, 0.12);
+  --color-shadow-metric-card: 0 1px 2px rgba(0, 0, 0, 0.22);
 
-  --color-text-primary: #f5eee5;
-  --color-text-secondary: #c4b4a3;
-  --color-text-muted: #a08f7c;
-  --color-text-on-header: #f5eee5;
-  --color-text-on-banner: #f5eee5;
+  --color-text-primary: #fbf4ea;
+  --color-text-secondary: #d9c9b6;
+  --color-text-muted: #b8a38c;
+  --color-text-on-header: var(--cream-50);
+  --color-text-on-banner: var(--brown-200);
 
-  --color-brand: #d7b98f;
-  --color-brand-accent: #d7b98f;
+  --color-brand: var(--brown-100);
+  --color-brand-accent: var(--brown-400);
 
-  --color-btn-primary-bg: #d7b98f;
-  --color-btn-primary-text: #241b13;
-  --color-btn-secondary-bg: #2b251f;
-  --color-btn-secondary-border: #3b342c;
-  --color-btn-secondary-text: #f5eee5;
+  --color-btn-primary-bg: var(--brown-100);
+  --color-btn-primary-text: var(--brown-950);
+  --color-btn-secondary-bg: color-mix(in srgb, var(--brown-400) 9%, transparent);
+  --color-btn-secondary-border: rgba(212, 184, 150, 0.28);
+  --color-btn-secondary-text: var(--cream-50);
 
-  --color-action-call-text: #d7b98f;
-  --color-action-whatsapp-text: #241b13;
+  --color-action-call-text: var(--brown-100);
+  --color-action-whatsapp-text: var(--brown-950);
 
-  --color-segmented-border: rgba(215, 185, 143, 0.34);
-  --color-segmented-active-text: #241b13;
-  --color-segmented-inactive-text: #d8c7b5;
+  --color-segmented-bg: rgba(0, 0, 0, 0.22);
+  --color-segmented-border: rgba(212, 184, 150, 0.26);
+  --color-segmented-active-text: var(--brown-950);
+  --color-segmented-inactive-text: var(--brown-200);
 
-  --color-tab-inactive: #2b251f;
-  --color-tab-label-active: #f5eee5;
-  --color-tab-label-inactive: #a08f7c;
+  --color-tab-inactive: color-mix(in srgb, var(--color-bg-subtle-card) 86%, transparent);
+  --color-tab-label-active: var(--cream-50);
+  --color-tab-label-inactive: var(--color-text-muted);
+  --color-tab-active: var(--brown-100);
 
-  --color-metric-presenca: #a9d889;
-  --color-metric-atencoes: #f08b78;
-  --color-metric-visitantes: #f5eee5;
+  --status-danger-bg: #3a1d19;
+  --status-danger-border: #8f3f35;
+  --status-danger-text: #ffb4a8;
+  --status-warning-bg: #352714;
+  --status-warning-border: #806020;
+  --status-warning-text: #ffd27d;
+  --status-success-bg: #182f1d;
+  --status-success-border: #3d6844;
+  --status-success-text: #a9e6ad;
+  --status-info-bg: #13283d;
+  --status-info-border: #365f87;
+  --status-info-text: #a8d4ff;
 
-  --color-badge-atencao-bg: #352a18;
-  --color-badge-atencao-border: #6c4b1b;
-  --color-badge-atencao-text: #f5bd5e;
-  --color-badge-risco-bg: #3a211d;
-  --color-badge-risco-border: #a04233;
-  --color-badge-risco-text: #ff9a87;
-  --color-badge-cuidado-bg: #172b3c;
-  --color-badge-cuidado-border: #31597a;
-  --color-badge-cuidado-text: #8ec7f1;
-  --color-badge-apoio-bg: #2b2338;
-  --color-badge-apoio-border: #584275;
-  --color-badge-apoio-text: #c8b3f3;
-  --color-badge-estavel-bg: #21321c;
-  --color-badge-estavel-border: #39522d;
-  --color-badge-estavel-text: #a9d889;
-  --color-badge-info-bg: var(--color-badge-cuidado-bg);
-  --color-badge-info-border: var(--color-badge-cuidado-border);
-  --color-badge-info-text: var(--color-badge-cuidado-text);
+  --color-metric-presenca: var(--status-success-text);
+  --color-metric-atencoes: var(--status-danger-text);
+  --color-metric-visitantes: var(--cream-50);
 
-  --color-border-card: #463b32;
-  --color-border-divider: #3c332b;
-  --color-border-tab: rgba(215, 185, 143, 0.22);
-  --color-shadow-card: 0 12px 28px rgba(0, 0, 0, 0.24), 0 1px 2px rgba(0, 0, 0, 0.18);
-  --color-shadow-nav: 0 14px 34px rgba(0, 0, 0, 0.32), 0 1px 2px rgba(0, 0, 0, 0.22);
+  --color-badge-atencao-bg: var(--status-warning-bg);
+  --color-badge-atencao-border: var(--status-warning-border);
+  --color-badge-atencao-text: var(--status-warning-text);
+  --color-badge-risco-bg: var(--status-danger-bg);
+  --color-badge-risco-border: var(--status-danger-border);
+  --color-badge-risco-text: var(--status-danger-text);
+  --color-badge-cuidado-bg: var(--status-info-bg);
+  --color-badge-cuidado-border: var(--status-info-border);
+  --color-badge-cuidado-text: var(--status-info-text);
+  --color-badge-apoio-bg: #2c2138;
+  --color-badge-apoio-border: #67508a;
+  --color-badge-apoio-text: #d5c1ff;
+  --color-badge-estavel-bg: var(--status-success-bg);
+  --color-badge-estavel-border: var(--status-success-border);
+  --color-badge-estavel-text: var(--status-success-text);
+  --color-badge-info-bg: var(--status-info-bg);
+  --color-badge-info-border: var(--status-info-border);
+  --color-badge-info-text: var(--status-info-text);
+
+  --color-border-card: rgba(232, 213, 188, 0.16);
+  --color-border-divider: rgba(232, 213, 188, 0.12);
+  --color-border-tab: rgba(232, 213, 188, 0.16);
+  --color-shadow-card: 0 14px 34px rgba(0, 0, 0, 0.30), 0 1px 2px rgba(0, 0, 0, 0.26);
+  --color-shadow-nav: 0 16px 38px rgba(0, 0, 0, 0.38), 0 1px 2px rgba(0, 0, 0, 0.26);
   --color-shadow-nav-active: 0 2px 10px rgba(0, 0, 0, 0.20);
-  --color-shadow-header: 0 18px 42px rgba(0, 0, 0, 0.24);
+  --color-shadow-header: 0 18px 44px rgba(0, 0, 0, 0.34);
+  --color-shadow-hover: 0 12px 28px rgba(0, 0, 0, 0.28), 0 1px 3px rgba(0, 0, 0, 0.16);
+  --color-shadow-elevated: 0 28px 72px rgba(0, 0, 0, 0.46);
+  --color-modal-backdrop: rgba(10, 6, 3, 0.66);
+  --color-bg-page-top: #1a1008;
 
-  --color-avatar-bg: #3a211d;
-  --color-avatar-text: #f08b78;
+  --color-avatar-bg: var(--status-danger-bg);
+  --color-avatar-text: var(--status-danger-text);
 
-  --color-theme-icon-active-bg: rgba(215, 185, 143, 0.12);
-  --color-theme-icon-active-border: rgba(215, 185, 143, 0.28);
+  --color-theme-icon-active-bg: rgba(253, 250, 246, 0.08);
+  --color-theme-icon-active-border: rgba(232, 213, 188, 0.20);
 
-  --surface-alt: #302820;
-  --accent-muted: #4f3d2c;
-  --page-glow: rgba(215, 185, 143, 0.1);
+  --surface-alt: var(--color-bg-subtle-card);
+  --accent-muted: rgba(212, 184, 150, 0.18);
+  --page-glow: rgba(184, 132, 79, 0.16);
 
   --login-page-bg: var(--color-bg-page);
-  --login-card-bg: var(--color-bg-card);
-  --login-card-border: var(--color-border-card);
-  --login-title: var(--color-text-primary);
-  --login-text: var(--color-text-secondary);
-  --login-muted: var(--color-text-muted);
-  --login-brand-kicker: var(--color-brand-accent);
-  --login-logo-bg: var(--color-bg-subtle-card);
-  --login-logo-border: var(--color-border-card);
-  --login-logo-icon: var(--color-brand-accent);
-  --login-divider: var(--color-border-divider);
-  --login-input-bg: var(--color-bg-page);
-  --login-input-border: var(--color-border-card);
-  --login-input-hover-border: color-mix(in srgb, var(--color-brand-accent) 44%, var(--color-border-card));
-  --login-input-text: var(--color-text-primary);
-  --login-input-placeholder: var(--color-text-muted);
-  --login-input-icon: var(--color-text-muted);
-  --login-input-icon-hover: var(--color-brand-accent);
-  --login-password-toggle-hover-bg: var(--color-bg-subtle-card);
-  --login-password-toggle-hover-border: var(--color-border-card);
-  --login-input-focus-border: var(--color-brand-accent);
-  --login-input-focus-shadow: color-mix(in srgb, var(--color-brand-accent) 18%, transparent);
-  --login-button-bg: var(--color-btn-primary-bg);
-  --login-button-border: var(--color-btn-primary-bg);
-  --login-button-text: var(--color-btn-primary-text);
-  --login-button-hover-bg: color-mix(in srgb, var(--color-btn-primary-bg) 84%, #ffffff);
-  --login-button-active-bg: color-mix(in srgb, var(--color-btn-primary-bg) 74%, #ffffff);
-  --theme-toggle-bg: var(--color-bg-subtle-card);
-  --theme-toggle-border: var(--color-border-card);
-  --theme-toggle-icon: var(--color-text-primary);
-  --theme-toggle-hover-bg: var(--surface-alt);
-  --theme-toggle-active-bg: color-mix(in srgb, var(--surface-alt) 76%, var(--color-brand-accent));
+  --login-page-bg-top: var(--brown-950);
+  --login-card-bg: var(--brown-900);
+  --login-card-bg-bottom: var(--brown-950);
+  --login-card-glow: rgba(184, 132, 79, 0.18);
+  --login-card-border: rgba(232, 213, 188, 0.16);
+  --login-card-shadow: 0 28px 72px rgba(0, 0, 0, 0.42), 0 1px 2px rgba(0, 0, 0, 0.28);
+  --login-title: var(--cream-50);
+  --login-text: var(--brown-200);
+  --login-muted: color-mix(in srgb, var(--brown-200) 84%, var(--cream-50));
+  --login-brand-kicker: var(--brown-400);
+  --login-logo-bg: rgba(253, 250, 246, 0.08);
+  --login-logo-border: rgba(232, 213, 188, 0.20);
+  --login-logo-icon: var(--brown-100);
+  --login-divider: rgba(212, 184, 150, 0.22);
+  --login-input-bg: color-mix(in srgb, var(--cream-50) 94%, var(--brown-50));
+  --login-input-border: rgba(212, 184, 150, 0.34);
+  --login-input-hover-border: color-mix(in srgb, var(--brown-400) 70%, var(--brown-100));
+  --login-input-text: var(--brown-950);
+  --login-input-placeholder: #8a765f;
+  --login-input-icon: #8a765f;
+  --login-input-icon-hover: var(--brown-700);
+  --login-password-toggle-hover-bg: rgba(44, 26, 10, 0.06);
+  --login-password-toggle-hover-border: rgba(139, 90, 43, 0.18);
+  --login-input-focus-border: var(--brown-400);
+  --login-input-focus-shadow: color-mix(in srgb, var(--brown-400) 26%, transparent);
+  --login-button-bg: var(--cream-50);
+  --login-button-border: var(--cream-50);
+  --login-button-text: var(--brown-900);
+  --login-button-hover-bg: var(--brown-100);
+  --login-button-active-bg: var(--brown-200);
+  --theme-toggle-bg: rgba(253, 250, 246, 0.08);
+  --theme-toggle-border: rgba(232, 213, 188, 0.20);
+  --theme-toggle-icon: var(--brown-100);
+  --theme-toggle-hover-bg: rgba(253, 250, 246, 0.12);
+  --theme-toggle-active-bg: rgba(253, 250, 246, 0.16);
 }
 
 html[data-text-size="large"] {
