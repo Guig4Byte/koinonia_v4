@@ -28,8 +28,8 @@ export function PulseCard({
     attention: {
       accentClass: "bg-[var(--color-metric-atencoes)]",
       surfaceStyle: {
-        borderColor: "color-mix(in srgb, var(--color-metric-atencoes) 22%, var(--color-border-card) 78%)",
-        background: "color-mix(in srgb, var(--color-bg-card) 94%, var(--color-metric-atencoes) 6%)",
+        borderColor: "color-mix(in srgb, var(--color-metric-atencoes) 18%, var(--color-border-card) 82%)",
+        background: "color-mix(in srgb, var(--color-bg-card) 97%, var(--color-metric-atencoes) 3%)",
       },
     },
     ok: {
@@ -40,17 +40,17 @@ export function PulseCard({
 
   return (
     <section
-      className={cn("relative isolate mb-4 overflow-hidden rounded-[1.35rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card", className)}
+      className={cn("relative isolate mb-4 overflow-hidden rounded-[1.35rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-4 py-3.5 shadow-card", className)}
       style={toneStyles.surfaceStyle}
     >
-      <div className={cn("absolute inset-x-0 top-0 h-[3px]", toneStyles.accentClass)} />
+      <div className={cn("absolute inset-x-0 top-0 h-0.5", toneStyles.accentClass)} />
       <div
         className="pointer-events-none absolute -right-10 -top-16 -z-10 h-32 w-32 rounded-full"
         style={{ background: "color-mix(in srgb, var(--color-brand-accent) 12%, transparent)" }}
       />
       <p className="k-eyebrow mb-2">Radar pastoral</p>
-      <p className="font-serif-display text-[length:var(--text-xl)] font-semibold leading-tight tracking-[-0.025em] text-[color:var(--color-text-primary)] text-balance">{title}</p>
-      {subtitle ? <p className="mt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{subtitle}</p> : null}
+      <p className="font-serif-display text-[length:var(--text-xl)] font-semibold leading-[1.12] tracking-normal text-[color:var(--color-text-primary)] text-balance">{title}</p>
+      {subtitle ? <p className="mt-1.5 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{subtitle}</p> : null}
     </section>
   );
 }
@@ -163,12 +163,20 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex items-center gap-2.5 rounded-2xl border border-dashed border-[var(--color-border-card)] bg-[var(--surface-alt)] text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]",
-        compact ? "px-3 py-2.5" : "p-4",
+        "flex items-start gap-3 rounded-2xl border border-dashed border-[var(--color-border-card)] bg-[var(--surface-alt)] text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]",
+        compact ? "px-3 py-2.5" : "min-h-16 p-4",
       )}
     >
-      <Heart className="h-4 w-4 shrink-0 opacity-50" aria-hidden="true" />
-      <p>{children}</p>
+      <span
+        className={cn(
+          "grid shrink-0 place-items-center rounded-full border border-[var(--color-border-card)] bg-[var(--color-bg-card)] text-[color:var(--color-text-secondary)]",
+          compact ? "mt-0.5 h-7 w-7" : "h-9 w-9",
+        )}
+        aria-hidden="true"
+      >
+        <Heart className={compact ? "h-3.5 w-3.5" : "h-4 w-4"} />
+      </span>
+      <p className="min-w-0 pt-0.5">{children}</p>
     </div>
   );
 }

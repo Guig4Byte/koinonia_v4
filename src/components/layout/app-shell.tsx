@@ -72,7 +72,7 @@ export function AppShell({
               </div>
             </div>
 
-            <div className="mt-5 flex items-end justify-between gap-4">
+            <div className="mt-4 flex items-end justify-between gap-4">
               <div>
                 <p className="app-header-greeting">Olá,</p>
                 <h1 className="app-header-title">{firstName}.</h1>

@@ -143,7 +143,7 @@ function PeriodChips({ mode, activePeriod }: { mode: EventConsultationMode; acti
   const periods: EventPeriod[] = mode === "historico" ? ["semana", "semana-passada", "30d"] : ["semana", "30d"];
 
   return (
-    <div className={styles.periodChips}>
+    <div className="k-filter-row">
       {periods.map((period) => {
         const active = period === activePeriod;
         return (

@@ -7,7 +7,8 @@
   max-width: 480px;
   margin: 0 auto;
   min-height: 100vh;
-  padding: 14px 16px calc(var(--bottom-nav-height) + var(--bottom-nav-offset) + env(safe-area-inset-bottom) + 44px);
+  padding: 14px 16px calc(var(--bottom-nav-height) + var(--bottom-nav-offset) + env(safe-area-inset-bottom) + 72px);
+  scroll-padding-bottom: calc(var(--bottom-nav-height) + var(--bottom-nav-offset) + env(safe-area-inset-bottom) + 32px);
 }
 
 .safe-page-focus {
@@ -18,14 +19,14 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
   border: 1px solid color-mix(in srgb, var(--color-brand-accent) 20%, transparent);
-  border-radius: 28px;
+  border-radius: 26px;
   background:
     radial-gradient(ellipse 82% 68% at 50% -6%, color-mix(in srgb, var(--color-brand-accent) 18%, transparent) 0%, transparent 72%),
     linear-gradient(180deg, var(--color-bg-header) 0%, color-mix(in srgb, var(--color-bg-header) 90%, #000000) 100%);
   color: var(--color-text-on-header);
-  padding: 14px;
+  padding: 13px 14px;
   box-shadow: var(--color-shadow-header);
 }
 
@@ -80,7 +81,7 @@
 }
 
 .app-header-subtitle {
-  margin-top: 10px;
+  margin-top: 8px;
   max-width: 18rem;
   color: color-mix(in srgb, var(--color-text-on-banner) 88%, transparent);
   font-size: var(--text-sm);
@@ -133,9 +134,9 @@
 }
 
 .app-header-compact .header-action-button {
-  width: 44px;
-  min-width: 44px;
-  height: 44px;
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
   border-radius: 14px;
 }
 

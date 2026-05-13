@@ -157,7 +157,7 @@ function StructureSearchContent<TFilter extends string>({
         {searchStatus}
       </p>
 
-      <div className={styles.filterRow}>
+      <div className="k-filter-row">
         {filters.map((option) => {
           const active = option.value === filter && (option.value !== defaultFilter || !query);
 

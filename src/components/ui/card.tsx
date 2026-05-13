@@ -39,7 +39,7 @@ export function Card({
         "rounded-[1.15rem]",
         cardToneClass[tone],
         cardPaddingClass[padding],
-        interactive && "transition active:scale-[0.99]",
+        interactive && "card-hover-lift transition active:scale-[0.99]",
         className,
       )}
       {...props}

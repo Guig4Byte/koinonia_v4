@@ -22,7 +22,7 @@ type ButtonClassNameOptions = {
 };
 
 const buttonBaseClass =
-  "inline-flex items-center justify-center gap-2 text-center font-semibold leading-tight tracking-[-0.01em] transition active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:saturate-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-brand)]";
+  "inline-flex items-center justify-center gap-2 text-center font-semibold leading-tight tracking-normal transition active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-60 disabled:saturate-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-brand)]";
 
 const buttonVariantClass: Record<ButtonVariant, string> = {
   primary:
@@ -30,7 +30,7 @@ const buttonVariantClass: Record<ButtonVariant, string> = {
   primaryFlat:
     "border border-[var(--color-btn-primary-bg)] bg-[var(--color-btn-primary-bg)] text-[color:var(--color-btn-primary-text)] hover:opacity-95",
   secondary:
-    "border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] text-[color:var(--color-btn-secondary-text)]",
+    "border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] text-[color:var(--color-btn-secondary-text)] hover:bg-[var(--surface-alt)]",
   ghost: "text-[color:var(--color-text-secondary)] hover:bg-[var(--surface-alt)]",
   stableSoft:
     "border border-[var(--color-badge-estavel-border)] bg-[var(--color-badge-estavel-bg)] text-[color:var(--color-badge-estavel-text)]",
@@ -42,7 +42,7 @@ const buttonVariantClass: Record<ButtonVariant, string> = {
     "border border-[var(--color-badge-info-border)] bg-[var(--color-badge-info-bg)] text-[color:var(--color-badge-info-text)]",
   supportSoft:
     "border border-[var(--color-badge-apoio-border)] bg-[var(--color-badge-apoio-bg)] text-[color:var(--color-badge-apoio-text)]",
-  outline: "border border-[var(--color-border-card)] bg-[var(--color-bg-card)] text-[color:var(--color-text-primary)]",
+  outline: "border border-[var(--color-border-card)] bg-[var(--color-bg-card)] text-[color:var(--color-text-primary)] hover:bg-[var(--surface-alt)]",
 };
 
 const buttonSizeClass: Record<ButtonSize, string> = {

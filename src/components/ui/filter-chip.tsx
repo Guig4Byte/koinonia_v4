@@ -13,7 +13,7 @@ type FilterChipProps = LinkProps &
     children: ReactNode;
   };
 
-const periodBaseClass = "rounded-full border px-3 py-2 text-[length:var(--text-xs)] font-semibold transition active:scale-[0.98]";
+const periodBaseClass = "inline-flex min-h-10 shrink-0 items-center justify-center rounded-full border px-3 py-0 text-center text-[length:var(--text-xs)] font-semibold leading-tight whitespace-nowrap transition active:scale-[0.98]";
 const periodActiveClass = "border-[var(--color-brand)] bg-[var(--color-brand-soft)] text-[color:var(--color-brand)]";
 const periodInactiveClass = "border-[var(--color-border-card)] bg-[var(--surface-alt)] text-[color:var(--color-text-secondary)]";
 

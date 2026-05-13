@@ -111,19 +111,3 @@
   transform: translateX(2px);
 }
 
-.periodChips {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  padding-bottom: 4px;
-  padding-right: 28px;
-  scrollbar-width: none;
-  scroll-padding-inline: 2px 28px;
-  -webkit-mask-image: linear-gradient(to right, black calc(100% - 42px), transparent 100%);
-  mask-image: linear-gradient(to right, black calc(100% - 42px), transparent 100%);
-}
-
-.periodChips::-webkit-scrollbar {
-  display: none;
-}

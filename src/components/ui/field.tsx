@@ -59,7 +59,7 @@ export function TextareaField({
       <textarea
         id={id}
         className={cn(
-          "w-full resize-none rounded-xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-secondary)] focus:border-[var(--color-brand)]",
+          "w-full resize-none rounded-xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 py-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-primary)] outline-none transition placeholder:text-[color:var(--color-text-muted)] hover:border-[var(--color-brand-accent)] focus:border-[var(--color-brand)] focus:ring-2 focus:ring-[var(--color-brand-accent)]",
           textareaClassName,
         )}
         {...props}
