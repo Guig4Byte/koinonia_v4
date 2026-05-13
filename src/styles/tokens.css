@@ -1,9 +1,36 @@
 /* Design tokens, theme palettes and text-size scale. */
 
 :root {
+  /* Paleta Koinonia — base visual oficial */
+  --brown-950: #1a1008;
+  --brown-900: #2c1a0a;
+  --brown-800: #4a2e12;
+  --brown-700: #6b3f1a;
+  --brown-600: #8b5a2b;
+  --brown-400: #b8844f;
+  --brown-200: #d4b896;
+  --brown-100: #e8d5bc;
+  --brown-50: #f5ede0;
+  --cream-100: #faf6f0;
+  --cream-50: #fdfaf6;
+
+  /* Estados semânticos — feedback e presença */
+  --status-danger-bg: #fef2f2;
+  --status-danger-text: #991b1b;
+  --status-danger-border: #fca5a5;
+  --status-warning-bg: #fffbeb;
+  --status-warning-text: #92400e;
+  --status-warning-border: #fcd34d;
+  --status-success-bg: #f0fdf4;
+  --status-success-text: #166534;
+  --status-success-border: #86efac;
+  --status-info-bg: #eff6ff;
+  --status-info-text: #1e40af;
+  --status-info-border: #bfdbfe;
+
   /* Tipografia */
-  --font-display: Georgia, "Times New Roman", serif;
-  --font-body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: var(--font-lora), "Lora", Georgia, "Times New Roman", serif;
+  --font-body: var(--font-dm-sans), "DM Sans", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
@@ -48,8 +75,8 @@
   --ok-soft: var(--color-badge-estavel-bg);
   --warn: var(--color-badge-atencao-text);
   --warn-soft: var(--color-badge-atencao-bg);
-  --info: var(--color-brand);
-  --info-soft: color-mix(in srgb, var(--color-brand-accent) 18%, var(--color-bg-card));
+  --info: var(--status-info-text);
+  --info-soft: var(--status-info-bg);
   --care: var(--color-badge-cuidado-text);
   --care-soft: var(--color-badge-cuidado-bg);
   --support: var(--color-badge-apoio-text);
@@ -78,115 +105,124 @@
 :root,
 html[data-theme="light"] {
   /* Superfícies */
-  --color-bg-page: #ede8e0;
-  --color-bg-card: #fffaf2;
-  --color-bg-header: #2c1a0a;
+  --color-bg-page: var(--cream-50);
+  --color-bg-card: #ffffff;
+  --color-bg-header: var(--brown-900);
   --color-bg-tab: color-mix(in srgb, var(--color-bg-card) 96%, transparent);
   --color-bg-tab-active: color-mix(in srgb, var(--color-brand-accent) 28%, var(--color-bg-card));
-  --color-bg-metric-card: #f1e7da;
-  --color-bg-subtle-card: #f5ede2;
-  --color-border-metric-card: rgba(60, 30, 10, 0.10);
+  --color-bg-metric-card: var(--brown-50);
+  --color-bg-subtle-card: var(--cream-100);
+  --color-border-metric-card: rgba(139, 90, 43, 0.12);
   --color-shadow-metric-card: 0 1px 2px rgba(60, 30, 10, 0.05);
 
   /* Texto */
-  --color-text-primary: #1c1008;
-  --color-text-secondary: #67513f;
-  --color-text-muted: #604c3b;
-  --color-text-on-header: #f0e0c0;
-  --color-text-on-banner: #f0d8a8;
+  --color-text-primary: var(--brown-950);
+  --color-text-secondary: #5c4a35;
+  --color-text-muted: #9c836a;
+  --color-text-on-header: var(--cream-50);
+  --color-text-on-banner: var(--brown-200);
 
   /* Marca */
-  --color-brand: #2c1a0a;
-  --color-brand-accent: #c9a060;
+  --color-brand: var(--brown-900);
+  --color-brand-accent: var(--brown-400);
 
   /* Botões */
-  --color-btn-primary-bg: #2c1a0a;
-  --color-btn-primary-text: #f0d8a8;
-  --color-btn-secondary-border: #2c1a0a;
-  --color-btn-secondary-text: #2c1a0a;
+  --color-btn-primary-bg: var(--brown-900);
+  --color-btn-primary-text: var(--cream-50);
+  --color-btn-secondary-border: var(--brown-900);
+  --color-btn-secondary-text: var(--brown-900);
 
   /* Ações diretas */
-  --color-action-call-text: #2c1a0a;
-  --color-action-whatsapp-text: #fff7e8;
+  --color-action-call-text: var(--brown-900);
+  --color-action-whatsapp-text: var(--cream-50);
 
   /* Controles segmentados */
-  --color-segmented-border: rgba(201, 160, 96, 0.34);
-  --color-segmented-active-text: #2c1a0a;
-  --color-segmented-inactive-text: #f0e0c0;
+  --color-segmented-border: rgba(184, 132, 79, 0.34);
+  --color-segmented-active-text: var(--brown-900);
+  --color-segmented-inactive-text: var(--brown-200);
 
   /* Tab bar */
-  --color-tab-inactive: #e8e0d6;
-  --color-tab-label-active: #2c1a0a;
-  --color-tab-label-inactive: #604c3b;
+  --color-tab-inactive: var(--brown-50);
+  --color-tab-label-active: var(--brown-900);
+  --color-tab-label-inactive: #5c4a35;
 
   /* Métricas */
-  --color-metric-presenca: #2e6b2e;
-  --color-metric-atencoes: #b54020;
-  --color-metric-visitantes: #2c1a0a;
+  --color-metric-presenca: var(--status-success-text);
+  --color-metric-atencoes: var(--status-danger-text);
+  --color-metric-visitantes: var(--brown-900);
 
   /* Badges */
-  --color-badge-atencao-bg: #faeeda;
-  --color-badge-atencao-border: #ef9f27;
-  --color-badge-atencao-text: #854f0b;
-  --color-badge-risco-bg: #fde8e3;
-  --color-badge-risco-border: #e36b55;
-  --color-badge-risco-text: #9d321d;
-  --color-badge-cuidado-bg: #e6f0fb;
-  --color-badge-cuidado-border: #7fb0e3;
-  --color-badge-cuidado-text: #245f9a;
+  --color-badge-atencao-bg: var(--status-warning-bg);
+  --color-badge-atencao-border: var(--status-warning-border);
+  --color-badge-atencao-text: var(--status-warning-text);
+  --color-badge-risco-bg: var(--status-danger-bg);
+  --color-badge-risco-border: var(--status-danger-border);
+  --color-badge-risco-text: var(--status-danger-text);
+  --color-badge-cuidado-bg: var(--status-info-bg);
+  --color-badge-cuidado-border: var(--status-info-border);
+  --color-badge-cuidado-text: var(--status-info-text);
   --color-badge-apoio-bg: #f1eafa;
   --color-badge-apoio-border: #b99ee5;
   --color-badge-apoio-text: #61429b;
-  --color-badge-estavel-bg: #eaf3de;
-  --color-badge-estavel-border: #97c459;
-  --color-badge-estavel-text: #3b6d11;
+  --color-badge-estavel-bg: var(--status-success-bg);
+  --color-badge-estavel-border: var(--status-success-border);
+  --color-badge-estavel-text: var(--status-success-text);
+  --color-badge-info-bg: var(--status-info-bg);
+  --color-badge-info-border: var(--status-info-border);
+  --color-badge-info-text: var(--status-info-text);
 
   /* Bordas e sombras */
-  --color-border-card: rgba(60, 30, 10, 0.13);
-  --color-border-divider: #e8dccd;
-  --color-border-tab: rgba(60, 30, 10, 0.12);
-  --color-shadow-card: 0 10px 26px rgba(60, 30, 10, 0.07), 0 1px 2px rgba(60, 30, 10, 0.05);
-  --color-shadow-nav: 0 10px 24px rgba(60, 30, 10, 0.10), 0 1px 2px rgba(60, 30, 10, 0.04);
+  --color-border-card: rgba(139, 90, 43, 0.15);
+  --color-border-divider: var(--brown-100);
+  --color-border-tab: rgba(139, 90, 43, 0.12);
+  --color-shadow-card: 0 10px 26px rgba(100, 60, 20, 0.07), 0 1px 2px rgba(100, 60, 20, 0.05);
+  --color-shadow-nav: 0 10px 24px rgba(100, 60, 20, 0.10), 0 1px 2px rgba(100, 60, 20, 0.04);
   --color-shadow-nav-active: none;
   --color-shadow-header: 0 18px 48px rgba(44, 26, 10, 0.12);
 
   /* Avatar */
-  --color-avatar-bg: #2c1a0a;
-  --color-avatar-text: #c9a060;
+  --color-avatar-bg: var(--brown-900);
+  --color-avatar-text: var(--brown-200);
 
   /* Toggle */
-  --color-theme-icon-active-bg: rgba(201, 160, 96, 0.12);
-  --color-theme-icon-active-border: rgba(201, 160, 96, 0.34);
+  --color-theme-icon-active-bg: rgba(184, 132, 79, 0.12);
+  --color-theme-icon-active-border: rgba(184, 132, 79, 0.34);
 
-  /* Login */
-  --login-page-bg: var(--color-bg-page);
-  --login-card-bg: var(--color-bg-card);
-  --login-card-border: var(--color-border-card);
-  --login-title: var(--color-text-primary);
-  --login-text: var(--color-text-secondary);
-  --login-muted: var(--color-text-muted);
-  --login-brand-kicker: var(--color-badge-atencao-text);
-  --login-logo-bg: var(--color-bg-metric-card);
-  --login-logo-border: var(--color-border-card);
-  --login-logo-icon: var(--color-badge-atencao-text);
-  --login-divider: var(--color-border-divider);
-  --login-input-bg: var(--color-bg-page);
-  --login-input-border: var(--color-border-card);
-  --login-input-hover-border: color-mix(in srgb, var(--color-brand-accent) 54%, var(--color-border-card));
-  --login-input-text: var(--color-text-primary);
-  --login-input-placeholder: var(--color-text-muted);
-  --login-input-focus-border: var(--color-brand-accent);
-  --login-input-focus-shadow: color-mix(in srgb, var(--color-brand-accent) 22%, transparent);
-  --login-button-bg: var(--color-btn-primary-bg);
-  --login-button-border: var(--color-btn-primary-bg);
-  --login-button-text: var(--color-btn-primary-text);
-  --login-button-hover-bg: color-mix(in srgb, var(--color-btn-primary-bg) 88%, #000000);
-  --login-button-active-bg: color-mix(in srgb, var(--color-btn-primary-bg) 78%, #000000);
-  --theme-toggle-bg: var(--color-bg-metric-card);
-  --theme-toggle-border: var(--color-border-card);
-  --theme-toggle-icon: var(--color-text-primary);
-  --theme-toggle-hover-bg: var(--color-bg-subtle-card);
-  --theme-toggle-active-bg: color-mix(in srgb, var(--color-bg-subtle-card) 82%, var(--color-brand-accent));
+  /* Login — hero pastoral escuro */
+  --login-page-bg: var(--cream-100);
+  --login-card-bg: var(--brown-900);
+  --login-card-bg-bottom: var(--brown-950);
+  --login-card-glow: rgba(184, 132, 79, 0.22);
+  --login-card-border: rgba(232, 213, 188, 0.18);
+  --login-title: var(--cream-50);
+  --login-text: var(--brown-200);
+  --login-muted: color-mix(in srgb, var(--brown-200) 82%, var(--cream-50));
+  --login-brand-kicker: var(--brown-400);
+  --login-logo-bg: rgba(253, 250, 246, 0.08);
+  --login-logo-border: rgba(232, 213, 188, 0.22);
+  --login-logo-icon: var(--brown-100);
+  --login-divider: rgba(212, 184, 150, 0.24);
+  --login-input-bg: color-mix(in srgb, var(--cream-50) 94%, var(--brown-50));
+  --login-input-border: rgba(212, 184, 150, 0.36);
+  --login-input-hover-border: color-mix(in srgb, var(--brown-400) 70%, var(--brown-100));
+  --login-input-text: var(--brown-950);
+  --login-input-placeholder: #8a765f;
+  --login-input-icon: #8a765f;
+  --login-input-icon-hover: var(--brown-700);
+  --login-password-toggle-hover-bg: rgba(44, 26, 10, 0.06);
+  --login-password-toggle-hover-border: rgba(139, 90, 43, 0.18);
+  --login-input-focus-border: var(--brown-400);
+  --login-input-focus-shadow: color-mix(in srgb, var(--brown-400) 28%, transparent);
+  --login-button-bg: var(--cream-50);
+  --login-button-border: var(--cream-50);
+  --login-button-text: var(--brown-900);
+  --login-button-hover-bg: var(--brown-100);
+  --login-button-active-bg: var(--brown-200);
+  --theme-toggle-bg: rgba(253, 250, 246, 0.08);
+  --theme-toggle-border: rgba(232, 213, 188, 0.22);
+  --theme-toggle-icon: var(--brown-100);
+  --theme-toggle-hover-bg: rgba(253, 250, 246, 0.12);
+  --theme-toggle-active-bg: rgba(253, 250, 246, 0.16);
 }
 
 html[data-theme="parchment"] {
@@ -245,6 +281,9 @@ html[data-theme="parchment"] {
   --color-badge-estavel-bg: rgba(59, 109, 17, 0.15);
   --color-badge-estavel-border: rgba(59, 109, 17, 0.35);
   --color-badge-estavel-text: #2a4c0a;
+  --color-badge-info-bg: var(--color-badge-cuidado-bg);
+  --color-badge-info-border: var(--color-badge-cuidado-border);
+  --color-badge-info-text: var(--color-badge-cuidado-text);
 
   --color-border-card: rgba(92, 54, 13, 0.26);
   --color-border-divider: rgba(92, 54, 13, 0.26);
@@ -347,6 +386,9 @@ html[data-theme="dark"] {
   --color-badge-estavel-bg: #21321c;
   --color-badge-estavel-border: #39522d;
   --color-badge-estavel-text: #a9d889;
+  --color-badge-info-bg: var(--color-badge-cuidado-bg);
+  --color-badge-info-border: var(--color-badge-cuidado-border);
+  --color-badge-info-text: var(--color-badge-cuidado-text);
 
   --color-border-card: #463b32;
   --color-border-divider: #3c332b;
@@ -382,6 +424,10 @@ html[data-theme="dark"] {
   --login-input-hover-border: color-mix(in srgb, var(--color-brand-accent) 44%, var(--color-border-card));
   --login-input-text: var(--color-text-primary);
   --login-input-placeholder: var(--color-text-muted);
+  --login-input-icon: var(--color-text-muted);
+  --login-input-icon-hover: var(--color-brand-accent);
+  --login-password-toggle-hover-bg: var(--color-bg-subtle-card);
+  --login-password-toggle-hover-border: var(--color-border-card);
   --login-input-focus-border: var(--color-brand-accent);
   --login-input-focus-shadow: color-mix(in srgb, var(--color-brand-accent) 18%, transparent);
   --login-button-bg: var(--color-btn-primary-bg);

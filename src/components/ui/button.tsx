@@ -9,6 +9,7 @@ export type ButtonVariant =
   | "stableSoft"
   | "attentionSoft"
   | "dangerSoft"
+  | "infoSoft"
   | "supportSoft"
   | "outline";
 export type ButtonSize = "sm" | "md" | "lg";
@@ -37,6 +38,8 @@ const buttonVariantClass: Record<ButtonVariant, string> = {
     "border border-[var(--color-badge-atencao-border)] bg-[var(--color-badge-atencao-bg)] text-[color:var(--color-badge-atencao-text)]",
   dangerSoft:
     "border border-[var(--color-badge-risco-border)] bg-[var(--color-badge-risco-bg)] text-[color:var(--color-badge-risco-text)]",
+  infoSoft:
+    "border border-[var(--color-badge-info-border)] bg-[var(--color-badge-info-bg)] text-[color:var(--color-badge-info-text)]",
   supportSoft:
     "border border-[var(--color-badge-apoio-border)] bg-[var(--color-badge-apoio-bg)] text-[color:var(--color-badge-apoio-text)]",
   outline: "border border-[var(--color-border-card)] bg-[var(--color-bg-card)] text-[color:var(--color-text-primary)]",

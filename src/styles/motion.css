@@ -51,3 +51,24 @@
 .content-flow {
   animation: content-in 180ms ease-out both;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+
+  .stagger-children > *,
+  .content-flow {
+    animation: none !important;
+  }
+
+  .card-hover-lift,
+  .header-action-button,
+  .priority-card,
+  button,
+  a {
+    transition-duration: 1ms !important;
+  }
+}

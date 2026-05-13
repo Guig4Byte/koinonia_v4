@@ -5,3 +5,43 @@
 @import "../styles/layout.css";
 @import "../styles/utilities.css";
 @import "../styles/motion.css";
+
+@theme inline {
+  --font-sans: var(--font-body);
+  --font-serif: var(--font-display);
+
+  --color-brown-950: var(--brown-950);
+  --color-brown-900: var(--brown-900);
+  --color-brown-800: var(--brown-800);
+  --color-brown-700: var(--brown-700);
+  --color-brown-600: var(--brown-600);
+  --color-brown-400: var(--brown-400);
+  --color-brown-200: var(--brown-200);
+  --color-brown-100: var(--brown-100);
+  --color-brown-50: var(--brown-50);
+
+  --color-cream-100: var(--cream-100);
+  --color-cream-50: var(--cream-50);
+
+  --color-surface-page: var(--color-bg-page);
+  --color-surface-card: var(--color-bg-card);
+  --color-surface-warm: var(--color-bg-subtle-card);
+
+  --color-pastoral-text: var(--color-text-primary);
+  --color-pastoral-secondary: var(--color-text-secondary);
+  --color-pastoral-muted: var(--color-text-muted);
+  --color-pastoral-border: var(--color-border-card);
+
+  --color-status-danger-bg: var(--status-danger-bg);
+  --color-status-danger-text: var(--status-danger-text);
+  --color-status-danger-border: var(--status-danger-border);
+  --color-status-warning-bg: var(--status-warning-bg);
+  --color-status-warning-text: var(--status-warning-text);
+  --color-status-warning-border: var(--status-warning-border);
+  --color-status-success-bg: var(--status-success-bg);
+  --color-status-success-text: var(--status-success-text);
+  --color-status-success-border: var(--status-success-border);
+  --color-status-info-bg: var(--status-info-bg);
+  --color-status-info-text: var(--status-info-text);
+  --color-status-info-border: var(--status-info-border);
+}

@@ -37,8 +37,8 @@ export function AppShell({
         {headerVariant === "compact" ? (
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-[length:var(--text-xs)] font-bold uppercase text-[color:var(--color-brand-accent)]">Koinonia</p>
-              <p className="mt-1 truncate text-[length:var(--text-xs)] font-semibold text-[color:var(--color-text-on-header)]">
+              <p className="app-header-eyebrow">Koinonia</p>
+              <p className="app-header-compact-title">
                 {roleLabels[role]} · Olá, {firstName}
               </p>
             </div>
@@ -62,8 +62,8 @@ export function AppShell({
           <>
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-[length:var(--text-xs)] font-bold uppercase text-[color:var(--color-brand-accent)]">Koinonia</p>
-                <p className="mt-1 text-[length:var(--text-xs)] font-semibold text-[color:var(--color-text-on-header)]">{roleLabels[role]}</p>
+                <p className="app-header-eyebrow">Koinonia</p>
+                <p className="app-header-role">{roleLabels[role]}</p>
               </div>
 
               <div className="flex items-center gap-2">
@@ -74,10 +74,9 @@ export function AppShell({
 
             <div className="mt-5 flex items-end justify-between gap-4">
               <div>
-                <p className="text-[length:var(--text-sm)] text-[color:var(--color-text-on-header)] opacity-80">Olá,</p>
-                <h1 className="font-serif-display mt-1 text-[length:var(--text-hero)] font-semibold leading-none text-[color:var(--color-text-on-header)]">
-                  {firstName}.
-                </h1>
+                <p className="app-header-greeting">Olá,</p>
+                <h1 className="app-header-title">{firstName}.</h1>
+                <p className="app-header-subtitle">Cuidado pastoral em suas mãos.</p>
               </div>
 
               <form action={ROUTES.logout} method="post" className="shrink-0">
