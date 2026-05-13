@@ -21,11 +21,13 @@
 
 .k-section-kicker {
   color: var(--color-text-primary);
-  font-size: var(--text-lg);
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  line-height: 1.25;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
   text-transform: none;
+  text-wrap: balance;
 }
 
 .k-section-detail {
@@ -237,4 +239,143 @@ html[data-theme="dark"] .card-hover-lift:hover {
   border-color: var(--status-info-border);
   background: var(--status-info-bg);
   color: var(--status-info-text);
+}
+
+.k-page-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin-bottom: 16px;
+  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 20%, var(--color-border-card));
+  border-radius: 1.35rem;
+  background:
+    radial-gradient(ellipse 85% 65% at 50% -18%, color-mix(in srgb, var(--color-brand-accent) 16%, transparent), transparent 72%),
+    linear-gradient(135deg, color-mix(in srgb, var(--color-bg-card) 98%, var(--color-brand-accent) 2%), var(--color-bg-card));
+  padding: 16px;
+  box-shadow: var(--color-shadow-card);
+}
+
+.k-page-hero::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: -1;
+  width: 4px;
+  background: linear-gradient(180deg, var(--color-brand-accent), color-mix(in srgb, var(--color-brand) 58%, transparent));
+  opacity: 0.82;
+}
+
+.k-page-hero::after {
+  content: "";
+  position: absolute;
+  inset: auto -48px -76px auto;
+  z-index: -1;
+  width: 148px;
+  height: 148px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-brand-accent) 12%, transparent);
+  pointer-events: none;
+}
+
+.k-page-hero-compact {
+  margin-bottom: 14px;
+  padding: 14px;
+}
+
+.k-page-hero-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.k-page-hero-eyebrow {
+  color: var(--color-brand-accent);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.k-page-hero-title {
+  margin-top: 6px;
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.k-page-hero-description {
+  margin-top: 8px;
+  max-width: 26rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+}
+
+.k-page-hero-action {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.k-page-hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  border-top: 1px solid var(--color-border-divider);
+  padding-top: 12px;
+}
+
+.k-page-hero-chip {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 18%, var(--color-border-card));
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--color-brand-accent) 10%, var(--surface-alt));
+  padding: 6px 10px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.k-detail-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--color-brand-accent) 20%, var(--color-border-card));
+  background:
+    radial-gradient(ellipse 80% 64% at 48% -20%, color-mix(in srgb, var(--color-brand-accent) 14%, transparent), transparent 72%),
+    var(--color-bg-card);
+}
+
+.k-detail-hero::after {
+  content: "";
+  position: absolute;
+  inset: auto -42px -72px auto;
+  z-index: -1;
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-brand-accent) 10%, transparent);
+  pointer-events: none;
+}
+
+.k-detail-title {
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  text-wrap: balance;
 }

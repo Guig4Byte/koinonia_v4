@@ -1,4 +1,5 @@
 import { BackLink, EmptyState, SectionTitle } from "@/components/shared/base-cards";
+import { PageHero } from "@/components/shared/page-hero";
 import { CalendarClock, ClipboardCheck, type LucideIcon } from "lucide-react";
 import { priorityCardClass } from "@/lib/card-priority";
 import { ProgressiveList } from "@/components/shared/progressive-list";
@@ -20,7 +21,6 @@ import {
 import type { PermissionUser } from "@/features/permissions/permissions";
 import { cn } from "@/lib/cn";
 import { ROUTES } from "@/lib/routes";
-import pageStyles from "@/components/shared/consultation-page.module.css";
 import styles from "./events-page-sections.module.css";
 
 const EVENTS_CONSULTATION_SECTION_ID = "eventos-consulta";
@@ -179,8 +179,12 @@ export function EventsConsultationView({
   return (
     <>
       <BackLink href={ROUTES.events}>Encontros</BackLink>
-      <h2 className={pageStyles.title}>{view.title}</h2>
-      <p className={cn(pageStyles.description, pageStyles.eventsIntro)}>{view.description}</p>
+      <PageHero
+        compact
+        eyebrow="Consulta"
+        title={view.title}
+        description={view.description}
+      />
       <section id={EVENTS_CONSULTATION_SECTION_ID} className="scroll-mt-6">
         <PeriodChips mode={mode} activePeriod={period} />
         <SectionTitle>{view.periodLabel}</SectionTitle>

@@ -54,7 +54,7 @@ export function ListLinkCard({
     <Link
       className={cn(
         surface === "card" && [
-          "card-hover-lift group flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] shadow-card transition active:scale-[0.99]",
+          "card-hover-lift group relative isolate flex items-center justify-between gap-3 overflow-hidden rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] shadow-card transition active:scale-[0.99]",
           compact ? "min-h-[3.75rem] px-3 py-2.5" : "min-h-[4.25rem] px-3 py-3",
           priorityCardClass(priorityTone ?? badgeTone),
         ],

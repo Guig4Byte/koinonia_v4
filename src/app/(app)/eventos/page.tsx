@@ -1,5 +1,6 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { EmptyState, SectionTitle } from "@/components/shared/base-cards";
+import { PageHero } from "@/components/shared/page-hero";
 import { EventConsultationCards, EventList, EventsConsultationView } from "@/features/events/components/events-page-sections";
 import {
   EVENTS_PAGE_HISTORY_LOOKBACK_DAYS,
@@ -65,10 +66,12 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
           <EventsConsultationView mode={mode} period={period} events={events} user={user} now={now} />
         ) : (
           <>
-            <h2 className={pageStyles.title}>Encontros</h2>
-            <p className={cn(pageStyles.description, pageStyles.eventsIntro)}>
-              Encontros da semana e presença em um só lugar.
-            </p>
+            <PageHero
+              compact
+              eyebrow="Presença"
+              title="Encontros"
+              description="Encontros da semana e presença em um só lugar."
+            />
             <EventConsultationCards />
 
             <SectionTitle>Hoje</SectionTitle>

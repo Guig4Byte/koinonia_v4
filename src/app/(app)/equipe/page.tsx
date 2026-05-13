@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { ContextSummary, EmptyState, InfoCard, SectionTitle } from "@/components/shared/base-cards";
 import { ButtonLink } from "@/components/ui/button-link";
+import { PageHero } from "@/components/shared/page-hero";
 import { ProgressiveList } from "@/components/shared/progressive-list";
 import { TeamStructureSearch } from "@/features/team/components/team-structure-search";
 import { InactiveTeamGroupLink, TeamGroupLink, TeamSupervisorCard } from "@/features/team/components/team-structure-cards";
@@ -25,7 +26,6 @@ import { firstParam } from "@/lib/search-params";
 import { normalizeSearchText } from "@/lib/text";
 import { NO_RECENT_PRESENCE_LABEL } from "@/lib/filter-param";
 import { ROUTES } from "@/lib/routes";
-import { cn } from "@/lib/cn";
 import pageStyles from "@/components/shared/consultation-page.module.css";
 
 type TeamPageProps = {
@@ -70,20 +70,18 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
       headerVariant="compact"
     >
       <div className={pageStyles.page}>
-        <div className={cn(pageStyles.header, "flex items-center justify-between gap-3")}>
-          <div className="min-w-0">
-            <h2 className={pageStyles.title}>Equipe</h2>
-            <p className={pageStyles.description}>
-              Supervisores e células por atenção pastoral.
-            </p>
-          </div>
-          {canCreateGroup ? (
+        <PageHero
+          compact
+          eyebrow="Equipe pastoral"
+          title="Equipe"
+          description="Supervisores e células por atenção pastoral."
+          action={canCreateGroup ? (
             <ButtonLink href={ROUTES.newCell} size="sm" className="shrink-0 rounded-2xl px-3 font-bold">
               <Plus className="h-4 w-4" aria-hidden="true" />
               Nova célula
             </ButtonLink>
           ) : null}
-        </div>
+        />
 
         {savedMessage ? <InfoCard tone="success">{savedMessage}</InfoCard> : null}
 

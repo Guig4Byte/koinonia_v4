@@ -1,6 +1,7 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { SectionTitle } from "@/components/shared/base-cards";
+import { PageHero } from "@/components/shared/page-hero";
 import { MemberPriorityList } from "@/features/people/components/member-priority-list";
 import { SearchBox } from "@/features/search/components/search-box";
 import { getPeoplePageData } from "@/app/(app)/pessoas/page-data";
@@ -23,6 +24,13 @@ export default async function PeoplePage({ searchParams }: PeoplePageProps) {
       nav={appNavForRole(user, { active: "secondary", indicator: peopleView.navIndicator })}
       headerVariant="compact"
     >
+      <PageHero
+        compact
+        eyebrow="Membros"
+        title="Pessoas da célula"
+        description="Radar de cuidado, presença e acompanhamento em um só lugar."
+      />
+
       <SearchBox placeholder="Buscar membro..." />
 
       <section id="membros" className="scroll-mt-6">

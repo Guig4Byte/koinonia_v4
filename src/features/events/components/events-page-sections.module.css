@@ -1,9 +1,14 @@
 .card {
-  border: 1px solid color-mix(in srgb, var(--color-border-card) 70%, transparent);
-  border-radius: 16px;
-  background: color-mix(in srgb, var(--color-bg-card) 94%, transparent);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 14%, var(--color-border-card));
+  border-radius: 1.15rem;
+  background:
+    radial-gradient(ellipse 78% 56% at 50% -28%, color-mix(in srgb, var(--color-brand-accent) 10%, transparent), transparent 72%),
+    color-mix(in srgb, var(--color-bg-card) 96%, transparent);
   padding: 12px 14px;
-  box-shadow: var(--color-shadow-metric-card);
+  box-shadow: var(--color-shadow-card);
 }
 
 .registered {
@@ -60,10 +65,10 @@
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px;
-  border-color: color-mix(in srgb, var(--color-brand-accent) 24%, var(--color-border-card));
+  border-color: color-mix(in srgb, var(--color-brand-accent) 28%, var(--color-border-card));
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--color-brand-accent) 8%, transparent), transparent 70%),
-    color-mix(in srgb, var(--color-bg-card) 95%, transparent);
+    radial-gradient(ellipse 80% 58% at 50% -24%, color-mix(in srgb, var(--color-brand-accent) 12%, transparent), transparent 72%),
+    color-mix(in srgb, var(--color-bg-card) 96%, transparent);
 }
 
 .consultationIcon {

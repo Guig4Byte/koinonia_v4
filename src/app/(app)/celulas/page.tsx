@@ -4,6 +4,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { CellsPageSections } from "@/features/groups/components/cells-page-sections";
 import { CellsStructureSearch } from "@/features/groups/components/cells-structure-search";
 import { ButtonLink } from "@/components/ui/button-link";
+import { PageHero } from "@/components/shared/page-hero";
 import { ContextSummary, EmptyState, SectionTitle } from "@/components/shared/base-cards";
 import { buildWeeklyPresenceSummaryItem } from "@/features/dashboard/presence-health";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
@@ -50,20 +51,18 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
       headerVariant="compact"
     >
       <div className={pageStyles.page}>
-        <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <h2 className={pageStyles.title}>Células</h2>
-            <p className={pageStyles.description}>
-              Células sob sua supervisão, por atenção pastoral.
-            </p>
-          </div>
-          {canCreateGroup ? (
+        <PageHero
+          compact
+          eyebrow="Supervisão"
+          title="Células"
+          description="Células sob sua supervisão, por atenção pastoral."
+          action={canCreateGroup ? (
             <ButtonLink href={ROUTES.newCell} size="sm" className="shrink-0 rounded-2xl px-3 font-bold">
               <Plus className="h-4 w-4" aria-hidden="true" />
               Nova célula
             </ButtonLink>
           ) : null}
-        </div>
+        />
 
         <div className={pageStyles.summaryBlock}>
           <ContextSummary

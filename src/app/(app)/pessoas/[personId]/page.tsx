@@ -129,13 +129,14 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
     >
       <BackLink href={backHref}>{backLabel}</BackLink>
 
-      <PriorityCard as="section" priorityTone={personBadge.tone} className="card-hover-lift">
+      <PriorityCard as="section" priorityTone={personBadge.tone} className="card-hover-lift k-detail-hero">
         <div className="flex items-start gap-3">
           <Avatar name={person.fullName} size="xl" />
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-2">
-              <div>
-                <h2 className="text-[length:var(--text-2xl)] font-semibold leading-tight text-[color:var(--color-text-primary)]">{person.fullName}</h2>
+              <div className="min-w-0">
+                <p className="k-eyebrow mb-1">Pessoa</p>
+                <h2 className="k-detail-title">{person.fullName}</h2>
                 <p className="k-item-meta">
                   {groupNameOrFallback(primaryGroup)}
                   {primaryLeadershipName ? ` · ${primaryLeadershipName}` : ""}
@@ -145,7 +146,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
             </div>
 
             {person.shortNote ? (
-              <p className="mt-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-primary)]">
+              <p className="mt-3 rounded-2xl border border-[var(--color-border-divider)] bg-[var(--metric-card-bg)] px-3 py-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-primary)]">
                 {person.shortNote}
               </p>
             ) : null}

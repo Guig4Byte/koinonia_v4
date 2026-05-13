@@ -5,7 +5,7 @@ import styles from "./pastoral-section.module.css";
 
 export function PastoralSectionTitle({ children, detail }: { children: ReactNode; detail?: string }) {
   return (
-    <div className="mb-3">
+    <div className={`mb-3 ${styles.titleWrap}`}>
       <h2 className={styles.title}>{children}</h2>
       {detail ? <p className={styles.detail}>{detail}</p> : null}
     </div>

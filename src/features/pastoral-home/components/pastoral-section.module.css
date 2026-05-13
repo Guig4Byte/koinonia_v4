@@ -1,10 +1,28 @@
+.titleWrap {
+  position: relative;
+  padding-left: 10px;
+}
+
+.titleWrap::before {
+  content: "";
+  position: absolute;
+  inset-block: 2px 2px;
+  inset-inline-start: 0;
+  width: 3px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--color-brand-accent) 72%, var(--color-brand));
+  opacity: 0.72;
+}
+
 .title {
   color: var(--color-text-primary);
-  font-size: var(--text-lg);
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.2;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
   text-transform: none;
+  text-wrap: balance;
 }
 
 .detail {

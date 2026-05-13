@@ -40,12 +40,17 @@ export function PulseCard({
 
   return (
     <section
-      className={cn("relative mb-4 overflow-hidden rounded-[1.25rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card", className)}
+      className={cn("relative isolate mb-4 overflow-hidden rounded-[1.35rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card", className)}
       style={toneStyles.surfaceStyle}
     >
       <div className={cn("absolute inset-x-0 top-0 h-[3px]", toneStyles.accentClass)} />
-      <p className="text-[length:var(--text-lg)] font-semibold leading-snug tracking-[-0.02em] text-[color:var(--color-text-primary)] text-balance">{title}</p>
-      {subtitle ? <p className="mt-1.5 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{subtitle}</p> : null}
+      <div
+        className="pointer-events-none absolute -right-10 -top-16 -z-10 h-32 w-32 rounded-full"
+        style={{ background: "color-mix(in srgb, var(--color-brand-accent) 12%, transparent)" }}
+      />
+      <p className="k-eyebrow mb-2">Radar pastoral</p>
+      <p className="font-serif-display text-[length:var(--text-xl)] font-semibold leading-tight tracking-[-0.025em] text-[color:var(--color-text-primary)] text-balance">{title}</p>
+      {subtitle ? <p className="mt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{subtitle}</p> : null}
     </section>
   );
 }

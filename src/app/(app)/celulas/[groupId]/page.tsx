@@ -70,8 +70,8 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
 
         <section className={styles.hero}>
           <div className="min-w-0">
-            <p className="text-[length:var(--text-xs)] font-bold uppercase tracking-[0.14em] text-[color:var(--color-text-secondary)]">Célula</p>
-            <h2 className="mt-1 text-[length:var(--text-2xl)] font-extrabold leading-tight tracking-[-0.02em] text-[color:var(--color-text-primary)]">{group.name}</h2>
+            <p className="k-eyebrow">Célula</p>
+            <h2 className="k-detail-title mt-1">{group.name}</h2>
             <p className="mt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">
               Liderança: {leadershipName}
               {supervisionName ? ` · Supervisão: ${supervisionName}` : ""}

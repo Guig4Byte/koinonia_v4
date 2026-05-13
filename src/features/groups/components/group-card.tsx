@@ -61,7 +61,7 @@ export function GroupCard({
     : presenceRate < DEFAULT_PRESENCE_TONE_THRESHOLDS.risk ? "Presença baixa" : "Presença recente";
   const presenceToneClass = metricTextClass(tone);
   const content = (
-    <PriorityCard priorityTone={priorityTone} padding="sm" interactive>
+    <PriorityCard priorityTone={priorityTone} padding="sm" interactive className="group">
       <CardHeader
         title={name}
         subtitle={subtitle}
@@ -76,7 +76,7 @@ export function GroupCard({
             <PresenceTrendDelta trend={presenceTrend} tone={tone} className="ml-1" />
           ) : null}
         </span>
-        {href ? <span className="font-semibold text-[color:var(--color-brand)]">Ver célula →</span> : null}
+        {href ? <span className="font-semibold text-[color:var(--color-brand)]">Ver célula <span className="inline-block transition group-active:translate-x-0.5">→</span></span> : null}
       </div>
     </PriorityCard>
   );
