@@ -74,8 +74,8 @@ export function ThemeToggle({
       aria-label={`Tema atual: ${label}. Alternar para ${nextLabel}.`}
       title={`Tema: ${label}`}
       className={cn(
-        "inline-flex h-10 items-center justify-center gap-2 rounded-2xl border transition active:scale-95",
-        showLabel ? "px-3" : "w-10",
+        "inline-flex h-11 min-h-11 items-center justify-center gap-2 rounded-2xl border transition active:scale-95",
+        showLabel ? "px-3" : "w-11 min-w-11",
         variantClass,
         className,
       )}

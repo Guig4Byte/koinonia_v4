@@ -1,7 +1,7 @@
 import { BackLink, EmptyState, SectionTitle } from "@/components/shared/base-cards";
 import { priorityCardClass } from "@/lib/card-priority";
 import { ProgressiveList } from "@/components/shared/progressive-list";
-import { ButtonLink } from "@/components/ui/button-link";
+import { buttonClassName } from "@/components/ui/button";
 import { CardHeader } from "@/components/ui/card-header";
 import { CardLink } from "@/components/ui/card-link";
 import { FilterChip } from "@/components/ui/filter-chip";
@@ -33,11 +33,17 @@ export function EventCard({ event, user, now }: { event: EventListEvent; user: P
   const { metrics } = state;
 
   return (
-    <article className={cn(
-      styles.card,
-      state.recordedPresence && cn(styles.registered, "priority-card"),
-      priorityCardClass(state.isPendingEvent ? "warn" : undefined),
-    )}>
+    <CardLink
+      href={ROUTES.event(event.id)}
+      aria-label={`${state.actionLabel}: ${event.title}`}
+      padding="sm"
+      className={cn(
+        styles.card,
+        "group",
+        state.recordedPresence && cn(styles.registered, "priority-card"),
+        priorityCardClass(state.isPendingEvent ? "warn" : undefined),
+      )}
+    >
       <CardHeader
         title={event.title}
         subtitle={eventMeta(event)}
@@ -64,18 +70,19 @@ export function EventCard({ event, user, now }: { event: EventListEvent; user: P
         </div>
       ) : null}
 
-      <ButtonLink
-        href={ROUTES.event(event.id)}
-        variant={state.canRegisterPresence ? "primaryFlat" : "secondary"}
-        size="sm"
-        className={cn(
-          "mt-3 rounded-full px-4 py-0 text-[length:var(--text-sm)] font-extrabold",
-          state.recordedPresence && "mt-2",
-        )}
+      <span
+        className={buttonClassName({
+          variant: state.canRegisterPresence ? "primaryFlat" : "secondary",
+          size: "sm",
+          className: cn(
+            "mt-3 rounded-full px-4 py-0 text-[length:var(--text-sm)] font-extrabold",
+            state.recordedPresence && "mt-2",
+          ),
+        })}
       >
-        {state.actionLabel} <span aria-hidden="true">→</span>
-      </ButtonLink>
-    </article>
+        {state.actionLabel} <span className="inline-block transition group-active:translate-x-0.5" aria-hidden="true">→</span>
+      </span>
+    </CardLink>
   );
 }
 

@@ -111,7 +111,7 @@ export function BackLink({
   return (
     <Link
       href={href}
-      className="mb-4 inline-flex min-h-11 items-center gap-1.5 rounded-xl px-2.5 text-[length:var(--text-sm)] font-semibold text-[color:var(--color-brand)] transition active:scale-[0.98]"
+      className="mb-4 inline-flex min-h-12 items-center gap-2 rounded-2xl px-3 pr-4 text-[length:var(--text-sm)] font-semibold text-[color:var(--color-brand)] transition hover:bg-[var(--surface-alt)] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-brand-accent)]"
     >
       <ArrowLeft className="h-4 w-4" aria-hidden="true" />
       {children}
@@ -186,7 +186,7 @@ export function DetailLinkCard({
   children?: ReactNode;
 }) {
   return (
-    <CardLink href={href} priorityTone={badgeTone}>
+    <CardLink href={href} aria-label={`${actionLabel}: ${title}`} priorityTone={badgeTone}>
       <CardHeader
         title={title}
         subtitle={meta}

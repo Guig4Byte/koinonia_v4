@@ -202,11 +202,17 @@ export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: 
         ) : null}
       </div>
 
-      {!showPanel ? (
-        <p className="mt-2 px-1 text-[length:var(--text-xs)] leading-relaxed text-[color:var(--color-text-secondary)]">
-          {searchMessage}
-        </p>
-      ) : null}
+      <p
+        id={statusId}
+        aria-live="polite"
+        className={cn(
+          showPanel
+            ? "sr-only"
+            : "mt-2 px-1 text-[length:var(--text-xs)] leading-relaxed text-[color:var(--color-text-secondary)]",
+        )}
+      >
+        {searchMessage}
+      </p>
 
       {showPanel ? (
         <div
