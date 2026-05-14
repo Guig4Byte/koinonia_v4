@@ -1,6 +1,7 @@
-import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { CardHeader } from "@/components/ui/card-header";
 import { Card } from "@/components/ui/card";
+import { ButtonLink } from "@/components/ui/button-link";
 import { ContextSummary } from "@/components/shared/base-cards";
 import type { BadgeTone } from "@/components/ui/badge";
 import type { MetricTone } from "@/components/shared/presence-metric";
@@ -38,7 +39,7 @@ export function EventDetailHeaderCard({
   showGroupLink: boolean;
 }) {
   return (
-    <Card>
+    <Card tone="featured">
       <CardHeader
         as="h2"
         eyebrow={checkInLabel}
@@ -48,9 +49,10 @@ export function EventDetailHeaderCard({
           <>
             {locationName ? <p className="k-item-meta">{locationName}</p> : null}
             {groupId && showGroupLink ? (
-              <Link href={ROUTES.group(groupId)} className="mt-3 inline-flex text-[length:var(--text-sm)] font-semibold text-[color:var(--color-brand)]">
-                Ver célula →
-              </Link>
+              <ButtonLink href={ROUTES.group(groupId)} variant="quiet" size="sm" className="mt-3">
+                Ver célula
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </ButtonLink>
             ) : null}
           </>
         ) : undefined}

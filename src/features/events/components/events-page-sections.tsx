@@ -4,6 +4,7 @@ import { CalendarClock, ClipboardCheck, type LucideIcon } from "lucide-react";
 import { priorityCardClass } from "@/lib/card-priority";
 import { ProgressiveList } from "@/components/shared/progressive-list";
 import { buttonClassName } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 import { CardHeader } from "@/components/ui/card-header";
 import { CardLink } from "@/components/ui/card-link";
 import { FilterChip } from "@/components/ui/filter-chip";
@@ -188,7 +189,20 @@ export function EventsConsultationView({
       <section id={EVENTS_CONSULTATION_SECTION_ID} className="scroll-mt-6">
         <PeriodChips mode={mode} activePeriod={period} />
         <SectionTitle>{view.periodLabel}</SectionTitle>
-        {view.filteredEvents.length > 0 ? <EventList events={view.filteredEvents} user={user} now={now} /> : <EmptyState>{view.emptyMessage}</EmptyState>}
+        {view.filteredEvents.length > 0 ? (
+          <EventList events={view.filteredEvents} user={user} now={now} />
+        ) : (
+          <EmptyState
+            title={mode === "historico" ? "Nenhum histórico neste período" : "Tudo em dia neste período"}
+            action={(
+              <ButtonLink href={ROUTES.events} variant="quiet" size="sm" className="rounded-full">
+                Voltar para encontros
+              </ButtonLink>
+            )}
+          >
+            {view.emptyMessage}
+          </EmptyState>
+        )}
       </section>
     </>
   );

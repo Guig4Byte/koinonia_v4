@@ -5,6 +5,7 @@ export type ButtonVariant =
   | "primary"
   | "primaryFlat"
   | "secondary"
+  | "quiet"
   | "ghost"
   | "stableSoft"
   | "attentionSoft"
@@ -31,6 +32,8 @@ const buttonVariantClass: Record<ButtonVariant, string> = {
     "border border-[var(--color-btn-primary-bg)] bg-[var(--color-btn-primary-bg)] text-[color:var(--color-btn-primary-text)] hover:opacity-95",
   secondary:
     "border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] text-[color:var(--color-btn-secondary-text)] hover:bg-[var(--surface-alt)]",
+  quiet:
+    "border border-[var(--color-border-divider)] bg-transparent text-[color:var(--color-text-secondary)] hover:border-[var(--color-border-card)] hover:bg-[var(--surface-alt)]",
   ghost: "text-[color:var(--color-text-secondary)] hover:bg-[var(--surface-alt)]",
   stableSoft:
     "border border-[var(--color-badge-estavel-border)] bg-[var(--color-badge-estavel-bg)] text-[color:var(--color-badge-estavel-text)]",

@@ -234,14 +234,14 @@ html[data-theme="light"] {
 
 html[data-theme="parchment"] {
   --color-bg-page: #d2ad72;
-  --color-bg-card: rgba(255, 249, 236, 0.80);
+  --color-bg-card: rgba(255, 249, 236, 0.88);
   --color-bg-header: #7a4f18;
-  --color-bg-tab: color-mix(in srgb, var(--color-bg-card) 96%, transparent);
-  --color-bg-tab-active: color-mix(in srgb, var(--color-brand-accent) 26%, var(--color-bg-card));
-  --color-bg-metric-card: rgba(107, 64, 16, 0.17);
-  --color-bg-subtle-card: rgba(255, 241, 214, 0.42);
-  --color-border-metric-card: rgba(92, 54, 13, 0.16);
-  --color-shadow-metric-card: 0 1px 2px rgba(92, 54, 13, 0.08);
+  --color-bg-tab: color-mix(in srgb, var(--color-bg-card) 98%, transparent);
+  --color-bg-tab-active: color-mix(in srgb, var(--color-brand-accent) 30%, var(--color-bg-card));
+  --color-bg-metric-card: rgba(107, 64, 16, 0.20);
+  --color-bg-subtle-card: rgba(255, 241, 214, 0.56);
+  --color-border-metric-card: rgba(92, 54, 13, 0.24);
+  --color-shadow-metric-card: 0 1px 2px rgba(92, 54, 13, 0.10);
 
   --color-text-primary: #3a2008;
   --color-text-secondary: #4f3214;
@@ -261,13 +261,13 @@ html[data-theme="parchment"] {
   --color-action-whatsapp-text: #fff6dc;
 
   --color-segmented-bg: rgba(0, 0, 0, 0.16);
-  --color-segmented-border: rgba(245, 223, 160, 0.40);
+  --color-segmented-border: rgba(92, 54, 13, 0.28);
   --color-segmented-active-text: #4a2808;
-  --color-segmented-inactive-text: #fff0cf;
+  --color-segmented-inactive-text: #5a3515;
 
-  --color-tab-inactive: rgba(0, 0, 0, 0.12);
+  --color-tab-inactive: rgba(92, 54, 13, 0.13);
   --color-tab-label-active: #3a2008;
-  --color-tab-label-inactive: #4f3214;
+  --color-tab-label-inactive: #5a3515;
 
   --color-metric-presenca: #2a5c2a;
   --color-metric-atencoes: #8a2a10;
@@ -305,11 +305,11 @@ html[data-theme="parchment"] {
   --status-info-text: var(--color-badge-info-text);
   --status-info-border: var(--color-badge-info-border);
 
-  --color-border-card: rgba(92, 54, 13, 0.22);
-  --color-border-divider: rgba(92, 54, 13, 0.26);
-  --color-border-tab: rgba(92, 54, 13, 0.18);
-  --color-shadow-card: 0 10px 22px rgba(74, 39, 9, 0.08), 0 1px 2px rgba(74, 39, 9, 0.05);
-  --color-shadow-nav: 0 10px 24px rgba(74, 39, 9, 0.12), 0 1px 2px rgba(74, 39, 9, 0.06);
+  --color-border-card: rgba(92, 54, 13, 0.34);
+  --color-border-divider: rgba(92, 54, 13, 0.38);
+  --color-border-tab: rgba(92, 54, 13, 0.26);
+  --color-shadow-card: 0 12px 28px rgba(74, 39, 9, 0.12), 0 1px 3px rgba(74, 39, 9, 0.08);
+  --color-shadow-nav: 0 12px 30px rgba(74, 39, 9, 0.16), 0 1px 3px rgba(74, 39, 9, 0.08);
   --color-shadow-nav-active: none;
   --color-shadow-header: 0 14px 34px rgba(74, 39, 9, 0.12);
   --color-shadow-hover: 0 8px 18px rgba(74, 39, 9, 0.10);
@@ -362,11 +362,11 @@ html[data-theme="dark"] {
   --color-bg-page: #120c07;
   --color-bg-card: #211811;
   --color-bg-header: var(--brown-950);
-  --color-bg-tab: color-mix(in srgb, var(--color-bg-card) 90%, transparent);
-  --color-bg-tab-active: color-mix(in srgb, var(--brown-400) 18%, var(--color-bg-card));
+  --color-bg-tab: color-mix(in srgb, var(--color-bg-card) 94%, transparent);
+  --color-bg-tab-active: color-mix(in srgb, var(--brown-400) 20%, var(--color-bg-card));
   --color-bg-metric-card: #2b2119;
   --color-bg-subtle-card: #2a2018;
-  --color-border-metric-card: rgba(232, 213, 188, 0.12);
+  --color-border-metric-card: rgba(232, 213, 188, 0.16);
   --color-shadow-metric-card: 0 1px 2px rgba(0, 0, 0, 0.22);
 
   --color-text-primary: #fbf4ea;
@@ -433,9 +433,9 @@ html[data-theme="dark"] {
   --color-badge-info-border: var(--status-info-border);
   --color-badge-info-text: var(--status-info-text);
 
-  --color-border-card: rgba(232, 213, 188, 0.16);
-  --color-border-divider: rgba(232, 213, 188, 0.12);
-  --color-border-tab: rgba(232, 213, 188, 0.16);
+  --color-border-card: rgba(232, 213, 188, 0.18);
+  --color-border-divider: rgba(232, 213, 188, 0.18);
+  --color-border-tab: rgba(232, 213, 188, 0.20);
   --color-shadow-card: 0 14px 34px rgba(0, 0, 0, 0.30), 0 1px 2px rgba(0, 0, 0, 0.26);
   --color-shadow-nav: 0 16px 38px rgba(0, 0, 0, 0.38), 0 1px 2px rgba(0, 0, 0, 0.26);
   --color-shadow-nav-active: 0 2px 10px rgba(0, 0, 0, 0.20);

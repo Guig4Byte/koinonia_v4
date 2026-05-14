@@ -87,9 +87,11 @@ export function CareContactStart({
       </div>
 
       {canRegisterCare ? (
-        <Button type="button" variant="secondary" fullWidth disabled={isPending} onClick={onExistingContact}>
-          {CARE_COPY.contactActions.existingContactLabel}
-        </Button>
+        <div className="pt-2">
+          <Button type="button" variant="quiet" size="sm" fullWidth disabled={isPending} onClick={onExistingContact}>
+            {CARE_COPY.contactActions.existingContactLabel}
+          </Button>
+        </div>
       ) : null}
     </>
   );

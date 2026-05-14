@@ -43,6 +43,22 @@ describe("person detail view helpers", () => {
       "Presença mais constante que nos encontros anteriores.",
     );
   });
+
+  it("keeps no presence history neutral, but flags recorded absences as risk", () => {
+    const emptyView = buildPersonPresenceView([]);
+    expect(emptyView.recentPresence.hasPresenceData).toBe(false);
+    expect(emptyView.tone).toBe("neutral");
+
+    const absentView = buildPersonPresenceView([
+      attendance("1", AttendanceStatus.ABSENT),
+      attendance("2", AttendanceStatus.ABSENT),
+      attendance("3", AttendanceStatus.ABSENT),
+    ]);
+
+    expect(absentView.recentPresence.hasPresenceData).toBe(true);
+    expect(absentView.recentPresence.presenceRate).toBe(0);
+    expect(absentView.tone).toBe("risk");
+  });
 });
 
 function attendance(id: string, status: AttendanceStatus) {

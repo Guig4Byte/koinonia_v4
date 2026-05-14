@@ -39,11 +39,12 @@
 }
 
 .k-horizontal-fade {
+  --k-horizontal-fade-width: 42px;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scrollbar-width: none;
-  -webkit-mask-image: linear-gradient(to right, black calc(100% - 30px), transparent 100%);
-  mask-image: linear-gradient(to right, black calc(100% - 30px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - var(--k-horizontal-fade-width)), transparent 100%);
+  mask-image: linear-gradient(to right, black calc(100% - var(--k-horizontal-fade-width)), transparent 100%);
 }
 
 .k-horizontal-fade::-webkit-scrollbar {
@@ -51,16 +52,17 @@
 }
 
 .k-filter-row {
+  --k-horizontal-fade-width: 42px;
   display: flex;
   gap: 8px;
   margin-inline: -2px;
   overflow-x: auto;
   overscroll-behavior-x: contain;
-  padding: 2px 18px 4px 2px;
+  padding: 2px 42px 4px 2px;
   scrollbar-width: none;
-  scroll-padding-inline: 2px 18px;
-  -webkit-mask-image: linear-gradient(to right, black calc(100% - 30px), transparent 100%);
-  mask-image: linear-gradient(to right, black calc(100% - 30px), transparent 100%);
+  scroll-padding-inline: 2px 42px;
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - var(--k-horizontal-fade-width)), transparent 100%);
+  mask-image: linear-gradient(to right, black calc(100% - var(--k-horizontal-fade-width)), transparent 100%);
 }
 
 .k-filter-row::-webkit-scrollbar {
@@ -250,6 +252,29 @@
   color: var(--status-info-text);
 }
 
+
+.k-feature-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--color-brand-accent) 22%, var(--color-border-card));
+  background:
+    radial-gradient(ellipse 82% 62% at 50% -18%, color-mix(in srgb, var(--color-brand-accent) 13%, transparent), transparent 72%),
+    linear-gradient(135deg, color-mix(in srgb, var(--color-bg-card) 97%, var(--color-brand-accent) 3%), var(--color-bg-card));
+}
+
+.k-feature-card::after {
+  content: "";
+  position: absolute;
+  inset: auto -44px -74px auto;
+  z-index: -1;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-brand-accent) 10%, transparent);
+  pointer-events: none;
+}
+
 .k-page-hero {
   position: relative;
   isolation: isolate;
@@ -389,6 +414,7 @@
   text-wrap: balance;
 }
 
+html[data-theme="dark"] .k-feature-card,
 html[data-theme="dark"] .k-page-hero {
   background:
     radial-gradient(ellipse 85% 65% at 50% -18%, color-mix(in srgb, var(--color-brand-accent) 14%, transparent), transparent 72%),
@@ -412,6 +438,7 @@ html[data-theme="parchment"] .k-page-hero-eyebrow {
   color: color-mix(in srgb, var(--color-brand) 84%, var(--color-text-primary));
 }
 
+html[data-theme="parchment"] .k-feature-card,
 html[data-theme="parchment"] .k-page-hero,
 html[data-theme="parchment"] .k-detail-hero {
   background:

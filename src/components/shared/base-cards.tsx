@@ -156,9 +156,13 @@ export function InfoCard({
 export function EmptyState({
   children,
   compact = false,
+  title,
+  action,
 }: {
   children: ReactNode;
   compact?: boolean;
+  title?: ReactNode;
+  action?: ReactNode;
 }) {
   return (
     <div
@@ -176,7 +180,11 @@ export function EmptyState({
       >
         <Heart className={compact ? "h-3.5 w-3.5" : "h-4 w-4"} />
       </span>
-      <p className="min-w-0 pt-0.5">{children}</p>
+      <div className="min-w-0 pt-0.5">
+        {title ? <p className="font-semibold text-[color:var(--color-text-primary)]">{title}</p> : null}
+        <p className={cn(title ? "mt-1" : undefined)}>{children}</p>
+        {action ? <div className="mt-3">{action}</div> : null}
+      </div>
     </div>
   );
 }

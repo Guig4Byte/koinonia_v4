@@ -31,7 +31,7 @@ export function CheckInSummaryCard({
   onMarkAllAsPresent,
 }: CheckInSummaryCardProps) {
   return (
-    <Card>
+    <Card tone="featured">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">Presença do encontro</p>
