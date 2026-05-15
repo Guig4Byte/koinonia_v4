@@ -96,6 +96,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
           detailTone="strong"
           trendLayout="stacked"
           className="mb-0"
+          presenceContext="cell"
           items={summaryItems}
         />
 

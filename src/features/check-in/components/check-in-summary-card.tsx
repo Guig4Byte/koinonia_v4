@@ -3,7 +3,8 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Feedback } from "@/components/ui/feedback";
-import { formatPresenceRate } from "@/features/events/presence-display";
+import { formatPresenceRate, presenceTone } from "@/features/events/presence-display";
+import { PresenceMetricDisplay } from "@/components/shared/presence-metric";
 import { countLabel } from "@/lib/format";
 import type { CheckInSummary } from "@/features/check-in/check-in-view";
 
@@ -35,12 +36,18 @@ export function CheckInSummaryCard({
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">Presença do encontro</p>
-          <p
-            className="text-[length:var(--text-3xl)] font-bold text-[color:var(--color-metric-presenca)]"
-            data-testid="check-in-presence-rate"
-          >
-            {formatPresenceRate(summary.hasPresenceData, summary.presenceRate)}
-          </p>
+          <div data-testid="check-in-presence-rate">
+            <PresenceMetricDisplay
+              hasPresenceData={summary.hasPresenceData}
+              presenceRate={summary.presenceRate}
+              tone={presenceTone(summary.hasPresenceData, summary.presenceRate)}
+              value={formatPresenceRate(summary.hasPresenceData, summary.presenceRate)}
+              context="event"
+              size="lg"
+              showValue={false}
+              showValueInside
+            />
+          </div>
           <p className="mt-1 text-[length:var(--text-xs)] text-[color:var(--color-text-secondary)]">
             {summary.pending > 0
               ? `${summary.totalMembers - summary.pending} de ${summary.totalMembers} marcados`

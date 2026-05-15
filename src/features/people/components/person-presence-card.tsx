@@ -4,13 +4,13 @@ import { Card } from "@/components/ui/card";
 import {
   attendanceLabels,
   attendanceTone,
-  presenceToneClass,
   presenceTrendToneClass,
   recentPresenceCountLabel,
   recentPresenceTrendLabel,
   type PersonPresenceView,
 } from "@/features/people/person-detail-view";
 import { formatPresenceRate } from "@/features/events/presence-display";
+import { PresenceMetricDisplay } from "@/components/shared/presence-metric";
 import { cn } from "@/lib/cn";
 import { countLabel, formatShortDate, formatTime } from "@/lib/format";
 import { ROUTES } from "@/lib/routes";
@@ -42,10 +42,18 @@ export function PersonPresenceCard({ view }: { view: PersonPresenceView }) {
             </p>
           ) : null}
         </div>
-        <div className="shrink-0 text-right">
-          <p className={cn("text-[length:var(--text-xl)] font-bold leading-none tracking-[-0.02em]", presenceToneClass(tone))}>
-            {formatPresenceRate(recentPresence.hasPresenceData, recentPresence.presenceRate)}
-          </p>
+        <div className="shrink-0 text-center">
+          <PresenceMetricDisplay
+            hasPresenceData={recentPresence.hasPresenceData}
+            presenceRate={recentPresence.presenceRate}
+            tone={tone}
+            value={formatPresenceRate(recentPresence.hasPresenceData, recentPresence.presenceRate)}
+            context="person"
+            size="lg"
+            showValue={false}
+            showValueInside
+            insideValueClassName="text-[length:var(--text-lg)]"
+          />
           {trend ? (
             <p
               className={cn("mt-1 text-[length:var(--text-sm)] font-bold leading-none", presenceTrendToneClass(trend.direction, tone))}

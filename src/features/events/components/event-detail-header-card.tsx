@@ -67,6 +67,7 @@ export function EventDetailHeaderCard({
         <ContextSummary
           surface="inset"
           variant="balanced"
+          presenceContext="event"
           items={[
             {
               label: "Presença",

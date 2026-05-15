@@ -6,7 +6,8 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { CardHeader } from "@/components/ui/card-header";
 import { CardLink } from "@/components/ui/card-link";
 import { FilterChip } from "@/components/ui/filter-chip";
-import { formatPresenceRate } from "@/features/events/presence-display";
+import { formatPresenceRate, presenceTone } from "@/features/events/presence-display";
+import { PresenceMetricDisplay } from "@/components/shared/presence-metric";
 import {
   buildEventListCardState,
   buildEventsConsultationView,
@@ -66,7 +67,15 @@ export function EventCard({ event, user, now }: { event: EventListEvent; user: P
       {state.recordedPresence ? (
         <div className={styles.stats} data-testid="event-card-stats">
           <p className={styles.stat}>
-            <strong className="text-[color:var(--color-metric-presenca)]">{formatPresenceRate(metrics.hasPresenceData, metrics.presenceRate)}</strong>
+            <PresenceMetricDisplay
+              hasPresenceData={metrics.hasPresenceData}
+              presenceRate={metrics.presenceRate}
+              tone={presenceTone(metrics.hasPresenceData, metrics.presenceRate)}
+              value={formatPresenceRate(metrics.hasPresenceData, metrics.presenceRate)}
+              context="event"
+              size="sm"
+              className={styles.statPresenceMetric}
+            />
             <span>presença</span>
           </p>
           <p className={styles.stat}>

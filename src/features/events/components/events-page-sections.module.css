@@ -88,8 +88,8 @@
   border-left: 1px solid var(--color-border-divider);
 }
 
-.stats strong,
-.stats span {
+.stat > strong,
+.stat > span:not(.statPresenceMetric) {
   display: block;
 }
 
@@ -99,7 +99,13 @@
   line-height: 1;
 }
 
-.stats span {
+.statPresenceMetric {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+}
+
+.stat > span:not(.statPresenceMetric) {
   margin-top: 3px;
   color: var(--color-text-secondary);
   font-size: var(--text-xs);

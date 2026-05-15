@@ -2,10 +2,9 @@ import Link from "next/link";
 import type { BadgeTone } from "@/components/ui/badge";
 import { CardHeader } from "@/components/ui/card-header";
 import { PriorityCard } from "@/components/ui/priority-card";
-import { cn } from "@/lib/cn";
 import { DEFAULT_PRESENCE_TONE_THRESHOLDS, formatPresenceRate, presenceTone } from "@/features/events/presence-display";
 import type { CardPriorityTone } from "@/lib/card-priority";
-import { metricTextClass, PresenceTrendDelta, type PresenceTrend } from "@/components/shared/presence-metric";
+import { PresenceMetricDisplay, PresenceTrendDelta, type PresenceTrend } from "@/components/shared/presence-metric";
 import { countLabel } from "@/lib/format";
 
 function groupAttentionLabel(count: number, kind: "default" | "local" | "pastoral") {
@@ -59,7 +58,6 @@ export function GroupCard({
   const presenceLabel = !hasPresenceData
     ? "Registro de presença"
     : presenceRate < DEFAULT_PRESENCE_TONE_THRESHOLDS.risk ? "Presença baixa" : "Presença recente";
-  const presenceToneClass = metricTextClass(tone);
   const content = (
     <PriorityCard priorityTone={priorityTone} padding="sm" interactive className="group">
       <CardHeader
@@ -71,7 +69,14 @@ export function GroupCard({
       <div className="mt-3 flex items-center justify-between gap-3 border-t border-[var(--color-border-divider)] pt-2 text-[length:var(--text-xs)] text-[color:var(--color-text-secondary)]">
         <span className="min-w-0">
           {presenceLabel}:{" "}
-          <strong className={cn("font-bold", presenceToneClass)}>{presenceText}</strong>
+          <PresenceMetricDisplay
+            hasPresenceData={hasPresenceData}
+            presenceRate={presenceRate}
+            tone={tone}
+            value={presenceText}
+            context="cell"
+            size="sm"
+          />
           {presenceTrend ? (
             <PresenceTrendDelta trend={presenceTrend} tone={tone} className="ml-1" />
           ) : null}

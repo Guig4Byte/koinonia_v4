@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CalendarCheck2, UsersRound } from "lucide-react";
 import type { CSSProperties } from "react";
 import { EmptyState, SectionTitle } from "@/components/shared/base-cards";
+import { PresenceMetricDisplay } from "@/components/shared/presence-metric";
 import { AttendanceStatus } from "@/generated/prisma/client";
 import { ProgressiveList } from "@/components/shared/progressive-list";
 import { type BadgeTone } from "@/components/ui/badge";
@@ -64,8 +65,6 @@ export function GroupRegisteredEncountersList({ events }: { events: GroupRegiste
             const metrics = summarizeEventPresence(event);
             const presenceBadgeTone = presenceTone(metrics.hasPresenceData, metrics.presenceRate);
             const presenceLabel = formatPresenceRate(metrics.hasPresenceData, metrics.presenceRate, "Sem registro");
-            const presenceProgress = metrics.hasPresenceData ? metrics.presenceRate : 0;
-
             return (
               <Link
                 key={event.id}
@@ -85,13 +84,15 @@ export function GroupRegisteredEncountersList({ events }: { events: GroupRegiste
                     {formatShortDate(event.startsAt)} · {formatTime(event.startsAt)}
                   </span>
                   <span className="mt-2 flex min-w-0 items-center gap-2 text-[length:var(--text-xs)] leading-none text-[color:var(--color-text-muted)]">
-                    <span className="h-1 w-24 overflow-hidden rounded-full bg-[var(--color-border-divider)]" aria-hidden="true">
-                      <span
-                        className="block h-full rounded-full bg-[var(--encounter-tone)]"
-                        style={{ width: `${presenceProgress}%` }}
-                      />
-                    </span>
-                    <strong className="min-w-8 font-bold text-[color:var(--encounter-tone)]">{presenceLabel}</strong>
+                    <PresenceMetricDisplay
+                      hasPresenceData={metrics.hasPresenceData}
+                      presenceRate={metrics.presenceRate}
+                      tone={presenceBadgeTone}
+                      value={presenceLabel}
+                      context="event"
+                      size="sm"
+                      className="shrink-0"
+                    />
                     <span className="h-3 w-px bg-[var(--color-border-divider)]" aria-hidden="true" />
                     <span className="flex min-w-0 items-center gap-1 truncate font-medium text-[color:var(--color-text-secondary)]">
                       <UsersRound className="h-3 w-3 shrink-0" strokeWidth={1.8} aria-hidden="true" />
