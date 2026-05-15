@@ -2,20 +2,63 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 14%, var(--color-border-card));
-  border-radius: 1.15rem;
+  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 16%, var(--color-border-card));
+  border-radius: 1rem;
   background:
-    radial-gradient(ellipse 78% 56% at 50% -28%, color-mix(in srgb, var(--color-brand-accent) 10%, transparent), transparent 72%),
-    color-mix(in srgb, var(--color-bg-card) 96%, transparent);
-  padding: 12px 14px;
+    linear-gradient(180deg, color-mix(in srgb, var(--color-bg-card) 98%, var(--color-brand-accent) 2%), var(--color-bg-card));
+  padding: 14px;
   box-shadow: var(--color-shadow-card);
 }
 
 .registered {
-  padding-block: 10px;
+  border-color: color-mix(in srgb, var(--color-metric-presenca) 18%, var(--color-border-card));
+}
+
+.header {
+  gap: 10px;
+}
+
+.title {
+  font-size: var(--text-base);
+  font-weight: 700;
+  line-height: 1.18;
+}
+
+.meta {
+  margin-top: 3px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.35;
+}
+
+.location {
+  margin-top: 8px;
+}
+
+.locationLine {
+  display: inline-flex;
+  max-width: 100%;
+  min-height: 28px;
+  align-items: center;
+  gap: 6px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--surface-alt) 84%, transparent);
+  padding: 4px 9px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.locationIcon {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 auto;
+  color: var(--color-brand);
 }
 
 .badge {
+  max-width: 46%;
   padding: 4px 8px;
   font-size: var(--text-xs);
 }
@@ -23,15 +66,26 @@
 .stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 8px;
+  margin-top: 12px;
   border-top: 1px solid var(--color-border-divider);
-  padding-top: 8px;
+  padding-top: 10px;
 }
 
 .stats p {
   margin: 0;
   min-width: 0;
+}
+
+.stat {
+  padding-inline: 8px;
+}
+
+.stat:first-child {
+  padding-left: 0;
+}
+
+.stat + .stat {
+  border-left: 1px solid var(--color-border-divider);
 }
 
 .stats strong,
@@ -52,23 +106,68 @@
   line-height: 1.2;
 }
 
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+  border-top: 1px solid var(--color-border-divider);
+  padding-top: 10px;
+}
+
+.stats + .footer {
+  margin-top: 10px;
+}
+
+.action {
+  display: inline-flex;
+  min-height: 36px;
+  max-width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid var(--color-btn-secondary-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-btn-secondary-bg);
+  padding: 7px 12px;
+  color: var(--color-btn-secondary-text);
+  font-size: var(--text-sm);
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.actionPrimary {
+  border-color: var(--color-btn-primary-bg);
+  background: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+}
+
+.actionIcon {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  transition: transform 150ms ease;
+}
+
+.card:active .actionIcon {
+  transform: translateX(2px);
+}
+
 .consultationActions {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: 10px;
   margin-top: 14px;
 }
 
 .consultationCard {
   display: grid;
-  min-height: 72px;
+  min-height: 76px;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 8px;
-  border-color: color-mix(in srgb, var(--color-brand-accent) 28%, var(--color-border-card));
+  gap: 10px;
+  border-color: color-mix(in srgb, var(--color-brand-accent) 24%, var(--color-border-card));
   background:
-    radial-gradient(ellipse 80% 58% at 50% -24%, color-mix(in srgb, var(--color-brand-accent) 12%, transparent), transparent 72%),
-    color-mix(in srgb, var(--color-bg-card) 96%, transparent);
+    linear-gradient(180deg, color-mix(in srgb, var(--color-bg-card) 97%, var(--color-brand-accent) 3%), var(--color-bg-card));
 }
 
 .consultationIcon {
@@ -102,12 +201,23 @@
 }
 
 .consultationArrow {
+  display: inline-grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--color-brand-accent) 12%, transparent);
   color: var(--color-brand);
-  font-weight: 800;
   transition: transform 150ms ease;
 }
 
 .consultationCard:active .consultationArrow {
   transform: translateX(2px);
+}
+
+@media (max-width: 359px) {
+  .consultationActions {
+    grid-template-columns: 1fr;
+  }
 }
 

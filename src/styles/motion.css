@@ -52,6 +52,10 @@
   animation: content-in 180ms ease-out both;
 }
 
+.safe-page-focus .content-flow {
+  animation: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -6,6 +6,7 @@ import { CheckInSummaryCard } from "@/features/check-in/components/check-in-summ
 import { CheckInVisitorsCard } from "@/features/check-in/components/check-in-visitors-card";
 import { useCheckInController, type CheckInMember, type CheckInVisitorRecord } from "@/hooks/use-check-in-controller";
 import { checkInHelperText, type CheckInMode } from "@/features/check-in/check-in-view";
+import styles from "./check-in.module.css";
 
 export function CheckInList({
   eventId,
@@ -16,7 +17,6 @@ export function CheckInList({
   mode = "register",
   cancelHref,
   cancelLabel = "Cancelar",
-  saveBarOffset = "nav",
 }: {
   eventId: string;
   members: CheckInMember[];
@@ -26,7 +26,6 @@ export function CheckInList({
   mode?: CheckInMode;
   cancelHref?: string;
   cancelLabel?: string;
-  saveBarOffset?: "nav" | "page";
 }) {
   const checkIn = useCheckInController({
     eventId,
@@ -46,34 +45,36 @@ export function CheckInList({
     .map(({ item }) => item);
 
   return (
-    <section className="space-y-3">
-      <CheckInSummaryCard
-        summary={checkIn.summary}
-        helperText={checkInHelperText(mode)}
-        allMembersPresent={checkIn.allMembersPresent}
-        isPending={checkIn.isPending}
-        bulkConfirmationOpen={checkIn.bulkConfirmationOpen}
-        errorMessage={checkIn.errorMessage}
-        onCancelMarkAllAsPresent={checkIn.cancelMarkAllAsPresent}
-        onConfirmMarkAllAsPresent={checkIn.confirmMarkAllAsPresent}
-        onMarkAllAsPresent={checkIn.markAllAsPresent}
-      />
+    <section className={styles.list}>
+      <div className={styles.content} data-testid="check-in-content">
+        <CheckInSummaryCard
+          summary={checkIn.summary}
+          helperText={checkInHelperText(mode)}
+          allMembersPresent={checkIn.allMembersPresent}
+          isPending={checkIn.isPending}
+          bulkConfirmationOpen={checkIn.bulkConfirmationOpen}
+          errorMessage={checkIn.errorMessage}
+          onCancelMarkAllAsPresent={checkIn.cancelMarkAllAsPresent}
+          onConfirmMarkAllAsPresent={checkIn.confirmMarkAllAsPresent}
+          onMarkAllAsPresent={checkIn.markAllAsPresent}
+        />
 
-      <CheckInVisitorsCard
-        savedVisitors={checkIn.savedVisitors}
-        fallbackSavedVisitorCount={checkIn.savedVisitorCount}
-        visitors={checkIn.visitors}
-        visitorName={checkIn.visitorName}
-        onVisitorNameChange={checkIn.setVisitorName}
-        onAddVisitor={checkIn.addVisitor}
-        onRemoveVisitor={checkIn.removeVisitor}
-        disabled={checkIn.isPending}
-      />
+        <CheckInVisitorsCard
+          savedVisitors={checkIn.savedVisitors}
+          fallbackSavedVisitorCount={checkIn.savedVisitorCount}
+          visitors={checkIn.visitors}
+          visitorName={checkIn.visitorName}
+          onVisitorNameChange={checkIn.setVisitorName}
+          onAddVisitor={checkIn.addVisitor}
+          onRemoveVisitor={checkIn.removeVisitor}
+          disabled={checkIn.isPending}
+        />
 
-      <div className="space-y-3">
-        {displayItems.map((item) => (
-          <CheckInMemberCard key={item.personId} item={item} onSetStatus={checkIn.setStatus} disabled={checkIn.isPending} />
-        ))}
+        <div className="space-y-3">
+          {displayItems.map((item) => (
+            <CheckInMemberCard key={item.personId} item={item} onSetStatus={checkIn.setStatus} disabled={checkIn.isPending} />
+          ))}
+        </div>
       </div>
 
       <CheckInSaveBar
@@ -85,7 +86,6 @@ export function CheckInList({
         isPending={checkIn.isPending}
         errorMessage={checkIn.errorMessage}
         submitLabel={submitLabel}
-        saveBarOffset={saveBarOffset}
         onSave={checkIn.save}
       />
     </section>

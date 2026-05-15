@@ -125,6 +125,7 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
   return (
     <article
       className={cn(styles.memberCard, "rounded-2xl border p-3", memberCardTone(item.status))}
+      data-testid="check-in-member-card"
     >
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">

@@ -82,7 +82,6 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
             mode={checkInMode}
             cancelHref={cancelHref}
             cancelLabel={cancelLabel}
-            saveBarOffset="page"
           />
         ) : (
           <div className="space-y-3">

@@ -1,8 +1,18 @@
 .pageFlow {
+  --leader-section-gap: 1.75rem;
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
+  gap: 0;
   padding-bottom: 0.5rem;
+}
+
+.pageFlow > * + * {
+  margin-top: var(--leader-section-gap);
+}
+
+/* The leader page owns section rhythm; pastoral sections keep their fallback margin for other pages. */
+.pageFlow > section[class] + section[class] {
+  margin-top: var(--leader-section-gap);
 }
 
 .eventSection {

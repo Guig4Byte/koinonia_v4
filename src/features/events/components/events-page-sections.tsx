@@ -1,9 +1,7 @@
 import { BackLink, EmptyState, SectionTitle } from "@/components/shared/base-cards";
 import { PageHero } from "@/components/shared/page-hero";
-import { CalendarClock, ClipboardCheck, type LucideIcon } from "lucide-react";
-import { priorityCardClass } from "@/lib/card-priority";
+import { ArrowRight, CalendarClock, ClipboardCheck, MapPin, type LucideIcon } from "lucide-react";
 import { ProgressiveList } from "@/components/shared/progressive-list";
-import { buttonClassName } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { CardHeader } from "@/components/ui/card-header";
 import { CardLink } from "@/components/ui/card-link";
@@ -39,50 +37,54 @@ export function EventCard({ event, user, now }: { event: EventListEvent; user: P
       href={ROUTES.event(event.id)}
       aria-label={`${state.actionLabel}: ${event.title}`}
       padding="sm"
+      priorityTone={state.isPendingEvent ? "warn" : state.recordedPresence ? "stable" : undefined}
+      data-testid="event-card"
       className={cn(
         styles.card,
         "group",
-        state.recordedPresence && cn(styles.registered, "priority-card"),
-        priorityCardClass(state.isPendingEvent ? "warn" : undefined),
+        state.recordedPresence && styles.registered,
       )}
     >
       <CardHeader
+        className={styles.header}
         title={event.title}
         subtitle={eventMeta(event)}
-        detail={state.locationName}
+        detail={state.locationName ? (
+          <span className={styles.locationLine}>
+            <MapPin className={styles.locationIcon} aria-hidden="true" />
+            <span className="min-w-0 truncate">{state.locationName}</span>
+          </span>
+        ) : null}
         badgeLabel={state.label}
         badgeTone={state.badgeTone}
         badgeClassName={styles.badge}
+        titleClassName={styles.title}
+        subtitleClassName={styles.meta}
+        detailClassName={styles.location}
       />
 
       {state.recordedPresence ? (
-        <div className={styles.stats}>
-          <p>
+        <div className={styles.stats} data-testid="event-card-stats">
+          <p className={styles.stat}>
             <strong className="text-[color:var(--color-metric-presenca)]">{formatPresenceRate(metrics.hasPresenceData, metrics.presenceRate)}</strong>
             <span>presença</span>
           </p>
-          <p>
+          <p className={styles.stat}>
             <strong className="text-[color:var(--color-metric-visitantes)]">{metrics.visitorCount}</strong>
             <span>{metrics.visitorCount === 1 ? "visitante" : "visitantes"}</span>
           </p>
-          <p>
+          <p className={styles.stat}>
             <strong className="text-[color:var(--color-text-primary)]">{metrics.markingsCount}</strong>
             <span>marcações</span>
           </p>
         </div>
       ) : null}
 
-      <span
-        className={buttonClassName({
-          variant: state.canRegisterPresence ? "primaryFlat" : "secondary",
-          size: "sm",
-          className: cn(
-            "mt-3 rounded-full px-4 py-0 text-[length:var(--text-sm)] font-extrabold",
-            state.recordedPresence && "mt-2",
-          ),
-        })}
-      >
-        {state.actionLabel} <span className="inline-block transition group-active:translate-x-0.5" aria-hidden="true">→</span>
+      <span className={styles.footer}>
+        <span className={cn(styles.action, state.canRegisterPresence && styles.actionPrimary)} data-testid="event-card-action">
+          {state.actionLabel}
+          <ArrowRight className={styles.actionIcon} aria-hidden="true" />
+        </span>
       </span>
     </CardLink>
   );
@@ -116,7 +118,9 @@ function ConsultationCard({
         <span className={styles.consultationTitle}>{title}</span>
         <span className={styles.consultationDescription}>{description}</span>
       </span>
-      <span className={styles.consultationArrow} aria-hidden="true">→</span>
+      <span className={styles.consultationArrow} aria-hidden="true">
+        <ArrowRight className="h-4 w-4" />
+      </span>
     </CardLink>
   );
 }

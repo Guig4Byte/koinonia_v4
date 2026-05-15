@@ -15,7 +15,6 @@ type CheckInSaveBarProps = {
   isPending: boolean;
   errorMessage: string | null;
   submitLabel: string;
-  saveBarOffset: "nav" | "page";
   onSave: () => void;
 };
 
@@ -53,39 +52,38 @@ export function CheckInSaveBar({
   isPending,
   errorMessage,
   submitLabel,
-  saveBarOffset,
   onSave,
 }: CheckInSaveBarProps) {
   return (
     <div
+      data-testid="check-in-save-bar"
       className={cn(
         styles.saveBar,
-        "rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card backdrop-blur-xl",
-        saveBarOffset === "page" ? styles.saveBarPage : styles.saveBarNav,
+        "rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-2.5 shadow-card backdrop-blur-xl",
       )}
     >
-      <div className="flex flex-col gap-3 min-[390px]:flex-row min-[390px]:items-center min-[390px]:justify-between">
+      <div className="grid gap-2 min-[390px]:grid-cols-[minmax(0,1fr)_auto] min-[390px]:items-center">
         <div className="min-w-0">
-          <p className="k-item-title-sm">
+          <p className="k-item-title-sm truncate">
             {saveBarTitle({ pending: summary.pending, isPending, errorMessage })}
           </p>
-          <p className="mt-0.5 text-[length:var(--text-xs)] text-[color:var(--color-text-secondary)]">
+          <p className="mt-0.5 truncate text-[length:var(--text-xs)] text-[color:var(--color-text-secondary)]">
             {saveBarDescription({ pending: summary.pending, isPending, errorMessage, mode })}
           </p>
         </div>
-        <div className="flex flex-col gap-2 min-[390px]:flex-row min-[390px]:shrink-0 min-[390px]:items-center">
+        <div className="grid grid-cols-2 gap-2 min-[390px]:flex min-[390px]:shrink-0 min-[390px]:items-center">
           {cancelHref ? (
             <ButtonLink
               href={cancelHref}
               aria-disabled={isPending}
               variant="secondary"
-              size="md"
+              size="sm"
               className={cn("w-full rounded-full px-3 min-[390px]:w-auto", isPending && "pointer-events-none saturate-75")}
             >
               {cancelLabel}
             </ButtonLink>
           ) : null}
-          <Button disabled={!canSave} loading={isPending} onClick={onSave} className="w-full min-w-28 min-[390px]:w-auto">
+          <Button disabled={!canSave} loading={isPending} onClick={onSave} size="sm" className="w-full min-w-24 min-[390px]:w-auto">
             {isPending ? "Salvando..." : submitLabel}
           </Button>
         </div>

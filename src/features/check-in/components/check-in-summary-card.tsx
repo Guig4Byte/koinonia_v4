@@ -35,7 +35,12 @@ export function CheckInSummaryCard({
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">Presença do encontro</p>
-          <p className="text-[length:var(--text-3xl)] font-bold text-[color:var(--color-metric-presenca)]">{formatPresenceRate(summary.hasPresenceData, summary.presenceRate)}</p>
+          <p
+            className="text-[length:var(--text-3xl)] font-bold text-[color:var(--color-metric-presenca)]"
+            data-testid="check-in-presence-rate"
+          >
+            {formatPresenceRate(summary.hasPresenceData, summary.presenceRate)}
+          </p>
           <p className="mt-1 text-[length:var(--text-xs)] text-[color:var(--color-text-secondary)]">
             {summary.pending > 0
               ? `${summary.totalMembers - summary.pending} de ${summary.totalMembers} marcados`

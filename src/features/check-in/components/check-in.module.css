@@ -1,14 +1,25 @@
+.list {
+  --check-in-save-bar-space: calc(8rem + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
 .saveBar {
-  position: sticky;
-  z-index: 20;
-}
-
-.saveBarNav {
-  bottom: 86px;
-}
-
-.saveBarPage {
+  position: fixed;
+  left: 50%;
+  z-index: 50;
+  width: calc(100% - 32px);
+  max-width: 448px;
   bottom: calc(12px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-bottom: var(--check-in-save-bar-space);
 }
 
 .memberCard {
@@ -187,6 +198,12 @@
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@media (min-width: 390px) {
+  .list {
+    --check-in-save-bar-space: calc(4.75rem + env(safe-area-inset-bottom));
   }
 }
 
