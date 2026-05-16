@@ -60,7 +60,7 @@ export function PersonPresenceCard({ view }: { view: PersonPresenceView }) {
               aria-label={`${trend.direction === "up" ? "subiu" : "caiu"} ${trend.delta} pontos em relação aos encontros anteriores`}
               title={`${trend.direction === "up" ? "Subiu" : "Caiu"} ${trend.delta} pontos em relação aos encontros anteriores`}
             >
-              {trend.direction === "up" ? "↑" : "↓"} {trend.delta} pts
+              {trend.direction === "up" ? "↑" : "↓"} {countLabel(trend.delta, "ponto", "pontos")}
             </p>
           ) : null}
         </div>

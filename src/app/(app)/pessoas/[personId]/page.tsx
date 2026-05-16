@@ -220,7 +220,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
                 {primarySupervisionName ? ` · Supervisão: ${primarySupervisionName}` : ""}
               </>
             }
-            actionLabel="Ver célula"
+            actionLabel="Abrir célula"
           />
         </>
       ) : null}

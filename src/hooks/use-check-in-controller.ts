@@ -76,15 +76,21 @@ export function useCheckInController({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [bulkConfirmationOpen, setBulkConfirmationOpen] = useState(false);
   const [visitorName, setVisitorName] = useState("");
+  const initialItems = useMemo(() => initialCheckInItems(members), [members]);
   const [savedVisitors] = useState<CheckInVisitorRecord[]>(initialVisitors);
   const [visitors, setVisitors] = useState<VisitorDraft[]>([]);
-  const [items, setItems] = useState<CheckInItem[]>(() => initialCheckInItems(members));
+  const [items, setItems] = useState<CheckInItem[]>(() => initialItems);
 
   const savedVisitorCount = Math.max(initialVisitorCount, savedVisitors.length);
   const visitorTotal = savedVisitorCount + visitors.length;
   const summary = useMemo(() => summarizeCheckInItems(items, visitorTotal), [items, visitorTotal]);
 
-  const canSave = summary.pending === 0 && !isSaving;
+  const hasMemberChanges = useMemo(
+    () => items.some((item, index) => item.status !== initialItems[index]?.status),
+    [initialItems, items],
+  );
+  const hasUnsavedChanges = hasMemberChanges || visitors.length > 0;
+  const canSave = summary.pending === 0 && !isSaving && (mode === "register" || hasUnsavedChanges);
   const allMembersPresent = summary.totalMembers > 0 && summary.present === summary.totalMembers;
 
   function clearTransientState() {
@@ -166,8 +172,12 @@ export function useCheckInController({
   async function save() {
     if (isSaving) return;
 
-    if (summary.pending > 0) {
-      setErrorMessage("Ainda falta marcar algumas pessoas antes de salvar a presença.");
+    if (!canSave) {
+      if (summary.pending > 0) {
+        setErrorMessage("Ainda falta marcar algumas pessoas antes de salvar a presença.");
+      } else if (mode === "adjust" && !hasUnsavedChanges) {
+        setErrorMessage("Faça uma alteração antes de salvar o ajuste.");
+      }
       return;
     }
 
@@ -206,6 +216,7 @@ export function useCheckInController({
     bulkConfirmationOpen,
     canSave,
     errorMessage,
+    hasUnsavedChanges,
     isPending: isSaving,
     items,
     savedVisitorCount,

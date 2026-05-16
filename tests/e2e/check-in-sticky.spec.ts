@@ -72,7 +72,7 @@ test.describe("check-in fixed save bar", () => {
 
       const saveBar = page.getByTestId("check-in-save-bar");
       const presenceRate = page.getByTestId("check-in-presence-rate");
-      await expect(saveBar).toContainText("Pronto para salvar");
+      await expect(saveBar).toContainText(/Sem alterações|Pronto para atualizar|Pronto para salvar/);
       await expect(saveBar.getByRole("link", { name: "Cancelar" })).toBeVisible();
       await expect(saveBar.getByRole("button", { name: "Salvar ajuste" })).toBeVisible();
       await expect(presenceRate).toHaveText(target.expectedPresenceRate);

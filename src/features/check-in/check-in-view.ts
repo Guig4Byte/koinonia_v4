@@ -70,6 +70,24 @@ export function summarizeCheckInItems(items: CheckInItem[], visitorTotal: number
   };
 }
 
+export function markedMembersCount(summary: CheckInSummary) {
+  return Math.max(0, summary.totalMembers - summary.pending);
+}
+
+export function checkInMarkedLabel(summary: CheckInSummary) {
+  if (summary.totalMembers === 0) return "Nenhum membro";
+
+  return `${markedMembersCount(summary)} de ${summary.totalMembers} marcados`;
+}
+
+export function checkInPendingLabel(summary: CheckInSummary) {
+  if (summary.totalMembers === 0) return "Sem membros";
+  if (summary.pending === 0) return "Todos marcados";
+  if (summary.pending === 1) return "Falta 1 marcação";
+
+  return `Faltam ${summary.pending} marcações`;
+}
+
 export function checkInHelperText(mode: CheckInMode) {
   return mode === "adjust"
     ? "Corrija apenas o que mudou neste encontro."

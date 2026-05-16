@@ -73,7 +73,7 @@ test.describe("leader page spacing", () => {
       await loginAsLeader(page);
       await page.goto("/lider");
 
-      const action = page.getByRole("link", { name: /Registrar presença|Ver resumo/ });
+      const action = page.getByRole("link", { name: /Registrar presença|Ver detalhes/ });
       await expect(action).toBeVisible();
 
       const styles = await action.evaluate((element) => {

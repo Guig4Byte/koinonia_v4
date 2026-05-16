@@ -50,7 +50,7 @@ CTAs relacionados:
 
 - `Ver encontro`;
 - `Registrar presença`;
-- `Ver resumo`;
+- `Ver detalhes`;
 - `Ajustar presença`;
 - `Salvar presença`;
 - `Salvar ajuste`;
@@ -188,7 +188,7 @@ Não rebaixe `Urgente` para `Em atenção`. O contexto pode mudar a mensagem, ma
 | Célula | `Abrir célula`, `Editar célula`, `Salvar célula` |
 | Encontro futuro | `Ver encontro`, `Remarcar encontro`, `Cancelar encontro` |
 | Encontro pendente | `Registrar presença`, `Não houve encontro` |
-| Encontro registrado | `Ver resumo`, `Ajustar presença`, `Ajustar local` |
+| Encontro registrado | `Ver detalhes`, `Ajustar presença`, `Ajustar local` |
 | Operação de presença | `Cancelar`, `Voltar`, `Salvar presença`, `Salvar ajuste` |
 | Cuidado | `Registrar cuidado`, `Salvar sem anotação` |
 

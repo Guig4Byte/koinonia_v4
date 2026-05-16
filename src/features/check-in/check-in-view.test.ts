@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { ATTENDANCE, checkInConfirmationParam, checkInHelperText, getInitialMemberStatus, summarizeCheckInItems } from "./check-in-view";
+import {
+  ATTENDANCE,
+  checkInConfirmationParam,
+  checkInHelperText,
+  checkInMarkedLabel,
+  checkInPendingLabel,
+  getInitialMemberStatus,
+  markedMembersCount,
+  summarizeCheckInItems,
+} from "./check-in-view";
 
 describe("check-in view helpers", () => {
   it("keeps visitor attendance out of member initial status", () => {
@@ -34,6 +43,28 @@ describe("check-in view helpers", () => {
       presenceRate: 50,
       hasPresenceData: true,
     });
+  });
+
+  it("formats check-in progress labels", () => {
+    const summary = summarizeCheckInItems([
+      { personId: "1", fullName: "Ana", status: ATTENDANCE.PRESENT },
+      { personId: "2", fullName: "Bia", status: null },
+      { personId: "3", fullName: "Caio", status: null },
+    ], 1);
+
+    expect(markedMembersCount(summary)).toBe(1);
+    expect(checkInMarkedLabel(summary)).toBe("1 de 3 marcados");
+    expect(checkInPendingLabel(summary)).toBe("Faltam 2 marcações");
+  });
+
+  it("formats completed check-in progress labels", () => {
+    const summary = summarizeCheckInItems([
+      { personId: "1", fullName: "Ana", status: ATTENDANCE.PRESENT },
+      { personId: "2", fullName: "Bia", status: ATTENDANCE.JUSTIFIED },
+    ], 0);
+
+    expect(checkInMarkedLabel(summary)).toBe("2 de 2 marcados");
+    expect(checkInPendingLabel(summary)).toBe("Todos marcados");
   });
 
   it("keeps mode-specific copy in one place", () => {

@@ -138,7 +138,7 @@ export function buildEventListCardState(event: EventListEvent, user: PermissionU
   const actionLabel = canRegisterPresence
     ? "Registrar presença"
     : recordedPresence
-      ? "Ver resumo"
+      ? "Ver detalhes"
       : "Ver encontro";
 
   return {

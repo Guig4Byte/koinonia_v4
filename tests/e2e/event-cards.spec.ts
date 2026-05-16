@@ -27,7 +27,7 @@ test.describe("event cards", () => {
       await expect(card).toBeVisible();
       await expect(card.getByTestId("event-card-stats")).toBeVisible();
       await expect(card.getByText(target.expectedPresenceRate, { exact: true })).toBeVisible();
-      await expect(card.getByTestId("event-card-action")).toContainText("Ver resumo");
+      await expect(card.getByTestId("event-card-action")).toContainText("Ver detalhes");
 
       const horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
       expect(horizontalOverflow).toBeLessThanOrEqual(1);

@@ -99,7 +99,7 @@ describe("leader-page-view", () => {
       locationName: "Local deste encontro",
       badgeLabel: "Presença registrada",
       badgeTone: "ok",
-      ctaLabel: "Ver resumo",
+      ctaLabel: "Ver detalhes",
     });
   });
 });

@@ -160,6 +160,6 @@ export function leaderCurrentEventState(event: LeaderCurrentEvent): LeaderCurren
     description: completed
       ? "A presença deste encontro já foi registrada. Ajuste somente se alguma marcação estiver errada."
       : "Registre a presença quando o encontro acontecer para manter o cuidado em dia.",
-    ctaLabel: completed ? "Ver resumo" : "Registrar presença",
+    ctaLabel: completed ? "Ver detalhes" : "Registrar presença",
   };
 }

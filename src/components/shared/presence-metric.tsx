@@ -24,12 +24,16 @@ function trendTextClass(trend: PresenceTrend, tone: MetricTone): string {
   return "text-[color:var(--color-metric-atencoes)]";
 }
 
+function presenceTrendValueLabel(delta: number): string {
+  return `${delta} ${delta === 1 ? "ponto" : "pontos"}`;
+}
+
 function presenceTrendLabel(trend: PresenceTrend, capitalized = false): string {
   const direction = trend.direction === "up"
     ? capitalized ? "Subiu" : "subiu"
     : capitalized ? "Caiu" : "caiu";
 
-  return `${direction} ${trend.delta} pontos em relação ao período anterior`;
+  return `${direction} ${presenceTrendValueLabel(trend.delta)} em relação ao período anterior`;
 }
 
 export function PresenceTrendDelta({
@@ -47,7 +51,7 @@ export function PresenceTrendDelta({
       aria-label={presenceTrendLabel(trend)}
       title={presenceTrendLabel(trend, true)}
     >
-      {trend.direction === "up" ? "↑" : "↓"} {trend.delta} pts
+      {trend.direction === "up" ? "↑" : "↓"} {presenceTrendValueLabel(trend.delta)}
     </span>
   );
 }

@@ -24,6 +24,7 @@ type MemberCardsProps<TMember extends MemberPriorityListItem> = {
   keyForMember: (member: TMember) => string;
   hrefForMember: (member: TMember) => string;
   contextForMember?: (member: TMember) => string | undefined;
+  badgeLabelForMember?: (member: TMember) => string | undefined;
   cardToneForMember?: (member: TMember) => MemberPriorityCardTone | undefined;
   compactForMember?: (member: TMember) => boolean;
 };
@@ -33,6 +34,7 @@ function MemberCards<TMember extends MemberPriorityListItem>({
   keyForMember,
   hrefForMember,
   contextForMember,
+  badgeLabelForMember,
   cardToneForMember,
   compactForMember,
 }: MemberCardsProps<TMember>) {
@@ -44,7 +46,7 @@ function MemberCards<TMember extends MemberPriorityListItem>({
           href={hrefForMember(member)}
           name={member.name}
           context={contextForMember?.(member)}
-          badgeLabel={member.badgeLabel}
+          badgeLabel={badgeLabelForMember ? badgeLabelForMember(member) : member.badgeLabel}
           badgeTone={member.badgeTone}
           cardTone={cardToneForMember?.(member) ?? member.cardTone}
           compact={compactForMember?.(member) ?? false}
@@ -159,6 +161,7 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
                   members={regularMembers}
                   keyForMember={keyForMember}
                   hrefForMember={hrefForMember}
+                  badgeLabelForMember={() => undefined}
                   cardToneForMember={() => "muted"}
                   compactForMember={() => true}
                 />
@@ -183,6 +186,7 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
               keyForMember={keyForMember}
               hrefForMember={hrefForMember}
               contextForMember={filteredContextForMember}
+              badgeLabelForMember={(member) => member.priorityRank >= 5 ? undefined : member.badgeLabel}
               cardToneForMember={(member) => member.priorityRank >= 5 ? "muted" : member.cardTone}
               compactForMember={(member) => member.priorityRank >= 5}
             />

@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Feedback } from "@/components/ui/feedback";
 import { formatPresenceRate, presenceTone } from "@/features/events/presence-display";
 import { PresenceMetricDisplay } from "@/components/shared/presence-metric";
+import { checkInMarkedLabel, checkInPendingLabel, type CheckInSummary } from "@/features/check-in/check-in-view";
 import { countLabel } from "@/lib/format";
-import type { CheckInSummary } from "@/features/check-in/check-in-view";
+import { cn } from "@/lib/cn";
 
 type CheckInSummaryCardProps = {
   summary: CheckInSummary;
@@ -19,6 +20,29 @@ type CheckInSummaryCardProps = {
   onConfirmMarkAllAsPresent: () => void;
   onMarkAllAsPresent: () => void;
 };
+
+type SummaryPillProps = {
+  label: string;
+  value: number;
+  tone?: "default" | "present" | "justified" | "absent" | "pending";
+};
+
+const summaryPillToneClass: Record<NonNullable<SummaryPillProps["tone"]>, string> = {
+  default: "border-[var(--color-border-card)] bg-[var(--surface-alt)] text-[color:var(--color-text-secondary)]",
+  present: "border-[var(--color-badge-estavel-border)] bg-[var(--color-badge-estavel-bg)] text-[color:var(--color-badge-estavel-text)]",
+  justified: "border-[var(--color-badge-atencao-border)] bg-[var(--color-badge-atencao-bg)] text-[color:var(--color-badge-atencao-text)]",
+  absent: "border-[var(--color-badge-risco-border)] bg-[var(--color-badge-risco-bg)] text-[color:var(--color-badge-risco-text)]",
+  pending: "border-[var(--color-border-card)] bg-[var(--surface-alt)] text-[color:var(--color-text-muted)]",
+};
+
+function SummaryPill({ label, value, tone = "default" }: SummaryPillProps) {
+  return (
+    <div className={cn("rounded-2xl border px-3 py-2", summaryPillToneClass[tone])}>
+      <p className="text-[length:var(--text-lg)] font-semibold leading-none">{value}</p>
+      <p className="mt-1 text-[length:var(--text-xs)] font-medium leading-tight">{label}</p>
+    </div>
+  );
+}
 
 export function CheckInSummaryCard({
   summary,
@@ -49,32 +73,48 @@ export function CheckInSummaryCard({
             />
           </div>
           <p className="mt-1 text-[length:var(--text-xs)] text-[color:var(--color-text-secondary)]">
-            {summary.pending > 0
-              ? `${summary.totalMembers - summary.pending} de ${summary.totalMembers} marcados`
-              : `${summary.present} de ${summary.totalMembers} presentes`}
+            {checkInMarkedLabel(summary)}
             {" · "}
             {countLabel(summary.visitorTotal, "visitante", "visitantes")}
           </p>
         </div>
         <div className="rounded-full border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-3 py-1 text-[length:var(--text-xs)] font-semibold text-[color:var(--color-text-secondary)]">
-          {summary.pending > 0 ? `Faltam ${summary.pending}` : "Tudo marcado"}
+          {checkInPendingLabel(summary)}
         </div>
+      </div>
+
+      <div className="mt-4 grid grid-cols-2 gap-2 min-[390px]:grid-cols-4">
+        <SummaryPill label="Presentes" value={summary.present} tone="present" />
+        <SummaryPill label="Justificaram" value={summary.justified} tone="justified" />
+        <SummaryPill label="Ausentes" value={summary.absent} tone="absent" />
+        <SummaryPill label="Pendentes" value={summary.pending} tone="pending" />
       </div>
 
       <p className="mt-3 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{helperText}</p>
 
       {!allMembersPresent ? (
-        <Button
-          type="button"
-          variant="secondary"
-          size="sm"
-          fullWidth
-          onClick={onMarkAllAsPresent}
-          disabled={isPending || bulkConfirmationOpen}
-          className="mt-4 text-[length:var(--text-xs)]"
-        >
-          Marcar todos como presentes
-        </Button>
+        <div className="mt-4 rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3">
+          <div className="flex flex-col gap-3 min-[390px]:flex-row min-[390px]:items-center min-[390px]:justify-between">
+            <div>
+              <p className="text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.08em] text-[color:var(--color-text-muted)]">
+                Ação rápida
+              </p>
+              <p className="mt-1 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">
+                Use quando todos os membros estiveram presentes.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={onMarkAllAsPresent}
+              disabled={isPending || bulkConfirmationOpen}
+              className="w-full shrink-0 text-[length:var(--text-xs)] min-[390px]:w-auto"
+            >
+              Marcar todos como presentes
+            </Button>
+          </div>
+        </div>
       ) : null}
 
       {bulkConfirmationOpen ? (
@@ -112,11 +152,11 @@ export function CheckInSummaryCard({
       ) : null}
 
       {summary.pending > 0 ? (
-        <Feedback tone="warning" className="mt-4">
-          <p className="font-semibold">
+        <Feedback tone="warning" compact className="mt-4" title="Marcações pendentes">
+          <p>
             {summary.pending === 1 ? "Falta marcar 1 pessoa." : `Falta marcar ${summary.pending} pessoas.`}
           </p>
-          <p className="mt-1 text-[length:var(--text-xs)] leading-relaxed">Se todos vieram, use o atalho acima e ajuste só exceções.</p>
+          <p className="mt-1 leading-relaxed">Se todos vieram, use o atalho acima e ajuste só exceções.</p>
         </Feedback>
       ) : null}
 

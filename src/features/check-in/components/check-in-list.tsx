@@ -83,6 +83,7 @@ export function CheckInList({
         cancelHref={cancelHref}
         cancelLabel={cancelLabel}
         canSave={checkIn.canSave}
+        hasUnsavedChanges={checkIn.hasUnsavedChanges}
         isPending={checkIn.isPending}
         errorMessage={checkIn.errorMessage}
         submitLabel={submitLabel}

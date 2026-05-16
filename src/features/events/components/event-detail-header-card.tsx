@@ -50,7 +50,7 @@ export function EventDetailHeaderCard({
             {locationName ? <p className="k-item-meta">{locationName}</p> : null}
             {groupId && showGroupLink ? (
               <ButtonLink href={ROUTES.group(groupId)} variant="quiet" size="sm" className="mt-3">
-                Ver célula
+                Abrir célula
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </ButtonLink>
             ) : null}

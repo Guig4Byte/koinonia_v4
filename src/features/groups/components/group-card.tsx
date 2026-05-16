@@ -81,10 +81,10 @@ export function GroupCard({
             <PresenceTrendDelta trend={presenceTrend} tone={tone} className="ml-1" />
           ) : null}
         </span>
-        {href ? <span className="font-semibold text-[color:var(--color-brand)]">Ver célula <span className="inline-block transition group-active:translate-x-0.5">→</span></span> : null}
+        {href ? <span className="font-semibold text-[color:var(--color-brand)]">Abrir célula <span className="inline-block transition group-active:translate-x-0.5">→</span></span> : null}
       </div>
     </PriorityCard>
   );
 
-  return href ? <Link href={href} aria-label={`Ver célula: ${name}`} className="block">{content}</Link> : content;
+  return href ? <Link href={href} aria-label={`Abrir célula: ${name}`} className="block">{content}</Link> : content;
 }
