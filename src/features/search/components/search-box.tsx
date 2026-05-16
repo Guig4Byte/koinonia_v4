@@ -173,7 +173,7 @@ export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: 
 
   return (
     <div id="buscar" className="relative mb-4">
-      <div className="flex min-h-12 items-center gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-4 shadow-[var(--color-shadow-metric-card)] transition focus-within:border-[var(--color-brand)] focus-within:ring-2 focus-within:ring-[var(--accent-soft)]">
+      <div className="flex min-h-12 items-center gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-4 shadow-[var(--color-shadow-metric-card)] transition focus-within:border-[var(--color-focus-ring)] focus-within:ring-2 focus-within:ring-[var(--color-focus-ring-soft)]">
         <Search className="h-4 w-4 shrink-0 text-[color:var(--color-text-secondary)]" />
         <input
           id="search-input"

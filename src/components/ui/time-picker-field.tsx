@@ -12,7 +12,7 @@ import pickerStyles from "./picker.module.css";
 import styles from "./time-picker-field.module.css";
 
 const defaultTimePickerInputClassName =
-  "min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)] focus:border-[var(--color-brand)]";
+  "min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)] focus:border-[var(--color-focus-ring)]";
 
 type TimePickerFieldProps = {
   id: string;

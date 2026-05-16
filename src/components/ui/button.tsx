@@ -23,7 +23,7 @@ type ButtonClassNameOptions = {
 };
 
 const buttonBaseClass =
-  "inline-flex items-center justify-center gap-2 text-center font-semibold leading-tight tracking-normal transition active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-60 disabled:saturate-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-brand)]";
+  "inline-flex items-center justify-center gap-2 text-center font-semibold leading-tight tracking-normal transition active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-60 disabled:saturate-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus-ring)]";
 
 const buttonVariantClass: Record<ButtonVariant, string> = {
   primary:

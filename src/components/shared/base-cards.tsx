@@ -7,7 +7,7 @@ import { CardLink } from "@/components/ui/card-link";
 import { MetricRow, SummaryCard } from "@/components/ui/summary-card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { cn } from "@/lib/cn";
-import { PresenceMetricDisplay, PresenceProgressDisplay, PresenceTrendDelta, type PresenceIndicatorContext, type PresenceTrend } from "@/components/shared/presence-metric";
+import { PresenceMetricDisplay, PresenceProgressDisplay, PresenceTrendDelta, type PresenceIndicatorContext, type PresenceIndicatorMode, type PresenceIndicatorSize, type PresenceIndicatorWeight, type PresenceTrend } from "@/components/shared/presence-metric";
 
 export function PulseCard({
   title,
@@ -71,6 +71,10 @@ export function ContextSummary({
   className,
   presenceContext = "overview",
   presenceLayout = "indicator",
+  presenceMetricSize,
+  presenceIndicatorWeight = "default",
+  presenceIndicatorMode = "ring",
+  presenceValueClassName,
 }: {
   items: Array<{ label: string; value: string; detail?: string; tone?: "ok" | "warn" | "risk" | "neutral"; trend?: PresenceTrend | null }>;
   detailTone?: "default" | "strong";
@@ -80,6 +84,10 @@ export function ContextSummary({
   className?: string;
   presenceContext?: PresenceIndicatorContext;
   presenceLayout?: "indicator" | "progress";
+  presenceMetricSize?: PresenceIndicatorSize;
+  presenceIndicatorWeight?: PresenceIndicatorWeight;
+  presenceIndicatorMode?: PresenceIndicatorMode;
+  presenceValueClassName?: string;
 }) {
   return (
     <SummaryCard variant={variant} surface={surface} className={className}>
@@ -88,7 +96,7 @@ export function ContextSummary({
         const normalizedLabel = item.label.trim().toLowerCase();
         const shouldUsePresenceIndicator = normalizedLabel === "presença" || normalizedLabel.startsWith("presença ");
         const tone = item.tone ?? "neutral";
-        const presenceMetricSize = variant === "balanced" || variant === "prominent" ? "md" : "sm";
+        const resolvedPresenceMetricSize = presenceMetricSize ?? (variant === "balanced" || variant === "prominent" ? "md" : "sm");
         const presenceValueIsPlaceholder = item.value.trim() === "—" || item.value.trim() === "-";
         const presenceValue = presenceLayout === "progress" ? (
           <PresenceProgressDisplay
@@ -97,7 +105,7 @@ export function ContextSummary({
             tone={tone}
             value={item.value}
             context={presenceContext}
-            size={presenceMetricSize}
+            size={resolvedPresenceMetricSize}
           />
         ) : (
           <PresenceMetricDisplay
@@ -106,7 +114,10 @@ export function ContextSummary({
             tone={tone}
             value={item.value}
             context={presenceContext}
-            size={presenceMetricSize}
+            size={resolvedPresenceMetricSize}
+            weight={presenceIndicatorWeight}
+            mode={presenceIndicatorMode}
+            valueClassName={presenceValueClassName}
             showValue={!presenceValueIsPlaceholder}
           />
         );
@@ -156,7 +167,7 @@ export function BackLink({
   return (
     <Link
       href={href}
-      className="mb-4 inline-flex min-h-12 items-center gap-2 rounded-2xl px-3 pr-4 text-[length:var(--text-sm)] font-semibold text-[color:var(--color-brand)] transition hover:bg-[var(--surface-alt)] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-brand-accent)]"
+      className="mb-4 inline-flex min-h-12 items-center gap-2 rounded-2xl px-3 pr-4 text-[length:var(--text-sm)] font-semibold text-[color:var(--color-brand)] transition hover:bg-[var(--surface-alt)] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus-ring)]"
     >
       <ArrowLeft className="h-4 w-4" aria-hidden="true" />
       {children}

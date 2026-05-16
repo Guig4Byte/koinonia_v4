@@ -15,8 +15,8 @@ function FormSectionTitle({ children }: { children: string }) {
   );
 }
 
-const groupTextInputClassName = "min-h-12 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-4 text-[length:var(--text-sm)] font-medium text-[color:var(--color-text-primary)] outline-none transition placeholder:font-normal placeholder:text-[color:var(--color-text-muted)] hover:border-[var(--color-brand-accent)] focus:border-[var(--color-brand)] focus:bg-[var(--color-bg-card)] focus:ring-2 focus:ring-[var(--color-brand-accent)]";
-const groupSelectClassName = "min-h-12 w-full appearance-none rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-4 pr-12 text-[length:var(--text-sm)] font-medium text-[color:var(--color-text-primary)] outline-none transition hover:border-[var(--color-brand-accent)] focus:border-[var(--color-brand)] focus:bg-[var(--color-bg-card)] focus:ring-2 focus:ring-[var(--color-brand-accent)]";
+const groupTextInputClassName = "min-h-12 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-4 text-[length:var(--text-sm)] font-medium text-[color:var(--color-text-primary)] outline-none transition placeholder:font-normal placeholder:text-[color:var(--color-text-muted)] hover:border-[var(--color-brand-accent)] focus:border-[var(--color-focus-ring)] focus:bg-[var(--color-bg-card)] focus:ring-2 focus:ring-[var(--color-focus-ring-soft)]";
+const groupSelectClassName = "min-h-12 w-full appearance-none rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-4 pr-12 text-[length:var(--text-sm)] font-medium text-[color:var(--color-text-primary)] outline-none transition hover:border-[var(--color-brand-accent)] focus:border-[var(--color-focus-ring)] focus:bg-[var(--color-bg-card)] focus:ring-2 focus:ring-[var(--color-focus-ring-soft)]";
 const helperTextClassName = "block text-[length:var(--text-xs)] leading-relaxed text-[color:var(--color-text-secondary)]";
 
 export function GroupForm({

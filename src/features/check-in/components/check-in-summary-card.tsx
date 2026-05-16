@@ -68,8 +68,7 @@ export function CheckInSummaryCard({
               value={formatPresenceRate(summary.hasPresenceData, summary.presenceRate)}
               context="attendance"
               size="lg"
-              showValue={false}
-              showValueInside
+              weight="light"
             />
           </div>
           <p className="mt-1 text-[length:var(--text-xs)] text-[color:var(--color-text-secondary)]">

@@ -10,6 +10,9 @@ export type PresenceTrend = {
 };
 
 export type PresenceIndicatorContext = "person" | "cell" | "event" | "attendance" | "overview";
+export type PresenceIndicatorSize = "sm" | "md" | "lg";
+export type PresenceIndicatorWeight = "default" | "light";
+export type PresenceIndicatorMode = "ring" | "plain";
 
 export function metricTextClass(tone: MetricTone): string {
   if (tone === "ok") return "text-[color:var(--color-metric-presenca)]";
@@ -57,13 +60,25 @@ export function PresenceTrendDelta({
 }
 
 const indicatorSizeClass = {
-  sm: "h-8 w-8",
-  md: "h-11 w-11",
-  lg: "h-[4.75rem] w-[4.75rem]",
+  sm: "h-7 w-7",
+  md: "h-10 w-10",
+  lg: "h-[4.25rem] w-[4.25rem]",
 } as const;
 
 const indicatorIconSizeClass = {
   sm: "h-3.5 w-3.5",
+  md: "h-[1.125rem] w-[1.125rem]",
+  lg: "h-5 w-5",
+} as const;
+
+const plainIndicatorWrapClass = {
+  sm: "h-5 w-5",
+  md: "h-6 w-6",
+  lg: "h-7 w-7",
+} as const;
+
+const plainIndicatorIconSizeClass = {
+  sm: "h-4 w-4",
   md: "h-[1.125rem] w-[1.125rem]",
   lg: "h-5 w-5",
 } as const;
@@ -200,25 +215,48 @@ export function PresenceIndicator({
   value,
   showValueInside = false,
   insideValueClassName,
+  weight = "default",
+  mode = "ring",
   className,
 }: {
   hasPresenceData: boolean;
   presenceRate: number;
   tone: MetricTone;
   context?: PresenceIndicatorContext;
-  size?: keyof typeof indicatorSizeClass;
+  size?: PresenceIndicatorSize;
   value?: string;
   showValueInside?: boolean;
   insideValueClassName?: string;
+  weight?: PresenceIndicatorWeight;
+  mode?: PresenceIndicatorMode;
   className?: string;
 }) {
   const safeRate = hasPresenceData ? clampPresenceRate(presenceRate) : 0;
   const radius = 24;
-  const ringStrokeWidth = showValueInside ? 3.5 : 4.5;
+  const ringStrokeWidth = weight === "light"
+  ? (showValueInside ? 2.6 : 3)
+  : (showValueInside ? 3.2 : 4);
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (safeRate / 100) * circumference;
   const label = metricLabel(context, hasPresenceData, presenceRate);
   const resolvedValue = value ?? (hasPresenceData ? `${safeRate}%` : "—");
+
+  if (mode === "plain") {
+    return (
+      <span
+        className={cn(
+          "inline-flex shrink-0 items-center justify-center align-middle text-[color:var(--presence-ring)]",
+          plainIndicatorWrapClass[size],
+          className,
+        )}
+        style={presenceIndicatorStyle(tone, hasPresenceData)}
+        aria-label={label}
+        title={label}
+      >
+        <PresenceContextGlyph context={context} className={plainIndicatorIconSizeClass[size]} />
+      </span>
+    );
+  }
 
   return (
     <span
@@ -233,7 +271,7 @@ export function PresenceIndicator({
     >
       <span
         className="absolute inset-0 rounded-full blur-md"
-        style={{ background: "var(--presence-ring-glow)", opacity: hasPresenceData ? 0.5 : 0 }}
+        style={{ background: "var(--presence-ring-glow)", opacity: hasPresenceData ? (weight === "light" ? 0.34 : 0.5) : 0 }}
         aria-hidden="true"
       />
       <svg viewBox="0 0 56 56" className="absolute inset-0 h-full w-full -rotate-90" aria-hidden="true" focusable="false">
@@ -279,6 +317,8 @@ export function PresenceMetricDisplay({
   value,
   context = "overview",
   size = "md",
+  weight = "default",
+  mode = "ring",
   className,
   valueClassName,
   showValue = true,
@@ -290,7 +330,9 @@ export function PresenceMetricDisplay({
   tone: MetricTone;
   value: string;
   context?: PresenceIndicatorContext;
-  size?: keyof typeof indicatorSizeClass;
+  size?: PresenceIndicatorSize;
+  weight?: PresenceIndicatorWeight;
+  mode?: PresenceIndicatorMode;
   className?: string;
   valueClassName?: string;
   showValue?: boolean;
@@ -308,6 +350,8 @@ export function PresenceMetricDisplay({
         value={value}
         showValueInside={showValueInside}
         insideValueClassName={insideValueClassName}
+        weight={weight}
+        mode={mode}
       />
       {showValue ? (
         <span className={cn("font-bold leading-none tabular-nums", metricLabelSizeClass[size], metricTextClass(tone), valueClassName)}>
@@ -332,7 +376,7 @@ export function PresenceProgressDisplay({
   tone: MetricTone;
   value: string;
   context?: PresenceIndicatorContext;
-  size?: keyof typeof indicatorSizeClass;
+  size?: PresenceIndicatorSize;
   className?: string;
 }) {
   const safeRate = hasPresenceData ? clampPresenceRate(presenceRate) : 0;

@@ -90,7 +90,7 @@ export function CheckInVisitorsCard({
           placeholder="Adicionar visitante"
           aria-label="Nome do visitante"
           disabled={disabled}
-          className="min-h-11 flex-1 rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] px-3 text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)] disabled:cursor-not-allowed disabled:opacity-60 focus:border-[var(--color-brand)]"
+          className="min-h-11 flex-1 rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] px-3 text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)] disabled:cursor-not-allowed disabled:opacity-60 focus:border-[var(--color-focus-ring)]"
         />
         <GhostButton type="button" onClick={onAddVisitor} className="px-3" aria-label="Adicionar visitante" disabled={disabled}>
           <Plus className="h-4 w-4" />

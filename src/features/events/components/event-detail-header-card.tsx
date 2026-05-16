@@ -68,6 +68,10 @@ export function EventDetailHeaderCard({
           surface="inset"
           variant="balanced"
           presenceContext="event"
+          presenceMetricSize="md"
+          presenceIndicatorWeight="light"
+          presenceIndicatorMode="plain"
+          presenceValueClassName="text-[length:var(--text-base)] font-extrabold"
           items={[
             {
               label: "Presença",

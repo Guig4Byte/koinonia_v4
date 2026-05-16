@@ -38,7 +38,7 @@ export function EventDatePickerField({
           placeholder="dd/mm/aaaa"
           className={cn(
             pickerStyles.input,
-            "min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)] focus:border-[var(--color-brand)]",
+            "min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)] focus:border-[var(--color-focus-ring)]",
           )}
         />
         <button type="button" className={pickerStyles.trigger} aria-label="Escolher data" aria-expanded={isOpen} onClick={() => onOpenChange(!isOpen)}>

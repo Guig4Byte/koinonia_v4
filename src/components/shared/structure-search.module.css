@@ -21,8 +21,8 @@
 }
 
 .searchForm:focus-within {
-  border-color: color-mix(in srgb, var(--color-brand) 58%, var(--color-border-card));
-  box-shadow: 0 0 0 3px var(--accent-soft);
+  border-color: color-mix(in srgb, var(--color-focus-ring) 62%, var(--color-border-card));
+  box-shadow: 0 0 0 3px var(--color-focus-ring-soft);
 }
 
 .searchClear {
@@ -50,7 +50,7 @@
 }
 
 .searchClear:focus-visible {
-  outline: 2px solid var(--color-brand-accent);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
