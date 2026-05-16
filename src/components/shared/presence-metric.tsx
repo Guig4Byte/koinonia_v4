@@ -9,7 +9,7 @@ export type PresenceTrend = {
   delta: number;
 };
 
-export type PresenceIndicatorContext = "person" | "cell" | "event" | "overview";
+export type PresenceIndicatorContext = "person" | "cell" | "event" | "attendance" | "overview";
 
 export function metricTextClass(tone: MetricTone): string {
   if (tone === "ok") return "text-[color:var(--color-metric-presenca)]";
@@ -96,6 +96,7 @@ const presenceContextIcon: Record<PresenceIndicatorContext, LucideIcon> = {
   person: UserRoundCheck,
   cell: UsersRound,
   event: CalendarCheck2,
+  attendance: UsersRound,
   overview: ChartNoAxesCombined,
 };
 
@@ -168,6 +169,7 @@ function metricLabel(context: PresenceIndicatorContext, hasPresenceData: boolean
     person: "da pessoa",
     cell: "da célula",
     event: "do encontro",
+    attendance: "do encontro",
     overview: "geral",
   }[context];
 

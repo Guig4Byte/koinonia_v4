@@ -66,7 +66,7 @@ export function CheckInSummaryCard({
               presenceRate={summary.presenceRate}
               tone={presenceTone(summary.hasPresenceData, summary.presenceRate)}
               value={formatPresenceRate(summary.hasPresenceData, summary.presenceRate)}
-              context="event"
+              context="attendance"
               size="lg"
               showValue={false}
               showValueInside
