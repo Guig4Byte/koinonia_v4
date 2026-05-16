@@ -52,7 +52,7 @@ export function PersonPresenceCard({ view }: { view: PersonPresenceView }) {
             size="lg"
             showValue={false}
             showValueInside
-            insideValueClassName="text-[length:var(--text-lg)]"
+            insideValueClassName="text-[length:var(--text-base)]"
           />
           {trend ? (
             <p

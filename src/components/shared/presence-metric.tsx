@@ -67,7 +67,7 @@ const indicatorIconSizeClass = {
 const indicatorValueSizeClass = {
   sm: "text-[length:var(--text-xs)]",
   md: "text-[length:var(--text-sm)]",
-  lg: "text-[length:var(--text-lg)]",
+  lg: "text-[length:var(--text-base)]",
 } as const;
 
 const metricLabelSizeClass = {
@@ -208,6 +208,7 @@ export function PresenceIndicator({
 }) {
   const safeRate = hasPresenceData ? clampPresenceRate(presenceRate) : 0;
   const radius = 24;
+  const ringStrokeWidth = showValueInside ? 3.5 : 4.5;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (safeRate / 100) * circumference;
   const label = metricLabel(context, hasPresenceData, presenceRate);
@@ -236,7 +237,7 @@ export function PresenceIndicator({
           r={radius}
           fill="var(--presence-ring-bg)"
           stroke="var(--presence-ring-track)"
-          strokeWidth="4.5"
+          strokeWidth={ringStrokeWidth}
         />
         <circle
           cx="28"
@@ -247,10 +248,13 @@ export function PresenceIndicator({
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
-          strokeWidth="4.5"
+          strokeWidth={ringStrokeWidth}
         />
       </svg>
-      <span className="relative z-10 flex flex-col items-center justify-center gap-1 text-center text-[color:var(--presence-ring)]">
+      <span className={cn(
+        "relative z-10 flex flex-col items-center justify-center text-center text-[color:var(--presence-ring)]",
+        showValueInside ? "gap-0.5" : "gap-1",
+      )}>
         <PresenceContextGlyph context={context} className={indicatorIconSizeClass[size]} />
         {showValueInside ? (
           <span className={cn("font-extrabold leading-none tracking-normal tabular-nums", indicatorValueSizeClass[size], insideValueClassName)}>

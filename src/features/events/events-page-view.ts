@@ -47,6 +47,7 @@ export type EventListCardState = {
   badgeTone: EventListBadgeTone;
   actionLabel: string;
   locationName: string | null;
+  pendingAgeLabel: string | null;
 };
 
 export function readEventConsultationMode(value?: string | null): EventConsultationMode | null {
@@ -57,8 +58,21 @@ export function readEventPeriod(value?: string | null): EventPeriod {
   return value === "semana-passada" || value === "30d" ? value : "semana";
 }
 
+export function eventDateTimeLabel(event: Pick<EventListEvent, "startsAt">) {
+  return `${formatShortDate(event.startsAt)}, ${formatTime(event.startsAt)}`;
+}
+
+export function eventPendingAgeLabel(event: Pick<EventListEvent, "startsAt">, now: Date) {
+  const elapsedDays = Math.max(0, Math.floor((startOfBrasiliaDay(now).getTime() - startOfBrasiliaDay(event.startsAt).getTime()) / 86_400_000));
+
+  if (elapsedDays === 0) return "hoje";
+  if (elapsedDays === 1) return "há 1 dia";
+
+  return `há ${elapsedDays} dias`;
+}
+
 export function eventMeta(event: EventListEvent) {
-  const dateTime = `${formatShortDate(event.startsAt)}, ${formatTime(event.startsAt)}`;
+  const dateTime = eventDateTimeLabel(event);
   const groupName = event.group?.name;
 
   if (!groupName) return `Encontro geral · ${dateTime}`;
@@ -136,7 +150,12 @@ export function buildEventListCardState(event: EventListEvent, user: PermissionU
     badgeTone,
     actionLabel,
     locationName: eventEffectiveLocation(event),
+    pendingAgeLabel: isPendingEvent ? eventPendingAgeLabel(event, now) : null,
   };
+}
+
+function pluralizeCount(count: number, singular: string, plural: string) {
+  return `${count} ${count === 1 ? singular : plural}`;
 }
 
 export function buildEventsConsultationView({
@@ -158,14 +177,20 @@ export function buildEventsConsultationView({
       if (mode === "historico") return recordedPresence;
       return !isClosedWithoutPresenceStatus(event.status) && !recordedPresence && !isAfter(event.startsAt, now);
     })
-    .sort((a, b) => b.startsAt.getTime() - a.startsAt.getTime());
+    .sort((a, b) => {
+      if (mode === "sem-presenca") return a.startsAt.getTime() - b.startsAt.getTime();
+
+      return b.startsAt.getTime() - a.startsAt.getTime();
+    });
+
+  const eventCountLabel = pluralizeCount(filteredEvents.length, "encontro", "encontros");
 
   return {
     filteredEvents,
-    title: mode === "historico" ? "Histórico de presença" : "Sem presença registrada",
+    title: mode === "historico" ? "Histórico de presença" : "Presenças pendentes",
     description: mode === "historico"
-      ? "Presenças registradas por período."
-      : "Encontros que já passaram e ainda precisam de presença.",
+      ? `${eventCountLabel} com presença registrada`
+      : `${eventCountLabel} aguardando registro`,
     emptyMessage: mode === "historico"
       ? "Nenhuma presença registrada neste período. Tente outro período."
       : "Nenhum encontro pendente neste período.",

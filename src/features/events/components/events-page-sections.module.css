@@ -221,9 +221,577 @@
   transform: translateX(2px);
 }
 
+.consultationPeriodChips {
+  margin-bottom: 12px;
+}
+
 @media (max-width: 359px) {
   .consultationActions {
     grid-template-columns: 1fr;
   }
 }
 
+.pendingConsultationCard {
+  border-color: color-mix(in srgb, var(--color-badge-atencao-text) 52%, var(--color-border-card));
+  border-radius: 1rem;
+  background:
+    radial-gradient(ellipse 108% 82% at 50% -18%, color-mix(in srgb, var(--color-badge-atencao-text) 12%, transparent), transparent 70%),
+    linear-gradient(180deg, color-mix(in srgb, var(--color-bg-card) 90%, var(--color-brand-accent) 10%), var(--color-bg-card));
+  padding: 11px 12px;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-badge-atencao-text) 15%, transparent),
+    0 0 28px color-mix(in srgb, var(--color-badge-atencao-text) 13%, transparent),
+    0 20px 46px rgba(0, 0, 0, 0.28),
+    var(--color-shadow-card);
+}
+
+.pendingConsultationCard::before,
+.pendingConsultationCard::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.pendingConsultationCard::before {
+  background:
+    linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-badge-atencao-text) 34%, transparent), transparent) top / 100% 1px no-repeat,
+    radial-gradient(ellipse 82% 44% at 50% 0%, color-mix(in srgb, var(--color-badge-atencao-text) 15%, transparent), transparent 72%);
+}
+
+.pendingConsultationCard::after {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--color-brand-accent) 16%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--color-text-primary) 7%, transparent);
+}
+
+.pendingContent {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 9px;
+  align-items: start;
+}
+
+.pendingIconWrap {
+  display: inline-grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 20%, var(--color-border-card));
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 48% 36%, color-mix(in srgb, var(--color-brand-accent) 15%, transparent), transparent 68%),
+    color-mix(in srgb, var(--surface-alt) 86%, transparent);
+  color: color-mix(in srgb, var(--color-text-secondary) 88%, var(--color-brand));
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.16);
+}
+
+.pendingIcon {
+  width: 18px;
+  height: 18px;
+}
+
+.pendingBody {
+  min-width: 0;
+}
+
+.pendingMeta {
+  margin-top: 5px;
+}
+
+.pendingHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pendingTitle {
+  min-width: 0;
+  font-size: var(--text-base);
+  font-weight: 800;
+  line-height: 1.12;
+}
+
+.pendingMetaLine,
+.pendingMetaItem,
+.pendingAge,
+.pendingLocationLine {
+  display: inline-flex;
+  align-items: center;
+}
+
+.pendingMetaLine {
+  max-width: 100%;
+  flex-wrap: wrap;
+  gap: 5px 8px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  line-height: 1.2;
+}
+
+.pendingMetaItem,
+.pendingAge {
+  gap: 6px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.pendingMetaItem::after {
+  content: "•";
+  color: color-mix(in srgb, var(--color-text-secondary) 38%, transparent);
+}
+
+.pendingAge {
+  color: var(--color-badge-risco-text);
+  font-weight: 850;
+}
+
+.pendingMetaIcon {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+}
+
+.pendingLocation {
+  margin-top: 6px;
+}
+
+.pendingLocationLine {
+  max-width: 100%;
+  gap: 6px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  line-height: 1.25;
+}
+
+.pendingBadge {
+  min-height: 26px;
+  align-items: center;
+  border-color: color-mix(in srgb, var(--color-badge-atencao-text) 56%, transparent);
+  border-radius: 0.72rem;
+  background: color-mix(in srgb, var(--color-badge-atencao-bg) 72%, transparent);
+  padding-inline: 8px;
+  color: var(--color-badge-atencao-text);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-badge-atencao-text) 8%, transparent);
+}
+
+.pendingFooter {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+  border-top: 1px solid color-mix(in srgb, var(--color-border-divider) 88%, transparent);
+  padding-top: 8px;
+}
+
+.pendingAction {
+  display: inline-flex;
+  min-height: 30px;
+  min-width: min(100%, 132px);
+  max-width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 78%, var(--color-btn-primary-bg));
+  border-radius: 0.62rem;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--color-btn-primary-bg) 96%, var(--color-text-primary) 4%), var(--color-btn-primary-bg));
+  padding: 6px 10px;
+  color: var(--color-btn-primary-text);
+  font-size: var(--text-xs);
+  font-weight: 850;
+  line-height: 1.1;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--color-btn-primary-text) 8%, transparent),
+    0 8px 18px color-mix(in srgb, var(--color-btn-primary-bg) 12%, transparent);
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    filter 150ms ease;
+}
+
+.pendingActionIcon {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 auto;
+}
+
+.pendingConsultationCard:active .pendingAction {
+  transform: translateY(1px);
+  filter: brightness(0.98);
+}
+
+.historyConsultationCard {
+  --history-card-accent: var(--color-badge-atencao-text);
+  --history-card-soft: var(--color-badge-atencao-bg);
+  --history-status-accent: var(--color-metric-presenca);
+  --history-status-soft: var(--color-badge-estavel-bg);
+
+  border-color: color-mix(in srgb, var(--history-card-accent) 44%, var(--color-border-card));
+  border-radius: 1rem;
+  background:
+    radial-gradient(ellipse 108% 82% at 50% -18%, color-mix(in srgb, var(--history-card-accent) 10%, transparent), transparent 70%),
+    linear-gradient(180deg, color-mix(in srgb, var(--color-bg-card) 91%, var(--color-brand-accent) 9%), var(--color-bg-card));
+  padding: 9px 10px;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--history-card-accent) 13%, transparent),
+    0 0 24px color-mix(in srgb, var(--history-card-accent) 10%, transparent),
+    var(--color-shadow-card);
+}
+
+.historyConsultationCard::before,
+.historyConsultationCard::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.historyConsultationCard::before {
+  background:
+    linear-gradient(90deg, transparent, color-mix(in srgb, var(--history-card-accent) 30%, transparent), transparent) top / 100% 1px no-repeat,
+    radial-gradient(ellipse 82% 44% at 50% 0%, color-mix(in srgb, var(--history-card-accent) 13%, transparent), transparent 72%);
+}
+
+.historyConsultationCard::after {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--color-brand-accent) 14%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--color-text-primary) 6%, transparent);
+}
+
+.historyContent {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 8px;
+}
+
+.historyIconWrap {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--history-card-accent) 22%, var(--color-border-card));
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 48% 36%, color-mix(in srgb, var(--history-card-accent) 14%, transparent), transparent 68%),
+    color-mix(in srgb, var(--surface-alt) 86%, transparent);
+  color: color-mix(in srgb, var(--color-text-secondary) 86%, var(--history-card-accent));
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.16);
+}
+
+.historyIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.historyBody {
+  min-width: 0;
+}
+
+.historyHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.historyTitle {
+  min-width: 0;
+  font-size: var(--text-base);
+  font-weight: 800;
+  line-height: 1.12;
+}
+
+.historyBadge {
+  min-height: 22px;
+  align-items: center;
+  border-color: color-mix(in srgb, var(--history-status-accent) 44%, transparent);
+  border-radius: 0.7rem;
+  background: color-mix(in srgb, var(--history-status-soft) 76%, transparent);
+  padding-inline: 7px;
+  color: var(--history-status-accent);
+  font-size: var(--text-xs);
+  font-weight: 800;
+}
+
+.historyMeta,
+.historyLocation {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  line-height: 1.25;
+}
+
+.historyMeta {
+  margin-top: 4px;
+}
+
+.historyLocation {
+  margin-top: 4px;
+}
+
+.historyMetaIcon {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+  color: color-mix(in srgb, var(--color-text-secondary) 84%, var(--history-card-accent));
+}
+
+.historyPresence {
+  display: grid;
+  gap: 2px;
+  margin-top: 6px;
+  border-top: 1px solid color-mix(in srgb, var(--color-border-divider) 88%, transparent);
+  padding-top: 6px;
+}
+
+.historyPresenceTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.historyPresenceLabel {
+  color: var(--color-text-primary);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.historyPresenceValue {
+  color: var(--presence-ring);
+  font-size: var(--text-base);
+  font-weight: 900;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.historyPresenceDetail {
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  line-height: 1.2;
+}
+
+.historyProgressTrack {
+  display: block;
+  height: 5px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--presence-ring-track);
+}
+
+.historyProgressFill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--presence-ring);
+}
+
+.historyFooter {
+  display: grid;
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  border-top: 1px solid color-mix(in srgb, var(--color-border-divider) 82%, transparent);
+  padding-top: 6px;
+}
+
+.historyStat {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 5px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  line-height: 1.1;
+}
+
+.historyStat + .historyStat {
+  border-left: 1px solid color-mix(in srgb, var(--color-border-divider) 95%, transparent);
+  padding-left: 7px;
+}
+
+.historyStat strong {
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  font-weight: 850;
+  line-height: 1;
+}
+
+.historyStatIcon {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 auto;
+  color: color-mix(in srgb, var(--color-text-secondary) 74%, var(--history-card-accent));
+}
+
+.historyStat span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.historyAction {
+  display: inline-flex;
+  min-height: 26px;
+  max-width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid color-mix(in srgb, var(--history-card-accent) 34%, var(--color-border-card));
+  border-radius: 0.62rem;
+  background: color-mix(in srgb, var(--history-card-accent) 12%, transparent);
+  padding: 5px 8px;
+  color: color-mix(in srgb, var(--color-text-primary) 82%, var(--history-card-accent));
+  font-size: var(--text-xs);
+  font-weight: 850;
+  line-height: 1.1;
+}
+
+.historyActionIcon {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+  transition: transform 150ms ease;
+}
+
+.historyConsultationCard:active .historyActionIcon {
+  transform: translateX(2px);
+}
+
+@media (max-width: 430px) {
+  .pendingConsultationCard {
+    padding: 10px;
+  }
+
+  .pendingContent {
+    gap: 8px;
+  }
+
+  .pendingIconWrap {
+    width: 36px;
+    height: 36px;
+  }
+
+  .pendingIcon {
+    width: 17px;
+    height: 17px;
+  }
+
+  .pendingTitle {
+    font-size: var(--text-base);
+  }
+
+  .pendingMeta {
+    margin-top: 5px;
+  }
+
+  .pendingMetaLine {
+    gap: 5px 7px;
+    font-size: var(--text-xs);
+  }
+
+  .pendingLocation {
+    margin-top: 5px;
+  }
+
+  .pendingLocationLine {
+    gap: 6px;
+    font-size: var(--text-xs);
+  }
+
+  .pendingBadge {
+    min-height: 25px;
+    padding-inline: 7px;
+    font-size: var(--text-xs);
+  }
+
+  .pendingFooter {
+    margin-top: 7px;
+    padding-top: 7px;
+  }
+
+  .pendingAction {
+    min-height: 30px;
+    min-width: min(100%, 128px);
+    font-size: var(--text-xs);
+  }
+
+  .historyConsultationCard {
+    padding: 9px;
+  }
+
+  .historyContent {
+    gap: 8px;
+  }
+
+  .historyIconWrap {
+    width: 34px;
+    height: 34px;
+  }
+
+  .historyIcon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .historyPresence {
+    margin-top: 6px;
+    padding-top: 6px;
+  }
+
+  .historyFooter {
+    gap: 6px;
+    margin-top: 6px;
+    padding-top: 6px;
+  }
+
+  .historyAction {
+    min-height: 26px;
+    padding-inline: 7px;
+  }
+}
+
+@media (max-width: 359px) {
+  .pendingContent {
+    grid-template-columns: 1fr;
+  }
+
+  .pendingIconWrap {
+    display: none;
+  }
+
+  .historyContent {
+    grid-template-columns: 1fr;
+  }
+
+  .historyIconWrap {
+    display: none;
+  }
+
+  .historyFooter {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .historyStat + .historyStat {
+    border-left: 0;
+    padding-left: 0;
+  }
+}

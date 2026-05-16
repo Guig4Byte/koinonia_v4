@@ -60,12 +60,14 @@ describe("events-page-view", () => {
     const view = buildEventsConsultationView({ mode: "historico", period: "semana", events, now: referenceDate });
 
     expect(view.title).toBe("Histórico de presença");
+    expect(view.description).toBe("1 encontro com presença registrada");
     expect(view.filteredEvents.map((item) => item.id)).toEqual(["registered"]);
   });
 
   it("filtra encontros passados sem presença registrada", () => {
     const events = [
       event({ id: "past-pending", startsAt: new Date("2026-05-08T12:00:00.000Z") }),
+      event({ id: "older-pending", startsAt: new Date("2026-05-06T22:00:00.000Z") }),
       event({ id: "future", startsAt: new Date("2026-05-08T18:00:00.000Z") }),
       event({ id: "cancelled", status: EventStatus.CANCELLED }),
       event({ id: "registered", status: EventStatus.COMPLETED, attendances: [{ status: AttendanceStatus.PRESENT }] }),
@@ -73,7 +75,9 @@ describe("events-page-view", () => {
 
     const view = buildEventsConsultationView({ mode: "sem-presenca", period: "semana", events, now: referenceDate });
 
-    expect(view.filteredEvents.map((item) => item.id)).toEqual(["past-pending"]);
+    expect(view.title).toBe("Presenças pendentes");
+    expect(view.description).toBe("2 encontros aguardando registro");
+    expect(view.filteredEvents.map((item) => item.id)).toEqual(["older-pending", "past-pending"]);
   });
 
   it("separa encontros de hoje dos próximos encontros da semana", () => {
@@ -99,6 +103,17 @@ describe("events-page-view", () => {
     expect(state.label).toBe("Presença pendente");
     expect(state.actionLabel).toBe("Registrar presença");
     expect(state.badgeTone).toBe("warn");
+    expect(state.pendingAgeLabel).toBe("hoje");
+  });
+
+  it("informa há quantos dias um encontro está pendente", () => {
+    const state = buildEventListCardState(
+      event({ startsAt: new Date("2026-05-06T22:00:00.000Z") }),
+      { id: "leader-1", churchId: "church-1", role: UserRole.LEADER },
+      referenceDate,
+    );
+
+    expect(state.pendingAgeLabel).toBe("há 2 dias");
   });
 
   it("mantém labels de período oficiais", () => {

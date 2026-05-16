@@ -1,16 +1,18 @@
-import { BackLink, EmptyState, SectionTitle } from "@/components/shared/base-cards";
+import { EmptyState } from "@/components/shared/base-cards";
 import { PageHero } from "@/components/shared/page-hero";
-import { ArrowRight, CalendarClock, ClipboardCheck, MapPin, type LucideIcon } from "lucide-react";
+import { ArrowRight, CalendarDays, CalendarClock, ClipboardCheck, Clock3, MapPin, UsersRound, type LucideIcon } from "lucide-react";
 import { ProgressiveList } from "@/components/shared/progressive-list";
+import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button-link";
 import { CardHeader } from "@/components/ui/card-header";
 import { CardLink } from "@/components/ui/card-link";
 import { FilterChip } from "@/components/ui/filter-chip";
 import { formatPresenceRate, presenceTone } from "@/features/events/presence-display";
-import { PresenceMetricDisplay } from "@/components/shared/presence-metric";
+import { clampPresenceRate, presenceIndicatorStyle, PresenceMetricDisplay } from "@/components/shared/presence-metric";
 import {
   buildEventListCardState,
   buildEventsConsultationView,
+  eventDateTimeLabel,
   eventMeta,
   eventPeriodLabel,
   EVENT_LIST_LIMIT,
@@ -25,13 +27,158 @@ import styles from "./events-page-sections.module.css";
 
 const EVENTS_CONSULTATION_SECTION_ID = "eventos-consulta";
 
+type EventCardVariant = "default" | "pendingConsultation" | "historyConsultation";
+
 function eventsConsultationSectionHref(mode: EventConsultationMode, period: EventPeriod) {
   return `${ROUTES.eventsConsultation(mode, period)}#${EVENTS_CONSULTATION_SECTION_ID}`;
 }
 
-export function EventCard({ event, user, now }: { event: EventListEvent; user: PermissionUser; now: Date }) {
+export function EventCard({
+  event,
+  user,
+  now,
+  variant = "default",
+}: {
+  event: EventListEvent;
+  user: PermissionUser;
+  now: Date;
+  variant?: EventCardVariant;
+}) {
   const state = buildEventListCardState(event, user, now);
   const { metrics } = state;
+  const isPendingConsultation = variant === "pendingConsultation" && state.isPendingEvent;
+  const isHistoryConsultation = variant === "historyConsultation" && state.recordedPresence;
+  const consultationTitle = event.group?.name ?? event.title;
+  const safePresenceRate = clampPresenceRate(metrics.presenceRate);
+  const historyTone = presenceTone(metrics.hasPresenceData, metrics.presenceRate);
+
+  if (isPendingConsultation) {
+    return (
+      <CardLink
+        href={ROUTES.event(event.id)}
+        aria-label={`${state.actionLabel}: ${event.title}`}
+        padding="sm"
+        priorityTone="warn"
+        data-testid="event-card"
+        className={cn(styles.card, styles.pendingConsultationCard, "group")}
+      >
+        <div className={styles.pendingContent}>
+          <span className={styles.pendingIconWrap} aria-hidden="true">
+            <UsersRound className={styles.pendingIcon} />
+          </span>
+
+          <div className={styles.pendingBody}>
+            <div className={styles.pendingHeader}>
+              <p className={cn(styles.title, styles.pendingTitle)}>{consultationTitle}</p>
+              <Badge tone={state.badgeTone} className={cn(styles.badge, styles.pendingBadge)}>Pendente</Badge>
+            </div>
+
+            <p className={styles.pendingMeta}>
+              <span className={styles.pendingMetaLine}>
+                <span className={styles.pendingMetaItem}>
+                  <CalendarDays className={styles.pendingMetaIcon} aria-hidden="true" />
+                  {eventDateTimeLabel(event)}
+                </span>
+                {state.pendingAgeLabel ? (
+                  <span className={styles.pendingAge}>
+                    <Clock3 className={styles.pendingMetaIcon} aria-hidden="true" />
+                    {state.pendingAgeLabel}
+                  </span>
+                ) : null}
+              </span>
+            </p>
+
+            {state.locationName ? (
+              <div className={styles.pendingLocation}>
+                <span className={styles.pendingLocationLine}>
+                  <MapPin className={styles.locationIcon} aria-hidden="true" />
+                  <span className="min-w-0 truncate">{state.locationName}</span>
+                </span>
+              </div>
+            ) : null}
+
+            <span className={styles.pendingFooter}>
+              <span className={styles.pendingAction} data-testid="event-card-action">
+                <UsersRound className={styles.pendingActionIcon} aria-hidden="true" />
+                {state.actionLabel}
+              </span>
+            </span>
+          </div>
+        </div>
+      </CardLink>
+    );
+  }
+
+  if (isHistoryConsultation) {
+    return (
+      <CardLink
+        href={ROUTES.event(event.id)}
+        aria-label={`${state.actionLabel}: ${event.title}`}
+        padding="sm"
+        priorityTone="warn"
+        data-testid="event-card"
+        className={cn(styles.card, styles.historyConsultationCard, "group")}
+        style={presenceIndicatorStyle(historyTone, metrics.hasPresenceData)}
+      >
+        <div className={styles.historyContent}>
+          <span className={styles.historyIconWrap} aria-hidden="true">
+            <UsersRound className={styles.historyIcon} />
+          </span>
+
+          <div className={styles.historyBody}>
+            <div className={styles.historyHeader}>
+              <p className={cn(styles.title, styles.historyTitle)}>{consultationTitle}</p>
+              <Badge tone="ok" className={cn(styles.badge, styles.historyBadge)}>Registrada</Badge>
+            </div>
+
+            <p className={styles.historyMeta}>
+              <CalendarDays className={styles.historyMetaIcon} aria-hidden="true" />
+              {eventDateTimeLabel(event)}
+            </p>
+
+            {state.locationName ? (
+              <p className={styles.historyLocation}>
+                <MapPin className={styles.historyMetaIcon} aria-hidden="true" />
+                <span className="min-w-0 truncate">{state.locationName}</span>
+              </p>
+            ) : null}
+
+            <div className={styles.historyPresence}>
+              <span className={styles.historyPresenceTop}>
+                <span className={styles.historyPresenceLabel}>Presença do encontro</span>
+                <strong className={styles.historyPresenceValue}>
+                  {formatPresenceRate(metrics.hasPresenceData, metrics.presenceRate)}
+                </strong>
+              </span>
+              <span className={styles.historyPresenceDetail}>
+                {metrics.presentCount} de {metrics.accountableCount} membros presentes
+              </span>
+              <span className={styles.historyProgressTrack} aria-hidden="true">
+                <span className={styles.historyProgressFill} style={{ width: `${safePresenceRate}%` }} />
+              </span>
+            </div>
+
+            <span className={styles.historyFooter}>
+              <span className={styles.historyStat}>
+                <UsersRound className={styles.historyStatIcon} aria-hidden="true" />
+                <strong>{metrics.visitorCount}</strong>
+                <span>{metrics.visitorCount === 1 ? "visitante" : "visitantes"}</span>
+              </span>
+              <span className={styles.historyStat}>
+                <ClipboardCheck className={styles.historyStatIcon} aria-hidden="true" />
+                <strong>{metrics.markingsCount}</strong>
+                <span>{metrics.markingsCount === 1 ? "membro" : "membros"}</span>
+              </span>
+              <span className={styles.historyAction} data-testid="event-card-action">
+                {state.actionLabel}
+                <ArrowRight className={styles.historyActionIcon} aria-hidden="true" />
+              </span>
+            </span>
+          </div>
+        </div>
+      </CardLink>
+    );
+  }
 
   return (
     <CardLink
@@ -99,10 +246,22 @@ export function EventCard({ event, user, now }: { event: EventListEvent; user: P
   );
 }
 
-export function EventList({ events, user, now, limit = EVENT_LIST_LIMIT }: { events: EventListEvent[]; user: PermissionUser; now: Date; limit?: number }) {
+export function EventList({
+  events,
+  user,
+  now,
+  limit = EVENT_LIST_LIMIT,
+  variant = "default",
+}: {
+  events: EventListEvent[];
+  user: PermissionUser;
+  now: Date;
+  limit?: number;
+  variant?: EventCardVariant;
+}) {
   return (
     <ProgressiveList initialCount={limit} step={EVENT_LIST_LIMIT} moreLabel="Ver mais encontros">
-      {events.map((event) => <EventCard key={event.id} event={event} user={user} now={now} />)}
+      {events.map((event) => <EventCard key={event.id} event={event} user={user} now={now} variant={variant} />)}
     </ProgressiveList>
   );
 }
@@ -138,15 +297,15 @@ export function EventConsultationCards() {
   return (
     <nav className={styles.consultationActions} aria-label="Consultas de encontros">
       <ConsultationCard
-        href={eventsConsultationSectionHref("sem-presenca", "semana")}
-        title="Sem presença"
-        description="Pendentes da semana"
+        href={eventsConsultationSectionHref("sem-presenca", "30d")}
+        title="Pendências"
+        description="Encontros sem presença registrada"
         icon={ClipboardCheck}
       />
       <ConsultationCard
-        href={eventsConsultationSectionHref("historico", "semana")}
+        href={eventsConsultationSectionHref("historico", "30d")}
         title="Histórico"
-        description="Presenças registradas"
+        description="Encontros com presença registrada"
         icon={CalendarClock}
       />
     </nav>
@@ -192,7 +351,6 @@ export function EventsConsultationView({
 
   return (
     <>
-      <BackLink href={ROUTES.events}>Encontros</BackLink>
       <PageHero
         compact
         eyebrow="Consulta"
@@ -200,10 +358,16 @@ export function EventsConsultationView({
         description={view.description}
       />
       <section id={EVENTS_CONSULTATION_SECTION_ID} className="scroll-mt-6">
-        <PeriodChips mode={mode} activePeriod={period} />
-        <SectionTitle>{view.periodLabel}</SectionTitle>
+        <div className={styles.consultationPeriodChips}>
+          <PeriodChips mode={mode} activePeriod={period} />
+        </div>
         {view.filteredEvents.length > 0 ? (
-          <EventList events={view.filteredEvents} user={user} now={now} />
+          <EventList
+            events={view.filteredEvents}
+            user={user}
+            now={now}
+            variant={mode === "sem-presenca" ? "pendingConsultation" : "historyConsultation"}
+          />
         ) : (
           <EmptyState
             title={mode === "historico" ? "Nenhum histórico neste período" : "Tudo em dia neste período"}
