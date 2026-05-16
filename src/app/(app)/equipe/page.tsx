@@ -5,6 +5,7 @@ import { ContextSummary, EmptyState, InfoCard, SectionTitle } from "@/components
 import { ButtonLink } from "@/components/ui/button-link";
 import { PageHero } from "@/components/shared/page-hero";
 import { ProgressiveList } from "@/components/shared/progressive-list";
+import { PastoralHealthCard } from "@/features/dashboard/components/pastoral-health-card";
 import { TeamStructureSearch } from "@/features/team/components/team-structure-search";
 import { InactiveTeamGroupLink, TeamGroupLink, TeamSupervisorCard } from "@/features/team/components/team-structure-cards";
 import { GroupKind } from "@/generated/prisma/client";
@@ -24,7 +25,6 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/search-params";
 import { normalizeSearchText } from "@/lib/text";
-import { NO_RECENT_PRESENCE_LABEL } from "@/lib/filter-param";
 import { ROUTES } from "@/lib/routes";
 import pageStyles from "@/components/shared/consultation-page.module.css";
 
@@ -58,7 +58,6 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
     filteredInactiveGroups,
     isFiltered,
   } = buildTeamPageLists({ team, inactiveGroups, normalizedQuery, activeFilter });
-  const needsAttentionCount = team.summary.groupsNeedingAttentionCount;
   const canCreateGroup = canManageGroups(user);
   const savedMessage = teamSavedMessage(savedParam);
 
@@ -103,27 +102,34 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
                 tone: "neutral",
               },
               {
-                label: "Pedem atenção",
-                value: String(needsAttentionCount),
-                detail: needsAttentionCount > 0
-                  ? "Casos ou presença baixa."
-                  : "Sem destaque agora.",
-                tone: needsAttentionCount > 0 ? "warn" : "ok",
+                label: "Sem supervisor",
+                value: String(team.summary.groupsWithoutSupervisorCount),
+                detail: team.summary.groupsWithoutSupervisorCount > 0
+                  ? "Precisam de responsável."
+                  : "Todas vinculadas.",
+                tone: team.summary.groupsWithoutSupervisorCount > 0 ? "warn" : "ok",
               },
               {
-                label: NO_RECENT_PRESENCE_LABEL,
-                value: String(team.summary.groupsWithoutPresenceCount),
-                detail: team.summary.groupsWithoutPresenceCount > 0
-                  ? "Confira encontros pendentes."
-                  : "Todas com registro recente.",
-                tone: team.summary.groupsWithoutPresenceCount > 0 ? "neutral" : "ok",
+                label: "Inativas",
+                value: String(inactiveGroups.length),
+                detail: inactiveGroups.length > 0
+                  ? "Fora do acompanhamento ativo."
+                  : "Nenhuma célula pausada.",
+                tone: "neutral",
               },
             ]}
           />
         </div>
 
+        <PastoralHealthCard
+          overview={team.healthOverview}
+          title="Saúde das células"
+          description="Leitura pastoral das células ativas por estabilidade, presença recente e cuidado."
+          className="mt-4 mb-0"
+        />
+
         <section id={SUPERVISORS_SECTION_ID} className="scroll-mt-4">
-          <SectionTitle detail="Busque ou filtre por atenção.">Estrutura da equipe</SectionTitle>
+          <SectionTitle className="mt-4" detail="Busque ou filtre por atenção.">Estrutura da equipe</SectionTitle>
           <TeamStructureSearch query={query} filter={activeFilter} sectionId={SUPERVISORS_SECTION_ID} />
         </section>
 

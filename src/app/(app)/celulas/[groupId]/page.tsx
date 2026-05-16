@@ -1,5 +1,6 @@
 import { AppShell } from "@/components/layout/app-shell";
-import { BackLink, ContextSummary, InfoCard, PulseCard, SectionTitle } from "@/components/shared/base-cards";
+import { BackLink, InfoCard, PulseCard, SectionTitle } from "@/components/shared/base-cards";
+import { GroupDetailSummaryCard } from "@/features/groups/components/group-detail-summary-card";
 import { GroupPendingEventCard } from "@/features/groups/components/group-pending-event-card";
 import { GroupRegisteredEncountersList } from "@/features/groups/components/group-registered-encounters-list";
 import { MemberPriorityList } from "@/features/people/components/member-priority-list";
@@ -39,7 +40,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
     pendingEventActionLabel,
     pendingEventStatusLabel,
     savedMessage,
-    summaryItems,
+    summaryCard,
     supervisionName,
   } = await getGroupDetailPageData({ user, groupId, queryParams });
 
@@ -91,14 +92,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
           />
         </div>
 
-        <ContextSummary
-          variant="balanced"
-          detailTone="strong"
-          trendLayout="stacked"
-          className="mb-0"
-          presenceContext="cell"
-          items={summaryItems}
-        />
+        <GroupDetailSummaryCard summary={summaryCard} />
 
         {pendingEvent ? (
           <GroupPendingEventCard
@@ -109,7 +103,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
         ) : null}
 
         <section id="membros" className="scroll-mt-6">
-          <SectionTitle detail={membersView.sectionDetail}>Membros</SectionTitle>
+          <SectionTitle detail={membersView.sectionDetail} className="mt-0">Membros</SectionTitle>
           <MemberPriorityList
             basePath={ROUTES.group(group.id)}
             activeFilter={activeMembersFilter}

@@ -1,5 +1,5 @@
 import { UserRole, type SignalSeverity, type PersonStatus } from "@/generated/prisma/client";
-import { buildWeeklyPresenceSummaryItem, type WeeklyPresenceSummaryItem } from "@/features/dashboard/presence-health";
+import { buildWeeklyPresenceSummaryItem, type WeeklyPresenceSummary, type WeeklyPresenceSummaryItem } from "@/features/dashboard/presence-health";
 import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features/pastoral-pulse";
 import { splitPastoralSections } from "@/features/signals/sections";
 
@@ -30,8 +30,7 @@ export type PastorPageInCarePerson = {
 export type PastorPageDashboard = {
   attentionPeople: PastorPageSignal[];
   inCarePeople: PastorPageInCarePerson[];
-  hasPresenceData: boolean;
-  presenceRate: number;
+  weeklyPresence: WeeklyPresenceSummary;
 };
 
 export type PastorPageView = {
@@ -75,6 +74,6 @@ export function buildPastorPageView({
     }),
     urgentOrPastoralCases,
     inCarePeople,
-    presenceSummary: [buildWeeklyPresenceSummaryItem(dashboard.hasPresenceData, dashboard.presenceRate)],
+    presenceSummary: [buildWeeklyPresenceSummaryItem(dashboard.weeklyPresence)],
   };
 }

@@ -5,8 +5,8 @@ import { CellsPageSections } from "@/features/groups/components/cells-page-secti
 import { CellsStructureSearch } from "@/features/groups/components/cells-structure-search";
 import { ButtonLink } from "@/components/ui/button-link";
 import { PageHero } from "@/components/shared/page-hero";
-import { ContextSummary, EmptyState, SectionTitle } from "@/components/shared/base-cards";
-import { buildWeeklyPresenceSummaryItem } from "@/features/dashboard/presence-health";
+import { EmptyState, SectionTitle } from "@/components/shared/base-cards";
+import { CellsOverviewSummaryCard } from "@/features/groups/components/cells-overview-summary-card";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { CELLS_SECTION_ID, readCellsFilter } from "@/features/groups/cells-page-filters";
 import { buildCellsPageView } from "@/features/groups/cells-page-view";
@@ -16,7 +16,6 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { firstParam } from "@/lib/search-params";
 import { normalizeSearchText } from "@/lib/text";
 import { UserRole } from "@/generated/prisma/client";
-import { NO_RECENT_PRESENCE_LABEL } from "@/lib/filter-param";
 import { ROUTES } from "@/lib/routes";
 import pageStyles from "@/components/shared/consultation-page.module.css";
 
@@ -65,32 +64,11 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
         />
 
         <div className={pageStyles.summaryBlock}>
-          <ContextSummary
-            items={[
-              {
-                label: "Células acompanhadas",
-                value: String(dashboard.groups.length),
-                detail: "Sob sua supervisão.",
-                tone: "neutral",
-              },
-              buildWeeklyPresenceSummaryItem(dashboard.hasPresenceData, dashboard.presenceRate),
-              {
-                label: "Pedem cuidado mais próximo",
-                value: String(view.groupsNeedingAttentionCount),
-                detail: view.groupsNeedingAttentionCount > 0
-                  ? "Prioridade no acompanhamento."
-                  : "Sem alerta aberto agora.",
-                tone: view.groupsNeedingAttentionCount > 0 ? "warn" : "ok",
-              },
-              {
-                label: NO_RECENT_PRESENCE_LABEL,
-                value: String(view.groupsWithoutPresenceCount),
-                detail: view.groupsWithoutPresenceCount > 0
-                  ? "Confira encontros pendentes."
-                  : "Todas com registro recente.",
-                tone: view.groupsWithoutPresenceCount > 0 ? "neutral" : "ok",
-              },
-            ]}
+          <CellsOverviewSummaryCard
+            cellsCount={dashboard.groups.length}
+            weeklyPresence={dashboard.weeklyPresence}
+            groupsNeedingAttentionCount={view.groupsNeedingAttentionCount}
+            groupsWithoutPresenceCount={view.groupsWithoutPresenceCount}
           />
         </div>
 

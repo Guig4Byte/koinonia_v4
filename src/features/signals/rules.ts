@@ -1,4 +1,5 @@
-import { EventStatus, EventType, MembershipRole, PersonStatus, SignalSource, SignalStatus } from "@/generated/prisma/client";
+import { MembershipRole, PersonStatus, SignalSource, SignalStatus } from "@/generated/prisma/client";
+import { presenceHistoryEventWhere } from "@/features/events/presence-query";
 import { ATTENTION_ELIGIBLE_PERSON_STATUSES } from "@/features/people/person-status";
 import { prisma } from "@/lib/prisma";
 import {
@@ -31,11 +32,7 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string, db: 
         include: { person: true },
       },
       events: {
-        where: {
-          type: EventType.CELL_MEETING,
-          startsAt: { lte: now },
-          OR: [{ status: EventStatus.COMPLETED }, { attendances: { some: {} } }],
-        },
+        where: presenceHistoryEventWhere(now),
         orderBy: { startsAt: "desc" },
         take: ATTENDANCE_SIGNAL_EVENT_LOOKBACK_COUNT,
         include: { attendances: true },

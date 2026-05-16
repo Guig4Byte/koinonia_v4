@@ -61,19 +61,31 @@ const indicatorSizeClass = {
 const indicatorIconSizeClass = {
   sm: "h-3.5 w-3.5",
   md: "h-[1.125rem] w-[1.125rem]",
-  lg: "h-[1.375rem] w-[1.375rem]",
+  lg: "h-5 w-5",
 } as const;
 
 const indicatorValueSizeClass = {
   sm: "text-[length:var(--text-xs)]",
   md: "text-[length:var(--text-sm)]",
-  lg: "text-[length:var(--text-xl)]",
+  lg: "text-[length:var(--text-lg)]",
 } as const;
 
 const metricLabelSizeClass = {
   sm: "text-[length:var(--text-xs)]",
   md: "text-[length:var(--text-sm)]",
   lg: "text-[length:var(--text-xl)]",
+} as const;
+
+const progressValueSizeClass = {
+  sm: "text-[length:var(--text-sm)]",
+  md: "text-[length:var(--text-xl)]",
+  lg: "text-[length:var(--text-2xl)]",
+} as const;
+
+const progressBarWidthClass = {
+  sm: "w-20",
+  md: "w-28",
+  lg: "w-36",
 } as const;
 
 const presenceContextIcon: Record<PresenceIndicatorContext, LucideIcon> = {
@@ -91,7 +103,7 @@ type PresenceIndicatorStyle = CSSProperties & {
   "--presence-ring-glow": string;
 };
 
-function presenceIndicatorStyle(tone: MetricTone, hasPresenceData: boolean): PresenceIndicatorStyle {
+export function presenceIndicatorStyle(tone: MetricTone, hasPresenceData: boolean): PresenceIndicatorStyle {
   const base = hasPresenceData ? tone : "neutral";
 
   const tokens = {
@@ -142,7 +154,7 @@ function presenceIndicatorStyle(tone: MetricTone, hasPresenceData: boolean): Pre
   };
 }
 
-function clampPresenceRate(presenceRate: number): number {
+export function clampPresenceRate(presenceRate: number): number {
   if (!Number.isFinite(presenceRate)) return 0;
   return Math.min(100, Math.max(0, Math.round(presenceRate)));
 }
@@ -238,10 +250,10 @@ export function PresenceIndicator({
           strokeWidth="4.5"
         />
       </svg>
-      <span className="relative z-10 flex flex-col items-center justify-center text-center text-[color:var(--presence-ring)]">
+      <span className="relative z-10 flex flex-col items-center justify-center gap-1 text-center text-[color:var(--presence-ring)]">
         <PresenceContextGlyph context={context} className={indicatorIconSizeClass[size]} />
         {showValueInside ? (
-          <span className={cn("mt-0.5 font-extrabold leading-none tracking-normal tabular-nums", indicatorValueSizeClass[size], insideValueClassName)}>
+          <span className={cn("font-extrabold leading-none tracking-normal tabular-nums", indicatorValueSizeClass[size], insideValueClassName)}>
             {resolvedValue}
           </span>
         ) : null}
@@ -290,6 +302,59 @@ export function PresenceMetricDisplay({
       {showValue ? (
         <span className={cn("font-bold leading-none tabular-nums", metricLabelSizeClass[size], metricTextClass(tone), valueClassName)}>
           {value}
+        </span>
+      ) : null}
+    </span>
+  );
+}
+
+export function PresenceProgressDisplay({
+  hasPresenceData,
+  presenceRate,
+  tone,
+  value,
+  context = "overview",
+  size = "md",
+  className,
+}: {
+  hasPresenceData: boolean;
+  presenceRate: number;
+  tone: MetricTone;
+  value: string;
+  context?: PresenceIndicatorContext;
+  size?: keyof typeof indicatorSizeClass;
+  className?: string;
+}) {
+  const safeRate = hasPresenceData ? clampPresenceRate(presenceRate) : 0;
+  const label = metricLabel(context, hasPresenceData, presenceRate);
+  const displayValue = hasPresenceData ? value : "Sem dados";
+
+  return (
+    <span
+      className={cn("inline-flex min-w-0 flex-col items-end gap-1.5 align-middle", className)}
+      style={presenceIndicatorStyle(tone, hasPresenceData)}
+      aria-label={label}
+      title={label}
+    >
+      <span
+        className={cn(
+          "font-extrabold leading-none tracking-[-0.02em] tabular-nums",
+          hasPresenceData ? metricTextClass(tone) : "text-[color:var(--color-text-muted)]",
+          hasPresenceData ? progressValueSizeClass[size] : "text-[length:var(--text-xs)] font-bold uppercase tracking-[0.08em]",
+        )}
+      >
+        {displayValue}
+      </span>
+      {hasPresenceData ? (
+        <span
+          className={cn("block h-1.5 overflow-hidden rounded-full", progressBarWidthClass[size])}
+          style={{ background: "var(--presence-ring-track)" }}
+          aria-hidden="true"
+        >
+          <span
+            className="block h-full rounded-full"
+            style={{ width: `${safeRate}%`, background: "var(--presence-ring)" }}
+          />
         </span>
       ) : null}
     </span>

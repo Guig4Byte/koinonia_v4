@@ -85,6 +85,10 @@ export function buildPastorGroupPresence(group: DashboardGroupBase) {
   const recordedEvents = group.events.filter(isPresenceRecordedEvent);
   const primarySignals = getPrimarySignalsByPerson(group.signals);
   const pastoralSignals = getPastoralSignalsByPerson(group.signals);
+  const urgentCount = pastoralSignals.filter((signal) => signal.severity === SignalSeverity.URGENT).length;
+  const supportRequestsCount = primarySignals.filter((signal) => signal.assignedTo?.role === UserRole.SUPERVISOR).length;
+  const pastoralCasesCount = pastoralSignals.length;
+  const attentionCount = primarySignals.length;
 
   return {
     id: group.id,
@@ -93,9 +97,13 @@ export function buildPastorGroupPresence(group: DashboardGroupBase) {
     supervisorName: responsibilityNames(group.responsibilities, GroupResponsibilityRole.SUPERVISOR, FALLBACK_SUPERVISOR_NAME),
     presenceRate: groupPresence.presenceRate,
     hasPresenceData: groupPresence.hasPresenceData,
+    hasLowPresence: hasLowPresence(groupPresence),
     recordedEventsCount: recordedEvents.length,
-    attentionCount: primarySignals.length,
-    pastoralCasesCount: pastoralSignals.length,
+    attentionCount,
+    pastoralCasesCount,
+    urgentCount,
+    supportRequestsCount,
+    localAttentionCount: Math.max(attentionCount - pastoralCasesCount - supportRequestsCount, 0),
   };
 }
 

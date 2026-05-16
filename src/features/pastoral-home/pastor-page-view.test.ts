@@ -22,8 +22,11 @@ function dashboard(overrides: Partial<PastorPageDashboard> = {}): PastorPageDash
   return {
     attentionPeople: overrides.attentionPeople ?? [],
     inCarePeople: overrides.inCarePeople ?? [],
-    hasPresenceData: overrides.hasPresenceData ?? false,
-    presenceRate: overrides.presenceRate ?? 0,
+    weeklyPresence: overrides.weeklyPresence ?? {
+      hasPresenceData: false,
+      presenceRate: 0,
+      recordedEventsCount: 0,
+    },
   };
 }
 
@@ -57,8 +60,8 @@ describe("pastor-page-view", () => {
   });
 
   it("usa tom pastoral da presença registrada", () => {
-    expect(buildPastorPageView({ dashboard: dashboard({ hasPresenceData: true, presenceRate: 60 }), user }).presenceSummary[0].tone).toBe("risk");
-    expect(buildPastorPageView({ dashboard: dashboard({ hasPresenceData: true, presenceRate: 70 }), user }).presenceSummary[0].tone).toBe("warn");
-    expect(buildPastorPageView({ dashboard: dashboard({ hasPresenceData: true, presenceRate: 85 }), user }).presenceSummary[0].tone).toBe("ok");
+    expect(buildPastorPageView({ dashboard: dashboard({ weeklyPresence: { hasPresenceData: true, presenceRate: 60, recordedEventsCount: 1 } }), user }).presenceSummary[0].tone).toBe("risk");
+    expect(buildPastorPageView({ dashboard: dashboard({ weeklyPresence: { hasPresenceData: true, presenceRate: 70, recordedEventsCount: 1 } }), user }).presenceSummary[0].tone).toBe("warn");
+    expect(buildPastorPageView({ dashboard: dashboard({ weeklyPresence: { hasPresenceData: true, presenceRate: 85, recordedEventsCount: 1 } }), user }).presenceSummary[0].tone).toBe("ok");
   });
 });

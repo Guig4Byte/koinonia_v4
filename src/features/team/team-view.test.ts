@@ -12,6 +12,7 @@ import {
   type TeamGroup,
   type TeamOverview,
 } from "./team-view";
+import { buildPastoralHealthOverview } from "@/features/dashboard/pastoral-health";
 
 function teamGroup(overrides: Partial<TeamGroup> = {}): TeamGroup {
   return {
@@ -58,6 +59,7 @@ function teamOverview(overrides: Partial<TeamOverview> = {}): TeamOverview {
     unassignedGroups: [],
     priorityGroups: [],
     readingPendingGroups: [],
+    healthOverview: buildPastoralHealthOverview([]),
     summary: {
       supervisorsCount: 0,
       groupsCount: 0,

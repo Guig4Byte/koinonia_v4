@@ -38,9 +38,12 @@ function group(overrides: Partial<SupervisorGroup> = {}): SupervisorGroup {
 function dashboard(groups: SupervisorGroup[]): SupervisorDashboard {
   return {
     groups,
-    presenceRate: 80,
-    hasPresenceData: true,
-    supportRequests: [],
+    attentionPeople: [],
+    weeklyPresence: {
+      hasPresenceData: true,
+      presenceRate: 80,
+      recordedEventsCount: 1,
+    },
   } as unknown as SupervisorDashboard;
 }
 

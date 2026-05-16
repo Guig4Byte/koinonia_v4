@@ -7,7 +7,7 @@ import { CardLink } from "@/components/ui/card-link";
 import { MetricRow, SummaryCard } from "@/components/ui/summary-card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { cn } from "@/lib/cn";
-import { PresenceMetricDisplay, PresenceTrendDelta, type PresenceIndicatorContext, type PresenceTrend } from "@/components/shared/presence-metric";
+import { PresenceMetricDisplay, PresenceProgressDisplay, PresenceTrendDelta, type PresenceIndicatorContext, type PresenceTrend } from "@/components/shared/presence-metric";
 
 export function PulseCard({
   title,
@@ -70,6 +70,7 @@ export function ContextSummary({
   surface = "card",
   className,
   presenceContext = "overview",
+  presenceLayout = "indicator",
 }: {
   items: Array<{ label: string; value: string; detail?: string; tone?: "ok" | "warn" | "risk" | "neutral"; trend?: PresenceTrend | null }>;
   detailTone?: "default" | "strong";
@@ -78,6 +79,7 @@ export function ContextSummary({
   surface?: "card" | "inset";
   className?: string;
   presenceContext?: PresenceIndicatorContext;
+  presenceLayout?: "indicator" | "progress";
 }) {
   return (
     <SummaryCard variant={variant} surface={surface} className={className}>
@@ -88,23 +90,33 @@ export function ContextSummary({
         const tone = item.tone ?? "neutral";
         const presenceMetricSize = variant === "balanced" || variant === "prominent" ? "md" : "sm";
         const presenceValueIsPlaceholder = item.value.trim() === "—" || item.value.trim() === "-";
+        const presenceValue = presenceLayout === "progress" ? (
+          <PresenceProgressDisplay
+            hasPresenceData={presenceRate !== null}
+            presenceRate={presenceRate ?? 0}
+            tone={tone}
+            value={item.value}
+            context={presenceContext}
+            size={presenceMetricSize}
+          />
+        ) : (
+          <PresenceMetricDisplay
+            hasPresenceData={presenceRate !== null}
+            presenceRate={presenceRate ?? 0}
+            tone={tone}
+            value={item.value}
+            context={presenceContext}
+            size={presenceMetricSize}
+            showValue={!presenceValueIsPlaceholder}
+          />
+        );
 
         return (
           <MetricRow
             key={item.label}
             label={item.label}
             detail={item.detail}
-            value={shouldUsePresenceIndicator ? (
-              <PresenceMetricDisplay
-                hasPresenceData={presenceRate !== null}
-                presenceRate={presenceRate ?? 0}
-                tone={tone}
-                value={item.value}
-                context={presenceContext}
-                size={presenceMetricSize}
-                showValue={!presenceValueIsPlaceholder}
-              />
-            ) : item.value}
+            value={shouldUsePresenceIndicator ? presenceValue : item.value}
             tone={tone}
             detailStrong={detailTone === "strong"}
             valueInlineAdornment={item.trend && trendLayout === "inline" ? (
@@ -129,8 +141,8 @@ export function ContextSummary({
 }
 
 
-export function SectionTitle({ children, detail }: { children: ReactNode; detail?: string }) {
-  return <SectionHeader title={children} detail={detail} />;
+export function SectionTitle({ children, detail, className }: { children: ReactNode; detail?: string; className?: string }) {
+  return <SectionHeader title={children} detail={detail} className={className} />;
 }
 
 

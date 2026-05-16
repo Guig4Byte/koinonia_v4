@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { CalendarCheck2, UsersRound } from "lucide-react";
+import { UsersRound } from "lucide-react";
 import type { CSSProperties } from "react";
 import { EmptyState, SectionTitle } from "@/components/shared/base-cards";
-import { PresenceMetricDisplay } from "@/components/shared/presence-metric";
+import { metricTextClass, PresenceIndicator } from "@/components/shared/presence-metric";
 import { AttendanceStatus } from "@/generated/prisma/client";
 import { ProgressiveList } from "@/components/shared/progressive-list";
 import { type BadgeTone } from "@/components/ui/badge";
@@ -73,26 +73,22 @@ export function GroupRegisteredEncountersList({ events }: { events: GroupRegiste
                 style={encounterToneVars(presenceBadgeTone)}
               >
                 <span className="absolute inset-y-0 left-0 w-1 bg-[var(--encounter-tone)]" aria-hidden="true" />
-                <span
-                  className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[var(--encounter-tone-soft)] text-[color:var(--encounter-tone)]"
-                  aria-hidden="true"
-                >
-                  <CalendarCheck2 className="h-4 w-4" strokeWidth={2.2} />
-                </span>
+                <PresenceIndicator
+                  hasPresenceData={metrics.hasPresenceData}
+                  presenceRate={metrics.presenceRate}
+                  tone={presenceBadgeTone}
+                  context="event"
+                  size="sm"
+                  className="h-9 w-9"
+                />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[length:var(--text-sm)] font-bold text-[color:var(--color-text-secondary)]">
                     {formatShortDate(event.startsAt)} · {formatTime(event.startsAt)}
                   </span>
                   <span className="mt-2 flex min-w-0 items-center gap-2 text-[length:var(--text-xs)] leading-none text-[color:var(--color-text-muted)]">
-                    <PresenceMetricDisplay
-                      hasPresenceData={metrics.hasPresenceData}
-                      presenceRate={metrics.presenceRate}
-                      tone={presenceBadgeTone}
-                      value={presenceLabel}
-                      context="event"
-                      size="sm"
-                      className="shrink-0"
-                    />
+                    <strong className={cn("shrink-0 font-extrabold tabular-nums", metricTextClass(presenceBadgeTone))}>
+                      {presenceLabel}
+                    </strong>
                     <span className="h-3 w-px bg-[var(--color-border-divider)]" aria-hidden="true" />
                     <span className="flex min-w-0 items-center gap-1 truncate font-medium text-[color:var(--color-text-secondary)]">
                       <UsersRound className="h-3 w-3 shrink-0" strokeWidth={1.8} aria-hidden="true" />

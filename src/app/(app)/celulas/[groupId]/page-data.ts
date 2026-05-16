@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation";
 import { EventType, GroupResponsibilityRole, MembershipRole, SignalStatus, UserRole } from "@/generated/prisma/client";
 import { formatPresenceRate, presenceTone } from "@/features/events/presence-display";
+import { presenceHistoryEventWhere } from "@/features/events/presence-query";
 import {
   isPresenceRecordedEvent,
   splitPresenceTrendSamples,
   summarizeEventsPresence,
   summarizePresenceTrend,
-  type PresenceTrend,
 } from "@/features/events/presence-summary";
 import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
 import {
@@ -32,18 +32,13 @@ import {
   isSupportRequest,
   isUrgentOrPastoralCase,
 } from "@/features/signals/sections";
+import type { GroupDetailSummaryCardData } from "@/features/groups/components/group-detail-summary-card";
+import { countLabel } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/search-params";
 
 type GroupDetailSearchParams = Record<string, string | string[] | undefined>;
 
-type ContextSummaryItem = {
-  label: string;
-  value: string;
-  detail?: string;
-  tone?: "ok" | "warn" | "risk" | "neutral";
-  trend?: PresenceTrend | null;
-};
 
 export async function getGroupDetailPageData({
   user,
@@ -56,6 +51,7 @@ export async function getGroupDetailPageData({
 }) {
   const activeMembersFilter = readMembersFilter(firstParam(queryParams.membros));
   const savedParam = firstParam(queryParams.salvo);
+  const referenceDate = new Date();
 
   const group = await prisma.smallGroup.findUnique({
     where: { id: groupId },
@@ -82,10 +78,20 @@ export async function getGroupDetailPageData({
 
   if (!group || !canViewGroup(user, group)) notFound();
 
+  const presenceEvents = await prisma.event.findMany({
+    where: {
+      churchId: group.churchId,
+      groupId: group.id,
+      ...presenceHistoryEventWhere(referenceDate),
+    },
+    include: { attendances: true },
+    orderBy: { startsAt: "desc" },
+    take: GROUP_DETAIL_EVENT_HISTORY_LIMIT,
+  });
+
   const leadershipName = responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, FALLBACK_LEADER_NAME);
   const supervisionName = responsibilityNames(group.responsibilities, GroupResponsibilityRole.SUPERVISOR, "");
 
-  const referenceDate = new Date();
   const homeHref = homeHrefForRole(user.role);
   const isPastorView = user.role === UserRole.PASTOR || user.role === UserRole.ADMIN;
   const isSupervisorView = user.role === UserRole.SUPERVISOR;
@@ -100,7 +106,7 @@ export async function getGroupDetailPageData({
   const inCareCount = group.memberships.filter((membership) => isInCarePerson(membership.person)).length;
   const hasRiskSignal = urgentOrPastoralSignals.length > 0;
   const navIndicator = hasRiskSignal ? "risk" : attentionPeople.length > 0 ? "attention" : inCareCount > 0 ? "care" : undefined;
-  const recordedPresenceEvents = group.events.filter((event) => event.startsAt <= referenceDate && isPresenceRecordedEvent(event));
+  const recordedPresenceEvents = presenceEvents.filter(isPresenceRecordedEvent);
   const { recentItems: recentPresenceEvents, previousItems: previousPresenceEvents } = splitPresenceTrendSamples(recordedPresenceEvents);
   const completedEvents = recordedPresenceEvents;
   const presence = summarizeEventsPresence(recentPresenceEvents);
@@ -134,31 +140,38 @@ export async function getGroupDetailPageData({
     : savedParam === "celula-atualizada"
       ? "Célula atualizada."
       : null;
-  const summaryItems: ContextSummaryItem[] = [
-    {
-      label: "Membros acompanhados",
-      value: String(group.memberships.length),
+  const recentPresenceEventsLabel = countLabel(
+    recentPresenceEvents.length,
+    "último encontro registrado",
+    "últimos encontros registrados",
+  );
+  const recentPresenceDetail = recentPresenceEvents.length === 1
+    ? "Média do último encontro registrado."
+    : `Média dos ${recentPresenceEventsLabel}.`;
+  const summaryCard: GroupDetailSummaryCardData = {
+    members: {
+      count: group.memberships.length,
       detail: "Pessoas sob cuidado e convivência desta célula.",
-      tone: "neutral",
     },
-    {
-      label: "Presença recente",
+    presence: {
+      hasPresenceData: hasRecentPresence,
+      presenceRate: presence.presenceRate,
       value: formatPresenceRate(hasRecentPresence, presence.presenceRate),
       detail: hasRecentPresence
-        ? "Média dos últimos encontros registrados."
+        ? recentPresenceDetail
         : "Ainda sem presença recente registrada.",
       tone: presenceTone(hasRecentPresence, presence.presenceRate),
       trend: presenceTrend,
     },
-    {
+    attention: {
       label: isPastorView ? "Pedem cuidado" : "Pedem proximidade",
-      value: String(attentionPeople.length),
+      count: attentionPeople.length,
       detail: attentionPeople.length > 0
         ? "Pessoas que merecem acompanhamento próximo."
         : "Nenhum sinal aberto pedindo cuidado agora.",
       tone: attentionPeople.length > 0 ? hasRiskSignal ? "risk" : "warn" : "ok",
     },
-  ];
+  };
 
   return {
     activeMembersFilter,
@@ -175,7 +188,7 @@ export async function getGroupDetailPageData({
     pendingEventActionLabel,
     pendingEventStatusLabel,
     savedMessage,
-    summaryItems,
+    summaryCard,
     supervisionName,
   };
 }

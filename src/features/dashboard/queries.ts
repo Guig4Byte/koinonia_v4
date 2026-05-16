@@ -1,4 +1,5 @@
 import { EventType, GroupResponsibilityRole, MembershipRole, SignalSeverity, SignalStatus, UserRole } from "@/generated/prisma/client";
+import { presenceHistoryEventWhere } from "@/features/events/presence-query";
 import { isPresenceRecordedEvent, PRESENCE_TREND_RECENT_SAMPLE_COUNT, PRESENCE_TREND_TOTAL_SAMPLE_COUNT, summarizeEventsPresence } from "@/features/events/presence-summary";
 import { ensureUpcomingCellMeetingsForUser } from "@/features/events/schedule";
 import { selectRelevantCheckInEvent } from "@/features/events/relevant-event";
@@ -11,9 +12,9 @@ import {
 } from "@/features/leader/leader-page-view";
 import { activeGroupResponsibilitiesInclude, activeGroupResponsibilityWhere } from "@/features/groups/group-query";
 import { IN_CARE_STATUS } from "@/features/people/person-status";
-import { canUsePastorDashboard, getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
+import { canUsePastorDashboard, getVisibleEventWhere, getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { getPastoralSignalsByPerson } from "@/features/signals/attention";
-import { getPastoralSectionSignalsByPerson, isSupportRequest } from "@/features/signals/sections";
+import { getPastoralSectionSignalsByPerson } from "@/features/signals/sections";
 import {
   buildPastorGroupPresence,
   buildPastorTeamGroup,
@@ -25,6 +26,7 @@ import {
   countLowPresenceGroups,
   sumBy,
 } from "@/features/dashboard/dashboard-view";
+import { buildPastoralHealthOverview } from "@/features/dashboard/pastoral-health";
 import { prisma } from "@/lib/prisma";
 import { addBrasiliaDays, endOfBrasiliaWeek, startOfBrasiliaDay, startOfBrasiliaWeek } from "@/lib/brasilia-time";
 
@@ -49,6 +51,7 @@ export async function getPastorDashboard(user: PermissionUser) {
   const weekStart = startOfBrasiliaWeek(now, 1);
   const weekEnd = endOfBrasiliaWeek(now, 1);
   const tomorrow = addBrasiliaDays(startOfBrasiliaDay(now), 1);
+  const presenceHistoryWhere = presenceHistoryEventWhere(now);
 
   const [events, openSignals, groups, inCarePeople] = await Promise.all([
     prisma.event.findMany({
@@ -79,7 +82,12 @@ export async function getPastorDashboard(user: PermissionUser) {
       include: {
         responsibilities: activeGroupResponsibilitiesInclude,
         signals: { where: { status: SignalStatus.OPEN }, include: { assignedTo: true } },
-        events: { orderBy: { startsAt: "desc" }, take: PRESENCE_TREND_RECENT_SAMPLE_COUNT, include: { attendances: true } },
+        events: {
+          where: presenceHistoryWhere,
+          orderBy: { startsAt: "desc" },
+          take: PRESENCE_TREND_RECENT_SAMPLE_COUNT,
+          include: { attendances: true },
+        },
       },
       orderBy: { name: "asc" },
     }),
@@ -117,14 +125,15 @@ export async function getPastorDashboard(user: PermissionUser) {
     completedEvents: completedEvents.length,
     pendingGroupsCount: groupsWithoutRecentPresence.length,
     groupsWithoutRecentPresence,
-    presenceRate: presence.presenceRate,
-    visitors: presence.visitorCount,
-    hasPresenceData: presence.hasPresenceData,
+    weeklyPresence: {
+      presenceRate: presence.presenceRate,
+      hasPresenceData: presence.hasPresenceData,
+      recordedEventsCount: presence.recordedEventsCount,
+    },
     openSignals,
     attentionPeople,
     urgentSignals,
     inCarePeople,
-    groups: groupsWithPresence,
   };
 }
 
@@ -134,6 +143,8 @@ export async function getPastorTeamOverview(user: PermissionUser) {
   }
 
   const churchId = user.churchId;
+  const now = new Date();
+  const presenceHistoryWhere = presenceHistoryEventWhere(now);
 
   const groupInclude = {
     responsibilities: activeGroupResponsibilitiesInclude,
@@ -142,7 +153,12 @@ export async function getPastorTeamOverview(user: PermissionUser) {
       include: { person: { select: { status: true } } },
     },
     signals: { where: { status: SignalStatus.OPEN }, include: { assignedTo: true } },
-    events: { orderBy: { startsAt: "desc" as const }, take: PRESENCE_TREND_RECENT_SAMPLE_COUNT, include: { attendances: true } },
+    events: {
+      where: presenceHistoryWhere,
+      orderBy: { startsAt: "desc" as const },
+      take: PRESENCE_TREND_RECENT_SAMPLE_COUNT,
+      include: { attendances: true },
+    },
   };
 
   const [supervisors, groupsWithoutSupervisor] = await Promise.all([
@@ -194,6 +210,7 @@ export async function getPastorTeamOverview(user: PermissionUser) {
     unassignedGroups,
     priorityGroups,
     readingPendingGroups,
+    healthOverview: buildPastoralHealthOverview(allGroups),
     summary: {
       supervisorsCount: supervisors.length,
       groupsCount: allGroups.length,
@@ -211,37 +228,54 @@ export async function getPastorTeamOverview(user: PermissionUser) {
 
 async function getGroupScopedDashboard(user: PermissionUser) {
   const now = new Date();
-  const groups = await prisma.smallGroup.findMany({
-    where: getVisibleGroupWhere(user),
-    include: {
-      responsibilities: activeGroupResponsibilitiesInclude,
-      memberships: { where: { leftAt: null, role: { not: MembershipRole.VISITOR } }, include: { person: true } },
-      signals: { where: { status: SignalStatus.OPEN }, include: { person: true, assignedTo: true } },
-      events: { orderBy: { startsAt: "desc" }, take: PRESENCE_TREND_TOTAL_SAMPLE_COUNT, include: { attendances: true } },
-    },
-    orderBy: { name: "asc" },
-  });
+  const weekStart = startOfBrasiliaWeek(now, 1);
+  const weekEnd = endOfBrasiliaWeek(now, 1);
+  const tomorrow = addBrasiliaDays(startOfBrasiliaDay(now), 1);
+  const presenceHistoryWhere = presenceHistoryEventWhere(now);
 
-  const events = groups.flatMap((group) => group.events);
-  const recordedEvents = events.filter(isPresenceRecordedEvent);
+  const [groups, weeklyEvents] = await Promise.all([
+    prisma.smallGroup.findMany({
+      where: getVisibleGroupWhere(user),
+      include: {
+        responsibilities: activeGroupResponsibilitiesInclude,
+        memberships: { where: { leftAt: null, role: { not: MembershipRole.VISITOR } }, include: { person: true } },
+        signals: { where: { status: SignalStatus.OPEN }, include: { person: true, assignedTo: true } },
+        events: {
+          where: presenceHistoryWhere,
+          orderBy: { startsAt: "desc" },
+          take: PRESENCE_TREND_TOTAL_SAMPLE_COUNT,
+          include: { attendances: true },
+        },
+      },
+      orderBy: { name: "asc" },
+    }),
+    prisma.event.findMany({
+      where: {
+        ...getVisibleEventWhere(user),
+        type: EventType.CELL_MEETING,
+        startsAt: { gte: weekStart, lte: weekEnd },
+      },
+      include: { attendances: true },
+      orderBy: { startsAt: "asc" },
+    }),
+  ]);
+
+  const recordedWeeklyEvents = weeklyEvents
+    .filter((event) => event.startsAt < tomorrow)
+    .filter(isPresenceRecordedEvent);
+  const weeklyPresence = summarizeEventsPresence(recordedWeeklyEvents);
   const signals = groups.flatMap((group) => group.signals.map((signal) => ({ ...signal, group })));
   const attentionPeople = getPastoralSectionSignalsByPerson(signals, user);
-  const supportRequests = attentionPeople.filter((signal) => isSupportRequest(signal, user));
-  const delegatedToPastor = signals.filter((signal) => signal.assignedTo?.role === UserRole.PASTOR || signal.assignedTo?.role === UserRole.ADMIN);
-  const presence = summarizeEventsPresence(recordedEvents);
   const groupsWithPresence = groups.map((group) => buildScopedGroupDashboardItem(group, user, now));
 
   return {
     groups: groupsWithPresence,
-    events,
-    signals,
     attentionPeople,
-    supportRequests,
-    delegatedToPastor,
-    presenceRate: presence.presenceRate,
-    hasPresenceData: presence.hasPresenceData,
-    recordedEventsCount: recordedEvents.length,
-    visitors: presence.visitorCount,
+    weeklyPresence: {
+      presenceRate: weeklyPresence.presenceRate,
+      hasPresenceData: weeklyPresence.hasPresenceData,
+      recordedEventsCount: weeklyPresence.recordedEventsCount,
+    },
   };
 }
 
