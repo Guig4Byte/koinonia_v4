@@ -272,6 +272,29 @@ Regras:
 
 Chamadas atuais ocorrem nas telas que dependem de encontros, como `/eventos` e `/lider`.
 
+## Listagem e consultas de encontros
+
+Fontes:
+
+```txt
+src/app/(app)/eventos/page.tsx
+src/features/events/events-page-view.ts
+src/features/events/components/events-page-sections.tsx
+src/features/events/components/events-page-sections.module.css
+```
+
+Regras:
+
+- `EVENTS_PAGE_HISTORY_LOOKBACK_DAYS` define a janela consultada pelo servidor;
+- `buildEventsHomeSections()` separa encontros de hoje e próximos encontros da semana;
+- encontros futuros sem presença aparecem em próximos encontros;
+- encontros passados sem presença válida aparecem na consulta `sem-presenca`;
+- encontros com presença válida aparecem na consulta `historico`;
+- `readEventConsultationMode()` aceita apenas `sem-presenca` e `historico`;
+- `readEventPeriod()` aceita `semana`, `semana-passada` e `30d`, conforme o modo;
+- cards de consulta têm variantes próprias para pendência e histórico, sem alterar a regra de permissão;
+- `eventMeta()` evita repetir o nome da célula quando o título já identifica o grupo.
+
 ## Ações do encontro
 
 Fontes:
@@ -315,6 +338,8 @@ Fontes principais:
 ```txt
 src/features/events/presence-summary.ts
 src/features/events/presence-display.ts
+src/components/shared/presence-metric.tsx
+src/features/dashboard/presence-health.ts
 ```
 
 Helpers de resumo:
@@ -330,6 +355,10 @@ Helper de apresentação:
 
 ```ts
 presenceTone()
+formatPresenceRate()
+PresenceMetricDisplay
+PresenceIndicator
+PresenceProgressDisplay
 ```
 
 Regras:
@@ -339,7 +368,9 @@ Regras:
 - UI deve mostrar `—` ou `Sem registro` quando `hasPresenceData` for falso;
 - percentual não deve indicar risco sem dado real;
 - eventos concluídos sem marcação válida continuam sendo ausência de dado, não `0%`;
-- use `presenceTone()` para tom visual de presença, mantendo limiares explícitos quando a superfície usa thresholds diferentes.
+- use `presenceTone()` para tom visual de presença, mantendo limiares explícitos quando a superfície usa thresholds diferentes;
+- `PresenceMetricDisplay` e derivados centralizam indicador visual, progresso, `aria-label` e tratamento de ausência de dado;
+- saúde semanal usa `src/features/dashboard/presence-health.ts` para labels e thresholds de visão geral.
 
 ## Check-in
 
@@ -447,7 +478,7 @@ Regras:
 - o histórico da pessoa mostra esse registro como cuidado recente, sem virar tarefa ou prontuário;
 - o detalhe da pessoa mostra poucos registros inicialmente e usa `Ver histórico` para revelar os demais.
 
-## Queries de dashboard
+## Queries de visão
 
 Fonte:
 
@@ -488,6 +519,7 @@ Regras:
 
 - `src/components/ui` concentra primitives visuais genéricos antes de novas classes locais ou variantes soltas.
 - `src/components/shared/structure-search.tsx` centraliza busca e chips de superfícies estruturais; wrappers de feature ficam em `features/groups` e `features/team`.
+- `src/components/shared/presence-metric.tsx` centraliza indicadores visuais de presença; novas superfícies devem reutilizá-lo antes de criar anéis/barras próprios.
 - `src/features/people/components/member-priority-list.tsx` centraliza a lista pastoral de membros, separando pessoas no radar e ativos.
 - `member-filters.ts`, `cells-page-filters.ts` e `team-filters.ts` devem usar `src/lib/filter-param.ts` para valores, labels comuns e parsing de query param.
 - `firstParam()` deve ser usado para leitura simples de `searchParams` em páginas server-side.
@@ -534,6 +566,8 @@ Regras:
 | `/pessoas` | membros do líder |
 | `/pessoas/[personId]` | detalhe da pessoa |
 | `/eventos` | `Encontros` na UI |
+| `/eventos?consulta=sem-presenca` | encontros passados sem presença registrada |
+| `/eventos?consulta=historico` | encontros com presença registrada |
 | `/eventos/[eventId]` | detalhe/resumo/registro do encontro |
 | `/api/search` | busca de pessoa |
 

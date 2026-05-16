@@ -2,6 +2,8 @@
 
 Este arquivo orienta sensação de uso, densidade visual e tom. Ele não define escopo técnico nem substitui `PRODUCT.md`, `GLOSSARY.md` ou `ARCHITECTURE.md`.
 
+Leia este arquivo depois dos documentos oficiais. Ele ajuda a avaliar se a experiência está coerente; não autoriza novas features por conta própria.
+
 ## Persona emocional
 
 Imagine Roberto, pastor, 52 anos, usando o celular à noite, cansado, sem querer “operar um sistema”. Ele quer saber rapidamente se alguém está escapando do cuidado e onde precisa prestar atenção.
@@ -50,6 +52,7 @@ A primeira tela deve responder em poucos segundos:
 - existe alguém já acolhido em cuidado?
 - alguma célula está sem presença ou com presença baixa?
 - há encontro que pede ação do líder?
+- há presença pendente ou histórico relevante para consulta?
 
 Evite telas iniciais com muitos cards, gráficos, tabelas ou linguagem executiva.
 
@@ -110,6 +113,9 @@ Resumo vem antes da operação.
 - Ajustar presença é escolha explícita.
 - Pastor/supervisor ficam em consulta.
 - Líder entra no modo operacional só quando precisa registrar ou ajustar.
+- A tela de encontros oferece consultas curtas: `Pendências` e `Histórico`.
+- Pendências devem destacar encontros passados sem presença registrada sem soar como cobrança.
+- Histórico deve mostrar presença registrada com leitura rápida do percentual, membros e visitantes.
 
 No modo de registro/ajuste:
 
@@ -120,6 +126,8 @@ No modo de registro/ajuste:
 - use cores suaves por status para orientar, não pressionar;
 - mantenha a barra de salvar clara e sem competir com a navegação;
 - `Marcar todos como presentes` é atalho, não substituto da revisão pastoral.
+
+Em formulários comuns do app, como nova/editar célula, a navegação inferior permanece visível. O check-in é exceção porque vira modo operacional.
 
 ## Local, cancelamento e remarcação
 

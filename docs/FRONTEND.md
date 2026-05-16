@@ -4,6 +4,8 @@ Este documento é a fonte de verdade para a organização visual do front-end: c
 
 Não governa regras de produto, permissões, banco, autenticação ou vocabulário. Para esses assuntos, use `PRODUCT.md`, `ARCHITECTURE.md` e `GLOSSARY.md`.
 
+Leia este arquivo depois de `PRODUCT.md`, `GLOSSARY.md` e `ARCHITECTURE.md`. Ele explica como a interface deve ser construída, não o que cada papel pode fazer.
+
 ## Objetivo
 
 Manter a interface simples de entender, segura para evoluir e sem CSS global de componente.
@@ -32,7 +34,7 @@ src/components/layout
 
 src/components/shared
   Componentes compartilhados entre features, mas ainda ligados à apresentação do produto.
-  Exemplos: ProgressiveList, PresenceMetric, StructureSearch, base cards, person cards e loading skeletons.
+  Exemplos: ProgressiveList, PresenceMetricDisplay, StructureSearch, base cards, person cards e loading skeletons.
 
 src/features/*/components
   Componentes visuais de domínio. Podem usar linguagem e dados da feature.
@@ -140,6 +142,30 @@ Uma primitive em `ui` deve:
 
 Não crie uma primitive nova apenas para esconder uma linha de Tailwind usada uma única vez.
 
+## Componentes Compartilhados Importantes
+
+Use estes componentes antes de criar variações locais:
+
+| Componente | Uso |
+| --- | --- |
+| `AppShell` | header, conteúdo e navegação inferior do app autenticado |
+| `BottomNav` | navegação mobile por papel; não deve aparecer em modo de check-in |
+| `ThemeToggle` | alternância de tema |
+| `TextSizeToggle` | alternância de tamanho do texto |
+| `ProgressiveList` | listas curtas com `Ver mais` / `Mostrar menos` |
+| `StructureSearch` | busca e filtros de superfícies estruturais |
+| `PresenceMetricDisplay` | métrica compacta de presença com indicador visual |
+| `PresenceIndicator` | anel visual de presença |
+| `PresenceProgressDisplay` | percentual com barra de progresso |
+
+Regras:
+
+- check-in usa barra fixa própria e oculta `BottomNav`;
+- formulários comuns dentro do app, como nova/editar célula, mantêm `BottomNav`;
+- full-page screenshots ou validações visuais podem ocultar `BottomNav`, mas isso não muda o comportamento real da tela;
+- indicadores de presença devem reutilizar `src/components/shared/presence-metric.tsx`;
+- quando não houver dado de presença, indicador e texto devem comunicar ausência de dado, não risco.
+
 ## Componentes de domínio
 
 Componentes em `src/features/*/components` podem conhecer a feature e usar linguagem pastoral.
@@ -151,6 +177,17 @@ Regras:
 - se duas features precisarem do mesmo padrão, subir para `src/components/shared` ou `src/components/ui`;
 - lógica de ordenação, filtros e labels complexos deve ficar em `*-view.ts`, não no meio do JSX;
 - componente client-side não deve importar Prisma Client nem helper server-only.
+
+### Encontros
+
+Os cards de encontros ficam em `src/features/events/components/events-page-sections.tsx` e usam CSS Module local. A tela tem:
+
+- cards de consulta `Pendências` e `Histórico`;
+- lista de hoje;
+- próximos encontros;
+- variantes visuais para consulta de pendências e histórico.
+
+Mantenha estilos específicos dessas variantes em `events-page-sections.module.css`. Não promova esses estilos para CSS global.
 
 ## Loading states
 
@@ -204,3 +241,5 @@ import { GroupPendingEventCard } from "@/features/groups/components/group-pendin
 6. O skeleton correspondente continua parecido com a tela real?
 7. O import respeita `ui`, `layout`, `shared` e `features/*/components`?
 8. Nenhuma classe global específica de tela foi adicionada?
+9. Métricas de presença usam os componentes compartilhados?
+10. Telas operacionais, como check-in, tratam navegação fixa e barras fixas sem sobrepor conteúdo?

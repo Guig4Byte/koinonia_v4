@@ -1,28 +1,26 @@
 # Koinonia Lite
 
-Koinonia Lite é um radar pastoral mobile-first para células.
+Koinonia Lite é um radar pastoral mobile-first para igrejas com células.
 
 > O Koinonia não registra cuidado por obrigação. Ele ajuda a não esquecer pessoas.
 
-## Mapa da documentação
+## Como Ler A Documentação
 
-O `README.md` é a porta de entrada do projeto. Ele resume contexto, stack, execução local e rotas principais; não substitui os documentos de decisão abaixo.
+Leia nesta ordem quando for entender ou alterar o sistema:
 
-Leia os documentos nesta ordem:
+1. `docs/AGENT_BRIEFING.md` - briefing operacional para agentes e desenvolvedores.
+2. `docs/PRODUCT.md` - comportamento, escopo e fluxos do MVP atual.
+3. `docs/GLOSSARY.md` - vocabulário oficial, rótulos, CTAs e tons da UI.
+4. `docs/ARCHITECTURE.md` - entidades, permissões, rotas, autenticação e helpers.
+5. `docs/FRONTEND.md` - organização visual, componentes, CSS e loading states.
+6. `docs/Perfil.txt` - norte de experiência mobile/pastoral.
+7. `docs/Koinonia.txt` - visão futura/legada; não governa o MVP atual.
 
-1. `docs/AGENT_BRIEFING.md` — entrada operacional para qualquer IA/agente antes de alterar código.
-2. `docs/PRODUCT.md` — fonte de verdade para comportamento, escopo e fluxos do MVP.
-3. `docs/GLOSSARY.md` — fonte de verdade para vocabulário, rótulos e tons de UI.
-4. `docs/ARCHITECTURE.md` — fonte técnica para entidades, autenticação, permissões, rotas e helpers.
-5. `docs/FRONTEND.md` — fonte visual para componentes, CSS, Tailwind, CSS Modules e loading states.
-6. `docs/Perfil.txt` — norte de experiência mobile/pastoral.
-7. `docs/Koinonia.txt` — visão futura/legada; não governa o MVP atual.
+Cada documento tem uma responsabilidade própria. Se houver conflito, siga o documento responsável pelo assunto. Se o código atual divergir dos docs, preserve o comportamento existente e atualize o documento responsável na mesma mudança.
 
-Quando documentos entrarem em conflito, siga a responsabilidade de cada arquivo acima. Quando o código atual divergir dos documentos, preserve o comportamento existente e atualize a documentação na mesma mudança. `docs/Koinonia.txt` não autoriza analytics, CRM, SLA, playbooks, mapas, QR Code, gestão avançada de usuários ou acompanhamento formal sem pedido explícito.
+## MVP Atual
 
-## MVP atual
-
-Ciclo:
+O recorte atual segue este ciclo:
 
 ```txt
 Encontro -> Presença -> Atenção -> Contato -> Cuidado
@@ -36,55 +34,9 @@ Supervisor acompanha.
 Pastor interpreta.
 ```
 
-Regra de visibilidade:
+O sistema hoje possui autenticação real, sessão por cookie assinado, temas locais, tamanho de texto local, pessoas, células, encontros, check-in do líder, visitantes, métricas de presença, sinais de atenção, pedido de apoio, encaminhamento pastoral, cuidado recente, busca de pessoa e visões por papel.
 
-```txt
-Líder cuida da atenção local.
-Supervisor apoia exceções e padrões.
-Pastor/Admin interpretam saúde geral, casos graves/encaminhados e buscas explícitas.
-```
-
-O pastor não é operador de sinais e não deve receber toda ausência ou atenção cotidiana como fila padrão.
-
-## O que existe agora
-
-- Autenticação real por e-mail e senha, com erro curto no login e opção de mostrar/ocultar senha.
-- Sessão em cookie `HttpOnly` assinado.
-- Tema local no login e no app.
-- Pessoas.
-- Células.
-- Encontros de célula.
-- Check-in simples feito pelo líder da célula.
-- Visitantes no check-in.
-- Métricas de presença que distinguem dado real de `Sem registro`.
-- Sinais de atenção por pessoa.
-- Escalonamento mínimo via `CareSignal.assignedToId`.
-- Visão do pastor/admin.
-- Equipe do pastor/admin para supervisores, células e cadastro mínimo de célula.
-- Visão do supervisor.
-- Células supervisionadas.
-- Visão do líder.
-- Busca simples de pessoa.
-- Detalhe simples de pessoa, célula e encontro.
-- Cadastro/edição mínima de célula: nome, dia padrão, horário padrão, local padrão e status ativa/inativa.
-- Contato/cuidado simples com anotação opcional.
-
-## O que não existe de propósito
-
-Não implemente sem pedido explícito:
-
-- Cadastro público.
-- Recuperação de senha.
-- Gestão avançada de usuários.
-- CRM pastoral completo.
-- Acompanhamento formal.
-- Task manager, kanban, fila ou SLA.
-- BI/analytics avançado.
-- Mapas, geolocalização ou QR Code.
-- Notificações.
-- Área rica do membro.
-- Formulários longos.
-- Calendário amplo de igreja.
+O escopo completo e os limites do MVP ficam em `docs/PRODUCT.md`.
 
 ## Stack
 
@@ -95,10 +47,11 @@ Não implemente sem pedido explícito:
 - Prisma ORM com PostgreSQL.
 - Zod.
 - Vitest.
+- Playwright.
 - `bcryptjs` para senha.
 - `jose` para sessão assinada.
 
-## Como rodar
+## Como Rodar
 
 ```bash
 npm install
@@ -116,17 +69,9 @@ Acesse:
 http://localhost:3000
 ```
 
-## Autenticação local
+## Autenticação Local
 
-O app usa e-mail e senha. A sessão fica no cookie `koinonia-session`.
-
-Defina um segredo de sessão no `.env`:
-
-```env
-KOINONIA_SESSION_SECRET="troque-por-um-valor-longo-e-aleatorio"
-```
-
-Em desenvolvimento, a seed cria usuários locais com a senha:
+A seed de desenvolvimento cria usuários locais com a senha:
 
 ```txt
 koinonia123
@@ -138,60 +83,49 @@ Acessos principais:
 - Supervisor: `ana@koinonia.local`
 - Líder: `bruno@koinonia.local`
 
-A seed também cria cenários pastorais para validar escopo, presença, atenção, pedidos de apoio, encaminhamento pastoral e célula inativa. Os detalhes técnicos da seed ficam em `docs/ARCHITECTURE.md`.
+A tela de login não deve exibir credenciais de desenvolvimento.
 
-## Tema
+## Rotas Principais
 
-O tema é salvo localmente no aparelho com a chave `koinonia-theme`.
+| Rota | Uso |
+| --- | --- |
+| `/login` | entrada pública |
+| `/logout` | encerra sessão |
+| `/` | redireciona para a visão do papel |
+| `/pastor` | visão do pastor/admin |
+| `/equipe` | equipe, supervisores e células para pastor/admin |
+| `/supervisor` | visão do supervisor |
+| `/celulas` | células supervisionadas |
+| `/celulas/nova` | cadastro mínimo de célula para pastor/admin |
+| `/celulas/[groupId]` | detalhe da célula |
+| `/celulas/[groupId]/editar` | edição mínima de célula para pastor/admin |
+| `/lider` | visão do líder |
+| `/pessoas` | membros do líder |
+| `/pessoas/[personId]` | detalhe da pessoa |
+| `/eventos` | encontros visíveis |
+| `/eventos?consulta=sem-presenca` | encontros passados sem presença registrada |
+| `/eventos?consulta=historico` | histórico de presença registrada |
+| `/eventos/[eventId]` | detalhe, resumo, registro ou ajuste do encontro |
 
-Temas disponíveis:
+## Estrutura
 
-- `Claro`
-- `Pergaminho`
-- `Escuro`
+```txt
+src/app              Rotas, páginas, login/logout, server actions e APIs.
+src/components       UI primitives, layout global e componentes compartilhados.
+src/features         Regras e componentes de domínio por feature.
+src/styles           Tokens, base, layout, motion e utilitários globais.
+src/lib              Prisma, autenticação, sessão e utilitários.
+prisma               Schema, client gerado e seed.
+docs                 Documentação por responsabilidade.
+```
 
-O botão de tema aparece no login e no app autenticado.
-
-## Scripts úteis
+## Scripts Úteis
 
 ```bash
 npm run lint
 npm run typecheck
 npm test
 npm run build
+npm run test:e2e
 npm run db:studio
-```
-
-## Estrutura
-
-```txt
-src/app              Rotas, telas, login/logout, loading states de rota e APIs.
-src/components       UI primitives, layout global e componentes compartilhados.
-src/features         Regras e componentes de domínio por feature.
-src/styles           Tokens, base, layout, motion e utilitários globais.
-src/lib              Prisma, autenticação, sessão e utilitários.
-prisma               Schema e seed.
-docs                 Produto, vocabulário, arquitetura, front-end e briefing.
-```
-
-## Rotas principais
-
-```txt
-/login               Entrada pública.
-/logout              Encerra sessão.
-/
-  redireciona para a visão do papel.
-
-/pastor              Visão do pastor/admin.
-/equipe              Equipe, supervisores e células para pastor/admin.
-/supervisor          Visão do supervisor.
-/celulas             Células supervisionadas.
-/lider               Visão do líder.
-/pessoas             Pessoas/membros dentro da superfície padrão.
-/pessoas/[personId]  Detalhe da pessoa.
-/celulas/nova        Cadastro mínimo de célula para pastor/admin.
-/celulas/[groupId]   Detalhe da célula.
-/celulas/[groupId]/editar  Edição mínima de célula para pastor/admin.
-/eventos             Encontros visíveis.
-/eventos/[eventId]   Check-in ou resumo do encontro.
 ```

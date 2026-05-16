@@ -8,6 +8,8 @@ Para qualquer decisão sobre a base atual, use primeiro:
 2. `docs/PRODUCT.md`
 3. `docs/GLOSSARY.md`
 4. `docs/ARCHITECTURE.md`
+5. `docs/FRONTEND.md`
+6. `docs/Perfil.txt`
 
 ## Como ler este arquivo
 
@@ -30,6 +32,9 @@ O MVP atual já possui:
 - local específico por encontro;
 - remarcação, cancelamento e marcação de `Não houve encontro` para líder;
 - resumo de presença antes do ajuste.
+- consultas de encontros por pendência e histórico;
+- preferência local de tamanho do texto;
+- indicadores visuais de presença sem tratar ausência de dado como risco.
 
 Não trate esses itens como pendências futuras.
 
