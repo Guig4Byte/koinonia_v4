@@ -1,17 +1,16 @@
-import Link from "next/link";
 import { UsersRound } from "lucide-react";
-import type { CSSProperties } from "react";
 import { EmptyState, SectionTitle } from "@/components/shared/base-cards";
 import { metricTextClass, PresenceIndicator } from "@/components/shared/presence-metric";
 import { AttendanceStatus } from "@/generated/prisma/client";
 import { ProgressiveList } from "@/components/shared/progressive-list";
+import { CardLink } from "@/components/ui/card-link";
 import { type BadgeTone } from "@/components/ui/badge";
+import type { CardPriorityTone } from "@/lib/card-priority";
 import { formatPresenceRate, presenceTone } from "@/features/events/presence-display";
 import { summarizeEventPresence } from "@/features/events/presence-summary";
 import { countLabel, formatShortDate, formatTime } from "@/lib/format";
 import { ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/cn";
-import styles from "./group-detail.module.css";
 
 export type GroupRegisteredEncounter = {
   id: string;
@@ -22,33 +21,12 @@ export type GroupRegisteredEncounter = {
   }>;
 };
 
-function encounterToneVars(tone: BadgeTone): CSSProperties {
-  if (tone === "risk") {
-    return {
-      "--encounter-tone": "var(--color-badge-risco-text)",
-      "--encounter-tone-soft": "var(--color-badge-risco-bg)",
-    } as CSSProperties;
-  }
-
-  if (tone === "warn") {
-    return {
-      "--encounter-tone": "var(--color-badge-atencao-text)",
-      "--encounter-tone-soft": "var(--color-badge-atencao-bg)",
-    } as CSSProperties;
-  }
-
-  if (tone === "ok") {
-    return {
-      "--encounter-tone": "var(--color-metric-presenca)",
-      "--encounter-tone-soft": "var(--color-badge-estavel-bg)",
-    } as CSSProperties;
-  }
-
-  return {
-    "--encounter-tone": "var(--color-text-secondary)",
-    "--encounter-tone-soft": "var(--surface-alt)",
-  } as CSSProperties;
+function encounterPriorityTone(tone: BadgeTone): CardPriorityTone {
+  if (tone === "ok") return "stable";
+  if (tone === "risk" || tone === "warn" || tone === "care" || tone === "support") return tone;
+  return "muted";
 }
+
 
 export function GroupRegisteredEncountersList({ events }: { events: GroupRegisteredEncounter[] }) {
   return (
@@ -66,13 +44,17 @@ export function GroupRegisteredEncountersList({ events }: { events: GroupRegiste
             const presenceBadgeTone = presenceTone(metrics.hasPresenceData, metrics.presenceRate);
             const presenceLabel = formatPresenceRate(metrics.hasPresenceData, metrics.presenceRate, "Sem registro");
             return (
-              <Link
+              <CardLink
                 key={event.id}
                 href={ROUTES.event(event.id)}
-                className={cn(styles.encounterCard, "relative min-h-[74px] gap-3 overflow-hidden py-3 pr-4 pl-5")}
-                style={encounterToneVars(presenceBadgeTone)}
+                padding="sm"
+                radius="sm"
+                containment="hidden"
+                minHeight="sm"
+                accent="left"
+                priorityTone={encounterPriorityTone(presenceBadgeTone)}
+                className="flex items-center gap-3"
               >
-                <span className="absolute inset-y-0 left-0 w-1 bg-[var(--encounter-tone)]" aria-hidden="true" />
                 <PresenceIndicator
                   hasPresenceData={metrics.hasPresenceData}
                   presenceRate={metrics.presenceRate}
@@ -98,7 +80,7 @@ export function GroupRegisteredEncountersList({ events }: { events: GroupRegiste
                 <span className="shrink-0 self-center text-[length:var(--text-xs)] font-semibold text-[color:var(--color-text-secondary)]">
                   Abrir →
                 </span>
-              </Link>
+              </CardLink>
             );
           })}
         </ProgressiveList>

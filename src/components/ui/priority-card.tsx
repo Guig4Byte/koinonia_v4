@@ -1,13 +1,15 @@
 import type { HTMLAttributes, ReactNode } from "react";
 import { priorityCardClass, type CardPriorityTone } from "@/lib/card-priority";
 import { cn } from "@/lib/cn";
+import styles from "./priority-card.module.css";
 
-export type PriorityCardPadding = "sm" | "md" | "lg";
+export type PriorityCardPadding = "none" | "xs" | "sm" | "relaxedSm" | "md" | "lg";
 export type PriorityCardRadius = "default" | "sm" | "lg";
 export type PriorityCardElevation = "card" | "none" | "soft";
 export type PriorityCardContainment = "visible" | "hidden";
 export type PriorityCardMinHeight = "none" | "sm" | "md";
 export type PriorityCardAccent = "none" | "left";
+export type PriorityCardSurface = "default" | "brand" | "consultation" | "spotlight" | "spotlightCompact";
 export type PriorityCardElement = "article" | "section" | "div";
 
 type PriorityCardProps = HTMLAttributes<HTMLElement> & {
@@ -19,12 +21,16 @@ type PriorityCardProps = HTMLAttributes<HTMLElement> & {
   containment?: PriorityCardContainment;
   minHeight?: PriorityCardMinHeight;
   accent?: PriorityCardAccent;
+  surface?: PriorityCardSurface;
   interactive?: boolean;
   children: ReactNode;
 };
 
 const priorityCardPaddingClass: Record<PriorityCardPadding, string> = {
+  none: "p-0",
+  xs: "p-2.5",
   sm: "p-3",
+  relaxedSm: "p-3.5",
   md: "p-4",
   lg: "p-5",
 };
@@ -57,6 +63,14 @@ const priorityCardAccentClass: Record<PriorityCardAccent, string> = {
   left: "border-l-4",
 };
 
+const priorityCardSurfaceClass: Record<PriorityCardSurface, string> = {
+  default: "",
+  brand: styles.brand,
+  consultation: styles.consultation,
+  spotlight: styles.spotlight,
+  spotlightCompact: styles.spotlightCompact,
+};
+
 export function priorityCardSurfaceClassName({
   priorityTone,
   padding = "md",
@@ -65,6 +79,7 @@ export function priorityCardSurfaceClassName({
   containment = "visible",
   minHeight = "none",
   accent = "none",
+  surface = "default",
   interactive = false,
   className,
 }: {
@@ -75,11 +90,12 @@ export function priorityCardSurfaceClassName({
   containment?: PriorityCardContainment;
   minHeight?: PriorityCardMinHeight;
   accent?: PriorityCardAccent;
+  surface?: PriorityCardSurface;
   interactive?: boolean;
   className?: string;
 } = {}) {
   return cn(
-    interactive && "card-hover-lift transition active:scale-[0.99]",
+    interactive && "card-hover-lift transition active:scale-[0.99] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus-ring)]",
     priorityCardRadiusClass[radius],
     "border border-[var(--color-border-card)] bg-[var(--color-bg-card)]",
     priorityCardElevationClass[elevation],
@@ -87,6 +103,7 @@ export function priorityCardSurfaceClassName({
     priorityCardContainmentClass[containment],
     priorityCardMinHeightClass[minHeight],
     priorityCardAccentClass[accent],
+    priorityCardSurfaceClass[surface],
     priorityCardClass(priorityTone),
     className,
   );
@@ -101,6 +118,7 @@ export function PriorityCard({
   containment = "visible",
   minHeight = "none",
   accent = "none",
+  surface = "default",
   interactive = false,
   className,
   children,
@@ -116,6 +134,7 @@ export function PriorityCard({
         containment,
         minHeight,
         accent,
+        surface,
         interactive,
         className,
       })}

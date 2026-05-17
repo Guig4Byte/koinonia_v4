@@ -41,10 +41,13 @@ export function EventCard({
       <CardLink
         href={ROUTES.event(event.id)}
         aria-label={`${state.actionLabel}: ${event.title}`}
-        padding="sm"
+        padding="xs"
+        radius="sm"
+        containment="hidden"
+        surface="spotlight"
         priorityTone="warn"
         data-testid="event-card"
-        className={cn(styles.card, styles.pendingConsultationCard, "group")}
+        className="group"
       >
         <div className={styles.pendingContent}>
           <span className={styles.pendingIconWrap} aria-hidden="true">
@@ -98,10 +101,13 @@ export function EventCard({
       <CardLink
         href={ROUTES.event(event.id)}
         aria-label={`${state.actionLabel}: ${event.title}`}
-        padding="sm"
+        padding="xs"
+        radius="sm"
+        containment="hidden"
+        surface="spotlightCompact"
         priorityTone="warn"
         data-testid="event-card"
-        className={cn(styles.card, styles.historyConsultationCard, "group")}
+        className="group"
         style={presenceIndicatorStyle(historyTone, metrics.hasPresenceData)}
       >
         <div className={styles.historyContent}>
@@ -168,14 +174,13 @@ export function EventCard({
     <CardLink
       href={ROUTES.event(event.id)}
       aria-label={`${state.actionLabel}: ${event.title}`}
-      padding="sm"
+      padding="relaxedSm"
+      radius="sm"
+      containment="hidden"
+      surface="brand"
       priorityTone={state.isPendingEvent ? "warn" : state.recordedPresence ? "stable" : undefined}
       data-testid="event-card"
-      className={cn(
-        styles.card,
-        "group",
-        state.recordedPresence && styles.registered,
-      )}
+      className="group"
     >
       <CardHeader
         className={styles.header}

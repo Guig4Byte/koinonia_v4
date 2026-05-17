@@ -1,7 +1,6 @@
-import Link from "next/link";
-import { cn } from "@/lib/cn";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { ROUTES } from "@/lib/routes";
+import { CardLink } from "@/components/ui/card-link";
 import styles from "./group-detail.module.css";
 
 export type GroupPendingEvent = {
@@ -21,7 +20,15 @@ export function GroupPendingEventCard({
 }) {
   return (
     <section className={styles.pendingEventSection}>
-      <Link href={ROUTES.event(event.id)} className={cn(styles.pendingEventCard, "priority-card priority-card-warn")}>
+      <CardLink
+        href={ROUTES.event(event.id)}
+        padding="none"
+        radius="sm"
+        containment="hidden"
+        minHeight="md"
+        priorityTone="warn"
+        className="flex flex-col gap-0"
+      >
         <span className={styles.pendingEventTop}>
           <span>{statusLabel}</span>
         </span>
@@ -36,7 +43,7 @@ export function GroupPendingEventCard({
             {actionLabel} →
           </span>
         </span>
-      </Link>
+      </CardLink>
     </section>
   );
 }

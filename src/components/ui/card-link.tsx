@@ -8,6 +8,7 @@ import {
   type PriorityCardMinHeight,
   type PriorityCardPadding,
   type PriorityCardRadius,
+  type PriorityCardSurface,
 } from "@/components/ui/priority-card";
 import type { CardPriorityTone } from "@/lib/card-priority";
 
@@ -20,6 +21,7 @@ type CardLinkProps = LinkProps &
     containment?: PriorityCardContainment;
     minHeight?: PriorityCardMinHeight;
     accent?: PriorityCardAccent;
+    surface?: PriorityCardSurface;
     className?: string;
     children: ReactNode;
   };
@@ -32,6 +34,7 @@ export function CardLink({
   containment = "visible",
   minHeight = "none",
   accent = "none",
+  surface = "default",
   className,
   children,
   ...props
@@ -46,6 +49,7 @@ export function CardLink({
         containment,
         minHeight,
         accent,
+        surface,
         interactive: true,
         className: ["block", className].filter(Boolean).join(" "),
       })}

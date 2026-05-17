@@ -1,52 +1,5 @@
-.encounterCard {
-  display: flex;
-  min-height: 74px;
-  align-items: center;
-  border: 1px solid var(--color-border-card);
-  border-radius: 16px;
-  background: var(--color-bg-card);
-  padding: 12px 16px 12px 18px;
-  box-shadow: var(--color-shadow-metric-card);
-  transition: transform 150ms ease;
-}
-
-.encounterCard:active {
-  transform: scale(0.99);
-}
-
-.encounterCard:focus-visible {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 3px;
-}
-
 .pendingEventSection {
   margin-top: 18px;
-}
-
-.pendingEventCard {
-  display: flex;
-  min-height: 124px;
-  flex-direction: column;
-  gap: 0;
-  border: 1px solid var(--color-border-card);
-  border-radius: 16px;
-  background: var(--color-bg-card);
-  padding: 0;
-  box-shadow: var(--color-shadow-metric-card);
-  transition: transform 150ms ease;
-}
-
-.pendingEventCard:active {
-  transform: scale(0.99);
-}
-
-.pendingEventCard:focus-visible {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 3px;
-}
-
-.pendingEventCard::before {
-  display: none;
 }
 
 .pendingEventTop {
@@ -91,10 +44,6 @@
 }
 
 @media (max-width: 380px) {
-  .pendingEventCard {
-    min-height: 136px;
-  }
-
   .pendingEventTop,
   .pendingEventBody {
     align-items: flex-start;

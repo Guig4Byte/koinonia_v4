@@ -1,19 +1,3 @@
-.card {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 16%, var(--color-border-card));
-  border-radius: 1rem;
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--color-bg-card) 98%, var(--color-brand-accent) 2%), var(--color-bg-card));
-  padding: 14px;
-  box-shadow: var(--color-shadow-card);
-}
-
-.registered {
-  border-color: color-mix(in srgb, var(--color-metric-presenca) 18%, var(--color-border-card));
-}
-
 .header {
   gap: 10px;
 }
@@ -148,7 +132,7 @@
   transition: transform 150ms ease;
 }
 
-.card:active .actionIcon {
+:global(.group:active) .actionIcon {
   transform: translateX(2px);
 }
 
@@ -159,15 +143,12 @@
   margin-top: 14px;
 }
 
-.consultationCard {
+.consultationLayout {
   display: grid;
-  min-height: 76px;
+  width: 100%;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
-  border-color: color-mix(in srgb, var(--color-brand-accent) 24%, var(--color-border-card));
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--color-bg-card) 97%, var(--color-brand-accent) 3%), var(--color-bg-card));
 }
 
 .consultationIcon {
@@ -211,7 +192,7 @@
   transition: transform 150ms ease;
 }
 
-.consultationCard:active .consultationArrow {
+:global(.group:active) .consultationArrow {
   transform: translateX(2px);
 }
 
@@ -223,42 +204,6 @@
   .consultationActions {
     grid-template-columns: 1fr;
   }
-}
-
-.pendingConsultationCard {
-  border-color: color-mix(in srgb, var(--color-badge-atencao-text) 52%, var(--color-border-card));
-  border-radius: 1rem;
-  background:
-    radial-gradient(ellipse 108% 82% at 50% -18%, color-mix(in srgb, var(--color-badge-atencao-text) 12%, transparent), transparent 70%),
-    linear-gradient(180deg, color-mix(in srgb, var(--color-bg-card) 90%, var(--color-brand-accent) 10%), var(--color-bg-card));
-  padding: 11px 12px;
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--color-badge-atencao-text) 15%, transparent),
-    0 0 28px color-mix(in srgb, var(--color-badge-atencao-text) 13%, transparent),
-    0 20px 46px rgba(0, 0, 0, 0.28),
-    var(--color-shadow-card);
-}
-
-.pendingConsultationCard::before,
-.pendingConsultationCard::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  border-radius: inherit;
-}
-
-.pendingConsultationCard::before {
-  background:
-    linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-badge-atencao-text) 34%, transparent), transparent) top / 100% 1px no-repeat,
-    radial-gradient(ellipse 82% 44% at 50% 0%, color-mix(in srgb, var(--color-badge-atencao-text) 15%, transparent), transparent 72%);
-}
-
-.pendingConsultationCard::after {
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--color-brand-accent) 16%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--color-text-primary) 7%, transparent);
 }
 
 .pendingContent {
@@ -403,49 +348,9 @@
   flex: 0 0 auto;
 }
 
-.pendingConsultationCard:active .pendingAction {
+:global(.group:active) .pendingAction {
   transform: translateY(1px);
   filter: brightness(0.98);
-}
-
-.historyConsultationCard {
-  --history-card-accent: var(--color-badge-atencao-text);
-  --history-card-soft: var(--color-badge-atencao-bg);
-  --history-status-accent: var(--color-metric-presenca);
-  --history-status-soft: var(--color-badge-estavel-bg);
-
-  border-color: color-mix(in srgb, var(--history-card-accent) 44%, var(--color-border-card));
-  border-radius: 1rem;
-  background:
-    radial-gradient(ellipse 108% 82% at 50% -18%, color-mix(in srgb, var(--history-card-accent) 10%, transparent), transparent 70%),
-    linear-gradient(180deg, color-mix(in srgb, var(--color-bg-card) 91%, var(--color-brand-accent) 9%), var(--color-bg-card));
-  padding: 9px 10px;
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--history-card-accent) 13%, transparent),
-    0 0 24px color-mix(in srgb, var(--history-card-accent) 10%, transparent),
-    var(--color-shadow-card);
-}
-
-.historyConsultationCard::before,
-.historyConsultationCard::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  border-radius: inherit;
-}
-
-.historyConsultationCard::before {
-  background:
-    linear-gradient(90deg, transparent, color-mix(in srgb, var(--history-card-accent) 30%, transparent), transparent) top / 100% 1px no-repeat,
-    radial-gradient(ellipse 82% 44% at 50% 0%, color-mix(in srgb, var(--history-card-accent) 13%, transparent), transparent 72%);
-}
-
-.historyConsultationCard::after {
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--color-brand-accent) 14%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--color-text-primary) 6%, transparent);
 }
 
 .historyContent {
@@ -462,12 +367,12 @@
   width: 34px;
   height: 34px;
   place-items: center;
-  border: 1px solid color-mix(in srgb, var(--history-card-accent) 22%, var(--color-border-card));
+  border: 1px solid color-mix(in srgb, var(--priority-accent) 22%, var(--color-border-card));
   border-radius: 999px;
   background:
-    radial-gradient(circle at 48% 36%, color-mix(in srgb, var(--history-card-accent) 14%, transparent), transparent 68%),
+    radial-gradient(circle at 48% 36%, color-mix(in srgb, var(--priority-accent) 14%, transparent), transparent 68%),
     color-mix(in srgb, var(--surface-alt) 86%, transparent);
-  color: color-mix(in srgb, var(--color-text-secondary) 86%, var(--history-card-accent));
+  color: color-mix(in srgb, var(--color-text-secondary) 86%, var(--priority-accent));
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.16);
 }
 
@@ -517,7 +422,7 @@
   width: 12px;
   height: 12px;
   flex: 0 0 auto;
-  color: color-mix(in srgb, var(--color-text-secondary) 84%, var(--history-card-accent));
+  color: color-mix(in srgb, var(--color-text-secondary) 84%, var(--priority-accent));
 }
 
 .historyPresence {
@@ -607,7 +512,7 @@
   width: 13px;
   height: 13px;
   flex: 0 0 auto;
-  color: color-mix(in srgb, var(--color-text-secondary) 74%, var(--history-card-accent));
+  color: color-mix(in srgb, var(--color-text-secondary) 74%, var(--priority-accent));
 }
 
 .historyStat span {
@@ -624,11 +529,11 @@
   align-items: center;
   justify-content: center;
   gap: 5px;
-  border: 1px solid color-mix(in srgb, var(--history-card-accent) 34%, var(--color-border-card));
+  border: 1px solid color-mix(in srgb, var(--priority-accent) 34%, var(--color-border-card));
   border-radius: 0.62rem;
-  background: color-mix(in srgb, var(--history-card-accent) 12%, transparent);
+  background: color-mix(in srgb, var(--priority-accent) 12%, transparent);
   padding: 5px 8px;
-  color: color-mix(in srgb, var(--color-text-primary) 82%, var(--history-card-accent));
+  color: color-mix(in srgb, var(--color-text-primary) 82%, var(--priority-accent));
   font-size: var(--text-xs);
   font-weight: 850;
   line-height: 1.1;
@@ -641,15 +546,11 @@
   transition: transform 150ms ease;
 }
 
-.historyConsultationCard:active .historyActionIcon {
+:global(.group:active) .historyActionIcon {
   transform: translateX(2px);
 }
 
 @media (max-width: 430px) {
-  .pendingConsultationCard {
-    padding: 10px;
-  }
-
   .pendingContent {
     gap: 8px;
   }
@@ -695,10 +596,6 @@
     min-height: 30px;
     min-width: min(100%, 128px);
     font-size: var(--text-xs);
-  }
-
-  .historyConsultationCard {
-    padding: 9px;
   }
 
   .historyContent {

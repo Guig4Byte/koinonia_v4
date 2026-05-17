@@ -1,6 +1,5 @@
 import { ArrowRight, CalendarClock, ClipboardCheck, type LucideIcon } from "lucide-react";
 import { CardLink } from "@/components/ui/card-link";
-import { cn } from "@/lib/cn";
 import { eventsConsultationSectionHref } from "./event-consultation-routes";
 import styles from "./events-page-sections.module.css";
 
@@ -16,16 +15,26 @@ function ConsultationCard({
   icon: LucideIcon;
 }) {
   return (
-    <CardLink href={href} padding="sm" className={cn(styles.consultationCard, "group")} aria-label={`${title}: ${description}`}>
-      <span className={styles.consultationIcon} aria-hidden="true">
-        <Icon className="h-4 w-4" />
-      </span>
-      <span className="min-w-0">
-        <span className={styles.consultationTitle}>{title}</span>
-        <span className={styles.consultationDescription}>{description}</span>
-      </span>
-      <span className={styles.consultationArrow} aria-hidden="true">
-        <ArrowRight className="h-4 w-4" />
+    <CardLink
+      href={href}
+      padding="sm"
+      radius="sm"
+      minHeight="sm"
+      surface="consultation"
+      className="group"
+      aria-label={`${title}: ${description}`}
+    >
+      <span className={styles.consultationLayout}>
+        <span className={styles.consultationIcon} aria-hidden="true">
+          <Icon className="h-4 w-4" />
+        </span>
+        <span className="min-w-0">
+          <span className={styles.consultationTitle}>{title}</span>
+          <span className={styles.consultationDescription}>{description}</span>
+        </span>
+        <span className={styles.consultationArrow} aria-hidden="true">
+          <ArrowRight className="h-4 w-4" />
+        </span>
       </span>
     </CardLink>
   );
