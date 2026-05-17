@@ -1,4 +1,5 @@
 import { GhostButton } from "@/components/ui/button";
+import { InputField } from "@/components/ui/field";
 import { EVENT_LOCATION_MAX_LENGTH } from "@/features/events/event-fields";
 
 export function EventLocationAction({
@@ -17,24 +18,21 @@ export function EventLocationAction({
   onSave: () => void;
 }) {
   return (
-    <>
-      <label className="mt-4 block text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.12em] text-[color:var(--color-text-secondary)]" htmlFor="event-location-name">
-        Local deste encontro
-      </label>
-      <div className="mt-2 flex flex-col gap-2">
-        <input
-          id="event-location-name"
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          placeholder={defaultLocationName ? `Padrão: ${defaultLocationName}` : "Ex.: Casa da família Souza"}
-          className="min-h-11 rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] px-3 text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)] focus:border-[var(--color-focus-ring)]"
-          maxLength={EVENT_LOCATION_MAX_LENGTH}
-          required
-        />
-        <GhostButton type="button" onClick={onSave} disabled={disabled} className="w-full rounded-xl">
-          {actionLabel}
-        </GhostButton>
-      </div>
-    </>
+    <div className="mt-5 flex flex-col gap-2">
+      <InputField
+        id="event-location-name"
+        label="Local deste encontro"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={defaultLocationName ? `Padrão: ${defaultLocationName}` : "Ex.: Casa da família Souza"}
+        maxLength={EVENT_LOCATION_MAX_LENGTH}
+        required
+        size="sm"
+        surface="muted"
+      />
+      <GhostButton type="button" onClick={onSave} disabled={disabled} fullWidth shape="pill">
+        {actionLabel}
+      </GhostButton>
+    </div>
   );
 }

@@ -66,10 +66,14 @@
 }
 
 .header {
+  display: grid;
   min-width: 0;
+  gap: 2px;
 }
 
 .title {
+  display: block;
+  min-width: 0;
   color: var(--color-text-primary);
   font-size: var(--text-sm);
   font-weight: 700;
@@ -77,7 +81,8 @@
 }
 
 .description {
-  margin-top: 2px;
+  display: block;
+  min-width: 0;
   color: var(--color-text-secondary);
   font-size: var(--text-xs);
   line-height: 1.55;
@@ -138,5 +143,9 @@
   .summaryResponsive {
     flex-direction: row;
     align-items: center;
+  }
+
+  .summaryResponsive .header {
+    flex: 1 1 auto;
   }
 }

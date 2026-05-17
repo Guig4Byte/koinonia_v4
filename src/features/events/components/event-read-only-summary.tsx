@@ -93,20 +93,20 @@ export function EventReadOnlySummary({
   return (
     <section className="space-y-3 pb-8">
       <Card>
-        <p className="k-item-title">Membros</p>
+        <p className="k-item-title">Membros da célula</p>
         <p className="mt-1 text-[length:var(--text-lg)] font-semibold leading-none text-[color:var(--color-text-primary)]">
           {attendanceView.memberTotalLabel}
         </p>
         <p className="mt-1 k-item-detail">{attendanceView.memberBreakdownLabel}</p>
 
-        <div className="mt-4 space-y-4">
+        <div className="mt-5 space-y-4">
           {attendanceView.groups.map((group) => (
             <AttendanceGroup key={group.title} group={group} />
           ))}
 
           {!attendanceView.hasPriorityAttention ? (
-            <p className="rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">
-              Nenhuma ausência, justificativa ou pendência registrada.
+            <p className="rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">
+              Tudo certo por aqui. Nenhuma ausência, justificativa ou pendência registrada.
             </p>
           ) : null}
         </div>

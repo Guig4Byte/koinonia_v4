@@ -39,7 +39,7 @@ export function EventDetailsActions({
     <Card>
       <p className="k-item-title">Ajustes do encontro</p>
       <p className="k-supporting-copy">
-        Ajuste só o que mudou nesta semana. Estas alterações valem apenas para este encontro.
+        Altere apenas o que mudou nesta semana. Isso vale só para este encontro.
       </p>
 
       <EventLocationAction
