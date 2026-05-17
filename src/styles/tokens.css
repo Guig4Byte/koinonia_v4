@@ -96,6 +96,8 @@
   --color-segmented-bg: rgba(0, 0, 0, 0.18);
   --color-segmented-active-bg: var(--color-brand-accent);
   --color-tab-active: var(--color-brand);
+  --color-shadow-popover: var(--color-shadow-elevated);
+  --color-shadow-icon: var(--color-shadow-hover);
 
   --action-primary-bg: var(--color-btn-primary-bg);
   --action-primary-text: var(--color-btn-primary-text);

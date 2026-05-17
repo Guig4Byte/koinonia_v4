@@ -1,0 +1,103 @@
+.pill {
+  display: inline-flex;
+  max-width: 100%;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  font-weight: 850;
+  line-height: 1.1;
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    filter 150ms ease;
+}
+
+.secondary {
+  border: 1px solid var(--color-btn-secondary-border);
+  background: var(--color-btn-secondary-bg);
+  color: var(--color-btn-secondary-text);
+}
+
+.primary {
+  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 78%, var(--color-btn-primary-bg));
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--color-btn-primary-bg) 96%, var(--color-text-primary) 4%), var(--color-btn-primary-bg));
+  color: var(--color-btn-primary-text);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--color-btn-primary-text) 8%, transparent),
+    0 8px 18px color-mix(in srgb, var(--color-btn-primary-bg) 12%, transparent);
+}
+
+.prioritySoft {
+  border: 1px solid color-mix(in srgb, var(--priority-accent, var(--color-brand)) 34%, var(--color-border-card));
+  background: color-mix(in srgb, var(--priority-accent, var(--color-brand)) 12%, transparent);
+  color: color-mix(in srgb, var(--color-text-primary) 82%, var(--priority-accent, var(--color-brand)));
+}
+
+.md {
+  min-height: 36px;
+  gap: 7px;
+  border-radius: var(--radius-pill);
+  padding: 7px 12px;
+  font-size: var(--text-sm);
+}
+
+.sm {
+  min-height: 30px;
+  gap: 6px;
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font-size: var(--text-xs);
+}
+
+.xs {
+  min-height: 26px;
+  gap: 5px;
+  border-radius: var(--radius-sm);
+  padding: 5px 8px;
+  font-size: var(--text-xs);
+}
+
+.actionWidth {
+  min-width: min(100%, 132px);
+}
+
+.icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  transition: transform 150ms ease;
+}
+
+.md .icon :where(svg) {
+  width: 15px;
+  height: 15px;
+}
+
+.sm .icon :where(svg) {
+  width: 13px;
+  height: 13px;
+}
+
+.xs .icon :where(svg) {
+  width: 12px;
+  height: 12px;
+}
+
+:global(.group:active) .pressDown {
+  transform: translateY(1px);
+  filter: brightness(0.98);
+}
+
+:global(.group:active) .shiftRight {
+  transform: translateX(2px);
+}
+
+@media (max-width: 430px) {
+  .actionWidth {
+    min-width: min(100%, 128px);
+  }
+
+  .xs {
+    padding-inline: 7px;
+  }
+}

@@ -5,6 +5,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 
 const COMPONENT_NAMES = [
+  "ActionPill",
   "ButtonLink",
   "Button",
   "Badge",
@@ -35,6 +36,16 @@ const severityWeight = {
 };
 
 const componentRules = {
+  ActionPill: [
+    {
+      id: "action-pill-local-geometry",
+      severity: "baixa",
+      pattern:
+        /\b(?:h|min-h|max-h|px|py|p|pl|pr|pt|pb)-|\brounded-|\btext-\[|\btext-(?:xs|sm|base|lg)\b|\bjustify-(?:between|start|end)\b|\bmin-w-/,
+      message: "ActionPill recebeu override local de geometria, densidade ou tipografia.",
+      recommendation: "Promova o padrão para props oficiais como tone, size, minWidth ou iconPosition.",
+    },
+  ],
   Button: [
     {
       id: "button-local-geometry",

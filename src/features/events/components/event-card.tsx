@@ -1,4 +1,5 @@
 import { ArrowRight, CalendarDays, ClipboardCheck, Clock3, MapPin, UsersRound } from "lucide-react";
+import { ActionPill } from "@/components/ui/action-pill";
 import { Badge } from "@/components/ui/badge";
 import { CardHeader } from "@/components/ui/card-header";
 import { CardLink } from "@/components/ui/card-link";
@@ -85,10 +86,9 @@ export function EventCard({
             ) : null}
 
             <span className={styles.pendingFooter}>
-              <span className={styles.pendingAction} data-testid="event-card-action">
-                <UsersRound className={styles.pendingActionIcon} aria-hidden="true" />
+              <ActionPill tone="primary" size="sm" minWidth="action" iconBefore={<UsersRound />} pressOnGroupActive data-testid="event-card-action">
                 {state.actionLabel}
-              </span>
+              </ActionPill>
             </span>
           </div>
         </div>
@@ -159,10 +159,9 @@ export function EventCard({
                 <strong>{metrics.markingsCount}</strong>
                 <span>{metrics.markingsCount === 1 ? "membro" : "membros"}</span>
               </span>
-              <span className={styles.historyAction} data-testid="event-card-action">
+              <ActionPill tone="prioritySoft" size="xs" iconAfter={<ArrowRight />} shiftIcon data-testid="event-card-action">
                 {state.actionLabel}
-                <ArrowRight className={styles.historyActionIcon} aria-hidden="true" />
-              </span>
+              </ActionPill>
             </span>
           </div>
         </div>
@@ -210,7 +209,7 @@ export function EventCard({
               value={formatPresenceRate(metrics.hasPresenceData, metrics.presenceRate)}
               context="event"
               size="sm"
-              className={styles.statPresenceMetric}
+              minHeight="sm"
             />
             <span>presença</span>
           </p>
@@ -226,10 +225,15 @@ export function EventCard({
       ) : null}
 
       <span className={styles.footer}>
-        <span className={cn(styles.action, state.canRegisterPresence && styles.actionPrimary)} data-testid="event-card-action">
+        <ActionPill
+          tone={state.canRegisterPresence ? "primary" : "secondary"}
+          size="md"
+          iconAfter={<ArrowRight />}
+          shiftIcon
+          data-testid="event-card-action"
+        >
           {state.actionLabel}
-          <ArrowRight className={styles.actionIcon} aria-hidden="true" />
-        </span>
+        </ActionPill>
       </span>
     </CardLink>
   );

@@ -24,7 +24,7 @@
   border-radius: 26px;
   background:
     radial-gradient(ellipse 82% 68% at 50% -6%, color-mix(in srgb, var(--color-brand-accent) 18%, transparent) 0%, transparent 72%),
-    linear-gradient(180deg, var(--color-bg-header) 0%, color-mix(in srgb, var(--color-bg-header) 90%, #000000) 100%);
+    linear-gradient(180deg, var(--color-bg-header) 0%, color-mix(in srgb, var(--color-bg-header) 90%, var(--color-text-primary)) 100%);
   color: var(--color-text-on-header);
   padding: 13px 14px;
   box-shadow: var(--color-shadow-header);

@@ -57,7 +57,7 @@
     transform 150ms ease;
 }
 
-.day:not(.daySelected):hover {
+.day:not(.dayActive):hover {
   background: var(--color-btn-secondary-bg);
   color: var(--color-brand);
 }
@@ -66,8 +66,8 @@
   transform: scale(0.96);
 }
 
-.daySelected,
-.daySelected:hover {
+.dayActive,
+.dayActive:hover {
   background: var(--color-brand);
   color: var(--color-btn-primary-text);
 }

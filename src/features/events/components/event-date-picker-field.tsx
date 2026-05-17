@@ -75,7 +75,7 @@ export function EventDatePickerField({
                   <button
                     key={`${calendarMonth.year}-${calendarMonth.monthIndex}-${day}`}
                     type="button"
-                    className={cn(styles.day, selected && styles.daySelected)}
+                    className={cn(styles.day, selected && styles.dayActive)}
                     onClick={() => onCalendarDaySelect(day)}
                   >
                     {day}

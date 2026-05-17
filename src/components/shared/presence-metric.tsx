@@ -123,6 +123,13 @@ const progressBarWidthClass: Record<PresenceIndicatorSize, string> = {
   lg: "w-36",
 };
 
+export type PresenceMetricDisplayMinHeight = "none" | "sm";
+
+const metricDisplayMinHeightClass = {
+  none: "",
+  sm: "min-h-8",
+} satisfies Record<PresenceMetricDisplayMinHeight, string>;
+
 const presenceContextIcon: Record<PresenceIndicatorContext, LucideIcon> = {
   person: UserRoundCheck,
   cell: UsersRound,
@@ -340,6 +347,7 @@ export function PresenceMetricDisplay({
   showValue = true,
   showValueInside = false,
   insideValueClassName,
+  minHeight = "none",
 }: {
   hasPresenceData: boolean;
   presenceRate: number;
@@ -354,9 +362,10 @@ export function PresenceMetricDisplay({
   showValue?: boolean;
   showValueInside?: boolean;
   insideValueClassName?: string;
+  minHeight?: PresenceMetricDisplayMinHeight;
 }) {
   return (
-    <span className={cn("inline-flex items-center justify-end gap-1.5 align-middle", className)}>
+    <span className={cn("inline-flex items-center justify-end gap-1.5 align-middle", metricDisplayMinHeightClass[minHeight], className)}>
       <PresenceIndicator
         hasPresenceData={hasPresenceData}
         presenceRate={presenceRate}

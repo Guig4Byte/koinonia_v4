@@ -54,5 +54,5 @@
   border-radius: 18px;
   background: color-mix(in srgb, var(--color-bg-card) 96%, transparent);
   padding: 12px;
-  box-shadow: 0 18px 42px color-mix(in srgb, #000 28%, transparent);
+  box-shadow: var(--color-shadow-popover);
 }

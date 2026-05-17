@@ -443,5 +443,5 @@ html[data-theme="parchment"] .k-page-hero,
 html[data-theme="parchment"] .k-detail-hero {
   background:
     radial-gradient(ellipse 80% 60% at 50% -18%, color-mix(in srgb, var(--color-brand-accent) 12%, transparent), transparent 72%),
-    linear-gradient(135deg, color-mix(in srgb, var(--color-bg-card) 96%, #ffffff 4%), var(--color-bg-card));
+    linear-gradient(135deg, color-mix(in srgb, var(--color-bg-card) 96%, var(--color-bg-page) 4%), var(--color-bg-card));
 }

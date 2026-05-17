@@ -1,3 +1,4 @@
+import { ActionPill } from "@/components/ui/action-pill";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { ROUTES } from "@/lib/routes";
 import { CardLink } from "@/components/ui/card-link";
@@ -39,9 +40,9 @@ export function GroupPendingEventCard({
               {formatShortDate(event.startsAt)} · {formatTime(event.startsAt)}
             </span>
           </span>
-          <span className={styles.pendingEventAction}>
+          <ActionPill tone="prioritySoft" size="md">
             {actionLabel} →
-          </span>
+          </ActionPill>
         </span>
       </CardLink>
     </section>

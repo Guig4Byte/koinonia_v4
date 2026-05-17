@@ -27,22 +27,6 @@
   padding: 16px 18px;
 }
 
-.pendingEventAction {
-  display: inline-flex;
-  min-height: 40px;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid color-mix(in srgb, var(--color-border-card) 50%, transparent);
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--color-bg-card) 82%, transparent);
-  color: var(--color-brand);
-  font-size: var(--text-sm);
-  font-weight: 800;
-  padding: 0 14px;
-  white-space: nowrap;
-}
-
 @media (max-width: 380px) {
   .pendingEventTop,
   .pendingEventBody {
@@ -52,9 +36,5 @@
   .pendingEventBody {
     flex-direction: column;
     gap: 12px;
-  }
-
-  .pendingEventAction {
-    min-height: 40px;
   }
 }
