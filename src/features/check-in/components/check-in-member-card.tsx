@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Button, buttonClassName, type ButtonVariant } from "@/components/ui/button";
 import {
   ATTENDANCE,
@@ -156,69 +157,64 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
       </div>
 
       {selectorOpen ? (
-        <div className={styles.statusSheetLayer} role="presentation">
-          <button
-            type="button"
-            className={styles.statusSheetBackdrop}
-            aria-label="Fechar seleção de presença"
-            onClick={closeSelectorAndRestoreFocus}
-          />
-          <div
-            ref={sheetRef}
-            className={styles.statusSheet}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={titleId}
-            aria-describedby={descriptionId}
-          >
-            <div className={styles.statusSheetHandle} aria-hidden="true" />
-            <div className="space-y-1 text-center">
-              <h2 id={titleId} className="k-pastoral-title text-[length:var(--text-lg)]">
-                {item.fullName}
-              </h2>
-              <p id={descriptionId} className="text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">
-                Escolha a presença deste encontro.
-              </p>
-            </div>
-
-            <div className="mt-4 space-y-2">
-              {MEMBER_ATTENDANCE_OPTIONS.map((status, index) => {
-                const selected = item.status === status;
-
-                return (
-                  <button
-                    key={status}
-                    ref={selected ? selectedOptionRef : index === 0 ? firstOptionRef : undefined}
-                    type="button"
-                    className={buttonClassName({
-                      variant: statusButtonVariant(status, selected),
-                      size: "lg",
-                      fullWidth: true,
-                      align: "between",
-                      className: "px-4",
-                    })}
-                    aria-pressed={selected}
-                    onClick={() => handleSelectStatus(status)}
-                  >
-                    <span>{ATTENDANCE_LABELS[status]}</span>
-                    {selected ? <span aria-hidden="true">✓</span> : null}
-                  </button>
-                );
-              })}
-            </div>
-
-            <Button
-              type="button"
-              variant="ghost"
-              size="lg"
-              fullWidth
-              onClick={closeSelectorAndRestoreFocus}
-              className="mt-3"
-            >
-              Cancelar
-            </Button>
+        <BottomSheet
+          dismissLabel="Fechar seleção de presença"
+          onDismiss={closeSelectorAndRestoreFocus}
+          panelRef={sheetRef}
+          tone="accent"
+          panelProps={{
+            role: "dialog",
+            "aria-modal": true,
+            "aria-labelledby": titleId,
+            "aria-describedby": descriptionId,
+          }}
+        >
+          <div className="space-y-1 text-center">
+            <h2 id={titleId} className="k-pastoral-title text-[length:var(--text-lg)]">
+              {item.fullName}
+            </h2>
+            <p id={descriptionId} className="text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">
+              Escolha a presença deste encontro.
+            </p>
           </div>
-        </div>
+
+          <div className="mt-4 space-y-2">
+            {MEMBER_ATTENDANCE_OPTIONS.map((status, index) => {
+              const selected = item.status === status;
+
+              return (
+                <button
+                  key={status}
+                  ref={selected ? selectedOptionRef : index === 0 ? firstOptionRef : undefined}
+                  type="button"
+                  className={buttonClassName({
+                    variant: statusButtonVariant(status, selected),
+                    size: "lg",
+                    fullWidth: true,
+                    align: "between",
+                    className: "px-4",
+                  })}
+                  aria-pressed={selected}
+                  onClick={() => handleSelectStatus(status)}
+                >
+                  <span>{ATTENDANCE_LABELS[status]}</span>
+                  {selected ? <span aria-hidden="true">✓</span> : null}
+                </button>
+              );
+            })}
+          </div>
+
+          <Button
+            type="button"
+            variant="ghost"
+            size="lg"
+            fullWidth
+            onClick={closeSelectorAndRestoreFocus}
+            className="mt-3"
+          >
+            Cancelar
+          </Button>
+        </BottomSheet>
       ) : null}
     </article>
   );

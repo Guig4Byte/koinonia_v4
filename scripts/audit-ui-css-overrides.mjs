@@ -15,6 +15,7 @@ const COMPONENT_NAMES = [
   "SelectField",
   "TextareaField",
   "DisclosureCard",
+  "BottomSheet",
   "FilterChip",
   "SummaryCard",
   "PresenceMetricDisplay",
@@ -127,6 +128,15 @@ const componentRules = {
       pattern: /\bborder(?:-|\b)|\bbg-\[|\bshadow-|\brounded-|\bp[trblxy]?-(?:\[|\d)|\bmin-h-|\boverflow-hidden\b|\bfocus-visible:/,
       message: "DisclosureCard recebeu override local de superfície, espaçamento ou foco.",
       recommendation: "Promova o padrão para props como tone, size, layout, separatedContent ou action.",
+    },
+  ],
+  BottomSheet: [
+    {
+      id: "bottom-sheet-local-stack",
+      severity: "baixa",
+      pattern: /\b(?:fixed|absolute|z-|inset-|bottom-|top-)\b|\bbg-\[|\bshadow-|\brounded-|\bp[trblxy]?-(?:\[|\d)/,
+      message: "BottomSheet recebeu override local de camada, superfície ou espaçamento.",
+      recommendation: "Promova variações de sheet para props como size, tone, showHandle ou para tokens de z-index/safe-area.",
     },
   ],
   FilterChip: [
@@ -626,7 +636,10 @@ function extractCssClassName(selector) {
 function classifyCssModuleBlock({ body, relativePath, selector }) {
   const className = extractCssClassName(selector);
   const isFeatureCssModule = relativePath.includes("/features/") && relativePath.endsWith(".module.css");
-  const isSystemFixedStackFile = relativePath === "src/components/ui/fixed-action-bar.module.css";
+  const isSystemFixedStackFile = [
+    "src/components/ui/fixed-action-bar.module.css",
+    "src/components/ui/bottom-sheet.module.css",
+  ].includes(relativePath);
   const normalizedClassName = className.toLowerCase();
   const findings = [];
 
@@ -636,7 +649,7 @@ function classifyCssModuleBlock({ body, relativePath, selector }) {
       severity: "alta",
       message: "CSS local define elemento fixed/sticky com top/bottom ou z-index.",
       recommendation:
-        "Centralize barras fixas/sticky em AppShell, FixedActionBar ou tokens de z-index/safe-area para evitar sobreposição visual.",
+        "Centralize barras fixas/sticky em AppShell, FixedActionBar, BottomSheet ou tokens de z-index/safe-area para evitar sobreposição visual.",
     });
   }
 
