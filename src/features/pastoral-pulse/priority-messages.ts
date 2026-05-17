@@ -16,7 +16,7 @@ export function mixedCareMessage(role: UserRole, scope: PastoralPulseScope, urge
   if (scope === "groupDetail") {
     if (isPastoralRole(role)) {
       return {
-        title: "Há cuidados com prioridades diferentes nesta célula.",
+        title: "Prioridade de cuidados nesta célula.",
         subtitle: "Os sinais mais sensíveis aparecem primeiro; os demais seguem com líderes e supervisores.",
         tone: "attention",
       };
@@ -31,7 +31,7 @@ export function mixedCareMessage(role: UserRole, scope: PastoralPulseScope, urge
     }
 
     return {
-      title: "Há cuidados com prioridades diferentes nesta célula.",
+      title: "Prioridade de cuidados nesta célula.",
       subtitle: "Os sinais mais sensíveis aparecem primeiro; os demais seguem no radar com calma.",
       tone: "attention",
     };

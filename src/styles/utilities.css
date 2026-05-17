@@ -113,7 +113,7 @@
 .k-supporting-copy {
   margin-top: 4px;
   color: var(--color-text-secondary);
-  font-size: var(--text-base);
+  font-size: var(--text-sm);
   line-height: 1.625;
 }
 

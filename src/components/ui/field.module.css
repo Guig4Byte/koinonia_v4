@@ -32,20 +32,20 @@
 }
 
 .requiredBadge {
-  margin-left: 8px;
+  margin-left: 6px;
   display: inline-flex;
   align-items: center;
-  border: 1px solid var(--color-badge-info-border);
+  border: 1px solid color-mix(in srgb, var(--color-text-secondary) 28%, transparent);
   border-radius: var(--radius-pill);
-  background: var(--color-badge-info-bg);
-  padding: 2px 8px;
-  color: var(--color-badge-info-text);
-  font-size: var(--text-xs);
+  background: color-mix(in srgb, var(--surface-alt) 74%, transparent);
+  padding: 1px 6px;
+  color: var(--color-text-secondary);
+  font-size: calc(var(--text-xs) * 0.82);
   font-weight: 700;
-  letter-spacing: 0.08em;
-  line-height: 1.1;
+  letter-spacing: 0.07em;
+  line-height: 1.15;
   text-transform: uppercase;
-  vertical-align: middle;
+  vertical-align: 0.08em;
 }
 
 .description {
