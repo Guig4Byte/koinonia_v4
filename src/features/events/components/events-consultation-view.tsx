@@ -47,7 +47,7 @@ export function EventsConsultationView({
           <EmptyState
             title={mode === "historico" ? "Nenhum histórico neste período" : "Tudo em dia neste período"}
             action={(
-              <ButtonLink href={ROUTES.events} variant="quiet" size="sm" className="rounded-full">
+              <ButtonLink href={ROUTES.events} variant="quiet" size="sm" shape="pill">
                 Voltar para encontros
               </ButtonLink>
             )}

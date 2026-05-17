@@ -24,7 +24,8 @@ export function LeaderCurrentEventCard({ event }: { event: LeaderCurrentEvent })
         href={ROUTES.event(event.id)}
         fullWidth
         size="sm"
-        className="mt-4 rounded-full px-4"
+        shape="pill"
+        className="mt-4"
       >
         {state.ctaLabel} <span aria-hidden="true">→</span>
       </ButtonLink>

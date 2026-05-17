@@ -103,12 +103,14 @@ export function CheckInSaveBar({
               aria-disabled={isPending}
               variant="secondary"
               size="sm"
-              className={cn("w-full rounded-full px-3 min-[390px]:w-auto", isPending && "pointer-events-none saturate-75")}
+              shape="pill"
+              responsiveWidth="fullUntilSm"
+              className={cn(isPending && "pointer-events-none saturate-75")}
             >
               {cancelLabel}
             </ButtonLink>
           ) : null}
-          <Button disabled={!canSave} loading={isPending} onClick={onSave} size="sm" className="w-full min-w-24 min-[390px]:w-auto">
+          <Button disabled={!canSave} loading={isPending} onClick={onSave} size="sm" responsiveWidth="fullUntilSm" className="min-w-24">
             {isPending ? "Salvando..." : submitLabel}
           </Button>
         </div>

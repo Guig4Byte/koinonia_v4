@@ -62,7 +62,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
               href={ROUTES.editGroup(group.id)}
               variant="secondary"
               size="sm"
-              className="rounded-2xl px-3"
+              shape="rounded"
             >
               Editar célula
             </ButtonLink>

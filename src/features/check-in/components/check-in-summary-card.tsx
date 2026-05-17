@@ -108,7 +108,9 @@ export function CheckInSummaryCard({
               size="sm"
               onClick={onMarkAllAsPresent}
               disabled={isPending || bulkConfirmationOpen}
-              className="w-full shrink-0 text-[length:var(--text-xs)] min-[390px]:w-auto"
+              density="compact"
+              responsiveWidth="fullUntilSm"
+              className="shrink-0"
             >
               Marcar todos como presentes
             </Button>

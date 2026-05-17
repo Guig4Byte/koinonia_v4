@@ -105,7 +105,7 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
               />
             ) : null}
             {canOfferAdjustment ? (
-              <ButtonLink href={adjustmentHref} fullWidth size="md" className="rounded-full">
+              <ButtonLink href={adjustmentHref} fullWidth size="md" shape="pill">
                 Ajustar presença →
               </ButtonLink>
             ) : null}

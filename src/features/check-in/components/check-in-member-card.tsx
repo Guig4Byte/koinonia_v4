@@ -194,7 +194,8 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
                       variant: statusButtonVariant(status, selected),
                       size: "lg",
                       fullWidth: true,
-                      className: "justify-between rounded-2xl px-4 text-left",
+                      align: "between",
+                      className: "px-4",
                     })}
                     aria-pressed={selected}
                     onClick={() => handleSelectStatus(status)}

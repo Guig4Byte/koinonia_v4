@@ -43,7 +43,7 @@ export function PastoralListSection({
               variant: "secondary",
               size: "sm",
               fullWidth: true,
-              className: "cursor-pointer list-none rounded-xl [&::-webkit-details-marker]:hidden",
+              className: "cursor-pointer list-none [&::-webkit-details-marker]:hidden",
             })}
           >
             <span className="group-open:hidden">{moreLabel}</span>

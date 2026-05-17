@@ -75,7 +75,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
           title="Equipe"
           description="Supervisores e células por atenção pastoral."
           action={canCreateGroup ? (
-            <ButtonLink href={ROUTES.newCell} variant="secondary" size="sm" className="shrink-0 rounded-2xl px-3 font-bold">
+            <ButtonLink href={ROUTES.newCell} variant="secondary" size="sm" shape="rounded" className="shrink-0 font-bold">
               <Plus className="h-4 w-4" aria-hidden="true" />
               Nova célula
             </ButtonLink>

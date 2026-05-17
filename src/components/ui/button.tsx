@@ -14,11 +14,19 @@ export type ButtonVariant =
   | "supportSoft"
   | "outline";
 export type ButtonSize = "sm" | "md" | "lg";
+export type ButtonShape = "default" | "rounded" | "pill";
+export type ButtonDensity = "default" | "compact";
+export type ButtonAlign = "center" | "left" | "between";
+export type ButtonResponsiveWidth = "auto" | "full" | "fullUntilSm";
 
 type ButtonClassNameOptions = {
   variant?: ButtonVariant;
   size?: ButtonSize;
+  shape?: ButtonShape;
+  density?: ButtonDensity;
+  align?: ButtonAlign;
   fullWidth?: boolean;
+  responsiveWidth?: ButtonResponsiveWidth;
   className?: string;
 };
 
@@ -54,19 +62,61 @@ const buttonSizeClass: Record<ButtonSize, string> = {
   lg: "min-h-12 rounded-2xl px-5 py-3 text-[length:var(--text-base)]",
 };
 
+const buttonShapeClass: Record<ButtonShape, string> = {
+  default: "",
+  rounded: "rounded-2xl",
+  pill: "rounded-full",
+};
+
+const buttonDensityClass: Record<ButtonDensity, string> = {
+  default: "",
+  compact: "min-h-10 px-3 py-1.5 text-[length:var(--text-xs)]",
+};
+
+const buttonAlignClass: Record<ButtonAlign, string> = {
+  center: "justify-center text-center",
+  left: "justify-start text-left",
+  between: "justify-between text-left",
+};
+
+const buttonResponsiveWidthClass: Record<ButtonResponsiveWidth, string> = {
+  auto: "",
+  full: "w-full",
+  fullUntilSm: "w-full min-[390px]:w-auto",
+};
+
 export function buttonClassName({
   variant = "primary",
   size = "md",
+  shape = "default",
+  density = "default",
+  align = "center",
   fullWidth = false,
+  responsiveWidth = "auto",
   className,
 }: ButtonClassNameOptions = {}) {
-  return cn(buttonBaseClass, buttonVariantClass[variant], buttonSizeClass[size], fullWidth && "w-full", className);
+  const widthClass = responsiveWidth === "auto" ? fullWidth && "w-full" : buttonResponsiveWidthClass[responsiveWidth];
+
+  return cn(
+    buttonBaseClass,
+    buttonVariantClass[variant],
+    buttonSizeClass[size],
+    buttonShapeClass[shape],
+    buttonDensityClass[density],
+    buttonAlignClass[align],
+    widthClass,
+    className,
+  );
 }
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;
   size?: ButtonSize;
+  shape?: ButtonShape;
+  density?: ButtonDensity;
+  align?: ButtonAlign;
   fullWidth?: boolean;
+  responsiveWidth?: ButtonResponsiveWidth;
   loading?: boolean;
 };
 
@@ -74,7 +124,11 @@ export function Button({
   className,
   variant = "primary",
   size = "md",
+  shape = "default",
+  density = "default",
+  align = "center",
   fullWidth = false,
+  responsiveWidth = "auto",
   loading = false,
   disabled,
   children,
@@ -82,7 +136,7 @@ export function Button({
 }: ButtonProps) {
   return (
     <button
-      className={buttonClassName({ variant, size, fullWidth, className })}
+      className={buttonClassName({ variant, size, shape, density, align, fullWidth, responsiveWidth, className })}
       disabled={disabled || loading}
       {...props}
     >
