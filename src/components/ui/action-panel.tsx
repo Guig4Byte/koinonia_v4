@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/cn";
 
 type ActionPanelProps = {
   title: ReactNode;
@@ -11,7 +10,7 @@ type ActionPanelProps = {
 
 export function ActionPanel({ title, description, children, className }: ActionPanelProps) {
   return (
-    <Card tone="inset" padding="sm" className={cn("rounded-2xl", className)}>
+    <Card tone="inset" padding="sm" radius="sm" className={className}>
       <p className="text-[length:var(--text-sm)] font-semibold text-[color:var(--color-text-primary)]">{title}</p>
       {description ? (
         <p className="mt-1 text-[length:var(--text-xs)] leading-relaxed text-[color:var(--color-text-secondary)]">

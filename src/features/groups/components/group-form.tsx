@@ -86,7 +86,7 @@ export function GroupForm({
     <div className="space-y-5">
       <BackLink href={backHref}>{backLabel}</BackLink>
 
-      <Card padding="lg" className="rounded-[1.35rem]">
+      <Card padding="lg" radius="lg">
         <p className="k-section-kicker">Célula</p>
         <h2 className="mt-1 text-[length:var(--text-2xl)] font-semibold tracking-[-0.03em] text-[color:var(--color-text-primary)]">{title}</h2>
         <p className="mt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{description}</p>

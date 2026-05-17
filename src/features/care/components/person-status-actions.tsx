@@ -33,7 +33,7 @@ export function PersonStatusActions({ personId }: { personId: string }) {
   }
 
   return (
-    <Card tone="inset" padding="sm" className="mt-3 rounded-2xl border-[var(--color-badge-cuidado-border)] bg-[var(--color-badge-cuidado-bg)] text-[length:var(--text-sm)] text-[color:var(--color-text-primary)]">
+    <Card tone="inset" padding="sm" radius="sm" statusTone="care" className="mt-3 text-[length:var(--text-sm)] text-[color:var(--color-text-primary)]">
       <p className="font-semibold text-[color:var(--color-badge-cuidado-text)]">{CARE_COPY.statusActions.title}</p>
       <p className="mt-1 text-[length:var(--text-xs)] leading-relaxed text-[color:var(--color-text-secondary)]">
         {CARE_COPY.statusActions.description}
