@@ -8,6 +8,8 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint .",
+    "audit:ui-css": "node scripts/audit-ui-css-overrides.mjs",
+    "audit:ui-css:strict": "node scripts/audit-ui-css-overrides.mjs --strict",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
