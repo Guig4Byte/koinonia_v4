@@ -1,5 +1,6 @@
 "use client";
 
+import { FixedActionBarContent } from "@/components/ui/fixed-action-bar";
 import { CheckInMemberCard } from "@/features/check-in/components/check-in-member-card";
 import { CheckInSaveBar } from "@/features/check-in/components/check-in-save-bar";
 import { CheckInSummaryCard } from "@/features/check-in/components/check-in-summary-card";
@@ -46,7 +47,7 @@ export function CheckInList({
 
   return (
     <section className={styles.list}>
-      <div className={styles.content} data-testid="check-in-content">
+      <FixedActionBarContent className={styles.content} data-testid="check-in-content">
         <CheckInSummaryCard
           summary={checkIn.summary}
           helperText={checkInHelperText(mode)}
@@ -75,7 +76,7 @@ export function CheckInList({
             <CheckInMemberCard key={item.personId} item={item} onSetStatus={checkIn.setStatus} disabled={checkIn.isPending} />
           ))}
         </div>
-      </div>
+      </FixedActionBarContent>
 
       <CheckInSaveBar
         summary={checkIn.summary}

@@ -538,10 +538,11 @@ function extractCssClassName(selector) {
 function classifyCssModuleBlock({ body, relativePath, selector }) {
   const className = extractCssClassName(selector);
   const isFeatureCssModule = relativePath.includes("/features/") && relativePath.endsWith(".module.css");
+  const isSystemFixedStackFile = relativePath === "src/components/ui/fixed-action-bar.module.css";
   const normalizedClassName = className.toLowerCase();
   const findings = [];
 
-  if (/position\s*:\s*(?:fixed|sticky)\b/.test(body) && /(?:bottom|top|z-index)\s*:/.test(body)) {
+  if (!isSystemFixedStackFile && /position\s*:\s*(?:fixed|sticky)\b/.test(body) && /(?:bottom|top|z-index)\s*:/.test(body)) {
     findings.push({
       id: "fixed-or-sticky-local-stack",
       severity: "alta",

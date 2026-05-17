@@ -1,10 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { FixedActionBar } from "@/components/ui/fixed-action-bar";
 import { ButtonLink } from "@/components/ui/button-link";
 import { checkInMarkedLabel, type CheckInMode, type CheckInSummary } from "@/features/check-in/check-in-view";
 import { cn } from "@/lib/cn";
-import styles from "./check-in.module.css";
 
 type CheckInSaveBarProps = {
   summary: CheckInSummary;
@@ -79,15 +79,11 @@ export function CheckInSaveBar({
   const description = saveBarDescription({ summary, isPending, errorMessage, mode, hasUnsavedChanges });
 
   return (
-    <div
+    <FixedActionBar
       data-testid="check-in-save-bar"
       role="status"
       aria-live="polite"
-      className={cn(
-        styles.saveBar,
-        "rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-2.5 shadow-card backdrop-blur-xl",
-        !canSave && !isPending && !errorMessage && styles.saveBarIdle,
-      )}
+      tone={!canSave && !isPending && !errorMessage ? "muted" : "default"}
     >
       <div className="grid gap-2 min-[390px]:grid-cols-[minmax(0,1fr)_auto] min-[390px]:items-center">
         <div className="min-w-0">
@@ -121,6 +117,6 @@ export function CheckInSaveBar({
           {errorMessage}
         </p>
       ) : null}
-    </div>
+    </FixedActionBar>
   );
 }

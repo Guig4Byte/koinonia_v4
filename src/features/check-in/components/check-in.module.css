@@ -1,30 +1,13 @@
 .list {
-  --check-in-save-bar-space: calc(9.25rem + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-}
-
-.saveBar {
-  position: fixed;
-  left: 50%;
-  z-index: 50;
-  width: calc(100% - 32px);
-  max-width: 448px;
-  bottom: calc(12px + env(safe-area-inset-bottom));
-  transform: translateX(-50%);
-}
-
-.saveBarIdle {
-  box-shadow: var(--color-shadow-metric-card);
-  opacity: 0.94;
 }
 
 .content {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  padding-bottom: var(--check-in-save-bar-space);
 }
 
 .memberCard {
@@ -206,11 +189,6 @@
   }
 }
 
-@media (min-width: 390px) {
-  .list {
-    --check-in-save-bar-space: calc(5.25rem + env(safe-area-inset-bottom));
-  }
-}
 
 @media (min-width: 640px) {
   .statusSheetLayer {
