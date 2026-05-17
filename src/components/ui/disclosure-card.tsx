@@ -17,7 +17,7 @@ type DisclosureCardProps = Omit<DetailsHTMLAttributes<HTMLDetailsElement>, "chil
   separatedContent?: boolean;
   closedLabel?: ReactNode;
   openLabel?: ReactNode;
-  action?: ReactNode;
+  action?: ReactNode | false;
   className?: string;
   summaryClassName?: string;
   contentClassName?: string;
@@ -61,6 +61,14 @@ export function DisclosureCard({
   ...props
 }: DisclosureCardProps) {
   const openProps = defaultOpen ? { open: true } : {};
+  const actionNode = action === false ? null : (
+    action ?? (
+      <span className={styles.action}>
+        <span className={styles.closedLabel}>{closedLabel}</span>
+        <span className={styles.openLabel}>{openLabel}</span>
+      </span>
+    )
+  );
 
   return (
     <details className={cn(styles.details, toneClassName[tone], className)} {...openProps} {...props}>
@@ -76,12 +84,7 @@ export function DisclosureCard({
           <span className={cn(styles.title, titleClassName)}>{title}</span>
           {description ? <span className={cn(styles.description, descriptionClassName)}>{description}</span> : null}
         </span>
-        {action ?? (
-          <span className={styles.action}>
-            <span className={styles.closedLabel}>{closedLabel}</span>
-            <span className={styles.openLabel}>{openLabel}</span>
-          </span>
-        )}
+        {actionNode}
       </summary>
       <div
         className={cn(

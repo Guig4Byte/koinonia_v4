@@ -3,6 +3,7 @@ import type { BadgeTone } from "@/components/ui/badge";
 import { ListLinkCard } from "@/components/ui/list-link-card";
 import { ProgressiveList } from "@/components/shared/progressive-list";
 import { EmptyState } from "@/components/shared/base-cards";
+import { DisclosureCard } from "@/components/ui/disclosure-card";
 import { priorityCardClass } from "@/lib/card-priority";
 import {
   compactGroupSubtitle,
@@ -99,36 +100,34 @@ export function TeamSupervisorCard({ supervisor }: { supervisor: SupervisorTeam 
 
           {!hasGroups ? (
             <>
-              <p className={styles.supervisorSummaryText}>{supervisorSummary(supervisor)}</p>
+              <p className={styles.supervisorDescriptionText}>{supervisorSummary(supervisor)}</p>
               <div className="mt-2">
                 <EmptyState compact>Nenhuma célula ativa vinculada a este supervisor.</EmptyState>
               </div>
             </>
           ) : (
-            <details className={cn(styles.supervisorDetails, "group")}>
-              <summary className={styles.supervisorSummary}>
-                <span className={styles.supervisorSummaryText}>
-                  {supervisorSummary(supervisor)}
-                </span>
-                <span className={styles.supervisorSummaryAction}>
-                  <span className="group-open:hidden">Ver células</span>
-                  <span className="hidden group-open:inline">Mostrar menos</span>
-                  <span className="inline-block transition group-active:translate-x-0.5" aria-hidden="true">→</span>
-                </span>
-              </summary>
-              <div className={styles.cellList}>
-                <ProgressiveList
-                  initialCount={GROUPS_PER_SUPERVISOR_LIMIT}
-                  step={GROUPS_PER_SUPERVISOR_LIMIT}
-                  moreLabel="Ver mais células"
-                  lessLabel="Mostrar menos células"
-                >
-                  {supervisor.groups.map((group) => (
-                    <TeamGroupLink key={group.id} group={group} />
-                  ))}
-                </ProgressiveList>
-              </div>
-            </details>
+            <DisclosureCard
+              title={supervisorSummary(supervisor)}
+              tone="transparent"
+              size="sm"
+              separatedContent
+              closedLabel="Ver células"
+              openLabel="Mostrar menos"
+              className="mt-2"
+              titleClassName={styles.supervisorDescriptionText}
+              contentClassName={styles.cellList}
+            >
+              <ProgressiveList
+                initialCount={GROUPS_PER_SUPERVISOR_LIMIT}
+                step={GROUPS_PER_SUPERVISOR_LIMIT}
+                moreLabel="Ver mais células"
+                lessLabel="Mostrar menos células"
+              >
+                {supervisor.groups.map((group) => (
+                  <TeamGroupLink key={group.id} group={group} />
+                ))}
+              </ProgressiveList>
+            </DisclosureCard>
           )}
         </div>
       </div>

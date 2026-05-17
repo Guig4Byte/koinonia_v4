@@ -11,16 +11,6 @@
   opacity: 0.92;
 }
 
-.supervisorCard:has(.supervisorDetails[open]) {
-  border-color: color-mix(in srgb, var(--color-border-card) 70%, transparent);
-  background: color-mix(in srgb, var(--color-bg-card) 94%, transparent);
-  box-shadow: var(--color-shadow-metric-card);
-}
-
-.supervisorCard:has(.supervisorDetails[open])::before {
-  opacity: 0;
-}
-
 .avatar {
   width: 36px;
   height: 36px;
@@ -30,54 +20,10 @@
   font-weight: 800;
 }
 
-.supervisorDetails {
-  margin-top: 0;
-}
-
-.supervisorSummary {
-  display: flex;
-  cursor: pointer;
-  list-style: none;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  border-radius: 10px;
-  border-top: 1px solid var(--color-border-divider);
-  margin-top: 8px;
-  padding-top: 8px;
-  transition:
-    color 150ms ease,
-    transform 150ms ease;
-}
-
-.supervisorSummary::-webkit-details-marker {
-  display: none;
-}
-
-.supervisorSummary::marker {
-  content: "";
-}
-
-.supervisorSummary:hover .supervisorSummaryAction {
-  color: color-mix(in srgb, var(--color-brand) 82%, var(--color-text-primary));
-}
-
-.supervisorSummary:active {
-  transform: scale(0.99);
-}
-
-.supervisorSummaryAction {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--color-brand);
-  font-size: var(--text-sm);
-  font-weight: 600;
-}
-
-.supervisorSummaryText {
+.supervisorDescriptionText {
   color: var(--color-text-primary);
   font-size: var(--text-sm);
+  font-weight: 400;
   line-height: 1.625;
 }
 
@@ -85,7 +31,7 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  margin-top: 6px;
+  margin-top: 0;
 }
 
 .cellLink {

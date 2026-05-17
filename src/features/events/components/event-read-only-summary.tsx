@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { DisclosureCard } from "@/components/ui/disclosure-card";
 import {
   buildEventReadOnlyAttendanceView,
   eventAttendanceLabels,
@@ -111,23 +112,19 @@ export function EventReadOnlySummary({
         </div>
 
         {attendanceView.presentMembers.length > 0 ? (
-          <details className="group mt-4">
-            <summary className="flex cursor-pointer list-none flex-col gap-3 rounded-2xl border border-[var(--color-border-divider)] bg-[var(--surface-alt)] px-3 py-3 text-[length:var(--text-sm)] transition active:scale-[0.99] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus-ring)] min-[390px]:flex-row min-[390px]:items-center min-[390px]:justify-between">
-              <div className="min-w-0">
-                <p className="k-item-title">Presentes ({attendanceView.presentMembers.length})</p>
-                <p className="k-item-detail-tight">Lista completa dos presentes.</p>
-              </div>
-              <span className="inline-flex min-h-9 shrink-0 items-center justify-center rounded-full border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.08em] text-[color:var(--color-brand)] transition group-hover:border-[var(--color-focus-ring)]">
-                <span className="group-open:hidden">Mostrar</span>
-                <span className="hidden group-open:inline">Ocultar</span>
-              </span>
-            </summary>
-            <div className="mt-2 space-y-1.5">
-              {attendanceView.presentMembers.map((member) => (
-                <AttendanceMemberRow key={member.personId} member={member} />
-              ))}
-            </div>
-          </details>
+          <DisclosureCard
+            title={`Presentes (${attendanceView.presentMembers.length})`}
+            description="Lista completa dos presentes."
+            tone="inset"
+            size="sm"
+            separatedContent
+            className="mt-4"
+            contentClassName="space-y-1.5"
+          >
+            {attendanceView.presentMembers.map((member) => (
+              <AttendanceMemberRow key={member.personId} member={member} />
+            ))}
+          </DisclosureCard>
         ) : null}
       </Card>
 

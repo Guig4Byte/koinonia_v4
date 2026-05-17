@@ -1,6 +1,6 @@
 import { Children, type ReactNode } from "react";
 import { EmptyState } from "@/components/shared/base-cards";
-import { buttonClassName } from "@/components/ui/button";
+import { DisclosureCard } from "@/components/ui/disclosure-card";
 import styles from "./pastoral-section.module.css";
 
 export function PastoralSectionTitle({ children, detail }: { children: ReactNode; detail?: string }) {
@@ -37,20 +37,22 @@ export function PastoralListSection({
         {children}
       </div>
       {hasHiddenChildren ? (
-        <details className="group rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-3 shadow-card">
-          <summary
-            className={buttonClassName({
-              variant: "secondary",
-              size: "sm",
-              fullWidth: true,
-              className: "cursor-pointer list-none [&::-webkit-details-marker]:hidden",
-            })}
-          >
-            <span className="group-open:hidden">{moreLabel}</span>
-            <span className="hidden group-open:inline">Mostrar menos</span>
-          </summary>
-          <div className={`stagger-children mt-3 ${styles.cards}`}>{hiddenChildren}</div>
-        </details>
+        <DisclosureCard
+          title={
+            <>
+              <span className="group-open:hidden">{moreLabel}</span>
+              <span className="hidden group-open:inline">Mostrar menos</span>
+            </>
+          }
+          tone="default"
+          size="sm"
+          separatedContent
+          action={false}
+          className="group"
+          contentClassName={`stagger-children ${styles.cards}`}
+        >
+          {hiddenChildren}
+        </DisclosureCard>
       ) : null}
       {!hasChildren && emptyMessage ? <EmptyState>{emptyMessage}</EmptyState> : null}
     </section>
