@@ -147,8 +147,11 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
               ))}
             </ProgressiveList>
           ) : (
-            <EmptyState>
-              {isFiltered ? "Nenhum supervisor ou célula encontrado nesse recorte." : "Nenhum supervisor cadastrado para esta igreja."}
+            <EmptyState title={isFiltered ? "Nenhum resultado nesse recorte" : "Nenhum supervisor cadastrado"}>
+              {isFiltered
+                ? "Ajuste a busca ou limpe os filtros para conferir toda a estrutura pastoral."
+                : "Quando supervisores forem cadastrados, a estrutura da equipe aparecerá aqui."
+              }
             </EmptyState>
           )}
         </section>

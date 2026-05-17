@@ -25,6 +25,8 @@ type TimePickerFieldProps = {
   getTimeOptions?: (currentValue: string) => ReadonlyArray<string>;
   placeholder?: string;
   ariaLabel?: string;
+  ariaDescribedBy?: string;
+  ariaInvalid?: boolean;
   autoComplete?: string;
   disabled?: boolean;
   required?: boolean;
@@ -54,6 +56,8 @@ export function TimePickerField({
   getTimeOptions,
   placeholder = "HH:mm",
   ariaLabel = "Escolher horário",
+  ariaDescribedBy,
+  ariaInvalid,
   autoComplete = "off",
   disabled,
   required,
@@ -121,6 +125,8 @@ export function TimePickerField({
           value={currentValue}
           disabled={disabled}
           required={required}
+          aria-describedby={ariaDescribedBy}
+          aria-invalid={ariaInvalid || undefined}
           onChange={(event) => updateValue(event.target.value)}
           className={cn(pickerStyles.input, defaultTimePickerInputClassName, inputClassName)}
         />

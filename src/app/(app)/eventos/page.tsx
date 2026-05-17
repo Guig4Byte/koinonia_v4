@@ -78,14 +78,14 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
             {todayEvents.length > 0 ? (
               <EventList events={todayEvents} user={user} now={now} />
             ) : (
-              <EmptyState title="Agenda livre hoje">Nenhum encontro previsto para hoje.</EmptyState>
+              <EmptyState title="Agenda livre hoje">Nenhum encontro previsto para hoje. Use Próximos encontros para acompanhar a semana.</EmptyState>
             )}
 
             <SectionTitle>Próximos encontros</SectionTitle>
             {weekEvents.length > 0 ? (
               <EventList events={weekEvents} user={user} now={now} />
             ) : (
-              <EmptyState title="Semana sem novos encontros">Nenhum outro encontro agendado para esta semana.</EmptyState>
+              <EmptyState title="Semana sem novos encontros">Nenhum outro encontro agendado para esta semana. Quando uma célula tiver agenda fixa, ela aparecerá aqui.</EmptyState>
             )}
 
           </>

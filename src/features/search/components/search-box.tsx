@@ -233,7 +233,7 @@ export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: 
           ) : null}
 
           {status === "success" && !hasResults ? (
-            <div className="px-4 py-3 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">Nenhuma pessoa encontrada.</div>
+            <div className="px-4 py-3 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">Nenhuma pessoa encontrada. Tente buscar pelo nome completo ou pela célula.</div>
           ) : null}
 
           {status === "success" && hasResults

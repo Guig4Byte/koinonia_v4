@@ -111,6 +111,24 @@ export function parseGroupFormData(formData: FormData) {
   });
 }
 
+export type GroupFormFieldName = "name" | "schedule" | "locationName";
+
+export function groupFormFieldErrors(error: string | undefined): Partial<Record<GroupFormFieldName, string>> {
+  if (!error) return {};
+
+  const messages: Partial<Record<GroupFormError, { field: GroupFormFieldName; message: string }>> = {
+    "nome-obrigatorio": { field: "name", message: "O nome da célula é obrigatório." },
+    "nome-longo": { field: "name", message: `Use até ${GROUP_NAME_MAX_LENGTH} caracteres.` },
+    "agenda-incompleta": { field: "schedule", message: "Dia e horário precisam ser preenchidos juntos." },
+    "dia-invalido": { field: "schedule", message: "Escolha um dia padrão válido." },
+    "horario-invalido": { field: "schedule", message: "Informe o horário no formato hh:mm." },
+    "local-longo": { field: "locationName", message: `Use até ${GROUP_LOCATION_MAX_LENGTH} caracteres.` },
+  };
+
+  const fieldError = messages[error as GroupFormError];
+  return fieldError ? { [fieldError.field]: fieldError.message } : {};
+}
+
 export function groupFormErrorMessage(error: string | undefined) {
   const messages: Partial<Record<GroupFormError | "permissao" | "nao-encontrada", string>> = {
     "nome-obrigatorio": "Informe o nome da célula.",

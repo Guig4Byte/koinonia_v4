@@ -74,7 +74,7 @@ export function CheckInVisitorsCard({
           {countLabel(fallbackSavedVisitorCount, "visitante já salvo", "visitantes já salvos")}.
         </p>
       ) : (
-        <p className="mt-2 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">Nenhum visitante neste encontro até agora.</p>
+        <p className="mt-2 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">Nenhum visitante marcado neste encontro até agora.</p>
       )}
 
       <div className="mt-4 flex gap-2">
@@ -87,7 +87,7 @@ export function CheckInVisitorsCard({
               onAddVisitor();
             }
           }}
-          placeholder="Adicionar visitante"
+          placeholder="Nome do visitante"
           aria-label="Nome do visitante"
           disabled={disabled}
           className="min-h-11 flex-1 rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] px-3 text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)] disabled:cursor-not-allowed disabled:opacity-60 focus:border-[var(--color-focus-ring)]"
