@@ -15,7 +15,7 @@ export type ButtonVariant =
   | "outline";
 export type ButtonSize = "sm" | "md" | "lg";
 export type ButtonShape = "default" | "rounded" | "pill";
-export type ButtonDensity = "default" | "compact";
+export type ButtonDensity = "default" | "compact" | "badge";
 export type ButtonAlign = "center" | "left" | "between";
 export type ButtonResponsiveWidth = "auto" | "full" | "fullUntilSm";
 
@@ -71,6 +71,7 @@ const buttonShapeClass: Record<ButtonShape, string> = {
 const buttonDensityClass: Record<ButtonDensity, string> = {
   default: "",
   compact: "min-h-10 px-3 py-1.5 text-[length:var(--text-xs)]",
+  badge: "min-h-11 px-3 py-2 text-[length:var(--text-xs)]",
 };
 
 const buttonAlignClass: Record<ButtonAlign, string> = {

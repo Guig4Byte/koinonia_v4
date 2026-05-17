@@ -1,10 +1,10 @@
 import { Avatar } from "@/components/ui/avatar";
 import type { BadgeTone } from "@/components/ui/badge";
 import { ListLinkCard } from "@/components/ui/list-link-card";
+import { PriorityCard } from "@/components/ui/priority-card";
 import { ProgressiveList } from "@/components/shared/progressive-list";
 import { EmptyState } from "@/components/shared/base-cards";
 import { DisclosureCard } from "@/components/ui/disclosure-card";
-import { priorityCardClass } from "@/lib/card-priority";
 import {
   compactGroupSubtitle,
   GROUPS_PER_SUPERVISOR_LIMIT,
@@ -90,7 +90,7 @@ export function TeamSupervisorCard({ supervisor }: { supervisor: SupervisorTeam 
   const hasGroups = supervisor.groups.length > 0;
   const badgeTone = supervisorBadgeTone(supervisor);
   return (
-    <section className={cn(styles.supervisorCard, styles.supervisorPriorityCard, priorityCardClass(badgeTone !== "neutral" ? badgeTone : undefined))}>
+    <PriorityCard as="section" priorityTone={badgeTone !== "neutral" ? badgeTone : undefined} padding="sm" radius="default" elevation="soft" containment="hidden">
       <div className="flex items-start gap-2.5">
         <Avatar name={supervisor.name} className={styles.avatar} />
         <div className="min-w-0 flex-1">
@@ -131,6 +131,6 @@ export function TeamSupervisorCard({ supervisor }: { supervisor: SupervisorTeam 
           )}
         </div>
       </div>
-    </section>
+    </PriorityCard>
   );
 }

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Button, buttonClassName, type ButtonVariant } from "@/components/ui/button";
+import { StatusCard, type StatusCardTone } from "@/components/ui/status-card";
 import {
   ATTENDANCE,
   ATTENDANCE_LABELS,
@@ -11,14 +12,13 @@ import {
   type CheckInItem,
   type MemberAttendanceStatus,
 } from "@/features/check-in/check-in-view";
-import { cn } from "@/lib/cn";
 import styles from "./check-in.module.css";
 
-function memberCardTone(status: AttendanceSelection) {
-  if (status === ATTENDANCE.PRESENT) return styles.memberCardPresent;
-  if (status === ATTENDANCE.ABSENT) return styles.memberCardAbsent;
-  if (status === ATTENDANCE.JUSTIFIED) return styles.memberCardJustified;
-  return styles.memberCardPending;
+function memberCardTone(status: AttendanceSelection): StatusCardTone {
+  if (status === ATTENDANCE.PRESENT) return "success";
+  if (status === ATTENDANCE.ABSENT) return "danger";
+  if (status === ATTENDANCE.JUSTIFIED) return "warning";
+  return "neutral";
 }
 
 function statusButtonVariant(status: MemberAttendanceStatus, selected: boolean): ButtonVariant {
@@ -28,18 +28,11 @@ function statusButtonVariant(status: MemberAttendanceStatus, selected: boolean):
   return "attentionSoft";
 }
 
-function statusBadgeTone(status: AttendanceSelection) {
-  if (status === ATTENDANCE.PRESENT) return styles.statusBadgePresent;
-  if (status === ATTENDANCE.ABSENT) return styles.statusBadgeAbsent;
-  if (status === ATTENDANCE.JUSTIFIED) return styles.statusBadgeJustified;
-  return styles.statusBadgePending;
-}
-
-function statusDotTone(status: AttendanceSelection) {
-  if (status === ATTENDANCE.PRESENT) return styles.statusDotPresent;
-  if (status === ATTENDANCE.ABSENT) return styles.statusDotAbsent;
-  if (status === ATTENDANCE.JUSTIFIED) return styles.statusDotJustified;
-  return styles.statusDotPending;
+function statusTriggerVariant(status: AttendanceSelection): ButtonVariant {
+  if (status === ATTENDANCE.PRESENT) return "stableSoft";
+  if (status === ATTENDANCE.ABSENT) return "dangerSoft";
+  if (status === ATTENDANCE.JUSTIFIED) return "attentionSoft";
+  return "outline";
 }
 
 type CheckInMemberCardProps = {
@@ -124,8 +117,12 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
   }, [closeSelectorAndRestoreFocus, selectorOpen]);
 
   return (
-    <article
-      className={cn(styles.memberCard, "rounded-2xl border p-3", memberCardTone(item.status))}
+    <StatusCard
+      as="article"
+      tone={memberCardTone(item.status)}
+      padding="sm"
+      radius="sm"
+      containment="hidden"
       data-testid="check-in-member-card"
     >
       <div className="flex items-center justify-between gap-3">
@@ -139,19 +136,20 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
         <button
           ref={statusButtonRef}
           type="button"
-          className={cn(
-            styles.statusBadgeButton,
-            styles.statusBadge,
-            "inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-full border px-3 py-2 text-[length:var(--text-xs)] font-semibold",
-            statusBadgeTone(item.status),
-          )}
+          className={buttonClassName({
+            variant: statusTriggerVariant(item.status),
+            size: "sm",
+            shape: "pill",
+            density: "badge",
+            className: "shrink-0 gap-1.5 font-semibold",
+          })}
           aria-haspopup="dialog"
           aria-expanded={selectorOpen}
           aria-label={`Alterar presença de ${item.fullName}. Status atual: ${statusLabel}.`}
           onClick={openSelector}
           disabled={disabled}
         >
-          <span className={cn(styles.statusDot, statusDotTone(item.status))} aria-hidden="true" />
+          <span className={styles.statusDot} aria-hidden="true" />
           {statusLabel}
         </button>
       </div>
@@ -216,6 +214,6 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
           </Button>
         </BottomSheet>
       ) : null}
-    </article>
+    </StatusCard>
   );
 }

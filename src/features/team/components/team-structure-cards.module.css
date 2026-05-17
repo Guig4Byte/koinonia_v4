@@ -1,16 +1,3 @@
-.supervisorCard {
-  border: 1px solid color-mix(in srgb, var(--color-border-card) 70%, transparent);
-  border-radius: 1.15rem;
-  background: color-mix(in srgb, var(--color-bg-card) 94%, transparent);
-  padding: 12px;
-  box-shadow: var(--color-shadow-metric-card);
-}
-
-.supervisorCard.supervisorPriorityCard::before {
-  width: 4px;
-  opacity: 0.92;
-}
-
 .avatar {
   width: 36px;
   height: 36px;

@@ -18,6 +18,7 @@ const COMPONENT_NAMES = [
   "BottomSheet",
   "FilterChip",
   "SummaryCard",
+  "StatusCard",
   "PresenceMetricDisplay",
   "PresenceIndicator",
 ];
@@ -155,6 +156,15 @@ const componentRules = {
       pattern: /\bborder(?:-|\b)|\bbg-\[|\bshadow-|\brounded-|\bp[trblxy]?-(?:\[|\d)|\bmin-h-/,
       message: "SummaryCard recebeu override local de superfície ou densidade.",
       recommendation: "Adicione variantes de SummaryCard ou primitives de métrica em vez de ajustar a superfície localmente.",
+    },
+  ],
+  StatusCard: [
+    {
+      id: "status-card-local-surface",
+      severity: "média",
+      pattern: /\bborder(?:-|\b)|\bbg-\[|\bshadow-|\brounded-|\bp[trblxy]?-(?:\[|\d)|\bmin-h-|\boverflow-hidden\b/,
+      message: "StatusCard recebeu override local de superfície ou densidade.",
+      recommendation: "Promova tom, padding, radius ou containment para props oficiais do StatusCard.",
     },
   ],
   PresenceIndicator: [

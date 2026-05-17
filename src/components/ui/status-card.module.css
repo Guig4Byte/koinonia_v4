@@ -1,0 +1,69 @@
+.root {
+  --status-card-accent: var(--color-border-card);
+  --status-card-bg: var(--color-bg-card);
+  --status-card-border: var(--color-border-card);
+  position: relative;
+  border: 1px solid var(--status-card-border);
+  background: var(--status-card-bg);
+  box-shadow:
+    inset 4px 0 0 color-mix(in srgb, var(--status-card-accent) 72%, transparent),
+    var(--color-shadow-card);
+}
+
+.root > * {
+  position: relative;
+}
+
+.paddingSm {
+  padding: 0.75rem;
+}
+
+.paddingMd {
+  padding: 1rem;
+}
+
+.radiusSm {
+  border-radius: 1rem;
+}
+
+.radiusDefault {
+  border-radius: var(--radius-lg);
+}
+
+.containmentHidden {
+  overflow: hidden;
+}
+
+.toneNeutral {
+  --status-card-accent: var(--color-text-muted);
+}
+
+.toneSuccess {
+  --status-card-accent: var(--color-badge-estavel-text);
+  --status-card-bg: color-mix(in srgb, var(--color-bg-card) 94%, var(--color-badge-estavel-bg));
+  --status-card-border: color-mix(in srgb, var(--color-border-card) 72%, var(--color-badge-estavel-border));
+}
+
+.toneDanger {
+  --status-card-accent: var(--color-badge-risco-text);
+  --status-card-bg: color-mix(in srgb, var(--color-bg-card) 90%, var(--color-badge-risco-bg));
+  --status-card-border: color-mix(in srgb, var(--color-border-card) 58%, var(--color-badge-risco-border));
+}
+
+.toneWarning {
+  --status-card-accent: var(--color-badge-atencao-text);
+  --status-card-bg: color-mix(in srgb, var(--color-bg-card) 93%, var(--color-badge-atencao-bg));
+  --status-card-border: color-mix(in srgb, var(--color-border-card) 64%, var(--color-badge-atencao-border));
+}
+
+.toneInfo {
+  --status-card-accent: var(--color-badge-info-text);
+  --status-card-bg: color-mix(in srgb, var(--color-bg-card) 94%, var(--color-badge-info-bg));
+  --status-card-border: color-mix(in srgb, var(--color-border-card) 68%, var(--color-badge-info-border));
+}
+
+.toneCare {
+  --status-card-accent: var(--color-badge-cuidado-text);
+  --status-card-bg: color-mix(in srgb, var(--color-bg-card) 94%, var(--color-badge-cuidado-bg));
+  --status-card-border: color-mix(in srgb, var(--color-border-card) 68%, var(--color-badge-cuidado-border));
+}
