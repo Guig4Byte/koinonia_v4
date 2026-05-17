@@ -217,6 +217,51 @@ const arbitraryUtilityRule = {
     "Se o valor se repetir ou corrigir componente base, transforme em token, variante oficial ou primitive reutilizável.",
 };
 
+const LOW_DISPOSITION = {
+  ACCEPTED: "aceitável",
+  CANDIDATE: "candidato",
+  REVIEW: "revisar",
+};
+
+const LOW_CATEGORY_DETAILS = {
+  "tokens/typography-color": {
+    label: "Tokens de tipografia/cor em composição local",
+    recommendation: "Aceite quando a classe apenas aplica token de texto/cor em layout local. Promova para primitive se o bloco inteiro se repetir.",
+  },
+  "layout/skeleton-loading": {
+    label: "Skeleton/loading state",
+    recommendation: "Aceite enquanto o padrão estiver limitado a loading states. Extraia apenas se vários skeletons passarem a compartilhar a mesma estrutura.",
+  },
+  "system/primitive-internal": {
+    label: "Implementação interna de primitive/layout",
+    recommendation: "Aceite quando o arquivo é a própria primitive ou componente de layout global. A auditoria deve vigiar consumidores, não impedir a implementação do padrão base.",
+  },
+  "layout/text-measure": {
+    label: "Medida textual ou quebra defensiva",
+    recommendation: "Aceite para max-width, leading/tracking e truncamento pontual. Revise se virar padrão de heading/section.",
+  },
+  "candidate/local-surface": {
+    label: "Candidato: superfície local",
+    recommendation: "Revise se o bloco cria card, callout, alerta ou superfície recorrente. Pode virar Card, StatusCard, ActionPanel ou primitive específica.",
+  },
+  "candidate/control-or-action": {
+    label: "Candidato: controle/ação local",
+    recommendation: "Revise se o bloco simula botão, input, select, action pill ou badge. Prefira Button, InputField, SelectField, ActionPill ou Badge.",
+  },
+  "candidate/size-or-density": {
+    label: "Candidato: tamanho/densidade arbitrária",
+    recommendation: "Revise se o tamanho corrige primitive ou se repete. Prefira props de size, density, minWidth ou maxWidth.",
+  },
+  "review/login-contained": {
+    label: "Revisar: visual isolado de login",
+    recommendation: "Login pode ter composição própria, mas campos, alertas e cards recorrentes devem migrar para primitives quando deixarem de ser exclusivos.",
+  },
+  "review/generic-arbitrary": {
+    label: "Revisar: utilitário arbitrário genérico",
+    recommendation: "Verifique se é caso único. Se repetir ou corrigir componente base, crie token, prop oficial ou primitive.",
+  },
+};
+
 const nativeDisclosureRule = {
   id: "native-disclosure-local-style",
   severity: "média",
@@ -231,6 +276,8 @@ function parseArgs(argv) {
     json: false,
     maxFindings: DEFAULT_MAX_FINDINGS,
     root: process.cwd(),
+    failOnLow: false,
+    lowReview: false,
     strict: false,
   };
 
@@ -247,6 +294,16 @@ function parseArgs(argv) {
 
     if (arg === "--strict") {
       options.strict = true;
+      continue;
+    }
+
+    if (arg === "--fail-on-low") {
+      options.failOnLow = true;
+      continue;
+    }
+
+    if (arg === "--low-review") {
+      options.lowReview = true;
       continue;
     }
 
@@ -283,14 +340,17 @@ function printHelp() {
 Uso:
   npm run audit:ui-css
   npm run audit:ui-css -- --strict
+  npm run audit:ui-css -- --low-review
   npm run audit:ui-css -- --json
 
 Opções:
   --dir=<caminho>          Diretório para varrer. Pode ser usado múltiplas vezes. Padrão: src
   --json                   Imprime findings em JSON.
+  --low-review             Imprime uma revisão agrupada apenas dos achados baixos.
   --max-findings=<n>       Limita a saída textual. Use 0 para não limitar. Padrão: ${DEFAULT_MAX_FINDINGS}
   --root=<caminho>         Raiz do projeto. Padrão: diretório atual.
-  --strict                 Encerra com código 1 quando houver findings.
+  --strict                 Encerra com código 1 quando houver achado alto ou médio.
+  --fail-on-low            Faz --strict também falhar com achados baixos.
 
 Comentários de exceção:
   // ui-audit-ignore-next-line
@@ -503,16 +563,112 @@ function extractClassNameAttributeText(tagText) {
   return tagText.slice(valueStartIndex + 1);
 }
 
-function createFinding({ component, file, line, message, recommendation, ruleId, severity, snippet }) {
+function createFinding({
+  component,
+  disposition,
+  file,
+  line,
+  lowCategory,
+  message,
+  recommendation,
+  ruleId,
+  severity,
+  snippet,
+}) {
   return {
     component,
+    disposition: severity === "baixa" ? (disposition ?? LOW_DISPOSITION.CANDIDATE) : undefined,
     file,
     line,
+    lowCategory: severity === "baixa" ? (lowCategory ?? "review/generic-arbitrary") : undefined,
     message,
     recommendation,
     ruleId,
     severity,
     snippet: collapseWhitespace(snippet).slice(0, 240),
+  };
+}
+
+function classifyArbitraryUtilityLine({ lineContent, relativePath }) {
+  const normalizedLine = collapseWhitespace(lineContent);
+  const isLoginFile = relativePath.startsWith("src/app/login/");
+  const isPrimitiveOrLayoutFile = relativePath.startsWith("src/components/ui/") || relativePath.startsWith("src/components/layout/");
+  const isSkeletonFile = relativePath.includes("/loading-skeletons/");
+  const hasSurfaceUtility =
+    /\b(?:rounded|bg|border|shadow)-\[[^\]]+\]/.test(normalizedLine) ||
+    /\bborder-\[var\(--/.test(normalizedLine) ||
+    /\bbg-\[var\(--/.test(normalizedLine);
+  const hasControlOrActionSignal =
+    /\b(?:input|select|textarea|button|action|badge|pill|alert|card)\b/i.test(normalizedLine) ||
+    /(?:login-form-controls|event-close-action|event-reschedule-action|event-location-action)/.test(relativePath);
+  const hasArbitrarySizeOrDensity =
+    /\b(?:h|min-h|max-h|w|min-w|max-w|p|px|py|pl|pr|pt|pb)-\[[^\]]+\]/.test(normalizedLine);
+  const hasOnlyTokenTypographyOrColor =
+    /(?:text-\[(?:length|color):var\(--|leading-\[[^\]]+\]|tracking-\[[^\]]+\])/.test(normalizedLine) &&
+    !hasSurfaceUtility &&
+    !hasArbitrarySizeOrDensity;
+  const hasTextMeasure =
+    /\bmax-w-\[[^\]]+\]/.test(normalizedLine) || /(?:leading|tracking)-\[[^\]]+\]/.test(normalizedLine);
+
+  if (isSkeletonFile) {
+    return {
+      disposition: LOW_DISPOSITION.ACCEPTED,
+      lowCategory: "layout/skeleton-loading",
+    };
+  }
+
+  if (isPrimitiveOrLayoutFile) {
+    return {
+      disposition: LOW_DISPOSITION.ACCEPTED,
+      lowCategory: "system/primitive-internal",
+    };
+  }
+
+  if (isLoginFile) {
+    return {
+      disposition: LOW_DISPOSITION.REVIEW,
+      lowCategory: "review/login-contained",
+    };
+  }
+
+  if (hasSurfaceUtility) {
+    return {
+      disposition: LOW_DISPOSITION.CANDIDATE,
+      lowCategory: "candidate/local-surface",
+    };
+  }
+
+  if (hasControlOrActionSignal) {
+    return {
+      disposition: LOW_DISPOSITION.CANDIDATE,
+      lowCategory: "candidate/control-or-action",
+    };
+  }
+
+  if (hasArbitrarySizeOrDensity) {
+    return {
+      disposition: LOW_DISPOSITION.CANDIDATE,
+      lowCategory: "candidate/size-or-density",
+    };
+  }
+
+  if (hasOnlyTokenTypographyOrColor) {
+    return {
+      disposition: LOW_DISPOSITION.ACCEPTED,
+      lowCategory: "tokens/typography-color",
+    };
+  }
+
+  if (hasTextMeasure) {
+    return {
+      disposition: LOW_DISPOSITION.ACCEPTED,
+      lowCategory: "layout/text-measure",
+    };
+  }
+
+  return {
+    disposition: LOW_DISPOSITION.REVIEW,
+    lowCategory: "review/generic-arbitrary",
   };
 }
 
@@ -632,13 +788,18 @@ function scanArbitraryClassLines({ lines, relativePath }) {
       return;
     }
 
+    const classification = classifyArbitraryUtilityLine({ lineContent, relativePath });
+    const categoryDetails = LOW_CATEGORY_DETAILS[classification.lowCategory];
+
     findings.push(
       createFinding({
         component: undefined,
+        disposition: classification.disposition,
         file: relativePath,
         line,
+        lowCategory: classification.lowCategory,
         message: arbitraryUtilityRule.message,
-        recommendation: arbitraryUtilityRule.recommendation,
+        recommendation: categoryDetails?.recommendation ?? arbitraryUtilityRule.recommendation,
         ruleId: arbitraryUtilityRule.id,
         severity: arbitraryUtilityRule.severity,
         snippet: lineContent,
@@ -842,13 +1003,26 @@ function summarizeFindings(findings) {
     baixa: 0,
   };
   const byRule = new Map();
+  const byLowCategory = new Map();
+  const byLowDisposition = new Map();
 
   for (const finding of findings) {
     summary[finding.severity] += 1;
     byRule.set(finding.ruleId, (byRule.get(finding.ruleId) ?? 0) + 1);
+
+    if (finding.severity === "baixa") {
+      const lowCategory = finding.lowCategory ?? "review/generic-arbitrary";
+      const disposition = finding.disposition ?? LOW_DISPOSITION.REVIEW;
+      byLowCategory.set(lowCategory, (byLowCategory.get(lowCategory) ?? 0) + 1);
+      byLowDisposition.set(disposition, (byLowDisposition.get(disposition) ?? 0) + 1);
+    }
   }
 
-  return { byRule, summary };
+  return { byLowCategory, byLowDisposition, byRule, summary };
+}
+
+function sortMapEntriesByCount(map) {
+  return [...map.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
 }
 
 function sortFindings(findings) {
@@ -868,7 +1042,7 @@ function sortFindings(findings) {
 }
 
 function printTextReport({ files, findings, maxFindings, root }) {
-  const { byRule, summary } = summarizeFindings(findings);
+  const { byLowCategory, byLowDisposition, byRule, summary } = summarizeFindings(findings);
   const visibleFindings = maxFindings === 0 ? findings : findings.slice(0, maxFindings);
   const hiddenCount = findings.length - visibleFindings.length;
 
@@ -884,8 +1058,23 @@ function printTextReport({ files, findings, maxFindings, root }) {
 
   console.log("\nResumo por regra:");
 
-  for (const [ruleId, count] of [...byRule.entries()].sort((a, b) => b[1] - a[1])) {
+  for (const [ruleId, count] of sortMapEntriesByCount(byRule)) {
     console.log(`- ${ruleId}: ${count}`);
+  }
+
+  if (summary.baixa > 0) {
+    console.log("\nResumo dos achados baixos:");
+
+    for (const [disposition, count] of sortMapEntriesByCount(byLowDisposition)) {
+      console.log(`- ${disposition}: ${count}`);
+    }
+
+    console.log("\nBaixos por categoria:");
+
+    for (const [category, count] of sortMapEntriesByCount(byLowCategory)) {
+      const label = LOW_CATEGORY_DETAILS[category]?.label ?? category;
+      console.log(`- ${category}: ${count} — ${label}`);
+    }
   }
 
   console.log("\nFindings:");
@@ -895,6 +1084,12 @@ function printTextReport({ files, findings, maxFindings, root }) {
     console.log(`\n[${finding.severity}] ${finding.ruleId}${componentLabel}`);
     console.log(`${finding.file}:${finding.line}`);
     console.log(`Problema: ${finding.message}`);
+
+    if (finding.severity === "baixa") {
+      const categoryLabel = LOW_CATEGORY_DETAILS[finding.lowCategory]?.label ?? finding.lowCategory;
+      console.log(`Classificação baixa: ${finding.disposition} / ${finding.lowCategory} — ${categoryLabel}`);
+    }
+
     console.log(`Recomendação: ${finding.recommendation}`);
     console.log(`Trecho: ${finding.snippet}`);
   }
@@ -902,6 +1097,64 @@ function printTextReport({ files, findings, maxFindings, root }) {
   if (hiddenCount > 0) {
     console.log(`\n... ${hiddenCount} finding(s) ocultos. Use --max-findings=0 para imprimir todos.`);
   }
+}
+
+function printLowReviewReport({ files, findings, root }) {
+  const lowFindings = findings.filter((finding) => finding.severity === "baixa");
+  const { byLowCategory, byLowDisposition, summary } = summarizeFindings(findings);
+  const candidateFindings = lowFindings.filter((finding) => finding.disposition === LOW_DISPOSITION.CANDIDATE);
+  const reviewFindings = lowFindings.filter((finding) => finding.disposition === LOW_DISPOSITION.REVIEW);
+
+  console.log("Revisão dos achados baixos de UI/CSS");
+  console.log(`Raiz: ${root}`);
+  console.log(`Arquivos varridos: ${files.length}`);
+  console.log(`Findings totais: ${findings.length} (alta: ${summary.alta}, média: ${summary.média}, baixa: ${summary.baixa})`);
+
+  if (lowFindings.length === 0) {
+    console.log("\nNenhum achado baixo encontrado.");
+    return;
+  }
+
+  console.log("\nLeitura dos baixos:");
+
+  for (const [disposition, count] of sortMapEntriesByCount(byLowDisposition)) {
+    console.log(`- ${disposition}: ${count}`);
+  }
+
+  console.log("\nCategorias:");
+
+  for (const [category, count] of sortMapEntriesByCount(byLowCategory)) {
+    const details = LOW_CATEGORY_DETAILS[category];
+    console.log(`\n- ${category}: ${count}`);
+    console.log(`  Tipo: ${details?.label ?? category}`);
+    console.log(`  Ação: ${details?.recommendation ?? "Revise o contexto antes de refatorar."}`);
+  }
+
+  if (candidateFindings.length > 0) {
+    console.log("\nAmostra de candidatos a refatoração:");
+
+    for (const finding of candidateFindings.slice(0, 20)) {
+      const categoryLabel = LOW_CATEGORY_DETAILS[finding.lowCategory]?.label ?? finding.lowCategory;
+      console.log(`\n[${finding.lowCategory}] ${categoryLabel}`);
+      console.log(`${finding.file}:${finding.line}`);
+      console.log(`Trecho: ${finding.snippet}`);
+    }
+  }
+
+  if (reviewFindings.length > 0) {
+    console.log("\nAmostra de baixos para revisão contextual:");
+
+    for (const finding of reviewFindings.slice(0, 10)) {
+      const categoryLabel = LOW_CATEGORY_DETAILS[finding.lowCategory]?.label ?? finding.lowCategory;
+      console.log(`\n[${finding.lowCategory}] ${categoryLabel}`);
+      console.log(`${finding.file}:${finding.line}`);
+      console.log(`Trecho: ${finding.snippet}`);
+    }
+  }
+}
+
+function shouldFailStrictMode(findings, { failOnLow }) {
+  return findings.some((finding) => finding.severity === "alta" || finding.severity === "média" || (failOnLow && finding.severity === "baixa"));
 }
 
 function main() {
@@ -917,12 +1170,28 @@ function main() {
   const findings = sortFindings(files.flatMap((file) => scanFile(file, root)));
 
   if (options.json) {
-    console.log(JSON.stringify({ filesScanned: files.length, findings }, null, 2));
+    const { byLowCategory, byLowDisposition, byRule, summary } = summarizeFindings(findings);
+    console.log(
+      JSON.stringify(
+        {
+          filesScanned: files.length,
+          findings,
+          summary,
+          summaryByLowCategory: Object.fromEntries(byLowCategory),
+          summaryByLowDisposition: Object.fromEntries(byLowDisposition),
+          summaryByRule: Object.fromEntries(byRule),
+        },
+        null,
+        2,
+      ),
+    );
+  } else if (options.lowReview) {
+    printLowReviewReport({ files, findings, root });
   } else {
     printTextReport({ files, findings, maxFindings: options.maxFindings, root });
   }
 
-  if (options.strict && findings.length > 0) {
+  if (options.strict && shouldFailStrictMode(findings, { failOnLow: options.failOnLow })) {
     process.exitCode = 1;
   }
 }

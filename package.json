@@ -19,7 +19,9 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
-    "db:seed:active-sandbox": "tsx prisma/seed-active-sandbox.ts"
+    "db:seed:active-sandbox": "tsx prisma/seed-active-sandbox.ts",
+    "audit:ui-css:lows": "node scripts/audit-ui-css-overrides.mjs --low-review",
+    "audit:ui-css:strict-all": "node scripts/audit-ui-css-overrides.mjs --strict --fail-on-low"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",

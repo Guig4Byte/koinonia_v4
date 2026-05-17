@@ -156,10 +156,22 @@ Use o script de auditoria para revisar mudanças de UI:
 npm run audit:ui-css
 ```
 
-Use o modo estrito em PRs sensíveis ou CI:
+Use o modo estrito em PRs sensíveis ou CI. Ele deve falhar com achados altos ou médios, mas não com baixos:
 
 ```bash
 npm run audit:ui-css:strict
+```
+
+Para revisar os achados baixos por categoria, use:
+
+```bash
+npm run audit:ui-css:lows
+```
+
+Use o modo estrito total apenas quando a intenção for investigar todos os baixos:
+
+```bash
+npm run audit:ui-css:strict-all
 ```
 
 Achados altos e médios devem ser corrigidos antes de merge. Achados baixos são uma fila de revisão: só promova para primitive quando o padrão for recorrente ou quando o ajuste estiver brigando com um componente base. O fechamento da auditoria e o checklist ficam em `docs/UI_CSS_AUDIT.md`.

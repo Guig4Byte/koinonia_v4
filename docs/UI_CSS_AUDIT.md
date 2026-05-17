@@ -25,6 +25,25 @@ Leitura correta do resultado final:
 - `média: 0` significa que os principais casos de superfície, densidade e CSS Module competindo com componente base foram tratados.
 - `baixa: 177` não significa bug visual. A regra baixa é intencionalmente conservadora e aponta classes arbitrárias com tokens. Ela serve como lembrete de revisão, não como bloqueio automático.
 
+A revisão de baixos agora separa os 177 achados em categorias operacionais:
+
+| Disposição | Quantidade atual | Leitura | Ação |
+| --- | ---: | --- | --- |
+| Aceitável | 114 | Uso local de tokens, skeleton/loading state ou implementação interna de primitive | Manter, salvo repetição clara |
+| Candidato | 51 | Pode representar superfície, ação ou densidade que talvez mereça primitive | Revisar por lote |
+| Revisar | 12 | Visual isolado, principalmente login | Avaliar contexto antes de refatorar |
+
+Categorias atuais:
+
+| Categoria | Quantidade | Interpretação |
+| --- | ---: | --- |
+| `tokens/typography-color` | 73 | Tokens de texto/cor aplicados em composição local |
+| `layout/skeleton-loading` | 28 | Skeletons e estados de carregamento |
+| `system/primitive-internal` | 13 | Implementação interna de primitive ou layout global |
+| `candidate/local-surface` | 43 | Possíveis superfícies locais ainda não promovidas para primitive |
+| `candidate/control-or-action` | 8 | Possíveis controles/ações locais |
+| `review/login-contained` | 12 | Visual especial da tela de login |
+
 ## Guardrail disponível
 
 Comando padrão:
@@ -33,10 +52,16 @@ Comando padrão:
 npm run audit:ui-css
 ```
 
-Modo estrito para CI ou revisão de PR:
+Modo estrito para CI ou revisão de PR. Este modo deve falhar com achados `alta` ou `média`, mas não com achados `baixa`:
 
 ```bash
 npm run audit:ui-css:strict
+```
+
+Modo estrito total, útil apenas em investigação de dívida de UI, também falhando com achados `baixa`:
+
+```bash
+npm run audit:ui-css:strict-all
 ```
 
 Saída completa:
@@ -45,7 +70,13 @@ Saída completa:
 npm run audit:ui-css -- --max-findings=0
 ```
 
-Saída JSON:
+Revisão dos achados baixos por categoria:
+
+```bash
+npm run audit:ui-css:lows
+```
+
+Saída JSON com resumo por regra, categoria baixa e disposição:
 
 ```bash
 npm run audit:ui-css -- --json
@@ -145,7 +176,7 @@ Não estilize `details`/`summary` diretamente em telas. Use:
 
 ## Pendências intencionais
 
-Os achados baixos restantes são uma fila de revisão, não uma dívida urgente. Priorize somente quando um padrão se repetir ou quando a classe estiver corrigindo uma primitive de UI.
+Os achados baixos restantes são uma fila de revisão, não uma dívida urgente. Use `npm run audit:ui-css:lows` para decidir o que é aceitável, o que é candidato a primitive e o que precisa apenas de revisão contextual. Priorize somente quando um padrão se repetir ou quando a classe estiver corrigindo uma primitive de UI.
 
 Casos aceitáveis:
 
