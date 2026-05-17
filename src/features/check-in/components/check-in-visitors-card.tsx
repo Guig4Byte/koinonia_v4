@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { Plus } from "lucide-react";
 import { GhostButton } from "@/components/ui/button";
+import { InputField } from "@/components/ui/field";
 import { countLabel } from "@/lib/format";
 
 type VisitorRecord = {
@@ -78,7 +79,10 @@ export function CheckInVisitorsCard({
       )}
 
       <div className="mt-4 flex gap-2">
-        <input
+        <InputField
+          id="visitor-name"
+          label="Nome do visitante"
+          labelHidden
           value={visitorName}
           onChange={(event) => onVisitorNameChange(event.target.value)}
           onKeyDown={(event) => {
@@ -88,9 +92,10 @@ export function CheckInVisitorsCard({
             }
           }}
           placeholder="Nome do visitante"
-          aria-label="Nome do visitante"
           disabled={disabled}
-          className="min-h-11 flex-1 rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] px-3 text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)] disabled:cursor-not-allowed disabled:opacity-60 focus:border-[var(--color-focus-ring)]"
+          size="sm"
+          surface="muted"
+          className="flex-1"
         />
         <GhostButton type="button" onClick={onAddVisitor} className="px-3" aria-label="Adicionar visitante" disabled={disabled}>
           <Plus className="h-4 w-4" />

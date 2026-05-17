@@ -9,6 +9,8 @@ import { cn } from "@/lib/cn";
 import styles from "./field.module.css";
 
 type FieldControlSize = "sm" | "md";
+type FieldControlSurface = "default" | "muted";
+type FieldLabelVariant = "default" | "item";
 
 type FieldProps = {
   htmlFor: string;
@@ -20,6 +22,8 @@ type FieldProps = {
   required?: boolean;
   className?: string;
   labelClassName?: string;
+  labelVariant?: FieldLabelVariant;
+  labelHidden?: boolean;
   children: ReactNode;
 } & Omit<LabelHTMLAttributes<HTMLLabelElement>, "htmlFor" | "children" | "className" | "required">;
 
@@ -31,7 +35,10 @@ type SharedFieldControlProps = {
   className?: string;
   fieldClassName?: string;
   labelClassName?: string;
+  labelVariant?: FieldLabelVariant;
+  labelHidden?: boolean;
   size?: FieldControlSize;
+  surface?: FieldControlSurface;
 };
 
 type InputFieldProps = SharedFieldControlProps &
@@ -63,12 +70,20 @@ function controlClassName({
   className,
   invalid,
   size = "md",
+  surface = "default",
 }: {
   className?: string;
   invalid?: boolean;
   size?: FieldControlSize;
+  surface?: FieldControlSurface;
 }) {
-  return cn(styles.control, size === "sm" && styles.controlSm, invalid && styles.controlInvalid, className);
+  return cn(
+    styles.control,
+    size === "sm" && styles.controlSm,
+    surface === "muted" && styles.controlMuted,
+    invalid && styles.controlInvalid,
+    className,
+  );
 }
 
 export function RequiredBadge({
@@ -109,12 +124,23 @@ export function Field({
   required = false,
   className,
   labelClassName,
+  labelVariant = "default",
+  labelHidden = false,
   children,
   ...props
 }: FieldProps) {
   return (
     <div className={cn(styles.field, className)}>
-      <label className={cn(styles.label, labelClassName)} htmlFor={htmlFor} {...props}>
+      <label
+        className={cn(
+          styles.label,
+          labelVariant === "item" && styles.labelItem,
+          labelHidden && styles.labelHidden,
+          labelClassName,
+        )}
+        htmlFor={htmlFor}
+        {...props}
+      >
         {label}
         {required ? <RequiredBadge /> : null}
       </label>
@@ -138,8 +164,11 @@ export function InputField({
   className,
   fieldClassName,
   labelClassName,
+  labelVariant,
+  labelHidden,
   inputClassName,
   size = "md",
+  surface = "default",
   required,
   "aria-describedby": ariaDescribedBy,
   "aria-invalid": ariaInvalid,
@@ -159,13 +188,15 @@ export function InputField({
       required={required}
       className={cn(fieldClassName, className)}
       labelClassName={labelClassName}
+      labelVariant={labelVariant}
+      labelHidden={labelHidden}
     >
       <input
         id={id}
         required={required}
         aria-describedby={describedByIds(ariaDescribedBy, descriptionId, error ? errorId : undefined)}
         aria-invalid={invalid || undefined}
-        className={controlClassName({ className: inputClassName, invalid, size })}
+        className={controlClassName({ className: inputClassName, invalid, size, surface })}
         {...props}
       />
     </Field>
@@ -181,8 +212,11 @@ export function SelectField({
   className,
   fieldClassName,
   labelClassName,
+  labelVariant,
+  labelHidden,
   selectClassName,
   size = "md",
+  surface = "default",
   required,
   icon,
   children,
@@ -204,6 +238,8 @@ export function SelectField({
       required={required}
       className={cn(fieldClassName, className)}
       labelClassName={labelClassName}
+      labelVariant={labelVariant}
+      labelHidden={labelHidden}
     >
       <div className={styles.selectWrapper}>
         <select
@@ -211,7 +247,7 @@ export function SelectField({
           required={required}
           aria-describedby={describedByIds(ariaDescribedBy, descriptionId, error ? errorId : undefined)}
           aria-invalid={invalid || undefined}
-          className={cn(controlClassName({ className: selectClassName, invalid, size }), styles.select)}
+          className={cn(controlClassName({ className: selectClassName, invalid, size, surface }), styles.select)}
           {...props}
         >
           {children}
@@ -235,8 +271,11 @@ export function TextareaField({
   fieldClassName,
   className,
   labelClassName,
+  labelVariant,
+  labelHidden,
   textareaClassName,
   size = "md",
+  surface = "default",
   required,
   resize = "none",
   "aria-describedby": ariaDescribedBy,
@@ -257,6 +296,8 @@ export function TextareaField({
       required={required}
       className={cn(fieldClassName, className)}
       labelClassName={labelClassName}
+      labelVariant={labelVariant}
+      labelHidden={labelHidden}
     >
       <textarea
         id={id}
@@ -264,7 +305,7 @@ export function TextareaField({
         aria-describedby={describedByIds(ariaDescribedBy, descriptionId, error ? errorId : undefined)}
         aria-invalid={invalid || undefined}
         className={cn(
-          controlClassName({ className: textareaClassName, invalid, size }),
+          controlClassName({ className: textareaClassName, invalid, size, surface }),
           styles.textarea,
           resize === "none" && styles.textareaResizeNone,
         )}

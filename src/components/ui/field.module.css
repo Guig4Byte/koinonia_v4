@@ -13,6 +13,24 @@
   text-transform: uppercase;
 }
 
+.labelItem {
+  color: var(--color-text-primary);
+  font-size: var(--text-base);
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.labelHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .requiredBadge {
   margin-left: 8px;
   display: inline-flex;
@@ -84,6 +102,10 @@
 .control:disabled {
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+.controlMuted {
+  background: var(--metric-card-bg);
 }
 
 .controlInvalid {
