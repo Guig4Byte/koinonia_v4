@@ -42,13 +42,13 @@ type SharedFieldControlProps = {
 };
 
 type InputFieldProps = SharedFieldControlProps &
-  Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "id"> & {
+  Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "id" | "size"> & {
     id: string;
     inputClassName?: string;
   };
 
 type SelectFieldProps = SharedFieldControlProps &
-  Omit<SelectHTMLAttributes<HTMLSelectElement>, "className" | "id"> & {
+  Omit<SelectHTMLAttributes<HTMLSelectElement>, "className" | "id" | "size"> & {
     id: string;
     selectClassName?: string;
     icon?: ReactNode;

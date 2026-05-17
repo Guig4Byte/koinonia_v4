@@ -14,6 +14,7 @@ const COMPONENT_NAMES = [
   "InputField",
   "SelectField",
   "TextareaField",
+  "DisclosureCard",
   "FilterChip",
   "SummaryCard",
   "PresenceMetricDisplay",
@@ -119,6 +120,15 @@ const componentRules = {
       recommendation: "Promova o padrão para props como size, error, required, resize ou para a primitive de formulário base.",
     },
   ],
+  DisclosureCard: [
+    {
+      id: "disclosure-card-local-surface",
+      severity: "baixa",
+      pattern: /\bborder(?:-|\b)|\bbg-\[|\bshadow-|\brounded-|\bp[trblxy]?-(?:\[|\d)|\bmin-h-|\boverflow-hidden\b|\bfocus-visible:/,
+      message: "DisclosureCard recebeu override local de superfície, espaçamento ou foco.",
+      recommendation: "Promova o padrão para props como tone, size, layout, separatedContent ou action.",
+    },
+  ],
   FilterChip: [
     {
       id: "filter-chip-local-state-style",
@@ -174,6 +184,13 @@ const arbitraryUtilityRule = {
   message: "Classe Tailwind arbitrária usada em className pode indicar variante visual ausente.",
   recommendation:
     "Se o valor se repetir ou corrigir componente base, transforme em token, variante oficial ou primitive reutilizável.",
+};
+
+const nativeDisclosureRule = {
+  id: "native-disclosure-local-style",
+  severity: "média",
+  message: "Uso local de <details>/<summary> para disclosure/accordion.",
+  recommendation: "Use DisclosureCard para centralizar superfície, foco, labels de aberto/fechado e espaçamento.",
 };
 
 function parseArgs(argv) {
@@ -529,6 +546,47 @@ function scanJsxFile({ content, lines, lineStarts, relativePath }) {
   return findings;
 }
 
+function scanNativeDisclosureElements({ content, lines, lineStarts, relativePath }) {
+  const findings = [];
+
+  if (relativePath === "src/components/ui/disclosure-card.tsx") {
+    return findings;
+  }
+
+  const detailPattern = /<\s*details\b/g;
+  let match;
+
+  while ((match = detailPattern.exec(content)) !== null) {
+    const startIndex = match.index;
+    const endIndex = findOpeningTagEnd(content, startIndex);
+
+    if (endIndex === -1) {
+      continue;
+    }
+
+    const line = lineNumberFromIndex(lineStarts, startIndex);
+
+    if (isIgnoredAtLine(lines, line)) {
+      continue;
+    }
+
+    findings.push(
+      createFinding({
+        component: "details",
+        file: relativePath,
+        line,
+        message: nativeDisclosureRule.message,
+        recommendation: nativeDisclosureRule.recommendation,
+        ruleId: nativeDisclosureRule.id,
+        severity: nativeDisclosureRule.severity,
+        snippet: content.slice(startIndex, endIndex),
+      }),
+    );
+  }
+
+  return findings;
+}
+
 function scanArbitraryClassLines({ lines, relativePath }) {
   const findings = [];
 
@@ -731,6 +789,7 @@ function scanFile(filePath, root) {
 
   if (extension === ".tsx") {
     findings.push(...scanJsxFile({ content, lines, lineStarts, relativePath }));
+    findings.push(...scanNativeDisclosureElements({ content, lines, lineStarts, relativePath }));
     findings.push(...scanArbitraryClassLines({ lines, relativePath }));
   }
 
