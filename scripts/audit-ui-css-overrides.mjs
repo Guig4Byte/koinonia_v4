@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-env node */
+//eslint-env node
 
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";

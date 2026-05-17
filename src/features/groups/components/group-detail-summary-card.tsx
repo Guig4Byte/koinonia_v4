@@ -110,8 +110,7 @@ function PresenceSpotlight({ presence }: { presence: GroupDetailSummaryCardData[
           presenceRate={presence.presenceRate}
           tone={presence.tone}
           context="cell"
-          size="sm"
-          className="h-14 w-14"
+          size="spotlight"
         />
 
         <div className="min-w-0">

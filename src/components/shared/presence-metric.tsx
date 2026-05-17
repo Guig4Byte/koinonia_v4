@@ -10,7 +10,7 @@ export type PresenceTrend = {
 };
 
 export type PresenceIndicatorContext = "person" | "cell" | "event" | "attendance" | "overview";
-export type PresenceIndicatorSize = "sm" | "md" | "lg";
+export type PresenceIndicatorSize = "sm" | "compact" | "md" | "spotlight" | "lg";
 export type PresenceIndicatorWeight = "default" | "light";
 export type PresenceIndicatorMode = "ring" | "plain";
 
@@ -59,53 +59,69 @@ export function PresenceTrendDelta({
   );
 }
 
-const indicatorSizeClass = {
+const indicatorSizeClass: Record<PresenceIndicatorSize, string> = {
   sm: "h-7 w-7",
+  compact: "h-9 w-9",
   md: "h-10 w-10",
+  spotlight: "h-14 w-14",
   lg: "h-[4.25rem] w-[4.25rem]",
-} as const;
+};
 
-const indicatorIconSizeClass = {
+const indicatorIconSizeClass: Record<PresenceIndicatorSize, string> = {
   sm: "h-3.5 w-3.5",
+  compact: "h-4 w-4",
   md: "h-[1.125rem] w-[1.125rem]",
+  spotlight: "h-5 w-5",
   lg: "h-5 w-5",
-} as const;
+};
 
-const plainIndicatorWrapClass = {
+const plainIndicatorWrapClass: Record<PresenceIndicatorSize, string> = {
   sm: "h-5 w-5",
+  compact: "h-5 w-5",
   md: "h-6 w-6",
+  spotlight: "h-7 w-7",
   lg: "h-7 w-7",
-} as const;
+};
 
-const plainIndicatorIconSizeClass = {
+const plainIndicatorIconSizeClass: Record<PresenceIndicatorSize, string> = {
   sm: "h-4 w-4",
+  compact: "h-4 w-4",
   md: "h-[1.125rem] w-[1.125rem]",
+  spotlight: "h-5 w-5",
   lg: "h-5 w-5",
-} as const;
+};
 
-const indicatorValueSizeClass = {
+const indicatorValueSizeClass: Record<PresenceIndicatorSize, string> = {
   sm: "text-[length:var(--text-xs)]",
+  compact: "text-[length:var(--text-xs)]",
   md: "text-[length:var(--text-sm)]",
+  spotlight: "text-[length:var(--text-sm)]",
   lg: "text-[length:var(--text-base)]",
-} as const;
+};
 
-const metricLabelSizeClass = {
+const metricLabelSizeClass: Record<PresenceIndicatorSize, string> = {
   sm: "text-[length:var(--text-xs)]",
+  compact: "text-[length:var(--text-xs)]",
   md: "text-[length:var(--text-sm)]",
+  spotlight: "text-[length:var(--text-lg)]",
   lg: "text-[length:var(--text-xl)]",
-} as const;
+};
 
-const progressValueSizeClass = {
+const progressValueSizeClass: Record<PresenceIndicatorSize, string> = {
   sm: "text-[length:var(--text-sm)]",
+  compact: "text-[length:var(--text-sm)]",
   md: "text-[length:var(--text-xl)]",
+  spotlight: "text-[length:var(--text-xl)]",
   lg: "text-[length:var(--text-2xl)]",
-} as const;
+};
 
-const progressBarWidthClass = {
+const progressBarWidthClass: Record<PresenceIndicatorSize, string> = {
   sm: "w-20",
+  compact: "w-24",
   md: "w-28",
+  spotlight: "w-32",
   lg: "w-36",
-} as const;
+};
 
 const presenceContextIcon: Record<PresenceIndicatorContext, LucideIcon> = {
   person: UserRoundCheck,

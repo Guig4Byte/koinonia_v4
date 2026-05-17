@@ -78,8 +78,7 @@ export function GroupRegisteredEncountersList({ events }: { events: GroupRegiste
                   presenceRate={metrics.presenceRate}
                   tone={presenceBadgeTone}
                   context="event"
-                  size="sm"
-                  className="h-9 w-9"
+                  size="compact"
                 />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[length:var(--text-sm)] font-bold text-[color:var(--color-text-secondary)]">
