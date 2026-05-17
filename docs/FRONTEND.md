@@ -108,26 +108,31 @@ O Tailwind v4 pode detectar classes dentro de Markdown. Em documentação, evite
 
 ## Primitives de UI
 
-Antes de criar markup visual novo, confira `src/components/ui`.
+Antes de criar markup visual novo, confira `src/components/ui` e o guia detalhado em `docs/UI_PRIMITIVES_GUIDE.md`.
 
 Primitives atuais de uso preferencial:
 
 ```txt
 ActionPanel
+ActionPill
 Avatar
-Badge (`size="md" | "sm"`)
+Badge
+BottomSheet
 Button
 ButtonLink
 Card
 CardHeader
 CardLink
+DisclosureCard
 Feedback
-Field
+Field / InputField / SelectField / TextareaField / FieldError / RequiredBadge
 FilterChip
+FixedActionBar / FixedActionBarContent
 ListLinkCard
 PriorityCard
 SectionHeader
 Skeleton
+StatusCard
 SummaryCard / MetricRow
 TimePickerField
 ```
@@ -138,9 +143,26 @@ Uma primitive em `ui` deve:
 - não importar helpers de domínio;
 - não conter texto pastoral fixo;
 - aceitar variações por props explícitas;
-- manter acessibilidade básica no próprio componente quando aplicável.
+- manter acessibilidade básica no próprio componente quando aplicável;
+- centralizar superfície, foco, safe-area, camada fixa ou densidade quando esses pontos forem parte do padrão visual.
 
-Não crie uma primitive nova apenas para esconder uma linha de Tailwind usada uma única vez.
+Não crie uma primitive nova apenas para esconder uma linha de Tailwind usada uma única vez. Crie variante ou primitive quando o ajuste se repetir ou quando o ajuste local estiver corrigindo um componente base.
+
+### Guardrail de overrides locais
+
+Use o script de auditoria para revisar mudanças de UI:
+
+```bash
+npm run audit:ui-css
+```
+
+Use o modo estrito em PRs sensíveis ou CI:
+
+```bash
+npm run audit:ui-css:strict
+```
+
+Achados altos e médios devem ser corrigidos antes de merge. Achados baixos são uma fila de revisão: só promova para primitive quando o padrão for recorrente ou quando o ajuste estiver brigando com um componente base. O fechamento da auditoria e o checklist ficam em `docs/UI_CSS_AUDIT.md`.
 
 ## Componentes Compartilhados Importantes
 
@@ -180,14 +202,14 @@ Regras:
 
 ### Encontros
 
-Os cards de encontros ficam em `src/features/events/components/events-page-sections.tsx` e usam CSS Module local. A tela tem:
+Os cards de encontros ficam em `src/features/events/components/events-page-sections.tsx` e devem usar primitives para superfície e ação visual. A tela tem:
 
 - cards de consulta `Pendências` e `Histórico`;
 - lista de hoje;
 - próximos encontros;
 - variantes visuais para consulta de pendências e histórico.
 
-Mantenha estilos específicos dessas variantes em `events-page-sections.module.css`. Não promova esses estilos para CSS global.
+Use `CardLink`, `PriorityCard`, `Badge`, `ActionPill` e `PresenceMetricDisplay` para superfície, status e ação visual. Mantenha `events-page-sections.module.css` focado em layout interno, grid, ícones e microestrutura da feature. Não promova estilos específicos de encontros para CSS global.
 
 ## Loading states
 
@@ -243,3 +265,6 @@ import { GroupPendingEventCard } from "@/features/groups/components/group-pendin
 8. Nenhuma classe global específica de tela foi adicionada?
 9. Métricas de presença usam os componentes compartilhados?
 10. Telas operacionais, como check-in, tratam navegação fixa e barras fixas sem sobrepor conteúdo?
+11. `npm run audit:ui-css` não introduziu achado alto ou médio?
+12. Se apareceu achado baixo novo, ele é caso único e justificado?
+13. A mudança foi validada em viewport mobile pequena e nos temas claro, escuro e pergaminho?
