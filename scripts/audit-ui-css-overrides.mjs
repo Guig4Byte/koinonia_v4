@@ -11,6 +11,9 @@ const COMPONENT_NAMES = [
   "CardLink",
   "Card",
   "Field",
+  "InputField",
+  "SelectField",
+  "TextareaField",
   "FilterChip",
   "SummaryCard",
   "PresenceMetricDisplay",
@@ -86,7 +89,34 @@ const componentRules = {
       severity: "baixa",
       pattern: /\bborder(?:-|\b)|\bbg-\[|\brounded-|\b(?:px|py|p)-|\btext-\[/,
       message: "Field recebeu classes que parecem pertencer a um controle de formulário.",
-      recommendation: "Considere primitives como InputField, SelectField, TextareaField e FieldError.",
+      recommendation: "Use InputField, SelectField, TextareaField ou FieldError para centralizar controle, foco, erro e required.",
+    },
+  ],
+  InputField: [
+    {
+      id: "input-field-local-control-style",
+      severity: "baixa",
+      pattern: /\bborder(?:-|\b)|\bbg-\[|\brounded-|\b(?:h|min-h|px|py|p)-|\btext-\[/,
+      message: "InputField recebeu override local de controle de formulário.",
+      recommendation: "Promova o padrão para props como size, error, required ou para a primitive de formulário base.",
+    },
+  ],
+  SelectField: [
+    {
+      id: "select-field-local-control-style",
+      severity: "baixa",
+      pattern: /\bborder(?:-|\b)|\bbg-\[|\brounded-|\b(?:h|min-h|px|py|p)-|\btext-\[/,
+      message: "SelectField recebeu override local de controle de formulário.",
+      recommendation: "Promova o padrão para props como size, error, required, icon ou para a primitive de formulário base.",
+    },
+  ],
+  TextareaField: [
+    {
+      id: "textarea-field-local-control-style",
+      severity: "baixa",
+      pattern: /\bborder(?:-|\b)|\bbg-\[|\brounded-|\b(?:h|min-h|px|py|p)-|\btext-\[/,
+      message: "TextareaField recebeu override local de controle de formulário.",
+      recommendation: "Promova o padrão para props como size, error, required, resize ou para a primitive de formulário base.",
     },
   ],
   FilterChip: [
