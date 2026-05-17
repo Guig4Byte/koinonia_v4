@@ -358,6 +358,73 @@ function collapseWhitespace(value) {
   return value.replace(/\s+/g, " ").trim();
 }
 
+function extractClassNameAttributeText(tagText) {
+  const classNameIndex = tagText.indexOf("className");
+
+  if (classNameIndex === -1) {
+    return "";
+  }
+
+  const equalsIndex = tagText.indexOf("=", classNameIndex);
+
+  if (equalsIndex === -1) {
+    return "";
+  }
+
+  let valueStartIndex = equalsIndex + 1;
+
+  while (/\s/.test(tagText[valueStartIndex] ?? "")) {
+    valueStartIndex += 1;
+  }
+
+  const startChar = tagText[valueStartIndex];
+
+  if (startChar === '"' || startChar === "'") {
+    const endIndex = tagText.indexOf(startChar, valueStartIndex + 1);
+    return endIndex === -1 ? tagText.slice(valueStartIndex + 1) : tagText.slice(valueStartIndex + 1, endIndex);
+  }
+
+  if (startChar !== "{") {
+    return "";
+  }
+
+  let quote = null;
+  let braceDepth = 0;
+
+  for (let index = valueStartIndex; index < tagText.length; index += 1) {
+    const char = tagText[index];
+    const previousChar = tagText[index - 1];
+
+    if (quote) {
+      if (char === quote && previousChar !== "\\") {
+        quote = null;
+      }
+
+      continue;
+    }
+
+    if (char === '"' || char === "'" || char === "`") {
+      quote = char;
+      continue;
+    }
+
+    if (char === "{") {
+      braceDepth += 1;
+      continue;
+    }
+
+    if (char === "}") {
+      braceDepth -= 1;
+
+      if (braceDepth === 0) {
+        return tagText.slice(valueStartIndex + 1, index);
+      }
+    }
+  }
+
+  return tagText.slice(valueStartIndex + 1);
+}
+
 function createFinding({ component, file, line, message, recommendation, ruleId, severity, snippet }) {
   return {
     component,
@@ -388,14 +455,16 @@ function scanJsxFile({ content, lines, lineStarts, relativePath }) {
     const tagText = content.slice(startIndex, endIndex);
     const line = lineNumberFromIndex(lineStarts, startIndex);
 
-    if (!tagText.includes("className") || isIgnoredAtLine(lines, line)) {
+    const classNameText = extractClassNameAttributeText(tagText);
+
+    if (!classNameText || isIgnoredAtLine(lines, line)) {
       continue;
     }
 
     const rules = componentRules[component] ?? [];
 
     for (const rule of rules) {
-      if (rule.pattern.test(tagText)) {
+      if (rule.pattern.test(classNameText)) {
         findings.push(
           createFinding({
             component,

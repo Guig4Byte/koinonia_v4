@@ -4,7 +4,9 @@ import { cn } from "@/lib/cn";
 const badgeTones = ["neutral", "ok", "warn", "risk", "info", "care", "support"] as const;
 
 export type BadgeTone = (typeof badgeTones)[number];
-export type BadgeSize = "md" | "sm";
+export type BadgeSize = "md" | "sm" | "xs";
+export type BadgeShape = "pill" | "rounded";
+export type BadgeMaxWidth = "full" | "none" | "header" | "tightHeader" | "list" | "row" | "narrow";
 
 const badgeToneValues = new Set<string>(badgeTones);
 
@@ -25,29 +27,54 @@ const badgeToneClass: Record<BadgeTone, string> = {
 const badgeSizeClass: Record<BadgeSize, string> = {
   md: "px-2.5 py-1 text-[length:var(--text-xs)]",
   sm: "px-2 py-0.5 text-[length:var(--text-xs)]",
+  xs: "px-1.5 py-0.5 text-[length:var(--text-xs)]",
+};
+
+const badgeShapeClass: Record<BadgeShape, string> = {
+  pill: "rounded-full",
+  rounded: "rounded-[0.72rem]",
+};
+
+const badgeMaxWidthClass: Record<BadgeMaxWidth, string> = {
+  full: "max-w-full",
+  none: "",
+  header: "max-w-[48%]",
+  tightHeader: "max-w-[46%]",
+  list: "max-w-[7.25rem]",
+  row: "max-w-[7.5rem]",
+  narrow: "max-w-[6rem]",
 };
 
 export function Badge({
   tone = "neutral",
   size = "md",
+  shape = "pill",
+  maxWidth = "full",
+  truncate = true,
   className,
   children,
 }: {
   tone?: BadgeTone;
   size?: BadgeSize;
+  shape?: BadgeShape;
+  maxWidth?: BadgeMaxWidth;
+  truncate?: boolean;
   className?: string;
   children: ReactNode;
 }) {
   return (
     <span
       className={cn(
-        "inline-flex max-w-full shrink-0 items-center justify-center overflow-hidden rounded-full text-center font-semibold leading-tight whitespace-nowrap",
+        "inline-flex min-w-0 shrink-0 items-center justify-center text-center font-semibold leading-tight",
+        truncate ? "overflow-hidden whitespace-nowrap" : "whitespace-normal",
         badgeToneClass[tone],
         badgeSizeClass[size],
+        badgeShapeClass[shape],
+        badgeMaxWidthClass[maxWidth],
         className,
       )}
     >
-      <span className="min-w-0 truncate">{children}</span>
+      <span className={cn("min-w-0", truncate && "truncate")}>{children}</span>
     </span>
   );
 }

@@ -51,7 +51,7 @@ export function PersonSignalCard(props: {
               <p className="k-item-title">{name}</p>
               <p className="mt-0.5 text-[length:var(--text-sm)] leading-snug text-[color:var(--color-text-secondary)]">{context}</p>
             </div>
-            <Badge tone={resolvedBadgeTone} size="sm" className="max-w-[48%]">{resolvedBadgeLabel}</Badge>
+            <Badge tone={resolvedBadgeTone} size="sm" maxWidth="header">{resolvedBadgeLabel}</Badge>
           </div>
           {reason ? <p className="mt-2 whitespace-pre-line border-t border-[var(--color-border-divider)] pt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-primary)]">{reason}</p> : null}
           {cardHref ? (

@@ -1,5 +1,5 @@
 import type { ElementType, ReactNode } from "react";
-import { Badge, type BadgeTone } from "@/components/ui/badge";
+import { Badge, type BadgeMaxWidth, type BadgeShape, type BadgeSize, type BadgeTone } from "@/components/ui/badge";
 import { cn } from "@/lib/cn";
 
 type CardHeaderProps = {
@@ -10,6 +10,10 @@ type CardHeaderProps = {
   badgeLabel?: ReactNode;
   badgeTone?: BadgeTone;
   badgeClassName?: string;
+  badgeSize?: BadgeSize;
+  badgeShape?: BadgeShape;
+  badgeMaxWidth?: BadgeMaxWidth;
+  badgeTruncate?: boolean;
   action?: ReactNode;
   as?: ElementType;
   className?: string;
@@ -28,6 +32,10 @@ export function CardHeader({
   badgeLabel,
   badgeTone = "neutral",
   badgeClassName,
+  badgeSize,
+  badgeShape,
+  badgeMaxWidth = "header",
+  badgeTruncate,
   action,
   as: Title = "p",
   className,
@@ -37,7 +45,18 @@ export function CardHeader({
   detailClassName,
   eyebrowClassName,
 }: CardHeaderProps) {
-  const trailing = action ?? (badgeLabel ? <Badge tone={badgeTone} className={cn("max-w-[48%]", badgeClassName)}>{badgeLabel}</Badge> : null);
+  const trailing = action ?? (badgeLabel ? (
+    <Badge
+      tone={badgeTone}
+      size={badgeSize}
+      shape={badgeShape}
+      maxWidth={badgeMaxWidth}
+      truncate={badgeTruncate}
+      className={badgeClassName}
+    >
+      {badgeLabel}
+    </Badge>
+  ) : null);
 
   return (
     <div className={cn("k-card-header-row", className)}>

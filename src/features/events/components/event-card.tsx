@@ -54,7 +54,7 @@ export function EventCard({
           <div className={styles.pendingBody}>
             <div className={styles.pendingHeader}>
               <p className={cn(styles.title, styles.pendingTitle)}>{consultationTitle}</p>
-              <Badge tone={state.badgeTone} className={cn(styles.badge, styles.pendingBadge)}>Pendente</Badge>
+              <Badge tone={state.badgeTone} size="md" shape="rounded" maxWidth="tightHeader">Pendente</Badge>
             </div>
 
             <p className={styles.pendingMeta}>
@@ -112,7 +112,7 @@ export function EventCard({
           <div className={styles.historyBody}>
             <div className={styles.historyHeader}>
               <p className={cn(styles.title, styles.historyTitle)}>{consultationTitle}</p>
-              <Badge tone="ok" className={cn(styles.badge, styles.historyBadge)}>Registrada</Badge>
+              <Badge tone="ok" size="md" shape="rounded" maxWidth="tightHeader">Registrada</Badge>
             </div>
 
             <p className={styles.historyMeta}>
@@ -189,7 +189,7 @@ export function EventCard({
         ) : null}
         badgeLabel={state.label}
         badgeTone={state.badgeTone}
-        badgeClassName={styles.badge}
+        badgeMaxWidth="tightHeader"
         titleClassName={styles.title}
         subtitleClassName={styles.meta}
         detailClassName={styles.location}

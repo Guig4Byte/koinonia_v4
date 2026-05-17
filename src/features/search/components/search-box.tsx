@@ -260,7 +260,6 @@ export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: 
                       badgeTone={person.statusTone ?? "neutral"}
                       titleClassName="k-item-title-sm block truncate"
                       subtitleClassName="mt-0.5 block truncate text-[length:var(--text-xs)] text-[color:var(--color-text-secondary)]"
-                      badgeClassName="truncate"
                     />
                   </Link>
                 );
