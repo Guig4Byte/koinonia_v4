@@ -17,6 +17,8 @@ describe("event-detail-view", () => {
       { personId: "4", fullName: "Daniel", currentStatus: null },
     ]);
 
+    expect(view.memberTotalLabel).toBe("4 membros");
+    expect(view.memberBreakdownLabel).toBe("1 presente · 1 ausente · 1 justificou · 1 pendente");
     expect(view.memberSummary).toBe("4 membros · 1 presente · 1 ausente · 1 justificou · 1 pendente");
     expect(view.hasPriorityAttention).toBe(true);
     expect(view.groups.map((group) => group.members.map((member) => member.fullName))).toEqual([
@@ -36,7 +38,7 @@ describe("event-detail-view", () => {
   it("derives event detail labels without duplicating page branching", () => {
     expect(buildEventDetailState({ status: "SCHEDULED", completed: false, isFutureEvent: false, canEditCheckIn: true, showCheckInForm: false })).toMatchObject({
       checkInLabel: "Resumo de presença",
-      checkInSectionTitle: "Resumo da presença",
+      checkInSectionTitle: "Detalhes da presença",
       eventStatusLabel: "Presença pendente",
       eventStatusTone: "warn",
     });

@@ -90,10 +90,13 @@ export function EventReadOnlySummary({
   const attendanceView = buildEventReadOnlyAttendanceView(members);
 
   return (
-    <section className="space-y-3">
+    <section className="space-y-3 pb-8">
       <Card>
         <p className="k-item-title">Membros</p>
-        <p className="k-item-detail">{attendanceView.memberSummary}</p>
+        <p className="mt-1 text-[length:var(--text-lg)] font-semibold leading-none text-[color:var(--color-text-primary)]">
+          {attendanceView.memberTotalLabel}
+        </p>
+        <p className="mt-1 k-item-detail">{attendanceView.memberBreakdownLabel}</p>
 
         <div className="mt-4 space-y-4">
           {attendanceView.groups.map((group) => (
@@ -109,14 +112,12 @@ export function EventReadOnlySummary({
 
         {attendanceView.presentMembers.length > 0 ? (
           <details className="group mt-4">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-divider)] bg-[var(--surface-alt)] px-3 py-2 text-[length:var(--text-sm)] transition active:scale-[0.99]">
-              <div>
+            <summary className="flex cursor-pointer list-none flex-col gap-3 rounded-2xl border border-[var(--color-border-divider)] bg-[var(--surface-alt)] px-3 py-3 text-[length:var(--text-sm)] transition active:scale-[0.99] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus-ring)] min-[390px]:flex-row min-[390px]:items-center min-[390px]:justify-between">
+              <div className="min-w-0">
                 <p className="k-item-title">Presentes ({attendanceView.presentMembers.length})</p>
-                <p className="k-item-detail-tight">
-                  Quem esteve no encontro. Abra só se quiser conferir a lista completa.
-                </p>
+                <p className="k-item-detail-tight">Lista completa dos presentes.</p>
               </div>
-              <span className="shrink-0 text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.08em] text-[color:var(--color-brand)]">
+              <span className="inline-flex min-h-9 shrink-0 items-center justify-center rounded-full border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-3 text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.08em] text-[color:var(--color-brand)] transition group-hover:border-[var(--color-focus-ring)]">
                 <span className="group-open:hidden">Mostrar</span>
                 <span className="hidden group-open:inline">Ocultar</span>
               </span>

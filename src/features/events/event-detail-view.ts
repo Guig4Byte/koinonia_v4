@@ -58,8 +58,8 @@ export function buildEventReadOnlyAttendanceView(members: EventReadOnlyMember[])
   const pendingMembers = sortPeopleByName(members.filter((member) => !member.currentStatus));
   const presentMembers = sortPeopleByName(members.filter((member) => member.currentStatus === AttendanceStatus.PRESENT));
 
-  const memberSummary = [
-    countLabel(members.length, "membro"),
+  const memberTotalLabel = countLabel(members.length, "membro");
+  const memberBreakdownLabel = [
     countLabel(presentMembers.length, "presente"),
     countLabel(absentMembers.length, "ausente"),
     justifiedMembers.length > 0 ? justifiedCountLabel(justifiedMembers.length) : null,
@@ -67,8 +67,11 @@ export function buildEventReadOnlyAttendanceView(members: EventReadOnlyMember[])
   ]
     .filter(Boolean)
     .join(" · ");
+  const memberSummary = [memberTotalLabel, memberBreakdownLabel].filter(Boolean).join(" · ");
 
   return {
+    memberTotalLabel,
+    memberBreakdownLabel,
     memberSummary,
     presentMembers,
     visitorsTitle: "Visitantes",
@@ -152,7 +155,7 @@ export function buildEventDetailState({
       ? "Sobre o encontro"
       : isFutureEvent
         ? "Sobre o encontro"
-        : "Resumo da presença";
+        : "Detalhes da presença";
 
   const eventStatusLabel = isCancelledEvent
     ? closedWithoutPresenceLabel(status)
