@@ -123,7 +123,6 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
         <TeamStructureAdjustments
           unassignedGroups={filteredUnassignedGroups}
           inactiveGroups={filteredInactiveGroups}
-          activeFilter={activeFilter}
         />
 
       </div>

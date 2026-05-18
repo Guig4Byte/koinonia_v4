@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { Archive, ChevronRight, HeartHandshake, UserRound } from "lucide-react";
 import type { ReactNode } from "react";
+import { Archive, ChevronRight, HeartHandshake, UserRound } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { ProgressiveList } from "@/components/shared/progressive-list";
 import { EmptyState } from "@/components/shared/base-cards";
+import { SectionHeader } from "@/components/ui/section-header";
 import { DisclosureCard } from "@/components/ui/disclosure-card";
 import { PriorityCard } from "@/components/ui/priority-card";
 import {
@@ -15,7 +16,6 @@ import {
   shouldShowGroupBadge,
   supervisorSummary,
   teamGroupHref,
-  TEAM_SECTION_LIMIT,
   type InactiveTeamGroup,
   type SupervisorTeam,
   type TeamFilter,
@@ -128,21 +128,6 @@ export function TeamGroupLink({ group, activeFilter }: { group: TeamGroup; activ
   );
 }
 
-export function InactiveTeamGroupLink({ group }: { group: InactiveTeamGroup }) {
-  const scheduleText = inactiveGroupScheduleText(group);
-
-  return (
-    <TeamCellLink
-      href={ROUTES.editGroup(group.id)}
-      name={group.name}
-      subtitle={`${scheduleText}${group.locationName ? ` · ${group.locationName}` : ""}`}
-      badgeLabel="Inativa"
-      badgeTone="neutral"
-      className={styles.cellLinkNeutral}
-    />
-  );
-}
-
 function SupervisorDisclosureAction() {
   return (
     <span className={styles.supervisorDisclosureAction}>
@@ -207,7 +192,18 @@ export function TeamSupervisorCard({ supervisor, activeFilter }: { supervisor: S
   );
 }
 
-function AdjustmentGroup({
+const STRUCTURE_ADJUSTMENTS_LIMIT = 2;
+
+function StructureAdjustmentAction({ count }: { count: number }) {
+  return (
+    <span className={styles.structureDisclosureAction} aria-label={`${count} célula${count === 1 ? "" : "s"}`}>
+      <span className={styles.structureCount}>{count}</span>
+      <ChevronRight className={styles.structureChevron} aria-hidden="true" />
+    </span>
+  );
+}
+
+function StructureAdjustmentDisclosure({
   icon,
   title,
   detail,
@@ -223,75 +219,148 @@ function AdjustmentGroup({
   const Icon = icon === "person" ? UserRound : Archive;
 
   return (
-    <div className={styles.adjustmentGroup}>
-      <div className={styles.adjustmentHeader}>
-        <span className={styles.adjustmentIcon} aria-hidden="true">
-          <Icon className="h-4 w-4" strokeWidth={1.9} />
+    <DisclosureCard
+      title={(
+        <span className={styles.structureSummaryContent}>
+          <span className={styles.structureIcon} aria-hidden="true">
+            <Icon className="h-4 w-4" strokeWidth={1.9} />
+          </span>
+          <span className={styles.structureCopy}>
+            <span className={styles.structureTitle}>{title}</span>
+            <span className={styles.structureDetail}>{detail}</span>
+          </span>
         </span>
-        <span className={styles.adjustmentCopy}>
-          <span className={styles.adjustmentTitle}>{title}</span>
-          <span className={styles.adjustmentDetail}>{detail}</span>
-        </span>
-        <span className={styles.adjustmentCount}>{count}</span>
-      </div>
-      <div className={styles.adjustmentList}>{children}</div>
-    </div>
+      )}
+      tone="transparent"
+      size="sm"
+      separatedContent
+      action={<StructureAdjustmentAction count={count} />}
+      className={styles.structureDisclosure}
+      summaryClassName={styles.structureDisclosureSummary}
+      titleClassName={styles.structureDisclosureTitle}
+      contentClassName={styles.structureDisclosureContent}
+    >
+      {children}
+    </DisclosureCard>
+  );
+}
+
+function StructureChildRow({
+  href,
+  name,
+  subtitle,
+  badgeLabel,
+  badgeTone,
+}: {
+  href: string;
+  name: string;
+  subtitle: string;
+  badgeLabel?: string;
+  badgeTone?: BadgeTone;
+}) {
+  return (
+    <Link href={href} className={cn(styles.structureChildRow, badgeTone ? cellLinkToneClass[badgeTone] : undefined)}>
+      <span className={styles.structureChildMarker} aria-hidden="true" />
+      <span className={styles.structureChildText}>
+        <span className={styles.structureChildTitle}>{name}</span>
+        <span className={styles.structureChildSubtitle}>{subtitle}</span>
+      </span>
+      <span className={styles.structureChildAction}>
+        {badgeLabel ? (
+          <Badge tone={badgeTone} size="xs" maxWidth="9.5rem" truncate>
+            {badgeLabel}
+          </Badge>
+        ) : null}
+        <ChevronRight className={styles.cellChevron} aria-hidden="true" />
+      </span>
+    </Link>
+  );
+}
+
+function StructureGroupLink({ group }: { group: TeamGroup }) {
+  const tone = groupBadgeTone(group);
+  const showBadge = shouldShowGroupBadge(group);
+
+  return (
+    <StructureChildRow
+      href={teamGroupHref(group.id)}
+      name={group.name}
+      subtitle={compactGroupSubtitle(group)}
+      badgeLabel={showBadge ? group.statusLabel : undefined}
+      badgeTone={tone}
+    />
+  );
+}
+
+function InactiveStructureGroupLink({ group }: { group: InactiveTeamGroup }) {
+  const location = group.locationName ? ` · ${group.locationName}` : "";
+
+  return (
+    <StructureChildRow
+      href={ROUTES.editGroup(group.id)}
+      name={group.name}
+      subtitle={`${inactiveGroupScheduleText(group)}${location}`}
+      badgeLabel="Inativa"
+      badgeTone="neutral"
+    />
   );
 }
 
 export function TeamStructureAdjustments({
   unassignedGroups,
   inactiveGroups,
-  activeFilter,
 }: {
   unassignedGroups: TeamGroup[];
   inactiveGroups: InactiveTeamGroup[];
-  activeFilter?: TeamFilter;
 }) {
   if (unassignedGroups.length === 0 && inactiveGroups.length === 0) return null;
 
   return (
-    <section className={styles.adjustmentsSection}>
-      <h2 className={styles.adjustmentsHeading}>Ajustes de estrutura</h2>
-      <PriorityCard as="div" padding="none" radius="default" elevation="soft" containment="hidden">
+    <section className={styles.structureSection}>
+      <SectionHeader
+        title="Células para organizar"
+        detail="Sem supervisão definida ou fora do acompanhamento ativo."
+        className={styles.structureHeading}
+      />
+      <PriorityCard as="div" padding="none" radius="default" elevation="soft" containment="hidden" className={styles.structureCard}>
         {unassignedGroups.length > 0 ? (
-          <AdjustmentGroup
+          <StructureAdjustmentDisclosure
             icon="person"
             title="Sem supervisor"
-            detail="Células ativas sem vínculo com supervisor."
+            detail="Precisam de supervisão definida."
             count={unassignedGroups.length}
           >
             <ProgressiveList
-              initialCount={TEAM_SECTION_LIMIT}
-              step={TEAM_SECTION_LIMIT}
+              initialCount={STRUCTURE_ADJUSTMENTS_LIMIT}
+              step={STRUCTURE_ADJUSTMENTS_LIMIT}
               moreLabel="Ver mais células"
               lessLabel="Mostrar menos células"
             >
               {unassignedGroups.map((group) => (
-                <TeamGroupLink key={group.id} group={group} activeFilter={activeFilter} />
+                <StructureGroupLink key={group.id} group={group} />
               ))}
             </ProgressiveList>
-          </AdjustmentGroup>
+          </StructureAdjustmentDisclosure>
         ) : null}
 
         {inactiveGroups.length > 0 ? (
-          <AdjustmentGroup
+          <StructureAdjustmentDisclosure
             icon="archive"
             title="Células inativas"
-            detail="Células arquivadas ou desativadas."
+            detail="Fora do acompanhamento ativo."
             count={inactiveGroups.length}
           >
             <ProgressiveList
-              initialCount={TEAM_SECTION_LIMIT}
-              step={TEAM_SECTION_LIMIT}
-              moreLabel="Ver mais células inativas"
-              lessLabel="Mostrar menos células inativas"
+              initialCount={STRUCTURE_ADJUSTMENTS_LIMIT}
+              step={STRUCTURE_ADJUSTMENTS_LIMIT}
+              moreLabel="Ver mais células"
+              lessLabel="Mostrar menos células"
             >
               {inactiveGroups.map((group) => (
-                <InactiveTeamGroupLink key={group.id} group={group} />
+                <InactiveStructureGroupLink key={group.id} group={group} />
               ))}
             </ProgressiveList>
-          </AdjustmentGroup>
+          </StructureAdjustmentDisclosure>
         ) : null}
       </PriorityCard>
     </section>
