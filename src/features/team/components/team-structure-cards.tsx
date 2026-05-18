@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Archive, ChevronRight, HeartHandshake, UserRound } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
-import { Badge, type BadgeTone } from "@/components/ui/badge";
+import { Badge, type BadgeMaxWidth, type BadgeTone } from "@/components/ui/badge";
 import { ProgressiveList } from "@/components/shared/progressive-list";
 import { EmptyState } from "@/components/shared/base-cards";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -51,6 +51,28 @@ const filterIconToneClass: Partial<Record<TeamFilter, string>> = {
   [FILTER_STABLE]: styles.filterContextOk,
 };
 
+function cellToneClass(tone?: BadgeTone) {
+  return tone ? cellLinkToneClass[tone] : undefined;
+}
+
+function CellStatusBadge({
+  label,
+  tone,
+  maxWidth,
+}: {
+  label?: string;
+  tone?: BadgeTone;
+  maxWidth: BadgeMaxWidth;
+}) {
+  if (!label) return null;
+
+  return (
+    <Badge tone={tone} size="xs" maxWidth={maxWidth} truncate>
+      {label}
+    </Badge>
+  );
+}
+
 function TeamCellLink({
   href,
   name,
@@ -73,16 +95,7 @@ function TeamCellLink({
         <span className={styles.cellSubtitle}>{subtitle}</span>
       </span>
       <span className={styles.cellAction}>
-        {badgeLabel ? (
-          <Badge
-            tone={badgeTone}
-            size="xs"
-            maxWidth="none"
-            truncate
-          >
-            {badgeLabel}
-          </Badge>
-        ) : null}
+        <CellStatusBadge label={badgeLabel} tone={badgeTone} maxWidth="none" />
         <ChevronRight className={styles.cellChevron} aria-hidden="true" />
       </span>
     </Link>
@@ -107,7 +120,6 @@ export function TeamFilterContextCard({
         <span className={styles.filterContextTitle}>{title}</span>
         <span className={styles.filterContextDetail}>{detail}</span>
       </span>
-      <ChevronRight className={styles.filterContextChevron} aria-hidden="true" />
     </section>
   );
 }
@@ -123,7 +135,7 @@ export function TeamGroupLink({ group, activeFilter }: { group: TeamGroup; activ
       subtitle={compactGroupSubtitle(group)}
       badgeLabel={showBadge ? group.statusLabel : undefined}
       badgeTone={tone}
-      className={cellLinkToneClass[tone]}
+      className={cellToneClass(tone)}
     />
   );
 }
@@ -259,31 +271,27 @@ function StructureChildRow({
   badgeTone?: BadgeTone;
 }) {
   return (
-    <Link href={href} className={cn(styles.structureChildRow, badgeTone ? cellLinkToneClass[badgeTone] : undefined)}>
+    <Link href={href} className={cn(styles.structureChildRow, cellToneClass(badgeTone))}>
       <span className={styles.structureChildMarker} aria-hidden="true" />
       <span className={styles.structureChildText}>
         <span className={styles.structureChildTitle}>{name}</span>
         <span className={styles.structureChildSubtitle}>{subtitle}</span>
       </span>
       <span className={styles.structureChildAction}>
-        {badgeLabel ? (
-          <Badge tone={badgeTone} size="xs" maxWidth="9.5rem" truncate>
-            {badgeLabel}
-          </Badge>
-        ) : null}
+        <CellStatusBadge label={badgeLabel} tone={badgeTone} maxWidth="row" />
         <ChevronRight className={styles.cellChevron} aria-hidden="true" />
       </span>
     </Link>
   );
 }
 
-function StructureGroupLink({ group }: { group: TeamGroup }) {
+function StructureGroupLink({ group, activeFilter }: { group: TeamGroup; activeFilter?: TeamFilter }) {
   const tone = groupBadgeTone(group);
   const showBadge = shouldShowGroupBadge(group);
 
   return (
     <StructureChildRow
-      href={teamGroupHref(group.id)}
+      href={teamGroupHref(group.id, activeFilter)}
       name={group.name}
       subtitle={compactGroupSubtitle(group)}
       badgeLabel={showBadge ? group.statusLabel : undefined}
@@ -309,9 +317,11 @@ function InactiveStructureGroupLink({ group }: { group: InactiveTeamGroup }) {
 export function TeamStructureAdjustments({
   unassignedGroups,
   inactiveGroups,
+  activeFilter,
 }: {
   unassignedGroups: TeamGroup[];
   inactiveGroups: InactiveTeamGroup[];
+  activeFilter?: TeamFilter;
 }) {
   if (unassignedGroups.length === 0 && inactiveGroups.length === 0) return null;
 
@@ -337,7 +347,7 @@ export function TeamStructureAdjustments({
               lessLabel="Mostrar menos células"
             >
               {unassignedGroups.map((group) => (
-                <StructureGroupLink key={group.id} group={group} />
+                <StructureGroupLink key={group.id} group={group} activeFilter={activeFilter} />
               ))}
             </ProgressiveList>
           </StructureAdjustmentDisclosure>
