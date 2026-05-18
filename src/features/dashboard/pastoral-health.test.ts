@@ -38,4 +38,17 @@ describe("pastoral-health", () => {
       ["stable", 1, "ok"],
     ]);
   });
+
+  it("liga cada segmento ao filtro correspondente da equipe", () => {
+    const overview = buildPastoralHealthOverview([group()]);
+
+    expect(overview.segments.map((segment) => [segment.key, segment.href])).toEqual([
+      ["urgent", "/equipe?filtro=urgentes"],
+      ["pastoral", "/equipe?filtro=encaminhadas"],
+      ["support", "/equipe?filtro=apoio"],
+      ["attention", "/equipe?filtro=atencao"],
+      ["noPresence", "/equipe?filtro=sem-presenca"],
+      ["stable", "/equipe?filtro=estaveis"],
+    ]);
+  });
 });

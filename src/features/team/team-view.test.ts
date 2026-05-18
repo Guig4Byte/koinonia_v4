@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   buildTeamPageLists,
   groupBadgeTone,
+  groupMatchesFilter,
   inactiveGroupScheduleText,
   readTeamFilter,
+  teamFilterContent,
   supervisorSummary,
   teamNavIndicator,
   teamSavedMessage,
@@ -84,12 +86,26 @@ const inactiveGroup: InactiveTeamGroup = {
 
 describe("team-view", () => {
   it("normaliza filtros inválidos para todos", () => {
+    expect(readTeamFilter("urgentes")).toBe("urgentes");
+    expect(readTeamFilter("encaminhadas")).toBe("encaminhadas");
+    expect(readTeamFilter("apoio")).toBe("apoio");
     expect(readTeamFilter("sem-presenca")).toBe("sem-presenca");
+    expect(readTeamFilter("estaveis")).toBe("estaveis");
     expect(readTeamFilter("qualquer-coisa")).toBe("todos");
   });
 
+  it("filtra células pela classificação pastoral principal", () => {
+    expect(groupMatchesFilter(teamGroup({ urgentCount: 1 }), "urgentes")).toBe(true);
+    expect(groupMatchesFilter(teamGroup({ pastoralCasesCount: 1 }), "encaminhadas")).toBe(true);
+    expect(groupMatchesFilter(teamGroup({ supportRequestsCount: 1 }), "apoio")).toBe(true);
+    expect(groupMatchesFilter(teamGroup({ localAttentionCount: 1 }), "atencao")).toBe(true);
+    expect(groupMatchesFilter(teamGroup({ hasPresenceData: false, hasNoPresenceData: true, presenceRate: 0 }), "sem-presenca")).toBe(true);
+    expect(groupMatchesFilter(teamGroup(), "estaveis")).toBe(true);
+    expect(groupMatchesFilter(teamGroup({ urgentCount: 1, supportRequestsCount: 1 }), "apoio")).toBe(false);
+  });
+
   it("filtra supervisores mantendo supervisor sem grupo apenas na visão padrão", () => {
-    const attentionGroup = teamGroup({ pastoralPriorityScore: 10, statusLabel: "Atenção local" });
+    const attentionGroup = teamGroup({ localAttentionCount: 1, pastoralPriorityScore: 10, statusLabel: "Atenção local" });
     const emptySupervisor = supervisor({ id: "sup-empty", name: "Pedro", groups: [] });
     const activeSupervisor = supervisor({ groups: [attentionGroup] });
     const team = teamOverview({ supervisors: [emptySupervisor, activeSupervisor] });
@@ -124,6 +140,7 @@ describe("team-view", () => {
     expect(inactiveGroupScheduleText(inactiveGroup)).toBe("Terça · 20:00");
     expect(teamSavedMessage("celula-criada")).toBe("Célula criada.");
     expect(teamSavedMessage("outro")).toBeNull();
+    expect(teamFilterContent("apoio").title).toBe("Células com pedido de apoio");
     expect(teamNavIndicator(teamOverview({ summary: { ...teamOverview().summary, pastoralCasesCount: 1 } }).summary)).toBe("risk");
   });
 });

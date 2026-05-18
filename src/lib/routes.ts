@@ -39,6 +39,7 @@ export const ROUTES = {
   eventCheckInAdjustment: (eventId: string) => routeWithQuery(`/eventos/${eventId}`, { modo: "ajuste" }),
   eventPresenceConfirmation: (eventId: string, confirmation: string) => routeWithQuery(`/eventos/${eventId}`, { presenca: confirmation }),
   eventsConsultation: (consulta: string, periodo: string) => routeWithQuery("/eventos", { consulta, periodo }),
+  teamFilter: (filter: string) => routeWithQuery("/equipe", { filtro: filter }),
   loginError: (nextPath?: string | null) => routeWithQuery("/login", { erro: "credenciais", next: nextPath }),
 } as const;
 

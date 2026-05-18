@@ -17,6 +17,7 @@ import {
   SUPERVISOR_SECTION_LIMIT,
   SUPERVISORS_SECTION_ID,
   TEAM_SECTION_LIMIT,
+  teamFilterContent,
   teamNavIndicator,
   teamSavedMessage,
 } from "@/features/team/team-view";
@@ -59,6 +60,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
   } = buildTeamPageLists({ team, inactiveGroups, normalizedQuery, activeFilter });
   const canCreateGroup = canManageGroups(user);
   const savedMessage = teamSavedMessage(savedParam);
+  const filterContent = teamFilterContent(activeFilter);
 
   return (
     <AppShell
@@ -84,7 +86,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
         {savedMessage ? <InfoCard tone="success">{savedMessage}</InfoCard> : null}
 
         <section id={SUPERVISORS_SECTION_ID} className="scroll-mt-4">
-          <SectionTitle className="mt-4" detail="Busque ou filtre por atenção.">Estrutura da equipe</SectionTitle>
+          <SectionTitle className="mt-4" detail={filterContent.detail}>{filterContent.title}</SectionTitle>
           <TeamStructureSearch query={query} filter={activeFilter} sectionId={SUPERVISORS_SECTION_ID} />
         </section>
 
@@ -104,7 +106,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
           ) : (
             <EmptyState title={isFiltered ? "Nenhum resultado nesse recorte" : "Nenhum supervisor cadastrado"}>
               {isFiltered
-                ? "Ajuste a busca ou limpe os filtros para conferir toda a estrutura pastoral."
+                ? filterContent.empty
                 : "Quando supervisores forem cadastrados, a estrutura da equipe aparecerá aqui."
               }
             </EmptyState>

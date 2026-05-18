@@ -1,9 +1,9 @@
 import type { getPastorTeamOverview } from "@/features/dashboard/queries";
 import type { SignalBadgeTone } from "@/features/signals/display";
-import { hasLowPresence } from "@/features/groups/group-pastoral-priority";
+import { groupPastoralStatusKey, hasLowPresence, type GroupPastoralStatusKey } from "@/features/groups/group-pastoral-priority";
 import { weekdayLabel } from "@/features/groups/weekdays";
 import type { TeamFilter } from "@/features/team/team-filters";
-import { FILTER_ALL, FILTER_ATTENTION, FILTER_NO_RECENT_PRESENCE } from "@/lib/filter-param";
+import { FILTER_ALL, FILTER_ATTENTION, FILTER_NO_RECENT_PRESENCE, FILTER_PASTORAL, FILTER_STABLE, FILTER_SUPPORT, FILTER_URGENT } from "@/lib/filter-param";
 import { matchesNormalizedQuery } from "@/lib/text";
 import { countLabel } from "@/lib/format";
 
@@ -14,6 +14,53 @@ export const SUPERVISORS_SECTION_ID = "supervisores";
 
 
 export { readTeamFilter, TEAM_FILTERS, type TeamFilter } from "@/features/team/team-filters";
+
+const filterToStatusKey: Partial<Record<TeamFilter, GroupPastoralStatusKey>> = {
+  [FILTER_URGENT]: "urgent",
+  [FILTER_PASTORAL]: "pastoralCase",
+  [FILTER_SUPPORT]: "supportRequest",
+  [FILTER_ATTENTION]: "localAttention",
+  [FILTER_NO_RECENT_PRESENCE]: "withoutRecentPresence",
+  [FILTER_STABLE]: "stable",
+};
+
+const teamFilterCopy: Record<TeamFilter, { title: string; detail: string; empty: string }> = {
+  [FILTER_ALL]: {
+    title: "Estrutura da equipe",
+    detail: "Busque ou filtre por atenção.",
+    empty: "Ajuste a busca ou limpe os filtros para conferir toda a estrutura pastoral.",
+  },
+  [FILTER_URGENT]: {
+    title: "Células com urgentes",
+    detail: "Sinais que pedem atenção imediata no contexto da célula.",
+    empty: "Nenhuma célula com sinal urgente nesse recorte.",
+  },
+  [FILTER_PASTORAL]: {
+    title: "Células encaminhadas ao pastor",
+    detail: "Casos que liderança ou supervisão trouxeram ao cuidado pastoral.",
+    empty: "Nenhuma célula com encaminhamento ao pastor nesse recorte.",
+  },
+  [FILTER_SUPPORT]: {
+    title: "Células com pedido de apoio",
+    detail: "Pedidos enviados à supervisão, reunidos por célula.",
+    empty: "Nenhuma célula com pedido de apoio nesse recorte.",
+  },
+  [FILTER_ATTENTION]: {
+    title: "Células que pedem atenção",
+    detail: "Atenções locais, cuidado recente ou presença baixa registrada.",
+    empty: "Nenhuma célula pedindo atenção nesse recorte.",
+  },
+  [FILTER_NO_RECENT_PRESENCE]: {
+    title: "Células sem presença recente",
+    detail: "Células ativas sem presença recente registrada.",
+    empty: "Nenhuma célula sem presença recente nesse recorte.",
+  },
+  [FILTER_STABLE]: {
+    title: "Células estáveis",
+    detail: "Células sem sinal prioritário e com presença recente registrada.",
+    empty: "Nenhuma célula estável nesse recorte.",
+  },
+};
 
 export type TeamOverview = Awaited<ReturnType<typeof getPastorTeamOverview>>;
 export type SupervisorTeam = TeamOverview["supervisors"][number];
@@ -46,8 +93,8 @@ export function inactiveGroupMatchesQuery(group: InactiveTeamGroup, normalizedQu
 }
 
 export function groupMatchesFilter(group: TeamGroup, filter: TeamFilter) {
-  if (filter === FILTER_ATTENTION) return group.pastoralPriorityScore > 0;
-  if (filter === FILTER_NO_RECENT_PRESENCE) return group.hasNoPresenceData;
+  const statusKey = filterToStatusKey[filter];
+  if (statusKey) return groupPastoralStatusKey(group) === statusKey;
   return true;
 }
 
@@ -179,6 +226,10 @@ export function teamSavedMessage(savedParam: string) {
   if (savedParam === "celula-criada") return "Célula criada.";
   if (savedParam === "celula-atualizada") return "Célula atualizada.";
   return null;
+}
+
+export function teamFilterContent(filter: TeamFilter) {
+  return teamFilterCopy[filter];
 }
 
 export function teamNavIndicator(summary: TeamOverview["summary"]) {

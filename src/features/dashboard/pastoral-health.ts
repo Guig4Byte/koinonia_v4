@@ -1,4 +1,6 @@
 import { countLabel } from "@/lib/format";
+import { FILTER_ATTENTION, FILTER_NO_RECENT_PRESENCE, FILTER_PASTORAL, FILTER_STABLE, FILTER_SUPPORT, FILTER_URGENT } from "@/lib/filter-param";
+import { ROUTES } from "@/lib/routes";
 import {
   groupPastoralStatusKey,
   type GroupPastoralPriorityInput,
@@ -18,6 +20,7 @@ export type PastoralHealthSegment = {
   label: string;
   count: number;
   tone: PastoralHealthTone;
+  href: string;
 };
 
 export type PastoralHealthOverview = {
@@ -34,6 +37,7 @@ const healthSegmentConfig: Record<PastoralHealthKey, Omit<PastoralHealthSegment,
     key: "stable",
     label: "Estáveis",
     tone: "ok",
+    href: ROUTES.teamFilter(FILTER_STABLE),
     singular: "estável",
     plural: "estáveis",
   },
@@ -41,6 +45,7 @@ const healthSegmentConfig: Record<PastoralHealthKey, Omit<PastoralHealthSegment,
     key: "attention",
     label: "Pedem atenção",
     tone: "warn",
+    href: ROUTES.teamFilter(FILTER_ATTENTION),
     singular: "pede atenção",
     plural: "pedem atenção",
   },
@@ -48,6 +53,7 @@ const healthSegmentConfig: Record<PastoralHealthKey, Omit<PastoralHealthSegment,
     key: "noPresence",
     label: "Sem presença recente",
     tone: "neutral",
+    href: ROUTES.teamFilter(FILTER_NO_RECENT_PRESENCE),
     singular: "sem presença recente",
     plural: "sem presença recente",
   },
@@ -55,6 +61,7 @@ const healthSegmentConfig: Record<PastoralHealthKey, Omit<PastoralHealthSegment,
     key: "support",
     label: "Com pedido de apoio",
     tone: "support",
+    href: ROUTES.teamFilter(FILTER_SUPPORT),
     singular: "com pedido de apoio",
     plural: "com pedido de apoio",
   },
@@ -62,6 +69,7 @@ const healthSegmentConfig: Record<PastoralHealthKey, Omit<PastoralHealthSegment,
     key: "pastoral",
     label: "Encaminhadas ao pastor",
     tone: "risk",
+    href: ROUTES.teamFilter(FILTER_PASTORAL),
     singular: "encaminhada ao pastor",
     plural: "encaminhadas ao pastor",
   },
@@ -69,6 +77,7 @@ const healthSegmentConfig: Record<PastoralHealthKey, Omit<PastoralHealthSegment,
     key: "urgent",
     label: "Urgentes",
     tone: "risk",
+    href: ROUTES.teamFilter(FILTER_URGENT),
     singular: "urgente",
     plural: "urgentes",
   },

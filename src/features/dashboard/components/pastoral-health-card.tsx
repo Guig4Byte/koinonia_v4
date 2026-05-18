@@ -1,4 +1,5 @@
-import { HeartPulse } from "lucide-react";
+import Link from "next/link";
+import { ChevronRight, HeartPulse } from "lucide-react";
 import type { CSSProperties } from "react";
 import type { PastoralHealthOverview, PastoralHealthSegment, PastoralHealthTone } from "@/features/dashboard/pastoral-health";
 import { cn } from "@/lib/cn";
@@ -86,15 +87,26 @@ export function PastoralHealthCard({
         )}
       </div>
 
-      <div className="mt-4 grid grid-cols-1 gap-x-5 gap-y-2.5 sm:grid-cols-2">
+      <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
         {overview.segments.map((segment) => (
-          <div key={segment.key} className={cn("flex min-w-0 items-center justify-between gap-3 text-[length:var(--text-sm)] leading-tight", segment.count === 0 && "opacity-65")}>
+          <Link
+            key={segment.key}
+            href={segment.href}
+            className={cn(
+              "group flex min-w-0 items-center justify-between gap-3 rounded-[0.85rem] px-2.5 py-2 text-[length:var(--text-sm)] leading-tight transition-colors hover:bg-[var(--surface-alt)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus-ring)]",
+              segment.count === 0 && "opacity-65",
+            )}
+            aria-label={`Ver células: ${segment.label}, ${segment.count}`}
+          >
             <span className="flex min-w-0 items-center gap-2">
               <span className={cn("h-3 w-3 shrink-0 rounded-full", toneClass[segment.tone])} aria-hidden="true" />
               <span className="truncate text-[color:var(--color-text-secondary)]">{segment.label}</span>
             </span>
-            <strong className={cn("shrink-0 text-[length:var(--text-sm)] font-bold tabular-nums", toneTextClass[segment.tone])}>{segment.count}</strong>
-          </div>
+            <span className="flex shrink-0 items-center gap-1.5">
+              <strong className={cn("text-[length:var(--text-sm)] font-bold tabular-nums", toneTextClass[segment.tone])}>{segment.count}</strong>
+              <ChevronRight className="h-4 w-4 text-[color:var(--color-text-muted)] transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+            </span>
+          </Link>
         ))}
       </div>
     </section>
