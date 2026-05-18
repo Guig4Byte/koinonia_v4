@@ -13,8 +13,10 @@ import {
   shouldShowGroupBadge,
   supervisorBadgeTone,
   supervisorSummary,
+  teamGroupHref,
   type InactiveTeamGroup,
   type SupervisorTeam,
+  type TeamFilter,
   type TeamGroup,
 } from "@/features/team/team-view";
 import { cn } from "@/lib/cn";
@@ -55,13 +57,13 @@ function TeamCellLink({
   );
 }
 
-export function TeamGroupLink({ group }: { group: TeamGroup }) {
+export function TeamGroupLink({ group, activeFilter }: { group: TeamGroup; activeFilter?: TeamFilter }) {
   const tone = groupBadgeTone(group);
   const showBadge = shouldShowGroupBadge(group);
 
   return (
     <TeamCellLink
-      href={ROUTES.group(group.id)}
+      href={teamGroupHref(group.id, activeFilter)}
       name={group.name}
       subtitle={compactGroupSubtitle(group)}
       badgeLabel={showBadge ? group.statusLabel : undefined}
@@ -86,7 +88,7 @@ export function InactiveTeamGroupLink({ group }: { group: InactiveTeamGroup }) {
   );
 }
 
-export function TeamSupervisorCard({ supervisor }: { supervisor: SupervisorTeam }) {
+export function TeamSupervisorCard({ supervisor, activeFilter }: { supervisor: SupervisorTeam; activeFilter?: TeamFilter }) {
   const hasGroups = supervisor.groups.length > 0;
   const badgeTone = supervisorBadgeTone(supervisor);
   return (
@@ -124,7 +126,7 @@ export function TeamSupervisorCard({ supervisor }: { supervisor: SupervisorTeam 
                 lessLabel="Mostrar menos células"
               >
                 {supervisor.groups.map((group) => (
-                  <TeamGroupLink key={group.id} group={group} />
+                  <TeamGroupLink key={group.id} group={group} activeFilter={activeFilter} />
                 ))}
               </ProgressiveList>
             </DisclosureCard>

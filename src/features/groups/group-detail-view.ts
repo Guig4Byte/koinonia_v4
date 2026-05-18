@@ -7,15 +7,51 @@ import { personEffectiveBadgeForViewer } from "@/features/people/status-display"
 import { escalationStatusDetailForViewer } from "@/features/signals/escalation";
 import { signalTitleForViewer, type SignalBadgeTone, type SignalDetailLike, type SignalDisplayViewerLike } from "@/features/signals/display";
 import { isSupportRequest, isUrgentOrPastoralCase, type SectionSignalWithIdentity } from "@/features/signals/sections";
+import { isPastoralCaseSignal, isUrgentSignal } from "@/features/groups/group-pastoral-priority";
 import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features/pastoral-pulse";
 import { countLabel } from "@/lib/format";
-import { FILTER_ALL } from "@/lib/filter-param";
+import {
+  FILTER_ALL,
+  FILTER_ATTENTION,
+  FILTER_NO_RECENT_PRESENCE,
+  FILTER_PASTORAL,
+  FILTER_STABLE,
+  FILTER_SUPPORT,
+  FILTER_URGENT,
+} from "@/lib/filter-param";
 import { compareByName } from "@/lib/text";
 
 export const GROUP_MEMBER_ATTENTION_MAX_PRIORITY = 4;
 export const GROUP_REGULAR_MEMBER_INITIAL_COUNT = 5;
 export const GROUP_REGULAR_MEMBER_STEP = 5;
 export const GROUP_DETAIL_EVENT_HISTORY_LIMIT = 12;
+
+export type GroupDetailFocus =
+  | typeof FILTER_URGENT
+  | typeof FILTER_PASTORAL
+  | typeof FILTER_SUPPORT
+  | typeof FILTER_ATTENTION
+  | typeof FILTER_NO_RECENT_PRESENCE
+  | typeof FILTER_STABLE;
+
+const GROUP_DETAIL_FOCUS_VALUES: ReadonlyArray<GroupDetailFocus> = [
+  FILTER_URGENT,
+  FILTER_PASTORAL,
+  FILTER_SUPPORT,
+  FILTER_ATTENTION,
+  FILTER_NO_RECENT_PRESENCE,
+  FILTER_STABLE,
+];
+
+export type GroupDetailFocusCardData = {
+  title: string;
+  detail: string;
+  tone: "default" | "success" | "error" | "warning";
+};
+
+export function readGroupDetailFocus(value: string | null | undefined): GroupDetailFocus | null {
+  return GROUP_DETAIL_FOCUS_VALUES.some((focus) => focus === value) ? value as GroupDetailFocus : null;
+}
 
 export type GroupDetailViewer = SignalDisplayViewerLike & {
   id: string;
@@ -43,6 +79,7 @@ export type MemberDisplay = {
   cardTone?: SignalBadgeTone | "stable" | "muted";
   priorityRank: number;
   status: PersonStatus;
+  focusKeys: GroupDetailFocus[];
 };
 
 export type GroupMembersView = {
@@ -51,6 +88,9 @@ export type GroupMembersView = {
   priorityMembers: MemberDisplay[];
   regularMembers: MemberDisplay[];
   sectionDetail: string;
+  prioritySectionTitle?: string;
+  prioritySectionDetail?: string;
+  focusedMembersCount: number;
 };
 
 export function groupMeetingText(day?: number | null, time?: string | null) {
@@ -92,6 +132,92 @@ export function groupPastoralPulse({
   });
 }
 
+export function groupMemberFocusKeys(
+  signal: GroupDetailSignal | undefined,
+  personStatus: PersonStatus,
+  viewer: GroupDetailViewer,
+): GroupDetailFocus[] {
+  if (signal) {
+    if (isUrgentSignal(signal)) return [FILTER_URGENT];
+    if (isPastoralCaseSignal(signal)) return [FILTER_PASTORAL];
+    if (isSupportRequest(signal, viewer)) return [FILTER_SUPPORT];
+    return [FILTER_ATTENTION];
+  }
+
+  if (isInCareStatus(personStatus)) return [FILTER_ATTENTION];
+
+  return [];
+}
+
+export function groupMemberMatchesFocus(member: Pick<MemberDisplay, "focusKeys">, focus: GroupDetailFocus) {
+  return member.focusKeys.includes(focus);
+}
+
+export function groupDetailFocusCard(
+  focus: GroupDetailFocus | null,
+  focusedMembersCount: number,
+): GroupDetailFocusCardData | null {
+  if (!focus) return null;
+
+  const peopleDetail = focusedMembersCount > 0
+    ? `${countLabel(focusedMembersCount, "pessoa neste recorte", "pessoas neste recorte")}.`
+    : "Abra os detalhes abaixo para entender o contexto da célula.";
+
+  if (focus === FILTER_URGENT) {
+    return {
+      title: "Urgentes nesta célula",
+      detail: focusedMembersCount > 0 ? `${peopleDetail} Sinais que pedem atenção imediata.` : "Sinais que pedem atenção imediata.",
+      tone: "error",
+    };
+  }
+
+  if (focus === FILTER_PASTORAL) {
+    return {
+      title: "Encaminhados ao pastor",
+      detail: focusedMembersCount > 0 ? `${peopleDetail} Casos trazidos para cuidado pastoral.` : "Casos trazidos para cuidado pastoral.",
+      tone: "warning",
+    };
+  }
+
+  if (focus === FILTER_SUPPORT) {
+    return {
+      title: "Pedido de apoio nesta célula",
+      detail: focusedMembersCount > 0 ? `${peopleDetail} Pedidos enviados à supervisão.` : "Pedidos enviados à supervisão.",
+      tone: "default",
+    };
+  }
+
+  if (focus === FILTER_ATTENTION) {
+    return {
+      title: "Atenção nesta célula",
+      detail: focusedMembersCount > 0 ? `${peopleDetail} Acompanhe com calma o contexto local.` : "Acompanhe com calma o contexto local.",
+      tone: "warning",
+    };
+  }
+
+  if (focus === FILTER_NO_RECENT_PRESENCE) {
+    return {
+      title: "Sem presença recente",
+      detail: "Ainda não há presença recente registrada para esta célula.",
+      tone: "default",
+    };
+  }
+
+  return {
+    title: "Célula estável",
+    detail: "Sem sinal prioritário neste recorte.",
+    tone: "success",
+  };
+}
+
+export function groupFocusSectionTitle(focus: GroupDetailFocus | null) {
+  if (focus === FILTER_URGENT) return "Urgentes nesta célula";
+  if (focus === FILTER_PASTORAL) return "Encaminhados ao pastor";
+  if (focus === FILTER_SUPPORT) return "Pedidos de apoio nesta célula";
+  if (focus === FILTER_ATTENTION) return "Atenção nesta célula";
+  return undefined;
+}
+
 export function groupMemberPriorityRank(signal: GroupDetailSignal | undefined, personStatus: PersonStatus, viewer: GroupDetailViewer) {
   if (signal && isUrgentOrPastoralCase(signal)) return 1;
   if (signal && isSupportRequest(signal, viewer)) return 2;
@@ -129,6 +255,7 @@ export function buildGroupMemberDisplays({
         cardTone: memberCardTone(memberBadge.tone),
         priorityRank: groupMemberPriorityRank(attentionSignal, membership.person.status, viewer),
         status: membership.person.status,
+        focusKeys: groupMemberFocusKeys(attentionSignal, membership.person.status, viewer),
       };
     })
     .sort(compareGroupMembers);
@@ -158,12 +285,21 @@ export function groupMembersSectionDetail({
   return countLabel(visibleCount, "pessoa neste recorte", "pessoas neste recorte");
 }
 
-export function buildGroupMembersView(members: MemberDisplay[], activeFilter: MembersFilter): GroupMembersView {
+export function buildGroupMembersView(
+  members: MemberDisplay[],
+  activeFilter: MembersFilter,
+  activeFocus: GroupDetailFocus | null = null,
+): GroupMembersView {
   const visibleMembers = members.filter((member) => memberMatchesFilter(member, activeFilter, {
     attentionMaxPriorityRank: GROUP_MEMBER_ATTENTION_MAX_PRIORITY,
   }));
-  const priorityMembers = members.filter((member) => member.priorityRank <= GROUP_MEMBER_ATTENTION_MAX_PRIORITY);
+  const defaultPriorityMembers = members.filter((member) => member.priorityRank <= GROUP_MEMBER_ATTENTION_MAX_PRIORITY);
   const activeMembers = members.filter((member) => member.priorityRank > GROUP_MEMBER_ATTENTION_MAX_PRIORITY);
+  const focusedMembers = activeFocus
+    ? members.filter((member) => groupMemberMatchesFocus(member, activeFocus))
+    : [];
+  const shouldUseFocusedPriority = activeFilter === FILTER_ALL && focusedMembers.length > 0;
+  const priorityMembers = shouldUseFocusedPriority ? focusedMembers : defaultPriorityMembers;
   const regularMembers = activeFilter === FILTER_ALL ? activeMembers : visibleMembers;
 
   return {
@@ -173,9 +309,14 @@ export function buildGroupMembersView(members: MemberDisplay[], activeFilter: Me
     regularMembers,
     sectionDetail: groupMembersSectionDetail({
       totalCount: members.length,
-      priorityCount: priorityMembers.length,
+      priorityCount: defaultPriorityMembers.length,
       visibleCount: visibleMembers.length,
       activeFilter,
     }),
+    prioritySectionTitle: shouldUseFocusedPriority ? groupFocusSectionTitle(activeFocus) : undefined,
+    prioritySectionDetail: shouldUseFocusedPriority
+      ? countLabel(focusedMembers.length, "pessoa neste recorte", "pessoas neste recorte")
+      : undefined,
+    focusedMembersCount: focusedMembers.length,
   };
 }

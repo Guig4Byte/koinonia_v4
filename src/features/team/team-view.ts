@@ -2,10 +2,11 @@ import type { getPastorTeamOverview } from "@/features/dashboard/queries";
 import type { SignalBadgeTone } from "@/features/signals/display";
 import { groupPastoralStatusKey, hasLowPresence, type GroupPastoralStatusKey } from "@/features/groups/group-pastoral-priority";
 import { weekdayLabel } from "@/features/groups/weekdays";
-import type { TeamFilter } from "@/features/team/team-filters";
+import { teamFilterToGroupFocus, type TeamFilter } from "@/features/team/team-filters";
 import { FILTER_ALL, FILTER_ATTENTION, FILTER_NO_RECENT_PRESENCE, FILTER_PASTORAL, FILTER_STABLE, FILTER_SUPPORT, FILTER_URGENT } from "@/lib/filter-param";
 import { matchesNormalizedQuery } from "@/lib/text";
 import { countLabel } from "@/lib/format";
+import { routeWithQuery, ROUTES } from "@/lib/routes";
 
 export const TEAM_SECTION_LIMIT = 4;
 export const SUPERVISOR_SECTION_LIMIT = 4;
@@ -61,6 +62,23 @@ const teamFilterCopy: Record<TeamFilter, { title: string; detail: string; empty:
     empty: "Nenhuma célula estável nesse recorte.",
   },
 };
+
+
+export function teamFilterBackHref(filter: TeamFilter) {
+  return filter === FILTER_ALL ? ROUTES.team : ROUTES.teamFilter(filter);
+}
+
+export function teamGroupHref(groupId: string, activeFilter: TeamFilter = FILTER_ALL) {
+  const focus = teamFilterToGroupFocus(activeFilter);
+
+  if (!focus) return ROUTES.group(groupId);
+
+  return routeWithQuery(ROUTES.group(groupId), {
+    from: "equipe",
+    filtro: activeFilter,
+    foco: focus,
+  });
+}
 
 export type TeamOverview = Awaited<ReturnType<typeof getPastorTeamOverview>>;
 export type SupervisorTeam = TeamOverview["supervisors"][number];

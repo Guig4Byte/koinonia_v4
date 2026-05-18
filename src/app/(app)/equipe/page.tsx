@@ -100,7 +100,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
               lessLabel="Mostrar menos supervisores"
             >
               {filteredSupervisors.map((supervisor) => (
-                <TeamSupervisorCard key={supervisor.id} supervisor={supervisor} />
+                <TeamSupervisorCard key={supervisor.id} supervisor={supervisor} activeFilter={activeFilter} />
               ))}
             </ProgressiveList>
           ) : (
@@ -123,7 +123,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
               lessLabel="Mostrar menos células"
             >
               {filteredUnassignedGroups.map((group) => (
-                <TeamGroupLink key={group.id} group={group} />
+                <TeamGroupLink key={group.id} group={group} activeFilter={activeFilter} />
               ))}
             </ProgressiveList>
           </section>

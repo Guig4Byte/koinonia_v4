@@ -12,13 +12,17 @@ import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/even
 import {
   buildGroupMemberDisplays,
   buildGroupMembersView,
+  groupDetailFocusCard,
   GROUP_DETAIL_EVENT_HISTORY_LIMIT,
   groupPastoralPulse,
+  readGroupDetailFocus,
 } from "@/features/groups/group-detail-view";
 import { FALLBACK_LEADER_NAME } from "@/features/groups/group-display";
 import { activeGroupResponsibilitiesInclude } from "@/features/groups/group-query";
 import { responsibilityNames } from "@/features/groups/responsibility-display";
 import { appNavForRole, homeHrefForRole, secondaryNavHrefForRole } from "@/features/navigation/app-nav";
+import { readTeamFilter } from "@/features/team/team-filters";
+import { teamFilterBackHref } from "@/features/team/team-view";
 import { readMembersFilter } from "@/features/people/member-filters";
 import { isInCarePerson } from "@/features/people/person-status";
 import {
@@ -50,6 +54,9 @@ export async function getGroupDetailPageData({
   queryParams: GroupDetailSearchParams;
 }) {
   const activeMembersFilter = readMembersFilter(firstParam(queryParams.membros));
+  const activeFocus = readGroupDetailFocus(firstParam(queryParams.foco));
+  const sourceParam = firstParam(queryParams.from);
+  const teamFilter = readTeamFilter(firstParam(queryParams.filtro));
   const savedParam = firstParam(queryParams.salvo);
   const referenceDate = new Date();
 
@@ -96,7 +103,12 @@ export async function getGroupDetailPageData({
   const isPastorView = user.role === UserRole.PASTOR || user.role === UserRole.ADMIN;
   const isSupervisorView = user.role === UserRole.SUPERVISOR;
   const secondaryNavHref = secondaryNavHrefForRole(user.role);
-  const backHref = isPastorView || isSupervisorView ? secondaryNavHref : homeHref;
+  const shouldReturnToFilteredTeam = isPastorView && sourceParam === "equipe";
+  const backHref = shouldReturnToFilteredTeam
+    ? teamFilterBackHref(teamFilter)
+    : isPastorView || isSupervisorView
+      ? secondaryNavHref
+      : homeHref;
   const backLabel = isPastorView ? "Voltar para equipe" : isSupervisorView ? "Voltar para células" : "Voltar para visão";
   const attentionPeople = getPastoralSectionSignalsByPerson(group.signals, user);
   const attentionSignalsByPersonId = new Map(attentionPeople.map((signal) => [signal.personId, signal]));
@@ -133,7 +145,8 @@ export async function getGroupDetailPageData({
     attentionSignalsByPersonId,
     viewer: user,
   });
-  const membersView = buildGroupMembersView(members, activeMembersFilter);
+  const membersView = buildGroupMembersView(members, activeMembersFilter, activeFocus);
+  const focusCard = groupDetailFocusCard(activeFocus, membersView.focusedMembersCount);
   const canEditGroup = canManageGroups(user);
   const savedMessage = savedParam === "celula-criada"
     ? "Célula criada."
@@ -179,6 +192,7 @@ export async function getGroupDetailPageData({
     backLabel,
     canEditGroup,
     completedEvents,
+    focusCard,
     group,
     leadershipName,
     membersView,

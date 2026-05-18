@@ -20,6 +20,8 @@ export type TeamFilter =
   | typeof FILTER_NO_RECENT_PRESENCE
   | typeof FILTER_STABLE;
 
+export type TeamGroupFocus = Exclude<TeamFilter, typeof FILTER_ALL>;
+
 export const TEAM_FILTERS: ReadonlyArray<FilterOption<TeamFilter>> = [
   { value: FILTER_ALL, label: "Todos" },
   { value: FILTER_URGENT, label: "Urgentes" },
@@ -32,4 +34,8 @@ export const TEAM_FILTERS: ReadonlyArray<FilterOption<TeamFilter>> = [
 
 export function readTeamFilter(value: string | null | undefined): TeamFilter {
   return readFilterParam(TEAM_FILTERS, value, FILTER_ALL);
+}
+
+export function teamFilterToGroupFocus(filter: TeamFilter): TeamGroupFocus | null {
+  return filter === FILTER_ALL ? null : filter;
 }

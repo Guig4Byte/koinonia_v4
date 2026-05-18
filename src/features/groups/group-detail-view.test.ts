@@ -3,9 +3,12 @@ import { PersonStatus, SignalSeverity, UserRole } from "@/generated/prisma/clien
 import {
   buildGroupMemberDisplays,
   buildGroupMembersView,
+  groupDetailFocusCard,
+  groupMemberFocusKeys,
   groupMeetingText,
   groupMemberPriorityRank,
   groupMembersSectionDetail,
+  readGroupDetailFocus,
   type GroupDetailMembership,
   type GroupDetailSignal,
   type GroupDetailViewer,
@@ -74,11 +77,34 @@ describe("buildGroupMemberDisplays", () => {
   });
 });
 
+
+describe("group detail focus", () => {
+  it("normaliza foco inválido", () => {
+    expect(readGroupDetailFocus("apoio")).toBe("apoio");
+    expect(readGroupDetailFocus("urgentes")).toBe("urgentes");
+    expect(readGroupDetailFocus("todos")).toBeNull();
+    expect(readGroupDetailFocus("outro")).toBeNull();
+  });
+
+  it("classifica o foco do membro pela origem do sinal", () => {
+    expect(groupMemberFocusKeys(signal({ severity: SignalSeverity.URGENT }), PersonStatus.ACTIVE, viewer)).toEqual(["urgentes"]);
+    expect(groupMemberFocusKeys(signal({ assignedTo: { role: UserRole.PASTOR } }), PersonStatus.ACTIVE, viewer)).toEqual(["encaminhadas"]);
+    expect(groupMemberFocusKeys(signal({ assignedTo: { role: UserRole.SUPERVISOR } }), PersonStatus.ACTIVE, { ...viewer, role: UserRole.PASTOR })).toEqual(["apoio"]);
+    expect(groupMemberFocusKeys(undefined, PersonStatus.COOLING_AWAY, viewer)).toEqual(["atencao"]);
+  });
+
+  it("monta o card de foco do detalhe da célula", () => {
+    expect(groupDetailFocusCard("apoio", 2)).toMatchObject({ title: "Pedido de apoio nesta célula", tone: "default" });
+    expect(groupDetailFocusCard("sem-presenca", 0)).toMatchObject({ title: "Sem presença recente" });
+    expect(groupDetailFocusCard(null, 0)).toBeNull();
+  });
+});
+
 describe("buildGroupMembersView", () => {
   it("separates priority members from regular members", () => {
     const members = [
-      { membershipId: "1", personId: "1", name: "Ana", badgeLabel: "Em atenção", badgeTone: "warn" as const, priorityRank: 3, status: PersonStatus.ACTIVE },
-      { membershipId: "2", personId: "2", name: "Bruno", badgeLabel: "Ativo", badgeTone: "ok" as const, priorityRank: 5, status: PersonStatus.ACTIVE },
+      { membershipId: "1", personId: "1", name: "Ana", badgeLabel: "Em atenção", badgeTone: "warn" as const, priorityRank: 3, status: PersonStatus.ACTIVE, focusKeys: ["atencao" as const] },
+      { membershipId: "2", personId: "2", name: "Bruno", badgeLabel: "Ativo", badgeTone: "ok" as const, priorityRank: 5, status: PersonStatus.ACTIVE, focusKeys: [] },
     ];
 
     const view = buildGroupMembersView(members, "todos");
@@ -90,5 +116,20 @@ describe("buildGroupMembersView", () => {
 
   it("uses the filtered count when the selected filter is not todos", () => {
     expect(groupMembersSectionDetail({ totalCount: 10, priorityCount: 2, visibleCount: 1, activeFilter: "em-cuidado" })).toBe("1 pessoa neste recorte");
+  });
+
+
+  it("usa membros do foco como seção principal quando a célula veio filtrada", () => {
+    const members = [
+      { membershipId: "1", personId: "1", name: "Ana", badgeLabel: "Pedido de apoio", badgeTone: "support" as const, priorityRank: 2, status: PersonStatus.ACTIVE, focusKeys: ["apoio" as const] },
+      { membershipId: "2", personId: "2", name: "Bruno", badgeLabel: "Em atenção", badgeTone: "warn" as const, priorityRank: 3, status: PersonStatus.ACTIVE, focusKeys: ["atencao" as const] },
+      { membershipId: "3", personId: "3", name: "Camila", badgeLabel: "Ativo", badgeTone: "ok" as const, priorityRank: 5, status: PersonStatus.ACTIVE, focusKeys: [] },
+    ];
+
+    const view = buildGroupMembersView(members, "todos", "apoio");
+
+    expect(view.prioritySectionTitle).toBe("Pedidos de apoio nesta célula");
+    expect(view.priorityMembers.map((member) => member.name)).toEqual(["Ana"]);
+    expect(view.regularMembers.map((member) => member.name)).toEqual(["Camila"]);
   });
 });

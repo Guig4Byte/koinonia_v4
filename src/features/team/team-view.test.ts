@@ -5,7 +5,9 @@ import {
   groupMatchesFilter,
   inactiveGroupScheduleText,
   readTeamFilter,
+  teamFilterBackHref,
   teamFilterContent,
+  teamGroupHref,
   supervisorSummary,
   teamNavIndicator,
   teamSavedMessage,
@@ -134,6 +136,13 @@ describe("team-view", () => {
     expect(groupBadgeTone(teamGroup({ hasPresenceData: false }))).toBe("neutral");
     expect(groupBadgeTone(teamGroup({ presenceRate: 60 }))).toBe("warn");
     expect(groupBadgeTone(teamGroup({ presenceRate: 80 }))).toBe("ok");
+  });
+
+  it("monta links de equipe preservando filtro para o detalhe da célula", () => {
+    expect(teamFilterBackHref("todos")).toBe("/equipe");
+    expect(teamFilterBackHref("apoio")).toBe("/equipe?filtro=apoio");
+    expect(teamGroupHref("group-1", "todos")).toBe("/celulas/group-1");
+    expect(teamGroupHref("group-1", "apoio")).toBe("/celulas/group-1?from=equipe&filtro=apoio&foco=apoio");
   });
 
   it("monta textos auxiliares da página", () => {

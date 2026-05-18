@@ -74,6 +74,8 @@ type MemberPriorityListProps<TMember extends MemberPriorityListItem> = {
   hrefForMember: (member: TMember) => string;
   priorityContextForMember?: (member: TMember) => string | undefined;
   filteredContextForMember?: (member: TMember) => string | undefined;
+  prioritySectionTitle?: string;
+  prioritySectionDetail?: string;
   priorityMoreLabel?: string;
   priorityLessLabel?: string;
   regularInitialCount?: number;
@@ -92,6 +94,8 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
   hrefForMember,
   priorityContextForMember,
   filteredContextForMember,
+  prioritySectionTitle = "Quem merece proximidade",
+  prioritySectionDetail,
   priorityMoreLabel = "Ver mais pessoas no radar",
   priorityLessLabel = "Mostrar menos pessoas no radar",
   regularInitialCount = 6,
@@ -124,8 +128,8 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
           {priorityMembers.length > 0 ? (
             <div className="space-y-2">
               <MemberSectionHeader
-                title="Quem merece proximidade"
-                detail={countLabel(priorityMembers.length, "pessoa no radar", "pessoas no radar")}
+                title={prioritySectionTitle}
+                detail={prioritySectionDetail ?? countLabel(priorityMembers.length, "pessoa no radar", "pessoas no radar")}
               />
               <ProgressiveList
                 initialCount={4}

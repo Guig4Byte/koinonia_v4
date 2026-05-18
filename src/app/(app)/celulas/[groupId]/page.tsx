@@ -31,6 +31,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
     backLabel,
     canEditGroup,
     completedEvents,
+    focusCard,
     group,
     leadershipName,
     membersView,
@@ -94,6 +95,13 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
 
         <GroupDetailSummaryCard summary={summaryCard} />
 
+        {focusCard ? (
+          <InfoCard tone={focusCard.tone}>
+            <span className="font-semibold">{focusCard.title}</span>
+            <span className="block">{focusCard.detail}</span>
+          </InfoCard>
+        ) : null}
+
         {pendingEvent ? (
           <GroupPendingEventCard
             event={pendingEvent}
@@ -113,6 +121,8 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
             hrefForMember={(member) => ROUTES.person(member.personId)}
             priorityContextForMember={(member) => member.subtitle}
             filteredContextForMember={(member) => member.subtitle}
+            prioritySectionTitle={membersView.prioritySectionTitle}
+            prioritySectionDetail={membersView.prioritySectionDetail}
             priorityMoreLabel="Ver mais pessoas em atenção"
             priorityLessLabel="Mostrar menos pessoas em atenção"
             regularInitialCount={GROUP_REGULAR_MEMBER_INITIAL_COUNT}
