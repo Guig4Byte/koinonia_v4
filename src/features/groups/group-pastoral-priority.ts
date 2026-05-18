@@ -14,6 +14,14 @@ export const GROUP_PRIORITY_WEIGHTS = {
   lowPresenceBase: 100,
 } as const;
 
+export type GroupPastoralStatusKey =
+  | "urgent"
+  | "pastoralCase"
+  | "supportRequest"
+  | "localAttention"
+  | "withoutRecentPresence"
+  | "stable";
+
 export type GroupPastoralSignalLike = {
   severity?: SignalSeverity | string | null;
   assignedTo?: { role?: UserRole | string | null } | null;
@@ -47,6 +55,10 @@ export function isUrgentSignal(signal: GroupPastoralSignalLike) {
   return signal.severity === SignalSeverity.URGENT;
 }
 
+export function isPastoralCaseSignal(signal: GroupPastoralSignalLike) {
+  return !isUrgentSignal(signal) && isPastoralAssignedSignal(signal);
+}
+
 export function hasLowPresence(group: Pick<GroupPastoralPriorityInput, "hasPresenceData" | "presenceRate">) {
   return group.hasPresenceData && group.presenceRate < LOW_PRESENCE_THRESHOLD;
 }
@@ -56,45 +68,59 @@ export function groupUrgentCount(group: Pick<GroupPastoralPriorityInput, "signal
 }
 
 export function groupPastoralCasesCount(group: Pick<GroupPastoralPriorityInput, "signals" | "pastoralCasesCount">) {
-  return group.pastoralCasesCount ?? countSignals(group.signals, (signal) => isUrgentSignal(signal) || isPastoralAssignedSignal(signal));
+  return group.pastoralCasesCount ?? countSignals(group.signals, isPastoralCaseSignal);
 }
 
-export function groupPastoralEscalatedCount(group: Pick<GroupPastoralPriorityInput, "signals">) {
-  return countSignals(group.signals, isPastoralAssignedSignal);
-}
-
-export function groupRiskCount(group: Pick<GroupPastoralPriorityInput, "signals" | "pastoralCasesCount">) {
+export function groupPastoralEscalatedCount(group: Pick<GroupPastoralPriorityInput, "signals" | "pastoralCasesCount">) {
   return groupPastoralCasesCount(group);
+}
+
+export function groupSupportRequestsCount(group: Pick<GroupPastoralPriorityInput, "signals" | "supportRequestsCount">) {
+  return group.supportRequestsCount ?? countSignals(group.signals, isSupervisorSupportSignal);
+}
+
+export function groupRiskCount(group: Pick<GroupPastoralPriorityInput, "signals" | "urgentCount" | "pastoralCasesCount">) {
+  return groupUrgentCount(group) + groupPastoralCasesCount(group);
 }
 
 export function groupLocalAttentionCount(group: GroupPastoralPriorityInput) {
   if (group.localAttentionCount !== undefined) return group.localAttentionCount;
 
   const attentionCount = group.attentionCount ?? 0;
-  const pastoralCasesCount = groupPastoralCasesCount(group);
-  const supportRequestsCount = group.supportRequestsCount ?? countSignals(group.signals, isSupervisorSupportSignal);
+  const riskCount = groupRiskCount(group);
+  const supportRequestsCount = groupSupportRequestsCount(group);
 
-  return Math.max(attentionCount - pastoralCasesCount - supportRequestsCount, 0);
+  return Math.max(attentionCount - riskCount - supportRequestsCount, 0);
+}
+
+export function groupPastoralStatusKey(group: GroupPastoralPriorityInput): GroupPastoralStatusKey {
+  if (groupUrgentCount(group) > 0) return "urgent";
+  if (groupPastoralCasesCount(group) > 0) return "pastoralCase";
+  if (groupSupportRequestsCount(group) > 0) return "supportRequest";
+  if (groupLocalAttentionCount(group) > 0 || (group.inCareCount ?? 0) > 0 || hasLowPresence(group)) return "localAttention";
+  if (!group.hasPresenceData) return "withoutRecentPresence";
+
+  return "stable";
 }
 
 export function groupNeedsPastoralAttention(group: GroupPastoralPriorityInput) {
-  return groupPastoralCasesCount(group) > 0
-    || (group.supportRequestsCount ?? countSignals(group.signals, isSupervisorSupportSignal)) > 0
+  return groupRiskCount(group) > 0
+    || groupSupportRequestsCount(group) > 0
     || groupLocalAttentionCount(group) > 0
     || hasLowPresence(group);
 }
 
 export function groupPastoralPriorityScore(group: GroupPastoralPriorityInput) {
   const urgent = groupUrgentCount(group);
-  const pastoralEscalated = groupPastoralEscalatedCount(group);
-  const supportRequests = group.supportRequestsCount ?? countSignals(group.signals, isSupervisorSupportSignal);
+  const pastoralCases = groupPastoralCasesCount(group);
+  const supportRequests = groupSupportRequestsCount(group);
   const localAttention = groupLocalAttentionCount(group);
   const inCare = group.inCareCount ?? 0;
   const lowPresenceScore = hasLowPresence(group) ? LOW_PRESENCE_THRESHOLD - group.presenceRate : 0;
   const noPresenceScore = group.hasPresenceData ? 0 : NO_RECENT_PRESENCE_PRIORITY;
 
   return urgent * GROUP_PRIORITY_WEIGHTS.urgent
-    + pastoralEscalated * GROUP_PRIORITY_WEIGHTS.pastoralCase
+    + pastoralCases * GROUP_PRIORITY_WEIGHTS.pastoralCase
     + supportRequests * GROUP_PRIORITY_WEIGHTS.supportRequest
     + localAttention * GROUP_PRIORITY_WEIGHTS.localAttention
     + inCare * GROUP_PRIORITY_WEIGHTS.inCare
@@ -102,31 +128,34 @@ export function groupPastoralPriorityScore(group: GroupPastoralPriorityInput) {
     + noPresenceScore;
 }
 
-export function teamGroupPastoralPriorityScore(group: Pick<GroupPastoralPriorityInput, "urgentCount" | "pastoralCasesCount" | "hasPresenceData" | "presenceRate">) {
-  const urgent = group.urgentCount ?? 0;
-  const pastoralCases = group.pastoralCasesCount ?? 0;
-  const lowPresenceScore = hasLowPresence(group) ? GROUP_PRIORITY_WEIGHTS.lowPresenceBase + (LOW_PRESENCE_THRESHOLD - group.presenceRate) : 0;
-
-  return urgent * 1000
-    + Math.max(pastoralCases - urgent, 0) * 700
-    + lowPresenceScore;
+export function teamGroupPastoralPriorityScore(group: GroupPastoralPriorityInput) {
+  return groupPastoralPriorityScore(group);
 }
 
 export function teamGroupStatusLabel({
   urgentCount,
   pastoralCasesCount,
+  supportRequestsCount = 0,
+  localAttentionCount = 0,
+  inCareCount = 0,
   hasNoPresenceData,
   hasLowPresence: lowPresence,
 }: {
   urgentCount: number;
   pastoralCasesCount: number;
+  supportRequestsCount?: number;
+  localAttentionCount?: number;
+  inCareCount?: number;
   hasNoPresenceData: boolean;
   hasLowPresence: boolean;
 }) {
   if (urgentCount > 0) return countLabel(urgentCount, "urgente", "urgentes");
-  if (pastoralCasesCount > 0) return countLabel(pastoralCasesCount, "caso pastoral", "casos pastorais");
-  if (hasNoPresenceData) return NO_RECENT_PRESENCE_LABEL;
+  if (pastoralCasesCount > 0) return countLabel(pastoralCasesCount, "encaminhado", "encaminhados");
+  if (supportRequestsCount > 0) return countLabel(supportRequestsCount, "pedido de apoio", "pedidos de apoio");
+  if (localAttentionCount > 0) return countLabel(localAttentionCount, "pessoa em atenção", "pessoas em atenção");
+  if (inCareCount > 0) return countLabel(inCareCount, "em cuidado", "em cuidado");
   if (lowPresence) return "Presença baixa";
+  if (hasNoPresenceData) return NO_RECENT_PRESENCE_LABEL;
 
   return "Estável";
 }

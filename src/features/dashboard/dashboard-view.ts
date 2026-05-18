@@ -1,6 +1,10 @@
-import { GroupResponsibilityRole, PersonStatus, SignalSeverity, UserRole } from "@/generated/prisma/client";
+import { GroupResponsibilityRole, PersonStatus, UserRole } from "@/generated/prisma/client";
 import { isPresenceRecordedEvent, splitPresenceTrendSamples, summarizeEventsPresence, summarizePresenceTrend, type PresenceEvent } from "@/features/events/presence-summary";
 import {
+  groupLocalAttentionCount,
+  groupPastoralCasesCount,
+  groupSupportRequestsCount,
+  groupUrgentCount,
   hasLowPresence,
   teamGroupPastoralPriorityScore,
   teamGroupStatusLabel,
@@ -9,7 +13,7 @@ import { FALLBACK_LEADER_NAME, FALLBACK_SUPERVISOR_NAME } from "@/features/group
 import { responsibilityNames } from "@/features/groups/responsibility-display";
 import { isInCarePerson } from "@/features/people/person-status";
 import { getPastoralSectionSignalsByPerson, isSupportRequest } from "@/features/signals/sections";
-import { getPastoralSignalsByPerson, getPrimarySignalsByPerson, type AttentionSignalLike } from "@/features/signals/attention";
+import { getPrimarySignalsByPerson, type AttentionSignalLike } from "@/features/signals/attention";
 import type { PermissionUser } from "@/features/permissions/permissions";
 import { compareByName } from "@/lib/text";
 
@@ -80,15 +84,38 @@ export function countLowPresenceGroups<T extends { hasPresenceData: boolean; pre
   return groups.filter(hasLowPresence).length;
 }
 
+function buildGroupPastoralSignalSummary(signals: DashboardSignal[], presence: { hasPresenceData: boolean; presenceRate: number }) {
+  const primarySignals = getPrimarySignalsByPerson(signals);
+  const countInput = {
+    signals: primarySignals,
+    hasPresenceData: presence.hasPresenceData,
+    presenceRate: presence.presenceRate,
+  };
+  const urgentCount = groupUrgentCount(countInput);
+  const pastoralCasesCount = groupPastoralCasesCount(countInput);
+  const supportRequestsCount = groupSupportRequestsCount(countInput);
+  const attentionCount = primarySignals.length;
+  const localAttentionCount = groupLocalAttentionCount({
+    ...countInput,
+    urgentCount,
+    pastoralCasesCount,
+    supportRequestsCount,
+    attentionCount,
+  });
+
+  return {
+    attentionCount,
+    pastoralCasesCount,
+    supportRequestsCount,
+    localAttentionCount,
+    urgentCount,
+  };
+}
+
 export function buildPastorGroupPresence(group: DashboardGroupBase) {
   const groupPresence = summarizeEventsPresence(group.events);
   const recordedEvents = group.events.filter(isPresenceRecordedEvent);
-  const primarySignals = getPrimarySignalsByPerson(group.signals);
-  const pastoralSignals = getPastoralSignalsByPerson(group.signals);
-  const urgentCount = pastoralSignals.filter((signal) => signal.severity === SignalSeverity.URGENT).length;
-  const supportRequestsCount = primarySignals.filter((signal) => signal.assignedTo?.role === UserRole.SUPERVISOR).length;
-  const pastoralCasesCount = pastoralSignals.length;
-  const attentionCount = primarySignals.length;
+  const signalSummary = buildGroupPastoralSignalSummary(group.signals, groupPresence);
 
   return {
     id: group.id,
@@ -99,35 +126,25 @@ export function buildPastorGroupPresence(group: DashboardGroupBase) {
     hasPresenceData: groupPresence.hasPresenceData,
     hasLowPresence: hasLowPresence(groupPresence),
     recordedEventsCount: recordedEvents.length,
-    attentionCount,
-    pastoralCasesCount,
-    urgentCount,
-    supportRequestsCount,
-    localAttentionCount: Math.max(attentionCount - pastoralCasesCount - supportRequestsCount, 0),
+    ...signalSummary,
   };
 }
 
 export function buildPastorTeamGroup(group: DashboardTeamGroup) {
   const presence = summarizeEventsPresence(group.events);
-  const primarySignals = getPrimarySignalsByPerson(group.signals);
-  const pastoralSignals = getPastoralSignalsByPerson(group.signals);
-  const urgentCount = pastoralSignals.filter((signal) => signal.severity === SignalSeverity.URGENT).length;
-  const supportRequestsCount = primarySignals.filter((signal) => signal.assignedTo?.role === UserRole.SUPERVISOR).length;
-  const pastoralCasesCount = pastoralSignals.length;
-  const attentionCount = primarySignals.length;
-  const localAttentionCount = Math.max(attentionCount - pastoralCasesCount - supportRequestsCount, 0);
+  const signalSummary = buildGroupPastoralSignalSummary(group.signals, presence);
   const inCareCount = group.memberships.filter((membership) => isInCarePerson(membership.person)).length;
   const hasLowPresenceValue = hasLowPresence(presence);
   const hasNoPresenceData = !presence.hasPresenceData;
   const pastoralPriorityScore = teamGroupPastoralPriorityScore({
-    urgentCount,
-    pastoralCasesCount,
+    ...signalSummary,
+    inCareCount,
     hasPresenceData: presence.hasPresenceData,
     presenceRate: presence.presenceRate,
   });
   const statusLabel = teamGroupStatusLabel({
-    urgentCount,
-    pastoralCasesCount,
+    ...signalSummary,
+    inCareCount,
     hasNoPresenceData,
     hasLowPresence: hasLowPresenceValue,
   });
@@ -141,11 +158,7 @@ export function buildPastorTeamGroup(group: DashboardTeamGroup) {
     hasPresenceData: presence.hasPresenceData,
     hasLowPresence: hasLowPresenceValue,
     hasNoPresenceData,
-    attentionCount,
-    pastoralCasesCount,
-    supportRequestsCount,
-    localAttentionCount,
-    urgentCount,
+    ...signalSummary,
     inCareCount,
     pastoralPriorityScore,
     statusLabel,
@@ -184,6 +197,8 @@ export function buildSupervisorTeam<TGroup extends DashboardTeamGroup>({
     groupsNeedingAttentionCount,
     pastoralCasesCount: sumBy(groups, (group) => group.pastoralCasesCount),
     urgentCount: sumBy(groups, (group) => group.urgentCount),
+    supportRequestsCount: sumBy(groups, (group) => group.supportRequestsCount),
+    localAttentionCount: sumBy(groups, (group) => group.localAttentionCount),
     attentionCount: sumBy(groups, (group) => group.attentionCount),
     groupsWithoutPresenceCount: countGroupsWithoutPresence(groups),
     lowPresenceGroupsCount: countLowPresenceGroups(groups),

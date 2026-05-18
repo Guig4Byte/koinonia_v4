@@ -61,14 +61,19 @@ describe("dashboard-view", () => {
   it("monta resumo pastoral de célula para o pastor", () => {
     const summary = buildPastorGroupPresence(group({
       events: [event("COMPLETED", now, [{ status: AttendanceStatus.PRESENT }, { status: AttendanceStatus.ABSENT }])],
-      signals: [signal(), signal({ id: "signal-person-2", personId: "person-2", severity: SignalSeverity.URGENT })],
+      signals: [
+        signal(),
+        signal({ id: "signal-person-2", personId: "person-2", severity: SignalSeverity.URGENT }),
+        signal({ id: "signal-person-3", personId: "person-3", assignedTo: { role: UserRole.PASTOR } }),
+      ],
     }));
 
     expect(summary.leaderName).toBe("Camila");
     expect(summary.supervisorName).toBe("Ana");
     expect(summary.presenceRate).toBe(50);
     expect(summary.recordedEventsCount).toBe(1);
-    expect(summary.attentionCount).toBe(2);
+    expect(summary.attentionCount).toBe(3);
+    expect(summary.urgentCount).toBe(1);
     expect(summary.pastoralCasesCount).toBe(1);
   });
 
@@ -76,7 +81,8 @@ describe("dashboard-view", () => {
     const overview = buildPastorTeamGroup(group({
       signals: [
         signal({ severity: SignalSeverity.URGENT }),
-        signal({ id: "support", personId: "person-2", assignedTo: { role: UserRole.SUPERVISOR } }),
+        signal({ id: "pastoral", personId: "person-2", assignedTo: { role: UserRole.PASTOR } }),
+        signal({ id: "support", personId: "person-3", assignedTo: { role: UserRole.SUPERVISOR } }),
       ],
       events: [event("COMPLETED", now, [{ status: AttendanceStatus.ABSENT }])],
     }));
@@ -85,6 +91,7 @@ describe("dashboard-view", () => {
     expect(overview.membersCount).toBe(2);
     expect(overview.inCareCount).toBe(1);
     expect(overview.urgentCount).toBe(1);
+    expect(overview.pastoralCasesCount).toBe(1);
     expect(overview.supportRequestsCount).toBe(1);
     expect(overview.hasLowPresence).toBe(true);
     expect(overview.pastoralPriorityScore).toBeGreaterThan(0);
@@ -112,7 +119,7 @@ describe("dashboard-view", () => {
     const team = buildSupervisorTeam({
       supervisor: { id: "sup-1", name: "Ana", email: "ana@igreja.com" },
       groups: [
-        group({ id: "group-1", signals: [signal({ severity: SignalSeverity.URGENT })] }),
+        group({ id: "group-1", signals: [signal({ severity: SignalSeverity.URGENT }), signal({ id: "pastoral", personId: "person-2", assignedTo: { role: UserRole.PASTOR } })] }),
         group({ id: "group-2" }),
       ],
     });
@@ -120,6 +127,7 @@ describe("dashboard-view", () => {
     expect(team.groups).toHaveLength(2);
     expect(team.groupsNeedingAttentionCount).toBeGreaterThan(0);
     expect(team.urgentCount).toBe(1);
+    expect(team.pastoralCasesCount).toBe(1);
   });
 
   it("monta item de dashboard escopado com tendência e pedidos de apoio", () => {

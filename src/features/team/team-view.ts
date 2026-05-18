@@ -73,6 +73,8 @@ export function withFilteredGroups(supervisor: SupervisorTeam, groups: TeamGroup
     groupsNeedingAttentionCount: groups.filter((group) => group.pastoralPriorityScore > 0).length,
     pastoralCasesCount: groups.reduce((total, group) => total + group.pastoralCasesCount, 0),
     urgentCount: groups.reduce((total, group) => total + group.urgentCount, 0),
+    supportRequestsCount: groups.reduce((total, group) => total + group.supportRequestsCount, 0),
+    localAttentionCount: groups.reduce((total, group) => total + group.localAttentionCount, 0),
     attentionCount: groups.reduce((total, group) => total + group.attentionCount, 0),
     groupsWithoutPresenceCount: groups.filter((group) => !group.hasPresenceData).length,
     lowPresenceGroupsCount: groups.filter((group) => group.hasPresenceData && group.hasLowPresence).length,
@@ -124,8 +126,10 @@ export function compactGroupSubtitle(group: TeamGroup) {
 
 export function groupBadgeTone(group: TeamGroup): SignalBadgeTone {
   if (group.urgentCount > 0 || group.pastoralCasesCount > 0) return "risk";
+  if (group.supportRequestsCount > 0) return "support";
+  if (group.localAttentionCount > 0 || hasLowPresence(group)) return "warn";
+  if (group.inCareCount > 0) return "care";
   if (!group.hasPresenceData) return "neutral";
-  if (hasLowPresence(group)) return "warn";
   return "ok";
 }
 
@@ -141,7 +145,11 @@ export function supervisorSummary(supervisor: SupervisorTeam) {
   }
 
   if (supervisor.pastoralCasesCount > 0) {
-    return `${groupsLabel} · ${countLabel(supervisor.pastoralCasesCount, "caso pastoral", "casos pastorais")}.`;
+    return `${groupsLabel} · ${countLabel(supervisor.pastoralCasesCount, "encaminhado", "encaminhados")}.`;
+  }
+
+  if (supervisor.supportRequestsCount > 0) {
+    return `${groupsLabel} · ${countLabel(supervisor.supportRequestsCount, "pedido de apoio", "pedidos de apoio")}.`;
   }
 
   if (supervisor.groupsNeedingAttentionCount > 0) {
@@ -157,7 +165,8 @@ export function supervisorSummary(supervisor: SupervisorTeam) {
 
 export function supervisorBadgeTone(supervisor: SupervisorTeam): SignalBadgeTone {
   if (supervisor.urgentCount > 0 || supervisor.pastoralCasesCount > 0) return "risk";
-  if (supervisor.lowPresenceGroupsCount > 0) return "warn";
+  if (supervisor.supportRequestsCount > 0) return "support";
+  if (supervisor.localAttentionCount > 0 || supervisor.lowPresenceGroupsCount > 0) return "warn";
   return "neutral";
 }
 

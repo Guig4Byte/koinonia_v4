@@ -46,6 +46,8 @@ function supervisor(overrides: Partial<SupervisorTeam> = {}): SupervisorTeam {
     groupsNeedingAttentionCount: 0,
     pastoralCasesCount: 0,
     urgentCount: 0,
+    supportRequestsCount: 0,
+    localAttentionCount: 0,
     attentionCount: 0,
     groupsWithoutPresenceCount: 0,
     lowPresenceGroupsCount: 0,
@@ -109,11 +111,14 @@ describe("team-view", () => {
 
   it("resume supervisor priorizando urgência e casos pastorais", () => {
     expect(supervisorSummary(supervisor({ groups: [teamGroup()], urgentCount: 1 }))).toBe("1 célula acompanhada · 1 urgente.");
-    expect(supervisorSummary(supervisor({ groups: [teamGroup(), teamGroup({ id: "group-2" })], pastoralCasesCount: 2 }))).toBe("2 células acompanhadas · 2 casos pastorais.");
+    expect(supervisorSummary(supervisor({ groups: [teamGroup(), teamGroup({ id: "group-2" })], pastoralCasesCount: 2 }))).toBe("2 células acompanhadas · 2 encaminhados.");
+    expect(supervisorSummary(supervisor({ groups: [teamGroup()], supportRequestsCount: 1 }))).toBe("1 célula acompanhada · 1 pedido de apoio.");
   });
 
   it("resolve tom do grupo por risco, ausência de dado e baixa presença", () => {
     expect(groupBadgeTone(teamGroup({ urgentCount: 1 }))).toBe("risk");
+    expect(groupBadgeTone(teamGroup({ supportRequestsCount: 1, statusLabel: "1 pedido de apoio" }))).toBe("support");
+    expect(groupBadgeTone(teamGroup({ localAttentionCount: 1, statusLabel: "1 pessoa em atenção" }))).toBe("warn");
     expect(groupBadgeTone(teamGroup({ hasPresenceData: false }))).toBe("neutral");
     expect(groupBadgeTone(teamGroup({ presenceRate: 60 }))).toBe("warn");
     expect(groupBadgeTone(teamGroup({ presenceRate: 80 }))).toBe("ok");

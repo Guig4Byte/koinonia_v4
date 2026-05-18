@@ -1,20 +1,16 @@
 import { countLabel } from "@/lib/format";
-import { hasLowPresence } from "@/features/groups/group-pastoral-priority";
+import {
+  groupPastoralStatusKey,
+  type GroupPastoralPriorityInput,
+  type GroupPastoralStatusKey,
+} from "@/features/groups/group-pastoral-priority";
 
-export type PastoralHealthKey = "stable" | "attention" | "noPresence" | "support" | "pastoral";
+export type PastoralHealthKey = "stable" | "attention" | "noPresence" | "support" | "pastoral" | "urgent";
 
 export type PastoralHealthTone = "ok" | "warn" | "neutral" | "support" | "risk";
 
-export type PastoralHealthGroup = {
-  hasPresenceData: boolean;
-  presenceRate: number;
+export type PastoralHealthGroup = GroupPastoralPriorityInput & {
   hasLowPresence?: boolean;
-  urgentCount?: number;
-  pastoralCasesCount?: number;
-  supportRequestsCount?: number;
-  attentionCount?: number;
-  localAttentionCount?: number;
-  inCareCount?: number;
 };
 
 export type PastoralHealthSegment = {
@@ -64,26 +60,33 @@ const healthSegmentConfig: Record<PastoralHealthKey, Omit<PastoralHealthSegment,
   },
   pastoral: {
     key: "pastoral",
-    label: "Caso pastoral",
+    label: "Encaminhadas ao pastor",
     tone: "risk",
-    singular: "com caso pastoral",
-    plural: "com caso pastoral",
+    singular: "encaminhada ao pastor",
+    plural: "encaminhadas ao pastor",
+  },
+  urgent: {
+    key: "urgent",
+    label: "Urgentes",
+    tone: "risk",
+    singular: "urgente",
+    plural: "urgentes",
   },
 };
 
-const healthSegmentOrder: PastoralHealthKey[] = ["stable", "attention", "noPresence", "support", "pastoral"];
+const healthSegmentOrder: PastoralHealthKey[] = ["stable", "attention", "noPresence", "support", "pastoral", "urgent"];
 
-function groupHasLocalAttention(group: PastoralHealthGroup) {
-  const localAttentionCount = group.localAttentionCount ?? group.attentionCount ?? 0;
-  return localAttentionCount > 0 || (group.inCareCount ?? 0) > 0;
-}
+const statusToHealthKey: Record<GroupPastoralStatusKey, PastoralHealthKey> = {
+  urgent: "urgent",
+  pastoralCase: "pastoral",
+  supportRequest: "support",
+  localAttention: "attention",
+  withoutRecentPresence: "noPresence",
+  stable: "stable",
+};
 
 export function classifyPastoralHealthGroup(group: PastoralHealthGroup): PastoralHealthKey {
-  if ((group.urgentCount ?? 0) > 0 || (group.pastoralCasesCount ?? 0) > 0) return "pastoral";
-  if ((group.supportRequestsCount ?? 0) > 0) return "support";
-  if (groupHasLocalAttention(group) || (group.hasLowPresence ?? hasLowPresence(group))) return "attention";
-  if (!group.hasPresenceData) return "noPresence";
-  return "stable";
+  return statusToHealthKey[groupPastoralStatusKey(group)];
 }
 
 function segmentSummary(segment: PastoralHealthSegment) {
@@ -107,6 +110,7 @@ export function buildPastoralHealthOverview(groups: PastoralHealthGroup[]): Past
     noPresence: 0,
     support: 0,
     pastoral: 0,
+    urgent: 0,
   };
 
   for (const group of groups) {

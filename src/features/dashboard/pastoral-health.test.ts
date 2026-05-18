@@ -10,8 +10,9 @@ function group(overrides: Partial<PastoralHealthGroup> = {}): PastoralHealthGrou
 }
 
 describe("pastoral-health", () => {
-  it("classifica pelo estado pastoral principal", () => {
-    expect(classifyPastoralHealthGroup(group({ urgentCount: 1, supportRequestsCount: 1 }))).toBe("pastoral");
+  it("classifica pelo estado pastoral principal sem misturar urgente e encaminhado", () => {
+    expect(classifyPastoralHealthGroup(group({ urgentCount: 1, pastoralCasesCount: 1, supportRequestsCount: 1 }))).toBe("urgent");
+    expect(classifyPastoralHealthGroup(group({ pastoralCasesCount: 1, supportRequestsCount: 1 }))).toBe("pastoral");
     expect(classifyPastoralHealthGroup(group({ supportRequestsCount: 1, attentionCount: 1 }))).toBe("support");
     expect(classifyPastoralHealthGroup(group({ attentionCount: 1 }))).toBe("attention");
     expect(classifyPastoralHealthGroup(group({ presenceRate: 60 }))).toBe("attention");
@@ -25,6 +26,7 @@ describe("pastoral-health", () => {
       group({ hasPresenceData: false, presenceRate: 0 }),
       group({ supportRequestsCount: 1 }),
       group({ pastoralCasesCount: 1 }),
+      group({ urgentCount: 1 }),
     ]);
 
     expect(overview.segments.map((segment) => [segment.key, segment.count, segment.tone])).toEqual([
@@ -33,6 +35,7 @@ describe("pastoral-health", () => {
       ["noPresence", 1, "neutral"],
       ["support", 1, "support"],
       ["pastoral", 1, "risk"],
+      ["urgent", 1, "risk"],
     ]);
   });
 });
