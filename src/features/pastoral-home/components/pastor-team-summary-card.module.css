@@ -1,0 +1,122 @@
+.root {
+  display: block;
+  margin-block: 0.95rem 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--color-border-card) 82%, transparent);
+  border-radius: 1.15rem;
+  background:
+    radial-gradient(circle at 12% 8%, color-mix(in srgb, var(--color-brand-accent) 6%, transparent), transparent 42%),
+    color-mix(in srgb, var(--color-bg-card) 94%, var(--surface-alt) 6%);
+  padding: 0.9rem;
+  color: inherit;
+  text-decoration: none;
+  box-shadow: var(--color-shadow-card);
+  transition: transform 150ms ease, border-color 150ms ease, background 150ms ease;
+}
+
+.root:active {
+  transform: scale(0.992);
+}
+
+.root:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .root:hover {
+    border-color: color-mix(in srgb, var(--color-brand-accent) 24%, var(--color-border-card));
+    background:
+      radial-gradient(circle at 12% 8%, color-mix(in srgb, var(--color-brand-accent) 9%, transparent), transparent 42%),
+      color-mix(in srgb, var(--color-bg-card) 91%, var(--surface-alt) 9%);
+  }
+}
+
+.header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.iconWrap {
+  display: grid;
+  width: 2.35rem;
+  height: 2.35rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 18%, var(--color-border-card));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-brand-accent) 8%, var(--surface-alt));
+  color: var(--color-brand);
+}
+
+.title {
+  color: var(--color-text-primary);
+  font-size: var(--text-base);
+  font-weight: 720;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.description {
+  margin-top: 0.15rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.35;
+}
+
+.action {
+  align-self: start;
+  color: var(--color-brand);
+  font-size: var(--text-sm);
+  font-weight: 720;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin-top: 0.85rem;
+}
+
+.item {
+  min-width: 0;
+  border: 1px solid color-mix(in srgb, var(--color-border-divider) 78%, transparent);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--surface-alt) 76%, transparent);
+  padding: 0.62rem 0.7rem;
+}
+
+.value {
+  display: block;
+  font-size: var(--text-xl);
+  font-weight: 760;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.valueNeutral {
+  color: var(--color-text-primary);
+}
+
+.valueOk {
+  color: var(--color-metric-presenca);
+}
+
+.valueWarn {
+  color: var(--color-badge-atencao-text);
+}
+
+.valueRisk {
+  color: var(--color-metric-atencoes);
+}
+
+.label {
+  display: block;
+  margin-top: 0.28rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  font-weight: 650;
+  line-height: 1.25;
+}

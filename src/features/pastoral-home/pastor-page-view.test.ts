@@ -71,25 +71,21 @@ describe("pastor-page-view", () => {
       {
         label: "Supervisores",
         value: "4",
-        detail: "Acompanhamento pastoral.",
         tone: "neutral",
       },
       {
         label: "Células ativas",
         value: "9",
-        detail: "Células em acompanhamento.",
         tone: "neutral",
       },
       {
         label: "Sem supervisor",
         value: "1",
-        detail: "Precisam de responsável.",
         tone: "warn",
       },
       {
         label: "Inativas",
         value: "2",
-        detail: "Fora do acompanhamento ativo.",
         tone: "neutral",
       },
     ]);

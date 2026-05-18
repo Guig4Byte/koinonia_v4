@@ -5,7 +5,6 @@ import {
   WEEKLY_PRESENCE_LABEL,
   weeklyPresenceTone,
   weeklyPresenceTrendInsight,
-  weeklyPresenceTrendLabel,
   type WeeklyPresenceSummary,
   type WeeklyPresenceTrendDirection,
   type WeeklyPresenceTrendPoint,
@@ -82,12 +81,47 @@ function Sparkline({ points }: { points: WeeklyPresenceTrendPoint[] }) {
   );
 }
 
+function TrendSignal({ weeklyPresence }: { weeklyPresence: WeeklyPresenceSummary }) {
+  const trend = weeklyPresence.monthTrend ?? null;
+  const direction = trend?.direction ?? "neutral";
+
+  if (!trend) {
+    return (
+      <div className={styles.trendMeta}>
+        <span className={styles.trendSignal} style={trendStyle("neutral")}>
+          <Minus className="h-4 w-4" aria-hidden="true" />
+          Sem tendência suficiente
+        </span>
+      </div>
+    );
+  }
+
+  if (trend.direction === "stable") {
+    return (
+      <div className={styles.trendMeta}>
+        <span className={styles.trendSignal} style={trendStyle("stable")}>
+          <Minus className="h-4 w-4" aria-hidden="true" />
+          Sem mudança relevante
+        </span>
+        <span className={styles.trendContext}>em relação ao último mês</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.trendMeta}>
+      <span className={styles.trendSignal} style={trendStyle(direction)}>
+        {trend.direction === "up" ? <TrendingUp className="h-4 w-4" aria-hidden="true" /> : <TrendingDown className="h-4 w-4" aria-hidden="true" />}
+        {trend.direction === "up" ? "+" : "-"}{trend.delta} pts
+      </span>
+      <span className={styles.trendContext}>em relação ao último mês</span>
+    </div>
+  );
+}
+
 export function PastorPresenceCard({ weeklyPresence, className }: { weeklyPresence: WeeklyPresenceSummary; className?: string }) {
   const value = formatPresenceRate(weeklyPresence.hasPresenceData, weeklyPresence.presenceRate);
   const tone = weeklyPresenceTone(weeklyPresence.hasPresenceData, weeklyPresence.presenceRate);
-  const trend = weeklyPresence.monthTrend ?? null;
-  const trendLabel = weeklyPresenceTrendLabel(trend);
-  const trendDirection = trend?.direction ?? "neutral";
   const points = weeklyPresence.trendPoints ?? [];
 
   return (
@@ -95,35 +129,23 @@ export function PastorPresenceCard({ weeklyPresence, className }: { weeklyPresen
       <div className={styles.content}>
         <div className={styles.spotlight}>
           <span className={styles.iconWrap} aria-hidden="true">
-            <ChartNoAxesCombined className="h-7 w-7" strokeWidth={2.3} />
+            <ChartNoAxesCombined className="h-6 w-6" strokeWidth={2.2} />
           </span>
           <div className="min-w-0">
-            <p className="k-eyebrow mb-2">Presença geral</p>
+            <p className="k-eyebrow mb-1.5">Presença geral</p>
             <p className="font-serif-display text-[length:var(--text-xl)] font-semibold leading-tight tracking-[-0.02em] text-[color:var(--color-text-primary)]">{WEEKLY_PRESENCE_LABEL}</p>
             <p className={cn(styles.value, !weeklyPresence.hasPresenceData && styles.valueMuted)}>{weeklyPresence.hasPresenceData ? value : "—"}</p>
           </div>
         </div>
 
         <div className="min-w-0">
-          {trendLabel ? (
-            <span className={styles.trendSignal} style={trendStyle(trendDirection)}>
-              {trendDirection === "up" ? <TrendingUp className="h-4 w-4" aria-hidden="true" /> : null}
-              {trendDirection === "down" ? <TrendingDown className="h-4 w-4" aria-hidden="true" /> : null}
-              {trendDirection === "stable" ? <Minus className="h-4 w-4" aria-hidden="true" /> : null}
-              {trendLabel}
-            </span>
-          ) : (
-            <span className={styles.trendSignal} style={trendStyle("neutral")}>
-              <Minus className="h-4 w-4" aria-hidden="true" />
-              Sem tendência suficiente
-            </span>
-          )}
-          <p className={cn("mt-3", styles.trendCopy)}>{weeklyPresenceTrendInsight({
+          <TrendSignal weeklyPresence={weeklyPresence} />
+          <p className={cn("mt-2.5", styles.trendCopy)}>{weeklyPresenceTrendInsight({
             hasPresenceData: weeklyPresence.hasPresenceData,
             recordedEventsCount: weeklyPresence.recordedEventsCount,
-            monthTrend: trend,
+            monthTrend: weeklyPresence.monthTrend ?? null,
           })}</p>
-          {points.length > 0 ? <div className="mt-3"><Sparkline points={points} /></div> : null}
+          {points.length > 0 ? <div className="mt-2.5"><Sparkline points={points} /></div> : null}
           <span className="sr-only">Tom da presença: {tone}</span>
         </div>
       </div>

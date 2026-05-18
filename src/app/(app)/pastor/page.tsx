@@ -1,9 +1,9 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
-import { ContextSummary, SectionTitle } from "@/components/shared/base-cards";
 import { PastoralHealthCard } from "@/features/dashboard/components/pastoral-health-card";
 import { PastorPresenceCard } from "@/features/pastoral-home/components/pastor-presence-card";
 import { PastorRadarCard } from "@/features/pastoral-home/components/pastor-radar-card";
+import { PastorTeamSummaryCard } from "@/features/pastoral-home/components/pastor-team-summary-card";
 import { SearchBox } from "@/features/search/components/search-box";
 import { getPastorDashboard } from "@/features/dashboard/queries";
 import { canUsePastorDashboard } from "@/features/permissions/permissions";
@@ -35,9 +35,6 @@ export default async function PastorPage() {
 
       <SearchBox placeholder="Buscar qualquer pessoa..." />
 
-      <SectionTitle>Resumo da equipe</SectionTitle>
-      <ContextSummary variant="balanced" items={view.teamSummaryItems} />
-
       <PastoralHealthCard
         overview={view.healthOverview}
         title="Saúde das células"
@@ -46,6 +43,8 @@ export default async function PastorPage() {
       />
 
       <PastorPresenceCard weeklyPresence={view.weeklyPresence} className="mt-4" />
+
+      <PastorTeamSummaryCard items={view.teamSummaryItems} />
     </AppShell>
   );
 }

@@ -28,7 +28,6 @@ export type PastorPageDashboard = {
 export type PastorPageSummaryItem = {
   label: string;
   value: string;
-  detail?: string;
   tone?: "ok" | "warn" | "risk" | "neutral";
 };
 
@@ -78,29 +77,21 @@ function buildTeamSummaryItems(summary: PastorPageTeamSummary): PastorPageSummar
     {
       label: "Supervisores",
       value: String(summary.supervisorsCount),
-      detail: "Acompanhamento pastoral.",
       tone: "neutral",
     },
     {
       label: "Células ativas",
       value: String(summary.groupsCount),
-      detail: "Células em acompanhamento.",
       tone: "neutral",
     },
     {
       label: "Sem supervisor",
       value: String(summary.groupsWithoutSupervisorCount),
-      detail: summary.groupsWithoutSupervisorCount > 0
-        ? "Precisam de responsável."
-        : "Todas vinculadas.",
       tone: summary.groupsWithoutSupervisorCount > 0 ? "warn" : "ok",
     },
     {
       label: "Inativas",
       value: String(summary.inactiveGroupsCount),
-      detail: summary.inactiveGroupsCount > 0
-        ? "Fora do acompanhamento ativo."
-        : "Nenhuma célula pausada.",
       tone: "neutral",
     },
   ];
