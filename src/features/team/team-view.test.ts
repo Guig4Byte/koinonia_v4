@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildTeamPageLists,
+  compactGroupSubtitle,
   groupBadgeTone,
   groupMatchesFilter,
   inactiveGroupScheduleText,
@@ -124,9 +125,9 @@ describe("team-view", () => {
   });
 
   it("resume supervisor priorizando urgência e casos pastorais", () => {
-    expect(supervisorSummary(supervisor({ groups: [teamGroup()], urgentCount: 1 }))).toBe("1 célula acompanhada · 1 urgente.");
-    expect(supervisorSummary(supervisor({ groups: [teamGroup(), teamGroup({ id: "group-2" })], pastoralCasesCount: 2 }))).toBe("2 células acompanhadas · 2 encaminhados.");
-    expect(supervisorSummary(supervisor({ groups: [teamGroup()], supportRequestsCount: 1 }))).toBe("1 célula acompanhada · 1 pedido de apoio.");
+    expect(supervisorSummary(supervisor({ groups: [teamGroup()], urgentCount: 1 }))).toBe("1 célula acompanhada");
+    expect(supervisorSummary(supervisor({ groups: [teamGroup(), teamGroup({ id: "group-2" })], pastoralCasesCount: 2 }))).toBe("2 células acompanhadas");
+    expect(supervisorSummary(supervisor({ groups: [teamGroup()], supportRequestsCount: 1 }))).toBe("1 célula acompanhada");
   });
 
   it("resolve tom do grupo por risco, ausência de dado e baixa presença", () => {
@@ -147,9 +148,13 @@ describe("team-view", () => {
 
   it("monta textos auxiliares da página", () => {
     expect(inactiveGroupScheduleText(inactiveGroup)).toBe("Terça · 20:00");
+    expect(compactGroupSubtitle(teamGroup({ leadershipName: "Diego e Paula", membersCount: 12 }))).toBe("12 membros · Diego e Paula");
     expect(teamSavedMessage("celula-criada")).toBe("Célula criada.");
     expect(teamSavedMessage("outro")).toBeNull();
-    expect(teamFilterContent("apoio").title).toBe("Células com pedido de apoio");
+    expect(teamFilterContent("apoio")).toMatchObject({
+      contextTitle: "Pedido de apoio",
+      listTitle: "Pedidos de apoio por supervisor",
+    });
     expect(teamNavIndicator(teamOverview({ summary: { ...teamOverview().summary, pastoralCasesCount: 1 } }).summary)).toBe("risk");
   });
 });

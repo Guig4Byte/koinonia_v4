@@ -24,7 +24,7 @@ export function PastorTeamSummaryCard({ items }: { items: PastorPageSummaryItem[
           <p className={styles.title}>Resumo da equipe</p>
           <p className={styles.description}>Estrutura para acompanhar as células.</p>
         </div>
-        <span className={styles.action} aria-hidden="true">Ver →</span>
+        <span className={styles.quickLink} aria-hidden="true">Ver →</span>
       </div>
 
       <div className={styles.grid}>

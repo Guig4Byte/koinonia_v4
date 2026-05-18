@@ -64,7 +64,8 @@
   line-height: 1.35;
 }
 
-.action {
+
+.quickLink {
   align-self: start;
   color: var(--color-brand);
   font-size: var(--text-sm);

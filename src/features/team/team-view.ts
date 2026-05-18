@@ -25,44 +25,63 @@ const filterToStatusKey: Partial<Record<TeamFilter, GroupPastoralStatusKey>> = {
   [FILTER_STABLE]: "stable",
 };
 
-const teamFilterCopy: Record<TeamFilter, { title: string; detail: string; empty: string }> = {
+const teamFilterCopy: Record<TeamFilter, {
+  contextTitle: string;
+  contextDetail: string;
+  listTitle: string;
+  listDetail: string;
+  empty: string;
+}> = {
   [FILTER_ALL]: {
-    title: "Estrutura da equipe",
-    detail: "Busque ou filtre por atenção.",
+    contextTitle: "Estrutura da equipe",
+    contextDetail: "Busque ou filtre por atenção.",
+    listTitle: "Supervisores",
+    listDetail: "Prioridade e presença por supervisor.",
     empty: "Ajuste a busca ou limpe os filtros para conferir toda a estrutura pastoral.",
   },
   [FILTER_URGENT]: {
-    title: "Células com urgentes",
-    detail: "Sinais que pedem atenção imediata no contexto da célula.",
+    contextTitle: "Urgentes",
+    contextDetail: "Sinais que pedem atenção imediata no contexto da célula.",
+    listTitle: "Células urgentes por supervisor",
+    listDetail: "Abra uma célula para ver o contexto pastoral.",
     empty: "Nenhuma célula com sinal urgente nesse recorte.",
   },
   [FILTER_PASTORAL]: {
-    title: "Células encaminhadas ao pastor",
-    detail: "Casos que liderança ou supervisão trouxeram ao cuidado pastoral.",
+    contextTitle: "Encaminhadas ao pastor",
+    contextDetail: "Casos que liderança ou supervisão trouxeram ao cuidado pastoral.",
+    listTitle: "Encaminhadas ao pastor por supervisor",
+    listDetail: "Mostrando células com encaminhamento pastoral aberto.",
     empty: "Nenhuma célula com encaminhamento ao pastor nesse recorte.",
   },
   [FILTER_SUPPORT]: {
-    title: "Células com pedido de apoio",
-    detail: "Pedidos enviados à supervisão, reunidos por célula.",
+    contextTitle: "Pedido de apoio",
+    contextDetail: "Células com pedido de apoio aberto.",
+    listTitle: "Pedidos de apoio por supervisor",
+    listDetail: "Mostrando supervisores com células com pedido de apoio.",
     empty: "Nenhuma célula com pedido de apoio nesse recorte.",
   },
   [FILTER_ATTENTION]: {
-    title: "Células que pedem atenção",
-    detail: "Atenções locais, cuidado recente ou presença baixa registrada.",
+    contextTitle: "Atenção",
+    contextDetail: "Células com atenção local, cuidado recente ou presença baixa registrada.",
+    listTitle: "Atenções por supervisor",
+    listDetail: "Mostrando células que pedem acompanhamento próximo.",
     empty: "Nenhuma célula pedindo atenção nesse recorte.",
   },
   [FILTER_NO_RECENT_PRESENCE]: {
-    title: "Células sem presença recente",
-    detail: "Células ativas sem presença recente registrada.",
+    contextTitle: "Sem presença recente",
+    contextDetail: "Células ativas sem presença recente registrada.",
+    listTitle: "Sem presença recente por supervisor",
+    listDetail: "Mostrando células sem dado recente de presença.",
     empty: "Nenhuma célula sem presença recente nesse recorte.",
   },
   [FILTER_STABLE]: {
-    title: "Células estáveis",
-    detail: "Células sem sinal prioritário e com presença recente registrada.",
+    contextTitle: "Estáveis",
+    contextDetail: "Células sem sinal prioritário e com presença recente registrada.",
+    listTitle: "Células estáveis por supervisor",
+    listDetail: "Mostrando células com leitura pastoral estável.",
     empty: "Nenhuma célula estável nesse recorte.",
   },
 };
-
 
 export function teamFilterBackHref(filter: TeamFilter) {
   return filter === FILTER_ALL ? ROUTES.team : ROUTES.teamFilter(filter);
@@ -186,7 +205,7 @@ export function buildTeamPageLists({
 
 export function compactGroupSubtitle(group: TeamGroup) {
   const membersLabel = countLabel(group.membersCount, "membro", "membros");
-  return `${group.leadershipName} · ${membersLabel}`;
+  return `${membersLabel} · ${group.leadershipName}`;
 }
 
 export function groupBadgeTone(group: TeamGroup): SignalBadgeTone {
@@ -203,36 +222,7 @@ export function shouldShowGroupBadge(group: TeamGroup) {
 }
 
 export function supervisorSummary(supervisor: SupervisorTeam) {
-  const groupsLabel = countLabel(supervisor.groups.length, "célula acompanhada", "células acompanhadas");
-
-  if (supervisor.urgentCount > 0) {
-    return `${groupsLabel} · ${countLabel(supervisor.urgentCount, "urgente", "urgentes")}.`;
-  }
-
-  if (supervisor.pastoralCasesCount > 0) {
-    return `${groupsLabel} · ${countLabel(supervisor.pastoralCasesCount, "encaminhado", "encaminhados")}.`;
-  }
-
-  if (supervisor.supportRequestsCount > 0) {
-    return `${groupsLabel} · ${countLabel(supervisor.supportRequestsCount, "pedido de apoio", "pedidos de apoio")}.`;
-  }
-
-  if (supervisor.groupsNeedingAttentionCount > 0) {
-    return `${groupsLabel} · ${countLabel(supervisor.groupsNeedingAttentionCount, "célula pede", "células pedem")} atenção.`;
-  }
-
-  if (supervisor.groupsWithoutPresenceCount > 0) {
-    return `${groupsLabel} · ${supervisor.groupsWithoutPresenceCount} sem presença recente.`;
-  }
-
-  return groupsLabel;
-}
-
-export function supervisorBadgeTone(supervisor: SupervisorTeam): SignalBadgeTone {
-  if (supervisor.urgentCount > 0 || supervisor.pastoralCasesCount > 0) return "risk";
-  if (supervisor.supportRequestsCount > 0) return "support";
-  if (supervisor.localAttentionCount > 0 || supervisor.lowPresenceGroupsCount > 0) return "warn";
-  return "neutral";
+  return countLabel(supervisor.groups.length, "célula acompanhada", "células acompanhadas");
 }
 
 export function inactiveGroupScheduleText(group: InactiveTeamGroup) {

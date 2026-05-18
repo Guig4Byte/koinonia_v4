@@ -6,7 +6,7 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { PageHero } from "@/components/shared/page-hero";
 import { ProgressiveList } from "@/components/shared/progressive-list";
 import { TeamStructureSearch } from "@/features/team/components/team-structure-search";
-import { InactiveTeamGroupLink, TeamGroupLink, TeamSupervisorCard } from "@/features/team/components/team-structure-cards";
+import { TeamFilterContextCard, TeamStructureAdjustments, TeamSupervisorCard } from "@/features/team/components/team-structure-cards";
 import { GroupKind } from "@/generated/prisma/client";
 import { getPastorTeamOverview } from "@/features/dashboard/queries";
 import { appNavForRole } from "@/features/navigation/app-nav";
@@ -16,7 +16,6 @@ import {
   readTeamFilter,
   SUPERVISOR_SECTION_LIMIT,
   SUPERVISORS_SECTION_ID,
-  TEAM_SECTION_LIMIT,
   teamFilterContent,
   teamNavIndicator,
   teamSavedMessage,
@@ -25,6 +24,7 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/search-params";
 import { normalizeSearchText } from "@/lib/text";
+import { FILTER_ALL } from "@/lib/filter-param";
 import { ROUTES } from "@/lib/routes";
 import pageStyles from "@/components/shared/consultation-page.module.css";
 
@@ -86,12 +86,19 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
         {savedMessage ? <InfoCard tone="success">{savedMessage}</InfoCard> : null}
 
         <section id={SUPERVISORS_SECTION_ID} className="scroll-mt-4">
-          <SectionTitle className="mt-4" detail={filterContent.detail}>{filterContent.title}</SectionTitle>
           <TeamStructureSearch query={query} filter={activeFilter} sectionId={SUPERVISORS_SECTION_ID} />
         </section>
 
+        {activeFilter !== FILTER_ALL ? (
+          <TeamFilterContextCard
+            filter={activeFilter}
+            title={filterContent.contextTitle}
+            detail={filterContent.contextDetail}
+          />
+        ) : null}
+
         <section>
-          <SectionTitle detail="Prioridade e presença por supervisor.">Supervisores</SectionTitle>
+          <SectionTitle detail={filterContent.listDetail}>{filterContent.listTitle}</SectionTitle>
           {filteredSupervisors.length > 0 ? (
             <ProgressiveList
               initialCount={SUPERVISOR_SECTION_LIMIT}
@@ -113,37 +120,11 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
           )}
         </section>
 
-        {filteredUnassignedGroups.length > 0 ? (
-          <section>
-            <SectionTitle detail="Células ativas sem vínculo.">Sem supervisor</SectionTitle>
-            <ProgressiveList
-              initialCount={TEAM_SECTION_LIMIT}
-              step={TEAM_SECTION_LIMIT}
-              moreLabel="Ver mais células"
-              lessLabel="Mostrar menos células"
-            >
-              {filteredUnassignedGroups.map((group) => (
-                <TeamGroupLink key={group.id} group={group} activeFilter={activeFilter} />
-              ))}
-            </ProgressiveList>
-          </section>
-        ) : null}
-
-        {filteredInactiveGroups.length > 0 ? (
-          <section>
-            <SectionTitle detail="Abra para reativar ou ajustar.">Células inativas</SectionTitle>
-            <ProgressiveList
-              initialCount={TEAM_SECTION_LIMIT}
-              step={TEAM_SECTION_LIMIT}
-              moreLabel="Ver mais células inativas"
-              lessLabel="Mostrar menos células inativas"
-            >
-              {filteredInactiveGroups.map((group) => (
-                <InactiveTeamGroupLink key={group.id} group={group} />
-              ))}
-            </ProgressiveList>
-          </section>
-        ) : null}
+        <TeamStructureAdjustments
+          unassignedGroups={filteredUnassignedGroups}
+          inactiveGroups={filteredInactiveGroups}
+          activeFilter={activeFilter}
+        />
 
       </div>
     </AppShell>
