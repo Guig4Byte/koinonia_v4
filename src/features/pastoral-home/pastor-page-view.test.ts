@@ -39,8 +39,26 @@ describe("pastor-page-view", () => {
     });
 
     expect(view.navIndicator).toBe("risk");
-    expect(view.pastoralPulse.title).toBe("2 sinais urgentes no radar pastoral.");
+    expect(view.pastoralPulse.title).toBe("Há sinais que pedem um olhar mais próximo.");
     expect(view.healthOverview.totalGroups).toBe(0);
+  });
+
+  it("leva a narrativa da saúde para o radar pastoral", () => {
+    const healthOverview = buildPastoralHealthOverview([
+      { hasPresenceData: true, presenceRate: 90, urgentCount: 1 },
+      { hasPresenceData: true, presenceRate: 90, supportRequestsCount: 1 },
+      { hasPresenceData: false, presenceRate: 0 },
+    ]);
+
+    const view = buildPastorPageView({
+      dashboard: dashboard({
+        teamSummary: teamSummary({ urgentCount: 1, supportRequestsCount: 1, groupsNeedingAttentionCount: 3 }),
+        healthOverview,
+      }),
+      user,
+    });
+
+    expect(view.radarSummary).toBe("1 célula com urgente, 1 com pedido de apoio e 1 sem presença recente");
   });
 
   it("monta resumo de equipe sem listar pessoas na visão", () => {
@@ -77,22 +95,24 @@ describe("pastor-page-view", () => {
     ]);
   });
 
-  it("monta resumo neutro quando ainda não há presença semanal", () => {
-    const view = buildPastorPageView({ dashboard: dashboard(), user });
+  it("preserva o resumo semanal para o card de presença", () => {
+    const view = buildPastorPageView({
+      dashboard: dashboard({
+        weeklyPresence: {
+          hasPresenceData: true,
+          presenceRate: 79,
+          recordedEventsCount: 4,
+          monthTrend: { direction: "up", delta: 5, currentRate: 79, previousRate: 74 },
+        },
+      }),
+      user,
+    });
 
-    expect(view.presenceSummary).toEqual([
-      {
-        label: "Presença da semana",
-        value: "—",
-        detail: "Nenhum encontro registrado nesta semana.",
-        tone: "neutral",
-      },
-    ]);
-  });
-
-  it("usa tom pastoral da presença registrada", () => {
-    expect(buildPastorPageView({ dashboard: dashboard({ weeklyPresence: { hasPresenceData: true, presenceRate: 60, recordedEventsCount: 1 } }), user }).presenceSummary[0].tone).toBe("risk");
-    expect(buildPastorPageView({ dashboard: dashboard({ weeklyPresence: { hasPresenceData: true, presenceRate: 70, recordedEventsCount: 1 } }), user }).presenceSummary[0].tone).toBe("warn");
-    expect(buildPastorPageView({ dashboard: dashboard({ weeklyPresence: { hasPresenceData: true, presenceRate: 85, recordedEventsCount: 1 } }), user }).presenceSummary[0].tone).toBe("ok");
+    expect(view.weeklyPresence).toEqual({
+      hasPresenceData: true,
+      presenceRate: 79,
+      recordedEventsCount: 4,
+      monthTrend: { direction: "up", delta: 5, currentRate: 79, previousRate: 74 },
+    });
   });
 });

@@ -1,6 +1,7 @@
 import { EventType, GroupKind, GroupResponsibilityRole, MembershipRole, SignalStatus, UserRole } from "@/generated/prisma/client";
 import { presenceHistoryEventWhere } from "@/features/events/presence-query";
-import { isPresenceRecordedEvent, PRESENCE_TREND_RECENT_SAMPLE_COUNT, PRESENCE_TREND_TOTAL_SAMPLE_COUNT, summarizeEventsPresence } from "@/features/events/presence-summary";
+import { isPresenceRecordedEvent, PRESENCE_TREND_RECENT_SAMPLE_COUNT, PRESENCE_TREND_TOTAL_SAMPLE_COUNT, summarizeEventsPresence, type PresenceEvent } from "@/features/events/presence-summary";
+import { buildWeeklyPresenceMonthTrend, type WeeklyPresenceTrendPoint } from "@/features/dashboard/presence-health";
 import { ensureUpcomingCellMeetingsForUser } from "@/features/events/schedule";
 import { selectRelevantCheckInEvent } from "@/features/events/relevant-event";
 import {
@@ -26,6 +27,42 @@ import {
 import { buildPastoralHealthOverview } from "@/features/dashboard/pastoral-health";
 import { prisma } from "@/lib/prisma";
 import { addBrasiliaDays, endOfBrasiliaWeek, startOfBrasiliaDay, startOfBrasiliaWeek } from "@/lib/brasilia-time";
+
+
+const PASTOR_PRESENCE_TREND_WEEK_LABELS = ["-4 sem", "-3 sem", "-2 sem", "-1 sem"] as const;
+
+function buildPresenceTrendPoint(label: string, events: PresenceEvent[]): WeeklyPresenceTrendPoint {
+  const presence = summarizeEventsPresence(events);
+
+  return {
+    label,
+    presenceRate: presence.presenceRate,
+    hasPresenceData: presence.hasPresenceData,
+  };
+}
+
+function buildPastorWeeklyPresenceTrendPoints({
+  currentWeekStart,
+  previousEvents,
+  currentEvents,
+}: {
+  currentWeekStart: Date;
+  previousEvents: (PresenceEvent & { startsAt: Date })[];
+  currentEvents: PresenceEvent[];
+}): WeeklyPresenceTrendPoint[] {
+  const previousPoints = PASTOR_PRESENCE_TREND_WEEK_LABELS.map((label, index) => {
+    const weekStart = addBrasiliaDays(currentWeekStart, (index - PASTOR_PRESENCE_TREND_WEEK_LABELS.length) * 7);
+    const weekEnd = addBrasiliaDays(weekStart, 7);
+    const events = previousEvents.filter((event) => event.startsAt >= weekStart && event.startsAt < weekEnd);
+
+    return buildPresenceTrendPoint(label, events);
+  });
+
+  return [
+    ...previousPoints,
+    buildPresenceTrendPoint("esta sem.", currentEvents),
+  ];
+}
 
 function pastorTeamGroupInclude(presenceHistoryWhere: ReturnType<typeof presenceHistoryEventWhere>) {
   return {
@@ -53,16 +90,27 @@ export async function getPastorDashboard(user: PermissionUser) {
   const now = new Date();
   const weekStart = startOfBrasiliaWeek(now, 1);
   const weekEnd = endOfBrasiliaWeek(now, 1);
+  const previousMonthStart = addBrasiliaDays(weekStart, -28);
   const tomorrow = addBrasiliaDays(startOfBrasiliaDay(now), 1);
   const presenceHistoryWhere = presenceHistoryEventWhere(now);
   const groupInclude = pastorTeamGroupInclude(presenceHistoryWhere);
 
-  const [weeklyEvents, activeGroups, supervisorsCount, groupsWithoutSupervisorCount, inactiveGroupsCount] = await Promise.all([
+  const [weeklyEvents, previousMonthEvents, activeGroups, supervisorsCount, groupsWithoutSupervisorCount, inactiveGroupsCount] = await Promise.all([
     prisma.event.findMany({
       where: {
         churchId,
         type: EventType.CELL_MEETING,
         startsAt: { gte: weekStart, lte: weekEnd },
+        group: { is: { churchId, isActive: true } },
+      },
+      include: { attendances: true },
+      orderBy: { startsAt: "asc" },
+    }),
+    prisma.event.findMany({
+      where: {
+        churchId,
+        type: EventType.CELL_MEETING,
+        startsAt: { gte: previousMonthStart, lt: weekStart },
         group: { is: { churchId, isActive: true } },
       },
       include: { attendances: true },
@@ -87,7 +135,9 @@ export async function getPastorDashboard(user: PermissionUser) {
 
   const dueEvents = weeklyEvents.filter((event) => event.startsAt < tomorrow);
   const completedEvents = dueEvents.filter(isPresenceRecordedEvent);
+  const previousCompletedEvents = previousMonthEvents.filter(isPresenceRecordedEvent);
   const presence = summarizeEventsPresence(completedEvents);
+  const previousMonthPresence = summarizeEventsPresence(previousCompletedEvents);
   const groups = activeGroups.map(buildPastorTeamGroup);
   const groupsNeedingAttention = groups.filter((group) => group.pastoralPriorityScore > 0);
 
@@ -96,6 +146,12 @@ export async function getPastorDashboard(user: PermissionUser) {
       presenceRate: presence.presenceRate,
       hasPresenceData: presence.hasPresenceData,
       recordedEventsCount: presence.recordedEventsCount,
+      monthTrend: buildWeeklyPresenceMonthTrend({ current: presence, previous: previousMonthPresence }),
+      trendPoints: buildPastorWeeklyPresenceTrendPoints({
+        currentWeekStart: weekStart,
+        previousEvents: previousCompletedEvents,
+        currentEvents: completedEvents,
+      }),
     },
     healthOverview: buildPastoralHealthOverview(groups),
     teamSummary: {

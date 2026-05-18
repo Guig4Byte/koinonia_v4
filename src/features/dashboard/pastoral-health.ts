@@ -26,12 +26,15 @@ export type PastoralHealthSegment = {
 export type PastoralHealthOverview = {
   totalGroups: number;
   summary: string;
+  narrativeSummary: string;
   segments: PastoralHealthSegment[];
 };
 
 const healthSegmentConfig: Record<PastoralHealthKey, Omit<PastoralHealthSegment, "count"> & {
   singular: string;
   plural: string;
+  narrativeSingular: string;
+  narrativePlural: string;
 }> = {
   stable: {
     key: "stable",
@@ -40,6 +43,8 @@ const healthSegmentConfig: Record<PastoralHealthKey, Omit<PastoralHealthSegment,
     href: ROUTES.teamFilter(FILTER_STABLE),
     singular: "estável",
     plural: "estáveis",
+    narrativeSingular: "1 célula estável",
+    narrativePlural: "{count} células estáveis",
   },
   attention: {
     key: "attention",
@@ -48,6 +53,8 @@ const healthSegmentConfig: Record<PastoralHealthKey, Omit<PastoralHealthSegment,
     href: ROUTES.teamFilter(FILTER_ATTENTION),
     singular: "pede atenção",
     plural: "pedem atenção",
+    narrativeSingular: "1 célula pedindo atenção",
+    narrativePlural: "{count} células pedindo atenção",
   },
   noPresence: {
     key: "noPresence",
@@ -56,6 +63,8 @@ const healthSegmentConfig: Record<PastoralHealthKey, Omit<PastoralHealthSegment,
     href: ROUTES.teamFilter(FILTER_NO_RECENT_PRESENCE),
     singular: "sem presença recente",
     plural: "sem presença recente",
+    narrativeSingular: "1 sem presença recente",
+    narrativePlural: "{count} sem presença recente",
   },
   support: {
     key: "support",
@@ -64,6 +73,8 @@ const healthSegmentConfig: Record<PastoralHealthKey, Omit<PastoralHealthSegment,
     href: ROUTES.teamFilter(FILTER_SUPPORT),
     singular: "com pedido de apoio",
     plural: "com pedido de apoio",
+    narrativeSingular: "1 com pedido de apoio",
+    narrativePlural: "{count} com pedido de apoio",
   },
   pastoral: {
     key: "pastoral",
@@ -72,6 +83,8 @@ const healthSegmentConfig: Record<PastoralHealthKey, Omit<PastoralHealthSegment,
     href: ROUTES.teamFilter(FILTER_PASTORAL),
     singular: "encaminhada ao pastor",
     plural: "encaminhadas ao pastor",
+    narrativeSingular: "1 encaminhada ao pastor",
+    narrativePlural: "{count} encaminhadas ao pastor",
   },
   urgent: {
     key: "urgent",
@@ -80,10 +93,13 @@ const healthSegmentConfig: Record<PastoralHealthKey, Omit<PastoralHealthSegment,
     href: ROUTES.teamFilter(FILTER_URGENT),
     singular: "urgente",
     plural: "urgentes",
+    narrativeSingular: "1 célula com urgente",
+    narrativePlural: "{count} células com urgentes",
   },
 };
 
 const healthSegmentOrder: PastoralHealthKey[] = ["urgent", "pastoral", "support", "attention", "noPresence", "stable"];
+const narrativeSegmentOrder: PastoralHealthKey[] = ["urgent", "pastoral", "support", "attention", "noPresence"];
 
 const statusToHealthKey: Record<GroupPastoralStatusKey, PastoralHealthKey> = {
   urgent: "urgent",
@@ -112,6 +128,34 @@ function buildHealthSummary(totalGroups: number, segments: PastoralHealthSegment
     .join(" · ");
 }
 
+function joinPortugueseList(items: string[]) {
+  if (items.length === 0) return "";
+  if (items.length === 1) return items[0];
+  if (items.length === 2) return `${items[0]} e ${items[1]}`;
+
+  return `${items.slice(0, -1).join(", ")} e ${items.at(-1)}`;
+}
+
+function segmentNarrative(segment: PastoralHealthSegment) {
+  const config = healthSegmentConfig[segment.key];
+  const template = segment.count === 1 ? config.narrativeSingular : config.narrativePlural;
+  return template.replace("{count}", String(segment.count));
+}
+
+function buildHealthNarrativeSummary(totalGroups: number, segments: PastoralHealthSegment[]) {
+  if (totalGroups === 0) return "Nenhuma célula ativa neste escopo.";
+
+  const activePrioritySegments = narrativeSegmentOrder
+    .map((key) => segments.find((segment) => segment.key === key))
+    .filter((segment): segment is PastoralHealthSegment => segment !== undefined && segment.count > 0);
+
+  if (activePrioritySegments.length === 0) {
+    return "Nenhuma célula pede atenção pastoral agora.";
+  }
+
+  return joinPortugueseList(activePrioritySegments.map(segmentNarrative));
+}
+
 export function buildPastoralHealthOverview(groups: PastoralHealthGroup[]): PastoralHealthOverview {
   const counts: Record<PastoralHealthKey, number> = {
     stable: 0,
@@ -134,6 +178,7 @@ export function buildPastoralHealthOverview(groups: PastoralHealthGroup[]): Past
   return {
     totalGroups: groups.length,
     summary: buildHealthSummary(groups.length, segments),
+    narrativeSummary: buildHealthNarrativeSummary(groups.length, segments),
     segments,
   };
 }

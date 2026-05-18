@@ -1,0 +1,147 @@
+.root {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--color-metric-presenca) 18%, var(--color-border-card));
+  border-radius: 1.35rem;
+  background:
+    radial-gradient(circle at 12% 28%, color-mix(in srgb, var(--color-metric-presenca) 12%, transparent), transparent 36%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-metric-presenca) 5%, var(--color-bg-card)), var(--color-bg-card));
+  box-shadow:
+    0 18px 42px color-mix(in srgb, var(--color-metric-presenca) 7%, transparent),
+    var(--color-shadow-card);
+}
+
+.root::before {
+  content: "";
+  position: absolute;
+  inset-block-end: -64px;
+  inset-inline-end: -50px;
+  z-index: -1;
+  width: 168px;
+  height: 168px;
+  border-radius: 999px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-metric-presenca) 13%, transparent), transparent 68%);
+  pointer-events: none;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.spotlight {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+}
+
+.iconWrap {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--color-metric-presenca) 28%, var(--color-border-card));
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, color-mix(in srgb, var(--color-metric-presenca) 16%, transparent), transparent 66%),
+    var(--surface-alt);
+  color: var(--color-metric-presenca);
+  box-shadow:
+    0 0 30px color-mix(in srgb, var(--color-metric-presenca) 22%, transparent),
+    inset 0 0 22px color-mix(in srgb, var(--color-metric-presenca) 10%, transparent);
+}
+
+.value {
+  color: var(--color-metric-presenca);
+  font-size: clamp(2.6rem, 15vw, 4.85rem);
+  font-weight: 800;
+  letter-spacing: -0.08em;
+  line-height: 0.9;
+  text-shadow: 0 0 22px color-mix(in srgb, var(--color-metric-presenca) 16%, transparent);
+}
+
+.valueMuted {
+  color: var(--color-text-muted);
+  letter-spacing: -0.03em;
+}
+
+.trendSignal {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid color-mix(in srgb, var(--trend-color) 26%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--trend-color) 10%, transparent);
+  color: var(--trend-color);
+  padding: 0.32rem 0.68rem;
+  font-size: var(--text-sm);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.trendCopy {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+}
+
+.chart {
+  overflow: visible;
+  width: 100%;
+  min-height: 82px;
+  color: var(--color-metric-presenca);
+}
+
+.chartTrack {
+  stroke: color-mix(in srgb, var(--color-border-divider) 76%, transparent);
+  stroke-dasharray: 3 4;
+}
+
+.chartLine {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--color-metric-presenca) 32%, transparent));
+}
+
+.chartArea {
+  fill: color-mix(in srgb, var(--color-metric-presenca) 13%, transparent);
+}
+
+.chartPoint {
+  fill: var(--color-bg-card);
+  stroke: currentColor;
+  stroke-width: 3;
+}
+
+.chartLabel {
+  fill: var(--color-text-muted);
+  font-size: 0.63rem;
+}
+
+@media (min-width: 430px) {
+  .content {
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    align-items: center;
+    padding: 1.15rem 1.2rem;
+  }
+
+  .spotlight {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
+    gap: 0.8rem;
+  }
+
+  .iconWrap {
+    width: 78px;
+    height: 78px;
+  }
+}

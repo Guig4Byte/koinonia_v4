@@ -1,5 +1,5 @@
 import type { UserRole } from "@/generated/prisma/client";
-import { buildWeeklyPresenceSummaryItem, type WeeklyPresenceSummary, type WeeklyPresenceSummaryItem } from "@/features/dashboard/presence-health";
+import type { WeeklyPresenceSummary } from "@/features/dashboard/presence-health";
 import type { PastoralHealthOverview } from "@/features/dashboard/pastoral-health";
 import type { PastoralPulseMessage } from "@/features/pastoral-pulse";
 
@@ -35,47 +35,32 @@ export type PastorPageSummaryItem = {
 export type PastorPageView = {
   navIndicator?: "risk" | "attention";
   pastoralPulse: PastoralPulseMessage;
+  radarSummary: string;
   teamSummaryItems: PastorPageSummaryItem[];
   healthOverview: PastoralHealthOverview;
-  presenceSummary: WeeklyPresenceSummaryItem[];
+  weeklyPresence: WeeklyPresenceSummary;
 };
 
 function buildPastorMacroPulse(summary: PastorPageTeamSummary): PastoralPulseMessage {
   if (summary.urgentCount > 0) {
     return {
-      title: summary.urgentCount === 1
-        ? "Há um sinal urgente no radar pastoral."
-        : `${summary.urgentCount} sinais urgentes no radar pastoral.`,
-      subtitle: "Veja as células com calma antes de orientar a equipe.",
+      title: "Há sinais que pedem um olhar mais próximo.",
+      subtitle: "Veja com calma onde a equipe precisa de mais proximidade.",
       tone: "attention",
     };
   }
 
-  if (summary.pastoralCasesCount > 0) {
+  if (summary.pastoralCasesCount > 0 || summary.supportRequestsCount > 0) {
     return {
-      title: summary.pastoralCasesCount === 1
-        ? "Há um encaminhamento ao pastor."
-        : `${summary.pastoralCasesCount} encaminhamentos ao pastor.`,
-      subtitle: "Os casos encaminhados aparecem no contexto das células.",
+      title: "Seu radar de cuidado está ativo.",
+      subtitle: "Há células que merecem leitura pastoral antes de orientar a equipe.",
       tone: "attention",
-    };
-  }
-
-  if (summary.supportRequestsCount > 0) {
-    return {
-      title: summary.supportRequestsCount === 1
-        ? "Há um pedido de apoio na equipe."
-        : `${summary.supportRequestsCount} pedidos de apoio na equipe.`,
-      subtitle: "A supervisão acompanha esses pedidos; veja as células quando precisar de contexto.",
-      tone: "calm",
     };
   }
 
   if (summary.groupsNeedingAttentionCount > 0) {
     return {
-      title: summary.groupsNeedingAttentionCount === 1
-        ? "Uma célula pede atenção pastoral."
-        : `${summary.groupsNeedingAttentionCount} células pedem atenção pastoral.`,
+      title: "Há células que pedem acompanhamento próximo.",
       subtitle: "A visão mostra a saúde geral; os detalhes ficam no contexto da célula.",
       tone: "calm",
     };
@@ -136,8 +121,9 @@ export function buildPastorPageView({
         ? "attention"
         : undefined,
     pastoralPulse: buildPastorMacroPulse(teamSummary),
+    radarSummary: dashboard.healthOverview.narrativeSummary,
     teamSummaryItems: buildTeamSummaryItems(teamSummary),
     healthOverview: dashboard.healthOverview,
-    presenceSummary: [buildWeeklyPresenceSummaryItem(dashboard.weeklyPresence)],
+    weeklyPresence: dashboard.weeklyPresence,
   };
 }

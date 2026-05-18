@@ -1,7 +1,9 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
-import { ContextSummary, PulseCard, SectionTitle } from "@/components/shared/base-cards";
+import { ContextSummary, SectionTitle } from "@/components/shared/base-cards";
 import { PastoralHealthCard } from "@/features/dashboard/components/pastoral-health-card";
+import { PastorPresenceCard } from "@/features/pastoral-home/components/pastor-presence-card";
+import { PastorRadarCard } from "@/features/pastoral-home/components/pastor-radar-card";
 import { SearchBox } from "@/features/search/components/search-box";
 import { getPastorDashboard } from "@/features/dashboard/queries";
 import { canUsePastorDashboard } from "@/features/permissions/permissions";
@@ -26,10 +28,9 @@ export default async function PastorPage() {
       role={user.role}
       nav={appNavForRole(user, { active: "home", indicator: view.navIndicator })}
     >
-      <PulseCard
-        title={view.pastoralPulse.title}
-        subtitle={view.pastoralPulse.subtitle}
-        tone={view.pastoralPulse.tone}
+      <PastorRadarCard
+        pulse={view.pastoralPulse}
+        summary={view.radarSummary}
       />
 
       <SearchBox placeholder="Buscar qualquer pessoa..." />
@@ -44,8 +45,7 @@ export default async function PastorPage() {
         className="mt-4 mb-0"
       />
 
-      <SectionTitle>Presença geral</SectionTitle>
-      <ContextSummary items={view.presenceSummary} />
+      <PastorPresenceCard weeklyPresence={view.weeklyPresence} className="mt-4" />
     </AppShell>
   );
 }
