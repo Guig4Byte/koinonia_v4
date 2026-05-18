@@ -27,6 +27,7 @@ import { normalizeSearchText } from "@/lib/text";
 import { FILTER_ALL } from "@/lib/filter-param";
 import { ROUTES } from "@/lib/routes";
 import pageStyles from "@/components/shared/consultation-page.module.css";
+import teamCardStyles from "@/features/team/components/team-structure-cards.module.css";
 
 type TeamPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -98,7 +99,9 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
         ) : null}
 
         <section>
-          <SectionTitle detail={filterContent.listDetail}>{filterContent.listTitle}</SectionTitle>
+          <SectionTitle detail={filterContent.listDetail} className={teamCardStyles.teamSectionHeading}>
+            {filterContent.listTitle}
+          </SectionTitle>
           {filteredSupervisors.length > 0 ? (
             <ProgressiveList
               initialCount={SUPERVISOR_SECTION_LIMIT}

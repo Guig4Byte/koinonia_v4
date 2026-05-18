@@ -16,7 +16,7 @@
   align-items: center;
   overflow: hidden;
   margin-top: 0.75rem;
-  margin-bottom: 1.15rem;
+  margin-bottom: 0;
   border: 1px solid color-mix(in srgb, var(--team-context-accent) 24%, var(--color-border-card));
   border-radius: 1.15rem;
   background:
@@ -166,9 +166,11 @@
 .supervisorName {
   display: block;
   color: var(--color-text-primary);
+  font-family: var(--font-display);
   font-size: var(--text-lg);
-  font-weight: 800;
-  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
 }
 
 .supervisorDescriptionText {
@@ -289,9 +291,11 @@
   display: block;
   overflow: hidden;
   color: var(--color-text-primary);
-  font-size: var(--text-base);
-  font-weight: 800;
-  line-height: 1.25;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -363,6 +367,7 @@
   margin-bottom: 1.25rem;
 }
 
+.teamSectionHeading,
 .structureHeading {
   margin-top: 1.45rem;
 }
@@ -426,9 +431,11 @@
 .structureTitle {
   display: block;
   color: var(--color-text-primary);
-  font-size: var(--text-base);
-  font-weight: 800;
-  line-height: 1.25;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
 }
 
 .structureDetail {
@@ -456,8 +463,11 @@
   border-radius: 0.65rem;
   background: color-mix(in srgb, var(--surface-alt) 64%, transparent);
   color: var(--color-text-primary);
+  font-family: var(--font-display);
   font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
   font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 .structureChevron {
@@ -525,9 +535,11 @@
   display: block;
   overflow: hidden;
   color: var(--color-text-primary);
-  font-size: var(--text-sm);
-  font-weight: 800;
-  line-height: 1.25;
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
