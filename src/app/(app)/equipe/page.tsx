@@ -1,11 +1,10 @@
 import { redirect } from "next/navigation";
 import { Plus } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
-import { ContextSummary, EmptyState, InfoCard, SectionTitle } from "@/components/shared/base-cards";
+import { EmptyState, InfoCard, SectionTitle } from "@/components/shared/base-cards";
 import { ButtonLink } from "@/components/ui/button-link";
 import { PageHero } from "@/components/shared/page-hero";
 import { ProgressiveList } from "@/components/shared/progressive-list";
-import { PastoralHealthCard } from "@/features/dashboard/components/pastoral-health-card";
 import { TeamStructureSearch } from "@/features/team/components/team-structure-search";
 import { InactiveTeamGroupLink, TeamGroupLink, TeamSupervisorCard } from "@/features/team/components/team-structure-cards";
 import { GroupKind } from "@/generated/prisma/client";
@@ -83,50 +82,6 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
         />
 
         {savedMessage ? <InfoCard tone="success">{savedMessage}</InfoCard> : null}
-
-        <div className={pageStyles.summaryBlock}>
-          <SectionTitle>Resumo</SectionTitle>
-          <ContextSummary
-            variant="balanced"
-            items={[
-              {
-                label: "Supervisores",
-                value: String(team.summary.supervisorsCount),
-                detail: "Acompanhamento pastoral.",
-                tone: "neutral",
-              },
-              {
-                label: "Células ativas",
-                value: String(team.summary.groupsCount),
-                detail: "Células em acompanhamento.",
-                tone: "neutral",
-              },
-              {
-                label: "Sem supervisor",
-                value: String(team.summary.groupsWithoutSupervisorCount),
-                detail: team.summary.groupsWithoutSupervisorCount > 0
-                  ? "Precisam de responsável."
-                  : "Todas vinculadas.",
-                tone: team.summary.groupsWithoutSupervisorCount > 0 ? "warn" : "ok",
-              },
-              {
-                label: "Inativas",
-                value: String(inactiveGroups.length),
-                detail: inactiveGroups.length > 0
-                  ? "Fora do acompanhamento ativo."
-                  : "Nenhuma célula pausada.",
-                tone: "neutral",
-              },
-            ]}
-          />
-        </div>
-
-        <PastoralHealthCard
-          overview={team.healthOverview}
-          title="Saúde das células"
-          description="Leitura pastoral das células ativas por estabilidade, presença recente e cuidado."
-          className="mt-4 mb-0"
-        />
 
         <section id={SUPERVISORS_SECTION_ID} className="scroll-mt-4">
           <SectionTitle className="mt-4" detail="Busque ou filtre por atenção.">Estrutura da equipe</SectionTitle>

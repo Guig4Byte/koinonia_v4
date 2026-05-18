@@ -30,12 +30,12 @@ describe("pastoral-health", () => {
     ]);
 
     expect(overview.segments.map((segment) => [segment.key, segment.count, segment.tone])).toEqual([
-      ["stable", 1, "ok"],
+      ["urgent", 1, "risk"],
+      ["pastoral", 1, "risk"],
+      ["support", 1, "support"],
       ["attention", 0, "warn"],
       ["noPresence", 1, "neutral"],
-      ["support", 1, "support"],
-      ["pastoral", 1, "risk"],
-      ["urgent", 1, "risk"],
+      ["stable", 1, "ok"],
     ]);
   });
 });

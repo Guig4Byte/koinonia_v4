@@ -1,4 +1,4 @@
-import { EventType, GroupResponsibilityRole, MembershipRole, SignalSeverity, SignalStatus, UserRole } from "@/generated/prisma/client";
+import { EventType, GroupKind, GroupResponsibilityRole, MembershipRole, SignalStatus, UserRole } from "@/generated/prisma/client";
 import { presenceHistoryEventWhere } from "@/features/events/presence-query";
 import { isPresenceRecordedEvent, PRESENCE_TREND_RECENT_SAMPLE_COUNT, PRESENCE_TREND_TOTAL_SAMPLE_COUNT, summarizeEventsPresence } from "@/features/events/presence-summary";
 import { ensureUpcomingCellMeetingsForUser } from "@/features/events/schedule";
@@ -11,12 +11,9 @@ import {
   type LeaderPageSignal,
 } from "@/features/leader/leader-page-view";
 import { activeGroupResponsibilitiesInclude, activeGroupResponsibilityWhere } from "@/features/groups/group-query";
-import { IN_CARE_STATUS } from "@/features/people/person-status";
 import { canUsePastorDashboard, getVisibleEventWhere, getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
-import { getPastoralSignalsByPerson } from "@/features/signals/attention";
 import { getPastoralSectionSignalsByPerson } from "@/features/signals/sections";
 import {
-  buildPastorGroupPresence,
   buildPastorTeamGroup,
   buildScopedGroupDashboardItem,
   buildSupervisorTeam,
@@ -30,123 +27,8 @@ import { buildPastoralHealthOverview } from "@/features/dashboard/pastoral-healt
 import { prisma } from "@/lib/prisma";
 import { addBrasiliaDays, endOfBrasiliaWeek, startOfBrasiliaDay, startOfBrasiliaWeek } from "@/lib/brasilia-time";
 
-const pastoralSignalWhere = {
-  OR: [
-    { severity: SignalSeverity.URGENT },
-    { assignedTo: { is: { role: { in: [UserRole.PASTOR, UserRole.ADMIN] } } } },
-  ],
-};
-
-const PASTORAL_SIGNAL_QUERY_LIMIT = 50;
-const PASTOR_IN_CARE_PEOPLE_QUERY_LIMIT = 30;
-
-
-export async function getPastorDashboard(user: PermissionUser) {
-  if (!canUsePastorDashboard(user)) {
-    throw new Error("getPastorDashboard requires pastor or admin scope");
-  }
-
-  const churchId = user.churchId;
-  const now = new Date();
-  const weekStart = startOfBrasiliaWeek(now, 1);
-  const weekEnd = endOfBrasiliaWeek(now, 1);
-  const tomorrow = addBrasiliaDays(startOfBrasiliaDay(now), 1);
-  const presenceHistoryWhere = presenceHistoryEventWhere(now);
-
-  const [events, openSignals, groups, inCarePeople] = await Promise.all([
-    prisma.event.findMany({
-      where: {
-        churchId,
-        type: EventType.CELL_MEETING,
-        startsAt: { gte: weekStart, lte: weekEnd },
-        group: { is: { churchId, isActive: true } },
-      },
-      include: { attendances: true, group: { include: { responsibilities: activeGroupResponsibilitiesInclude } } },
-      orderBy: { startsAt: "asc" },
-    }),
-    prisma.careSignal.findMany({
-      where: {
-        churchId,
-        status: SignalStatus.OPEN,
-        AND: [
-          pastoralSignalWhere,
-          { OR: [{ groupId: null }, { group: { is: { churchId, isActive: true } } }] },
-        ],
-      },
-      include: { person: true, assignedTo: true, group: { include: { responsibilities: activeGroupResponsibilitiesInclude } } },
-      orderBy: [{ detectedAt: "desc" }],
-      take: PASTORAL_SIGNAL_QUERY_LIMIT,
-    }),
-    prisma.smallGroup.findMany({
-      where: { churchId, isActive: true },
-      include: {
-        responsibilities: activeGroupResponsibilitiesInclude,
-        signals: { where: { status: SignalStatus.OPEN }, include: { assignedTo: true } },
-        events: {
-          where: presenceHistoryWhere,
-          orderBy: { startsAt: "desc" },
-          take: PRESENCE_TREND_RECENT_SAMPLE_COUNT,
-          include: { attendances: true },
-        },
-      },
-      orderBy: { name: "asc" },
-    }),
-    prisma.person.findMany({
-      where: {
-        churchId,
-        status: IN_CARE_STATUS,
-        memberships: { some: { leftAt: null, role: { not: MembershipRole.VISITOR }, group: { is: { churchId, isActive: true } } } },
-        careTouches: { some: { actor: { is: { role: { in: [UserRole.PASTOR, UserRole.ADMIN] } } } } },
-      },
-      include: {
-        memberships: {
-          where: { leftAt: null, role: { not: MembershipRole.VISITOR }, group: { is: { churchId, isActive: true } } },
-          include: { group: true },
-          take: 1,
-        },
-      },
-      orderBy: { updatedAt: "desc" },
-      take: PASTOR_IN_CARE_PEOPLE_QUERY_LIMIT,
-    }),
-  ]);
-
-  const dueEvents = events.filter((event) => event.startsAt < tomorrow);
-  const completedEvents = dueEvents.filter(isPresenceRecordedEvent);
-  const presence = summarizeEventsPresence(completedEvents);
-  const attentionPeople = getPastoralSignalsByPerson(openSignals);
-  const urgentSignals = attentionPeople.length;
-
-  const groupsWithPresence = groups.map(buildPastorGroupPresence);
-
-  const groupsWithoutRecentPresence = groupsWithPresence.filter((group) => !group.hasPresenceData);
-
+function pastorTeamGroupInclude(presenceHistoryWhere: ReturnType<typeof presenceHistoryEventWhere>) {
   return {
-    plannedEvents: dueEvents.length,
-    completedEvents: completedEvents.length,
-    pendingGroupsCount: groupsWithoutRecentPresence.length,
-    groupsWithoutRecentPresence,
-    weeklyPresence: {
-      presenceRate: presence.presenceRate,
-      hasPresenceData: presence.hasPresenceData,
-      recordedEventsCount: presence.recordedEventsCount,
-    },
-    openSignals,
-    attentionPeople,
-    urgentSignals,
-    inCarePeople,
-  };
-}
-
-export async function getPastorTeamOverview(user: PermissionUser) {
-  if (!canUsePastorDashboard(user)) {
-    throw new Error("getPastorTeamOverview requires pastor or admin scope");
-  }
-
-  const churchId = user.churchId;
-  const now = new Date();
-  const presenceHistoryWhere = presenceHistoryEventWhere(now);
-
-  const groupInclude = {
     responsibilities: activeGroupResponsibilitiesInclude,
     memberships: {
       where: { leftAt: null, role: { not: MembershipRole.VISITOR } },
@@ -160,6 +42,85 @@ export async function getPastorTeamOverview(user: PermissionUser) {
       include: { attendances: true },
     },
   };
+}
+
+export async function getPastorDashboard(user: PermissionUser) {
+  if (!canUsePastorDashboard(user)) {
+    throw new Error("getPastorDashboard requires pastor or admin scope");
+  }
+
+  const churchId = user.churchId;
+  const now = new Date();
+  const weekStart = startOfBrasiliaWeek(now, 1);
+  const weekEnd = endOfBrasiliaWeek(now, 1);
+  const tomorrow = addBrasiliaDays(startOfBrasiliaDay(now), 1);
+  const presenceHistoryWhere = presenceHistoryEventWhere(now);
+  const groupInclude = pastorTeamGroupInclude(presenceHistoryWhere);
+
+  const [weeklyEvents, activeGroups, supervisorsCount, groupsWithoutSupervisorCount, inactiveGroupsCount] = await Promise.all([
+    prisma.event.findMany({
+      where: {
+        churchId,
+        type: EventType.CELL_MEETING,
+        startsAt: { gte: weekStart, lte: weekEnd },
+        group: { is: { churchId, isActive: true } },
+      },
+      include: { attendances: true },
+      orderBy: { startsAt: "asc" },
+    }),
+    prisma.smallGroup.findMany({
+      where: { churchId, kind: GroupKind.CELL, isActive: true },
+      include: groupInclude,
+      orderBy: { name: "asc" },
+    }),
+    prisma.user.count({ where: { churchId, role: UserRole.SUPERVISOR } }),
+    prisma.smallGroup.count({
+      where: {
+        churchId,
+        kind: GroupKind.CELL,
+        isActive: true,
+        responsibilities: { none: activeGroupResponsibilityWhere(GroupResponsibilityRole.SUPERVISOR) },
+      },
+    }),
+    prisma.smallGroup.count({ where: { churchId, kind: GroupKind.CELL, isActive: false } }),
+  ]);
+
+  const dueEvents = weeklyEvents.filter((event) => event.startsAt < tomorrow);
+  const completedEvents = dueEvents.filter(isPresenceRecordedEvent);
+  const presence = summarizeEventsPresence(completedEvents);
+  const groups = activeGroups.map(buildPastorTeamGroup);
+  const groupsNeedingAttention = groups.filter((group) => group.pastoralPriorityScore > 0);
+
+  return {
+    weeklyPresence: {
+      presenceRate: presence.presenceRate,
+      hasPresenceData: presence.hasPresenceData,
+      recordedEventsCount: presence.recordedEventsCount,
+    },
+    healthOverview: buildPastoralHealthOverview(groups),
+    teamSummary: {
+      supervisorsCount,
+      groupsCount: groups.length,
+      pastoralCasesCount: sumBy(groups, (group) => group.pastoralCasesCount),
+      urgentCount: sumBy(groups, (group) => group.urgentCount),
+      supportRequestsCount: sumBy(groups, (group) => group.supportRequestsCount),
+      groupsNeedingAttentionCount: groupsNeedingAttention.length,
+      groupsWithoutSupervisorCount,
+      inactiveGroupsCount,
+    },
+  };
+}
+
+export async function getPastorTeamOverview(user: PermissionUser) {
+  if (!canUsePastorDashboard(user)) {
+    throw new Error("getPastorTeamOverview requires pastor or admin scope");
+  }
+
+  const churchId = user.churchId;
+  const now = new Date();
+  const presenceHistoryWhere = presenceHistoryEventWhere(now);
+
+  const groupInclude = pastorTeamGroupInclude(presenceHistoryWhere);
 
   const [supervisors, groupsWithoutSupervisor] = await Promise.all([
     prisma.user.findMany({
@@ -200,17 +161,11 @@ export async function getPastorTeamOverview(user: PermissionUser) {
   })).sort(compareSupervisorPriority);
   const unassignedGroups = groupsWithoutSupervisor.map(toTeamGroup).sort(comparePastoralPriorityThenName);
   const allGroups = [...supervisorTeams.flatMap((supervisor) => supervisor.groups), ...unassignedGroups];
-  const priorityGroups = allGroups.filter((group) => group.pastoralPriorityScore > 0).sort(comparePastoralPriorityThenName);
-  const readingPendingGroups = allGroups
-    .filter((group) => group.hasNoPresenceData)
-    .sort(comparePastoralPriorityThenName);
+  const priorityGroups = allGroups.filter((group) => group.pastoralPriorityScore > 0);
 
   return {
     supervisors: supervisorTeams,
     unassignedGroups,
-    priorityGroups,
-    readingPendingGroups,
-    healthOverview: buildPastoralHealthOverview(allGroups),
     summary: {
       supervisorsCount: supervisors.length,
       groupsCount: allGroups.length,

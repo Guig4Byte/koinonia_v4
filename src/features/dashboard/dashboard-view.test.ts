@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { AttendanceStatus, GroupResponsibilityRole, PersonStatus, SignalSeverity, UserRole } from "@/generated/prisma/client";
 import {
-  buildPastorGroupPresence,
   buildPastorTeamGroup,
   buildScopedGroupDashboardItem,
   buildSupervisorTeam,
@@ -13,7 +12,7 @@ import type { PermissionUser } from "@/features/permissions/permissions";
 
 const now = new Date("2026-05-08T12:00:00.000Z");
 
-function signal(overrides: Partial<Parameters<typeof buildPastorGroupPresence>[0]["signals"][number]> = {}) {
+function signal(overrides: Partial<Parameters<typeof buildPastorTeamGroup>[0]["signals"][number]> = {}) {
   return {
     id: overrides.id ?? `signal-${overrides.personId ?? "person-1"}`,
     personId: overrides.personId ?? "person-1",
@@ -58,25 +57,6 @@ const leaderUser: PermissionUser = {
 };
 
 describe("dashboard-view", () => {
-  it("monta resumo pastoral de célula para o pastor", () => {
-    const summary = buildPastorGroupPresence(group({
-      events: [event("COMPLETED", now, [{ status: AttendanceStatus.PRESENT }, { status: AttendanceStatus.ABSENT }])],
-      signals: [
-        signal(),
-        signal({ id: "signal-person-2", personId: "person-2", severity: SignalSeverity.URGENT }),
-        signal({ id: "signal-person-3", personId: "person-3", assignedTo: { role: UserRole.PASTOR } }),
-      ],
-    }));
-
-    expect(summary.leaderName).toBe("Camila");
-    expect(summary.supervisorName).toBe("Ana");
-    expect(summary.presenceRate).toBe(50);
-    expect(summary.recordedEventsCount).toBe(1);
-    expect(summary.attentionCount).toBe(3);
-    expect(summary.urgentCount).toBe(1);
-    expect(summary.pastoralCasesCount).toBe(1);
-  });
-
   it("monta célula da equipe com contadores e prioridade pastoral", () => {
     const overview = buildPastorTeamGroup(group({
       signals: [

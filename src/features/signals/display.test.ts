@@ -17,11 +17,13 @@ describe("signal display helpers", () => {
     expect(signalBadgeForViewer(signal, { role: UserRole.PASTOR })).toEqual({ label: "Urgente", tone: "risk" });
   });
 
-  it("shows supervisor support as a request for supervisors and as requested support for leaders", () => {
+  it("shows supervisor support as support for every viewer without hiding it as local attention", () => {
     const signal = { severity: SignalSeverity.ATTENTION, assignedTo: { role: UserRole.SUPERVISOR } };
 
     expect(signalBadgeForViewer(signal, { role: UserRole.SUPERVISOR })).toEqual({ label: "Pedido de apoio", tone: "support" });
     expect(signalBadgeForViewer(signal, { role: UserRole.LEADER })).toEqual({ label: "Apoio solicitado", tone: "support" });
+    expect(signalBadgeForViewer(signal, { role: UserRole.PASTOR })).toEqual({ label: "Pedido de apoio", tone: "support" });
+    expect(signalBadgeForViewer(signal, { role: UserRole.ADMIN })).toEqual({ label: "Pedido de apoio", tone: "support" });
   });
 
   it("keeps urgent unassigned signals consistent", () => {

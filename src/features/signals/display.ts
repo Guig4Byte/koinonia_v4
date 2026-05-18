@@ -52,10 +52,6 @@ export function signalBadgeForViewer(signal: SignalDisplayLike, viewer?: SignalD
   }
 
   if (isAssignedToSupervisor(signal)) {
-    if (isPastoralRole(viewer)) {
-      return { label: SIGNAL_COPY.badges.localAttention, tone: "warn" };
-    }
-
     const escalationLabel = viewer ? escalationStatusLabelForViewer(signal, viewer) : null;
     return { label: escalationLabel ?? SIGNAL_COPY.badges.supportRequest, tone: "support" };
   }

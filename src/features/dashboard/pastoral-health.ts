@@ -74,7 +74,7 @@ const healthSegmentConfig: Record<PastoralHealthKey, Omit<PastoralHealthSegment,
   },
 };
 
-const healthSegmentOrder: PastoralHealthKey[] = ["stable", "attention", "noPresence", "support", "pastoral", "urgent"];
+const healthSegmentOrder: PastoralHealthKey[] = ["urgent", "pastoral", "support", "attention", "noPresence", "stable"];
 
 const statusToHealthKey: Record<GroupPastoralStatusKey, PastoralHealthKey> = {
   urgent: "urgent",

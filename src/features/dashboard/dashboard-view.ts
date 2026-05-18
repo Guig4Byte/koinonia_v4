@@ -9,7 +9,7 @@ import {
   teamGroupPastoralPriorityScore,
   teamGroupStatusLabel,
 } from "@/features/groups/group-pastoral-priority";
-import { FALLBACK_LEADER_NAME, FALLBACK_SUPERVISOR_NAME } from "@/features/groups/group-display";
+import { FALLBACK_LEADER_NAME } from "@/features/groups/group-display";
 import { responsibilityNames } from "@/features/groups/responsibility-display";
 import { isInCarePerson } from "@/features/people/person-status";
 import { getPastoralSectionSignalsByPerson, isSupportRequest } from "@/features/signals/sections";
@@ -109,24 +109,6 @@ function buildGroupPastoralSignalSummary(signals: DashboardSignal[], presence: {
     supportRequestsCount,
     localAttentionCount,
     urgentCount,
-  };
-}
-
-export function buildPastorGroupPresence(group: DashboardGroupBase) {
-  const groupPresence = summarizeEventsPresence(group.events);
-  const recordedEvents = group.events.filter(isPresenceRecordedEvent);
-  const signalSummary = buildGroupPastoralSignalSummary(group.signals, groupPresence);
-
-  return {
-    id: group.id,
-    name: group.name,
-    leaderName: responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, FALLBACK_LEADER_NAME),
-    supervisorName: responsibilityNames(group.responsibilities, GroupResponsibilityRole.SUPERVISOR, FALLBACK_SUPERVISOR_NAME),
-    presenceRate: groupPresence.presenceRate,
-    hasPresenceData: groupPresence.hasPresenceData,
-    hasLowPresence: hasLowPresence(groupPresence),
-    recordedEventsCount: recordedEvents.length,
-    ...signalSummary,
   };
 }
 

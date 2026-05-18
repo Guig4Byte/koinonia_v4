@@ -1,27 +1,28 @@
 import { describe, expect, it } from "vitest";
-import { PersonStatus, SignalSeverity, UserRole } from "@/generated/prisma/client";
-import { buildPastorPageView, type PastorPageDashboard, type PastorPageSignal } from "./pastor-page-view";
+import { UserRole } from "@/generated/prisma/client";
+import { buildPastoralHealthOverview } from "@/features/dashboard/pastoral-health";
+import { buildPastorPageView, type PastorPageDashboard, type PastorPageTeamSummary } from "./pastor-page-view";
 
 const user = { id: "pastor-1", role: UserRole.PASTOR };
 
-function signal(overrides: Partial<PastorPageSignal> = {}): PastorPageSignal {
+function teamSummary(overrides: Partial<PastorPageTeamSummary> = {}): PastorPageTeamSummary {
   return {
-    id: overrides.id ?? "signal-1",
-    personId: overrides.personId ?? "person-1",
-    reason: overrides.reason ?? "Ausência recente",
-    severity: overrides.severity ?? SignalSeverity.ATTENTION,
-    assignedToId: overrides.assignedToId,
-    assignedTo: overrides.assignedTo,
-    person: overrides.person ?? { id: "person-1", fullName: "Maria" },
-    group: overrides.group ?? { name: "Célula Central" },
-    detectedAt: overrides.detectedAt,
+    supervisorsCount: 4,
+    groupsCount: 9,
+    groupsWithoutSupervisorCount: 0,
+    inactiveGroupsCount: 1,
+    urgentCount: 0,
+    pastoralCasesCount: 0,
+    supportRequestsCount: 0,
+    groupsNeedingAttentionCount: 0,
+    ...overrides,
   };
 }
 
 function dashboard(overrides: Partial<PastorPageDashboard> = {}): PastorPageDashboard {
   return {
-    attentionPeople: overrides.attentionPeople ?? [],
-    inCarePeople: overrides.inCarePeople ?? [],
+    teamSummary: overrides.teamSummary ?? teamSummary(),
+    healthOverview: overrides.healthOverview ?? buildPastoralHealthOverview([]),
     weeklyPresence: overrides.weeklyPresence ?? {
       hasPresenceData: false,
       presenceRate: 0,
@@ -31,19 +32,49 @@ function dashboard(overrides: Partial<PastorPageDashboard> = {}): PastorPageDash
 }
 
 describe("pastor-page-view", () => {
-  it("prioriza casos pastorais e monta indicador de risco", () => {
+  it("prioriza urgentes na leitura macro do pastor", () => {
     const view = buildPastorPageView({
-      dashboard: dashboard({
-        attentionPeople: [signal({ severity: SignalSeverity.URGENT })],
-        inCarePeople: [{ id: "person-2", fullName: "Ana", status: PersonStatus.COOLING_AWAY }],
-      }),
+      dashboard: dashboard({ teamSummary: teamSummary({ urgentCount: 2, pastoralCasesCount: 3, groupsNeedingAttentionCount: 4 }) }),
       user,
     });
 
     expect(view.navIndicator).toBe("risk");
-    expect(view.urgentOrPastoralCases).toHaveLength(1);
-    expect(view.inCarePeople).toHaveLength(1);
-    expect(view.pastoralPulse.tone).toBe("attention");
+    expect(view.pastoralPulse.title).toBe("2 sinais urgentes no radar pastoral.");
+    expect(view.healthOverview.totalGroups).toBe(0);
+  });
+
+  it("monta resumo de equipe sem listar pessoas na visão", () => {
+    const view = buildPastorPageView({
+      dashboard: dashboard({ teamSummary: teamSummary({ groupsWithoutSupervisorCount: 1, inactiveGroupsCount: 2 }) }),
+      user,
+    });
+
+    expect(view.teamSummaryItems).toEqual([
+      {
+        label: "Supervisores",
+        value: "4",
+        detail: "Acompanhamento pastoral.",
+        tone: "neutral",
+      },
+      {
+        label: "Células ativas",
+        value: "9",
+        detail: "Células em acompanhamento.",
+        tone: "neutral",
+      },
+      {
+        label: "Sem supervisor",
+        value: "1",
+        detail: "Precisam de responsável.",
+        tone: "warn",
+      },
+      {
+        label: "Inativas",
+        value: "2",
+        detail: "Fora do acompanhamento ativo.",
+        tone: "neutral",
+      },
+    ]);
   });
 
   it("monta resumo neutro quando ainda não há presença semanal", () => {

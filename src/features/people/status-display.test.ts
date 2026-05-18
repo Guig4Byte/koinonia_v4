@@ -45,6 +45,11 @@ describe("person effective badge", () => {
       label: "Pedido de apoio",
       tone: "support",
     });
+
+    expect(personEffectiveBadgeForViewer({ status: PersonStatus.NEEDS_ATTENTION }, signal, { role: UserRole.PASTOR })).toEqual({
+      label: "Pedido de apoio",
+      tone: "support",
+    });
   });
 
   it("keeps pastoral wording for pastor/admin when a signal is assigned pastorally", () => {

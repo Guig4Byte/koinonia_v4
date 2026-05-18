@@ -1,7 +1,7 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
-import { ContextSummary, EmptyState, PulseCard, SectionTitle } from "@/components/shared/base-cards";
-import { InCareSection, PastoralSignalSection } from "@/features/pastoral-home/components/pastoral-list-cards";
+import { ContextSummary, PulseCard, SectionTitle } from "@/components/shared/base-cards";
+import { PastoralHealthCard } from "@/features/dashboard/components/pastoral-health-card";
 import { SearchBox } from "@/features/search/components/search-box";
 import { getPastorDashboard } from "@/features/dashboard/queries";
 import { canUsePastorDashboard } from "@/features/permissions/permissions";
@@ -19,7 +19,6 @@ export default async function PastorPage() {
 
   const dashboard = await getPastorDashboard(user);
   const view = buildPastorPageView({ dashboard, user });
-  const hasPastoralRadar = view.urgentOrPastoralCases.length > 0 || view.inCarePeople.length > 0;
 
   return (
     <AppShell
@@ -35,32 +34,15 @@ export default async function PastorPage() {
 
       <SearchBox placeholder="Buscar qualquer pessoa..." />
 
-      {hasPastoralRadar ? (
-        <>
-          {view.urgentOrPastoralCases.length > 0 ? (
-            <PastoralSignalSection
-              title="Irmãos que precisam de um olhar especial"
-              detail="Urgentes e encaminhados."
-              emptyMessage="Nada grave ou encaminhado chegou para o pastor agora."
-              signals={view.urgentOrPastoralCases}
-              viewer={user}
-            />
-          ) : null}
+      <SectionTitle>Resumo da equipe</SectionTitle>
+      <ContextSummary variant="balanced" items={view.teamSummaryItems} />
 
-          {view.inCarePeople.length > 0 ? (
-            <InCareSection
-              title="Acolhidos em cuidado pastoral"
-              detail="Seguimento pastoral ativo."
-              emptyMessage="Nenhuma pessoa em cuidado pastoral para destacar agora."
-              people={view.inCarePeople}
-            />
-          ) : null}
-        </>
-      ) : (
-        <EmptyState>
-          Tudo tranquilo agora. Nenhum caso grave, encaminhamento ou cuidado pastoral aberto.
-        </EmptyState>
-      )}
+      <PastoralHealthCard
+        overview={view.healthOverview}
+        title="Saúde das células"
+        description="Leitura pastoral das células ativas por estabilidade, presença recente e cuidado."
+        className="mt-4 mb-0"
+      />
 
       <SectionTitle>Presença geral</SectionTitle>
       <ContextSummary items={view.presenceSummary} />
