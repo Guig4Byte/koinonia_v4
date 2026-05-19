@@ -6,6 +6,7 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { PageHero } from "@/components/shared/page-hero";
 import { ProgressiveList } from "@/components/shared/progressive-list";
 import { TeamStructureSearch } from "@/features/team/components/team-structure-search";
+import { TeamSectionAnchorScroll } from "@/features/team/components/team-section-anchor-scroll";
 import { TeamFilterContextCard, TeamStructureAdjustments, TeamSupervisorCard } from "@/features/team/components/team-structure-cards";
 import { GroupKind } from "@/generated/prisma/client";
 import { getPastorTeamOverview } from "@/features/dashboard/queries";
@@ -15,11 +16,11 @@ import {
   buildTeamPageLists,
   readTeamFilter,
   SUPERVISOR_SECTION_LIMIT,
-  SUPERVISORS_SECTION_ID,
   teamFilterContent,
   teamNavIndicator,
   teamSavedMessage,
 } from "@/features/team/team-view";
+import { SUPERVISORS_SECTION_ID, TEAM_FILTERS_SECTION_ID } from "@/features/team/team-routes";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/search-params";
@@ -71,6 +72,8 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
       headerVariant="compact"
     >
       <div className={pageStyles.page}>
+        <TeamSectionAnchorScroll />
+
         <PageHero
           compact
           eyebrow="Equipe pastoral"
@@ -86,8 +89,8 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
 
         {savedMessage ? <InfoCard tone="success">{savedMessage}</InfoCard> : null}
 
-        <section id={SUPERVISORS_SECTION_ID} className="scroll-mt-4">
-          <TeamStructureSearch query={query} filter={activeFilter} sectionId={SUPERVISORS_SECTION_ID} />
+        <section id={TEAM_FILTERS_SECTION_ID} className="scroll-mt-4">
+          <TeamStructureSearch query={query} filter={activeFilter} sectionId={TEAM_FILTERS_SECTION_ID} />
         </section>
 
         {activeFilter !== FILTER_ALL ? (
@@ -98,7 +101,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
           />
         ) : null}
 
-        <section>
+        <section id={SUPERVISORS_SECTION_ID} className="scroll-mt-6">
           <SectionTitle detail={filterContent.listDetail} className={teamCardStyles.teamSectionHeading}>
             {filterContent.listTitle}
           </SectionTitle>

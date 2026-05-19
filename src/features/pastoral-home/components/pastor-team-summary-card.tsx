@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { UsersRound } from "lucide-react";
 import type { PastorPageSummaryItem } from "@/features/pastoral-home/pastor-page-view";
+import { teamSupervisorsSectionHref } from "@/features/team/team-routes";
 import { cn } from "@/lib/cn";
-import { ROUTES } from "@/lib/routes";
 import styles from "./pastor-team-summary-card.module.css";
 
 const valueToneClass: Record<NonNullable<PastorPageSummaryItem["tone"]>, string> = {
@@ -14,7 +14,7 @@ const valueToneClass: Record<NonNullable<PastorPageSummaryItem["tone"]>, string>
 
 export function PastorTeamSummaryCard({ items }: { items: PastorPageSummaryItem[] }) {
   return (
-    <Link href={ROUTES.team} className={styles.root} aria-label="Ver equipe pastoral">
+    <Link href={teamSupervisorsSectionHref()} className={styles.root} aria-label="Ver equipe pastoral">
       <div className={styles.header}>
         <span className={styles.iconWrap} aria-hidden="true">
           <UsersRound className="h-4 w-4" strokeWidth={2.2} />

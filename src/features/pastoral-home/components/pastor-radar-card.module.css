@@ -104,13 +104,6 @@
   min-width: 0;
 }
 
-.narrative {
-  margin-top: 0.75rem;
-  color: var(--color-text-secondary);
-  font-size: var(--text-sm);
-  line-height: 1.62;
-}
-
 @media (min-width: 430px) {
   .content {
     grid-template-columns: minmax(0, 1fr) 138px;

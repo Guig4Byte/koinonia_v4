@@ -39,17 +39,6 @@ describe("pastoral-health", () => {
     ]);
   });
 
-  it("monta narrativa pastoral para o radar", () => {
-    const overview = buildPastoralHealthOverview([
-      group({ urgentCount: 1 }),
-      group({ pastoralCasesCount: 1 }),
-      group({ supportRequestsCount: 1 }),
-      group({ hasPresenceData: false, presenceRate: 0 }),
-    ]);
-
-    expect(overview.narrativeSummary).toBe("1 célula com urgente, 1 encaminhada ao pastor, 1 com pedido de apoio e 1 sem presença recente");
-  });
-
   it("liga cada segmento ao filtro correspondente da equipe", () => {
     const overview = buildPastoralHealthOverview([group()]);
 

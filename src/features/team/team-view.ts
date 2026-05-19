@@ -11,7 +11,6 @@ import { routeWithQuery, ROUTES } from "@/lib/routes";
 export const TEAM_SECTION_LIMIT = 4;
 export const SUPERVISOR_SECTION_LIMIT = 4;
 export const GROUPS_PER_SUPERVISOR_LIMIT = 4;
-export const SUPERVISORS_SECTION_ID = "supervisores";
 
 
 export { readTeamFilter, TEAM_FILTERS, type TeamFilter } from "@/features/team/team-filters";

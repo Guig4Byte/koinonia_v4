@@ -43,24 +43,6 @@ describe("pastor-page-view", () => {
     expect(view.healthOverview.totalGroups).toBe(0);
   });
 
-  it("leva a narrativa da saúde para o radar pastoral", () => {
-    const healthOverview = buildPastoralHealthOverview([
-      { hasPresenceData: true, presenceRate: 90, urgentCount: 1 },
-      { hasPresenceData: true, presenceRate: 90, supportRequestsCount: 1 },
-      { hasPresenceData: false, presenceRate: 0 },
-    ]);
-
-    const view = buildPastorPageView({
-      dashboard: dashboard({
-        teamSummary: teamSummary({ urgentCount: 1, supportRequestsCount: 1, groupsNeedingAttentionCount: 3 }),
-        healthOverview,
-      }),
-      user,
-    });
-
-    expect(view.radarSummary).toBe("1 célula com urgente, 1 com pedido de apoio e 1 sem presença recente");
-  });
-
   it("monta resumo de equipe sem listar pessoas na visão", () => {
     const view = buildPastorPageView({
       dashboard: dashboard({ teamSummary: teamSummary({ groupsWithoutSupervisorCount: 1, inactiveGroupsCount: 2 }) }),

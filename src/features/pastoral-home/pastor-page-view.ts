@@ -34,7 +34,6 @@ export type PastorPageSummaryItem = {
 export type PastorPageView = {
   navIndicator?: "risk" | "attention";
   pastoralPulse: PastoralPulseMessage;
-  radarSummary: string;
   teamSummaryItems: PastorPageSummaryItem[];
   healthOverview: PastoralHealthOverview;
   weeklyPresence: WeeklyPresenceSummary;
@@ -112,7 +111,6 @@ export function buildPastorPageView({
         ? "attention"
         : undefined,
     pastoralPulse: buildPastorMacroPulse(teamSummary),
-    radarSummary: dashboard.healthOverview.narrativeSummary,
     teamSummaryItems: buildTeamSummaryItems(teamSummary),
     healthOverview: dashboard.healthOverview,
     weeklyPresence: dashboard.weeklyPresence,

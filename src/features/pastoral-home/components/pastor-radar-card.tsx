@@ -3,19 +3,11 @@ import type { PastoralPulseMessage } from "@/features/pastoral-pulse";
 import { cn } from "@/lib/cn";
 import styles from "./pastor-radar-card.module.css";
 
-function punctuateSummary(summary: string) {
-  const trimmed = summary.trim();
-  if (!trimmed) return trimmed;
-  return /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
-}
-
 export function PastorRadarCard({
   pulse,
-  summary,
   className,
 }: {
   pulse: PastoralPulseMessage;
-  summary: string;
   className?: string;
 }) {
   return (
@@ -26,7 +18,6 @@ export function PastorRadarCard({
           <p className="font-serif-display text-[length:var(--text-2xl)] font-semibold leading-[1.08] tracking-[-0.02em] text-[color:var(--color-text-primary)] text-balance">
             {pulse.title}
           </p>
-          <p className={styles.narrative}>{punctuateSummary(summary)}</p>
           {pulse.subtitle ? (
             <p className="mt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">
               {pulse.subtitle}
