@@ -1,0 +1,291 @@
+.summarySection {
+  display: grid;
+  gap: 0.75rem;
+  padding-bottom: 2rem;
+}
+
+.attendanceCard.attendanceCard {
+  --summary-accent: var(--brown-400);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--summary-accent) 28%, var(--color-border-card));
+  border-left: 4px solid color-mix(in srgb, var(--summary-accent) 86%, var(--color-brand));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--summary-accent) 6%, transparent), transparent 42%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--brown-400) 6%), var(--color-bg-card) 64%);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--summary-accent) 8%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--surface-alt) 42%, transparent),
+    var(--color-shadow-card);
+}
+
+.attendanceCard::before {
+  content: "";
+  position: absolute;
+  inset-block-start: 0.85rem;
+  inset-inline-start: 0.9rem;
+  z-index: -1;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--summary-accent) 10%, transparent), transparent 72%);
+  filter: blur(12px);
+  opacity: 0.68;
+  pointer-events: none;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.9rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--summary-accent) 16%, var(--color-border-divider));
+  padding-bottom: 0.85rem;
+}
+
+.heading {
+  min-width: 0;
+}
+
+.title {
+  color: var(--color-text-primary);
+  font-size: var(--text-base);
+  font-weight: 800;
+  line-height: 1.18;
+}
+
+.total {
+  margin-top: 0.25rem;
+  color: color-mix(in srgb, var(--summary-accent) 78%, var(--color-text-primary));
+  font-size: var(--text-xl);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.breakdown {
+  margin-top: 0.35rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.statusPill {
+  display: inline-flex;
+  min-height: 1.85rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--summary-accent) 38%, var(--color-border-card));
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--summary-accent) 9%, var(--color-bg-card));
+  padding: 0 0.65rem;
+  color: color-mix(in srgb, var(--summary-accent) 78%, var(--color-text-primary));
+  font-size: var(--text-xs);
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.groupList {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.attendanceGroup {
+  --attendance-row-accent: var(--color-text-muted);
+  display: grid;
+  gap: 0.55rem;
+}
+
+.groupHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.groupTitle {
+  display: block;
+  color: color-mix(in srgb, var(--attendance-row-accent) 72%, var(--color-text-primary));
+  font-size: var(--text-sm);
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.groupDescription {
+  display: block;
+  margin-top: 0.1rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.rows {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.personRow {
+  --attendance-row-accent: var(--color-text-muted);
+  display: grid;
+  min-height: 3rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--attendance-row-accent) 24%, var(--color-border-card));
+  border-left: 4px solid color-mix(in srgb, var(--attendance-row-accent) 84%, var(--color-border-card));
+  border-radius: 1rem;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--attendance-row-accent) 8%, transparent), transparent 54%),
+    color-mix(in srgb, var(--color-bg-card) 92%, var(--surface-alt) 8%);
+  padding: 0.62rem 0.75rem 0.62rem 0.85rem;
+  text-decoration: none;
+  transition:
+    border-color 150ms ease,
+    background 150ms ease,
+    transform 150ms ease;
+}
+
+.personRow:hover {
+  border-color: color-mix(in srgb, var(--attendance-row-accent) 36%, var(--color-border-card));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--attendance-row-accent) 11%, transparent), transparent 56%),
+    color-mix(in srgb, var(--color-bg-card) 88%, var(--surface-alt) 12%);
+}
+
+.personRow:active {
+  transform: scale(0.99);
+}
+
+.personName {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  font-weight: 750;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rowPresent {
+  --attendance-row-accent: var(--color-metric-presenca);
+}
+
+.rowAbsent {
+  --attendance-row-accent: var(--color-badge-risco-text);
+}
+
+.rowJustified {
+  --attendance-row-accent: var(--color-badge-atencao-text);
+}
+
+.rowPending {
+  --attendance-row-accent: var(--color-text-muted);
+}
+
+.rowVisitor {
+  --attendance-row-accent: var(--color-badge-info-text);
+}
+
+.notice {
+  margin-top: 1rem;
+  border: 1px solid color-mix(in srgb, var(--brown-400) 20%, var(--color-border-card));
+  border-left: 4px solid color-mix(in srgb, var(--brown-400) 78%, var(--color-border-card));
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--brown-400) 6%, var(--color-bg-card));
+  padding: 0.75rem 0.85rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.presentDisclosure {
+  --attendance-row-accent: var(--brown-400);
+  margin-top: 1rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--attendance-row-accent) 22%, var(--color-border-card));
+  border-left: 4px solid color-mix(in srgb, var(--attendance-row-accent) 78%, var(--color-border-card));
+  border-radius: 1rem;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--attendance-row-accent) 7%, transparent), transparent 54%),
+    color-mix(in srgb, var(--color-bg-card) 93%, var(--surface-alt) 7%);
+}
+
+.presentSummary {
+  display: flex;
+  cursor: pointer;
+  list-style: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.78rem 0.85rem;
+}
+
+.presentSummary::-webkit-details-marker {
+  display: none;
+}
+
+.presentSummary::marker {
+  content: "";
+}
+
+.presentSummary:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: -2px;
+}
+
+.presentAction {
+  display: inline-flex;
+  min-height: 1.65rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--attendance-row-accent) 34%, var(--color-border-card));
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--attendance-row-accent) 8%, var(--color-bg-card));
+  padding: 0 0.52rem;
+  color: color-mix(in srgb, var(--attendance-row-accent) 74%, var(--color-text-primary));
+  font-size: calc(var(--text-xs) * 0.9);
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.openLabel {
+  display: none;
+}
+
+.presentDisclosure[open] .closedLabel {
+  display: none;
+}
+
+.presentDisclosure[open] .openLabel {
+  display: inline;
+}
+
+.presentContent {
+  display: grid;
+  gap: 0.5rem;
+  border-top: 1px solid color-mix(in srgb, var(--attendance-row-accent) 16%, var(--color-border-divider));
+  padding: 0.75rem;
+}
+
+@media (max-width: 420px) {
+  .cardHeader,
+  .groupHeader,
+  .presentSummary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .statusPill,
+  .presentAction {
+    align-self: flex-start;
+  }
+}

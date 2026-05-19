@@ -168,7 +168,6 @@ export async function getGroupDetailPageData({
     },
     presence: {
       hasPresenceData: hasRecentPresence,
-      presenceRate: presence.presenceRate,
       value: formatPresenceRate(hasRecentPresence, presence.presenceRate),
       detail: hasRecentPresence
         ? recentPresenceDetail

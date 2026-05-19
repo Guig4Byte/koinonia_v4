@@ -8,6 +8,7 @@ import type { MetricTone } from "@/components/shared/presence-metric";
 import { formatPresenceRate } from "@/features/events/presence-display";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { ROUTES } from "@/lib/routes";
+import styles from "./event-detail-header-card.module.css";
 
 export function EventDetailHeaderCard({
   title,
@@ -49,9 +50,9 @@ export function EventDetailHeaderCard({
           <>
             {locationName ? <p className="k-item-meta">{locationName}</p> : null}
             {groupId && showGroupLink ? (
-              <ButtonLink href={ROUTES.group(groupId)} variant="quiet" size="sm" className="mt-3">
+              <ButtonLink href={ROUTES.group(groupId)} variant="quiet" size="sm" shape="pill" density="compact" className={styles.groupLink}>
                 Abrir célula
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                <ArrowRight className={styles.groupLinkIcon} aria-hidden="true" />
               </ButtonLink>
             ) : null}
           </>
@@ -66,12 +67,12 @@ export function EventDetailHeaderCard({
       <div className="mt-4">
         <ContextSummary
           surface="inset"
-          variant="balanced"
+          variant="compact"
           presenceContext="event"
-          presenceMetricSize="md"
+          presenceMetricSize="sm"
           presenceIndicatorWeight="light"
           presenceIndicatorMode="plain"
-          presenceValueClassName="text-[length:var(--text-base)] font-extrabold"
+          presenceValueClassName="text-[length:var(--text-sm)] font-extrabold"
           items={[
             {
               label: "Presença",
