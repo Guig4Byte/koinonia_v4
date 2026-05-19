@@ -2,6 +2,52 @@
   gap: 10px;
 }
 
+.eventCard.eventCard {
+  --event-card-accent: var(--color-brand-accent);
+  position: relative;
+  isolation: isolate;
+  border-color: color-mix(in srgb, var(--event-card-accent) 24%, var(--color-border-card));
+  border-left: 4px solid color-mix(in srgb, var(--event-card-accent) 88%, var(--color-brand));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--event-card-accent) 7%, transparent), transparent 48%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--brown-400) 6%), var(--color-bg-card) 62%);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--event-card-accent) 10%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--event-card-accent) 8%, transparent),
+    var(--color-shadow-card);
+}
+
+.eventCard.eventCard::before {
+  content: "";
+  position: absolute;
+  inset-block: 0.75rem auto;
+  inset-inline-start: 0.8rem;
+  z-index: -1;
+  width: 4.75rem;
+  height: 4.75rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--event-card-accent) 14%, transparent), transparent 70%);
+  filter: blur(11px);
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.eventCard.eventCardRecorded {
+  --event-card-accent: var(--color-metric-presenca);
+}
+
+.eventCard.eventCardPending {
+  --event-card-accent: var(--color-badge-atencao-text);
+}
+
+.eventCard.eventCardScheduled {
+  --event-card-accent: var(--brown-400);
+}
+
+.eventCard.eventCardNeutral {
+  --event-card-accent: color-mix(in srgb, var(--color-text-muted) 64%, transparent);
+}
+
 .title {
   font-size: var(--text-base);
   font-weight: 700;
@@ -25,8 +71,9 @@
   min-height: 28px;
   align-items: center;
   gap: 6px;
+  border: 1px solid color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 12%, transparent);
   border-radius: var(--radius-pill);
-  background: color-mix(in srgb, var(--surface-alt) 84%, transparent);
+  background: color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 7%, var(--surface-alt));
   padding: 4px 9px;
   color: var(--color-text-secondary);
   font-size: var(--text-xs);
@@ -45,7 +92,7 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: 12px;
-  border-top: 1px solid var(--color-border-divider);
+  border-top: 1px solid color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 16%, var(--color-border-divider));
   padding-top: 10px;
 }
 
@@ -63,7 +110,7 @@
 }
 
 .stat + .stat {
-  border-left: 1px solid var(--color-border-divider);
+  border-left: 1px solid color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 14%, var(--color-border-divider));
 }
 
 .stat > strong,
@@ -88,12 +135,31 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 12px;
-  border-top: 1px solid var(--color-border-divider);
+  border-top: 1px solid color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 16%, var(--color-border-divider));
   padding-top: 10px;
 }
 
 .stats + .footer {
   margin-top: 10px;
+}
+
+.eventActionPill.eventActionPill {
+  border: 1px solid color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 42%, var(--color-border-card));
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 14%, var(--color-bg-card)), color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 8%, var(--color-bg-card))),
+    var(--color-bg-card);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--surface-alt) 44%, transparent),
+    0 8px 16px color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 7%, transparent);
+  color: color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 76%, var(--color-text-primary));
+}
+
+:global(.group:hover) .eventActionPill.eventActionPill {
+  border-color: color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 58%, var(--color-focus-ring));
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 18%, var(--color-bg-card)), color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 10%, var(--color-bg-card))),
+    var(--color-bg-card);
+  color: color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 86%, var(--color-text-primary));
 }
 
 .consultationActions {

@@ -36,6 +36,13 @@ export function EventCard({
   const consultationTitle = event.group?.name ?? event.title;
   const safePresenceRate = clampPresenceRate(metrics.presenceRate);
   const historyTone = presenceTone(metrics.hasPresenceData, metrics.presenceRate);
+  const eventCardToneClass = state.recordedPresence
+    ? styles.eventCardRecorded
+    : state.isPendingEvent
+      ? styles.eventCardPending
+      : state.badgeTone === "info"
+        ? styles.eventCardScheduled
+        : styles.eventCardNeutral;
 
   if (isPendingConsultation) {
     return (
@@ -179,7 +186,7 @@ export function EventCard({
       surface="brand"
       priorityTone={state.isPendingEvent ? "warn" : state.recordedPresence ? "stable" : undefined}
       data-testid="event-card"
-      className="group"
+      className={cn("group", styles.eventCard, eventCardToneClass)}
     >
       <CardHeader
         className={styles.header}
@@ -230,6 +237,7 @@ export function EventCard({
           size="md"
           iconAfter={<ArrowRight />}
           shiftIcon
+          className={styles.eventActionPill}
           data-testid="event-card-action"
         >
           {state.actionLabel}
