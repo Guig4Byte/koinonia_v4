@@ -41,7 +41,7 @@ export function EventsConsultationView({
             events={view.filteredEvents}
             user={user}
             now={now}
-            variant={mode === "sem-presenca" ? "pendingConsultation" : "historyConsultation"}
+            variant={mode === "sem-presenca" ? "pendingConsultation" : "default"}
           />
         ) : (
           <EmptyState

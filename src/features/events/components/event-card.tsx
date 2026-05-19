@@ -1,10 +1,10 @@
-import { ArrowRight, CalendarDays, ClipboardCheck, Clock3, MapPin, UsersRound } from "lucide-react";
+import { ArrowRight, CalendarDays, Clock3, MapPin, UsersRound } from "lucide-react";
 import { ActionPill } from "@/components/ui/action-pill";
 import { Badge } from "@/components/ui/badge";
 import { CardHeader } from "@/components/ui/card-header";
 import { CardLink } from "@/components/ui/card-link";
 import { formatPresenceRate, presenceTone } from "@/features/events/presence-display";
-import { clampPresenceRate, presenceIndicatorStyle, PresenceMetricDisplay } from "@/components/shared/presence-metric";
+import { PresenceMetricDisplay } from "@/components/shared/presence-metric";
 import {
   buildEventListCardState,
   eventDateTimeLabel,
@@ -16,7 +16,7 @@ import { cn } from "@/lib/cn";
 import { ROUTES } from "@/lib/routes";
 import styles from "./events-page-sections.module.css";
 
-export type EventCardVariant = "default" | "pendingConsultation" | "historyConsultation";
+export type EventCardVariant = "default" | "pendingConsultation";
 
 export function EventCard({
   event,
@@ -32,10 +32,7 @@ export function EventCard({
   const state = buildEventListCardState(event, user, now);
   const { metrics } = state;
   const isPendingConsultation = variant === "pendingConsultation" && state.isPendingEvent;
-  const isHistoryConsultation = variant === "historyConsultation" && state.recordedPresence;
   const consultationTitle = event.group?.name ?? event.title;
-  const safePresenceRate = clampPresenceRate(metrics.presenceRate);
-  const historyTone = presenceTone(metrics.hasPresenceData, metrics.presenceRate);
   const eventCardToneClass = state.recordedPresence
     ? styles.eventCardRecorded
     : state.isPendingEvent
@@ -52,10 +49,10 @@ export function EventCard({
         padding="xs"
         radius="sm"
         containment="hidden"
-        surface="spotlight"
+        surface="brand"
         priorityTone="warn"
         data-testid="event-card"
-        className="group"
+        className={cn("group", styles.consultationEventCard, styles.pendingConsultationCard)}
       >
         <div className={styles.pendingContent}>
           <span className={styles.pendingIconWrap} aria-hidden="true">
@@ -93,7 +90,15 @@ export function EventCard({
             ) : null}
 
             <span className={styles.pendingFooter}>
-              <ActionPill tone="primary" size="sm" minWidth="action" iconBefore={<UsersRound />} pressOnGroupActive data-testid="event-card-action">
+              <ActionPill
+                tone="primary"
+                size="sm"
+                minWidth="action"
+                iconBefore={<UsersRound />}
+                pressOnGroupActive
+                className={styles.eventActionPill}
+                data-testid="event-card-action"
+              >
                 {state.actionLabel}
               </ActionPill>
             </span>
@@ -103,84 +108,24 @@ export function EventCard({
     );
   }
 
-  if (isHistoryConsultation) {
-    return (
-      <CardLink
-        href={ROUTES.event(event.id)}
-        aria-label={`${state.actionLabel}: ${event.title}`}
-        padding="xs"
-        radius="sm"
-        containment="hidden"
-        surface="spotlightCompact"
-        priorityTone="warn"
-        data-testid="event-card"
-        className="group"
-        style={presenceIndicatorStyle(historyTone, metrics.hasPresenceData)}
-      >
-        <div className={styles.historyContent}>
-          <span className={styles.historyIconWrap} aria-hidden="true">
-            <UsersRound className={styles.historyIcon} />
-          </span>
-
-          <div className={styles.historyBody}>
-            <div className={styles.historyHeader}>
-              <p className={cn(styles.title, styles.historyTitle)}>{consultationTitle}</p>
-              <Badge tone="ok" size="md" shape="rounded" maxWidth="tightHeader">Registrada</Badge>
-            </div>
-
-            <p className={styles.historyMeta}>
-              <CalendarDays className={styles.historyMetaIcon} aria-hidden="true" />
-              {eventDateTimeLabel(event)}
-            </p>
-
-            {state.locationName ? (
-              <p className={styles.historyLocation}>
-                <MapPin className={styles.historyMetaIcon} aria-hidden="true" />
-                <span className="min-w-0 truncate">{state.locationName}</span>
-              </p>
-            ) : null}
-
-            <div className={styles.historyPresence}>
-              <span className={styles.historyPresenceTop}>
-                <span className={styles.historyPresenceLabel}>Presença do encontro</span>
-                <strong className={styles.historyPresenceValue}>
-                  {formatPresenceRate(metrics.hasPresenceData, metrics.presenceRate)}
-                </strong>
-              </span>
-              <span className={styles.historyPresenceDetail}>
-                {metrics.presentCount} de {metrics.accountableCount} membros presentes
-              </span>
-              <span className={styles.historyProgressTrack} aria-hidden="true">
-                <span className={styles.historyProgressFill} style={{ width: `${safePresenceRate}%` }} />
-              </span>
-            </div>
-
-            <span className={styles.historyFooter}>
-              <span className={styles.historyStat}>
-                <UsersRound className={styles.historyStatIcon} aria-hidden="true" />
-                <strong>{metrics.visitorCount}</strong>
-                <span>{metrics.visitorCount === 1 ? "visitante" : "visitantes"}</span>
-              </span>
-              <span className={styles.historyStat}>
-                <ClipboardCheck className={styles.historyStatIcon} aria-hidden="true" />
-                <strong>{metrics.markingsCount}</strong>
-                <span>{metrics.markingsCount === 1 ? "membro" : "membros"}</span>
-              </span>
-              <ActionPill tone="prioritySoft" size="xs" iconAfter={<ArrowRight />} shiftIcon data-testid="event-card-action">
-                {state.actionLabel}
-              </ActionPill>
-            </span>
-          </div>
-        </div>
-      </CardLink>
-    );
-  }
+  const eventAction = (
+    <ActionPill
+      tone={state.canRegisterPresence ? "primary" : "secondary"}
+      size={state.recordedPresence ? "sm" : "md"}
+      iconAfter={<ArrowRight />}
+      shiftIcon
+      className={styles.eventActionPill}
+      data-testid="event-card-action"
+    >
+      {state.actionLabel}
+    </ActionPill>
+  );
 
   return (
     <CardLink
       href={ROUTES.event(event.id)}
       aria-label={`${state.actionLabel}: ${event.title}`}
-      padding="relaxedSm"
+      padding={state.recordedPresence ? "sm" : "relaxedSm"}
       radius="sm"
       containment="hidden"
       surface="brand"
@@ -207,42 +152,37 @@ export function EventCard({
       />
 
       {state.recordedPresence ? (
-        <div className={styles.stats} data-testid="event-card-stats">
-          <p className={styles.stat}>
-            <PresenceMetricDisplay
-              hasPresenceData={metrics.hasPresenceData}
-              presenceRate={metrics.presenceRate}
-              tone={presenceTone(metrics.hasPresenceData, metrics.presenceRate)}
-              value={formatPresenceRate(metrics.hasPresenceData, metrics.presenceRate)}
-              context="event"
-              size="sm"
-              minHeight="sm"
-            />
-            <span>presença</span>
-          </p>
-          <p className={styles.stat}>
-            <strong className="text-[color:var(--color-metric-visitantes)]">{metrics.visitorCount}</strong>
-            <span>{metrics.visitorCount === 1 ? "visitante" : "visitantes"}</span>
-          </p>
-          <p className={styles.stat}>
-            <strong className="text-[color:var(--color-text-primary)]">{metrics.markingsCount}</strong>
-            <span>marcações</span>
-          </p>
+        <div className={styles.recordedFooter}>
+          <div className={styles.stats} data-testid="event-card-stats">
+            <p className={styles.stat}>
+              <PresenceMetricDisplay
+                hasPresenceData={metrics.hasPresenceData}
+                presenceRate={metrics.presenceRate}
+                tone={presenceTone(metrics.hasPresenceData, metrics.presenceRate)}
+                value={formatPresenceRate(metrics.hasPresenceData, metrics.presenceRate)}
+                context="event"
+                size="sm"
+                mode="plain"
+                minHeight="none"
+              />
+              <span>presença</span>
+            </p>
+            <p className={styles.stat}>
+              <strong className="text-[color:var(--color-metric-visitantes)]">{metrics.visitorCount}</strong>
+              <span>{metrics.visitorCount === 1 ? "visitante" : "visitantes"}</span>
+            </p>
+            <p className={styles.stat}>
+              <strong className="text-[color:var(--color-text-primary)]">{metrics.markingsCount}</strong>
+              <span>marcações</span>
+            </p>
+          </div>
+          <span className={cn(styles.footer, styles.recordedFooterAction)}>
+            {eventAction}
+          </span>
         </div>
       ) : null}
 
-      <span className={styles.footer}>
-        <ActionPill
-          tone={state.canRegisterPresence ? "primary" : "secondary"}
-          size="md"
-          iconAfter={<ArrowRight />}
-          shiftIcon
-          className={styles.eventActionPill}
-          data-testid="event-card-action"
-        >
-          {state.actionLabel}
-        </ActionPill>
-      </span>
+      {!state.recordedPresence ? <span className={styles.footer}>{eventAction}</span> : null}
     </CardLink>
   );
 }
