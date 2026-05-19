@@ -74,7 +74,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
                 size="sm"
                 density="compact"
                 shape="rounded"
-                className="k-action-pill k-action-pill-secondary"
+                className="k-action-pill k-action-pill-secondary shrink-0 whitespace-nowrap"
               >
                 <PencilLine className="h-3.5 w-3.5" aria-hidden="true" />
                 Editar célula
