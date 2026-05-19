@@ -3,6 +3,7 @@ export {
   EventDetailPageSkeleton,
   EventsPageSkeleton,
   GroupDetailPageSkeleton,
+  PastorPageSkeleton,
   PeoplePageSkeleton,
   PersonDetailPageSkeleton,
   TeamPageSkeleton,
