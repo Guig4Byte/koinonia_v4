@@ -1,7 +1,7 @@
 "use client";
 
 import { Clock3 } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   CLOCK_TIME_FORMAT_HINT,
   CLOCK_TIME_INPUT_MAX_LENGTH,
@@ -75,20 +75,42 @@ export function TimePickerField({
   onOpenChange,
   onTimeSelect,
 }: TimePickerFieldProps) {
+  const fieldRef = useRef<HTMLDivElement>(null);
   const [internalValue, setInternalValue] = useState(defaultValue ?? "");
   const [internalOpen, setInternalOpen] = useState(false);
   const currentValue = value ?? internalValue;
   const open = isOpen ?? internalOpen;
   const resolvedTimeOptions = timeOptions ?? getTimeOptions?.(currentValue) ?? [];
 
+  const updateOpen = useCallback((nextOpen: boolean) => {
+    if (isOpen === undefined) setInternalOpen(nextOpen);
+    onOpenChange?.(nextOpen);
+  }, [isOpen, onOpenChange]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    function closeOnOutsidePointer(event: PointerEvent) {
+      if (!fieldRef.current?.contains(event.target as Node)) {
+        updateOpen(false);
+      }
+    }
+
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") updateOpen(false);
+    }
+
+    document.addEventListener("pointerdown", closeOnOutsidePointer);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsidePointer);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [open, updateOpen]);
+
   function updateValue(nextValue: string) {
     if (value === undefined) setInternalValue(nextValue);
     onChange?.(nextValue);
-  }
-
-  function updateOpen(nextOpen: boolean) {
-    if (isOpen === undefined) setInternalOpen(nextOpen);
-    onOpenChange?.(nextOpen);
   }
 
   function selectTime(time: string) {
@@ -111,7 +133,7 @@ export function TimePickerField({
         </label>
       ) : null}
 
-      <div className={cn(pickerStyles.field, fieldClassName)}>
+      <div ref={fieldRef} className={cn(pickerStyles.field, fieldClassName)}>
         <input
           id={id}
           name={name}

@@ -7,6 +7,7 @@ import { MEMBERS_FILTERS, membersFilterHref, type MembersFilter } from "@/featur
 import { cn } from "@/lib/cn";
 import { countLabel } from "@/lib/format";
 import { FILTER_ALL } from "@/lib/filter-param";
+import styles from "./member-priority-list.module.css";
 
 export type MemberPriorityCardTone = BadgeTone | "stable" | "muted";
 
@@ -29,6 +30,15 @@ type MemberCardsProps<TMember extends MemberPriorityListItem> = {
   compactForMember?: (member: TMember) => boolean;
 };
 
+function memberCardToneClass(tone: MemberPriorityCardTone | undefined) {
+  if (tone === "risk") return styles.memberCardRisk;
+  if (tone === "warn") return styles.memberCardWarn;
+  if (tone === "care" || tone === "info") return styles.memberCardCare;
+  if (tone === "support") return styles.memberCardSupport;
+  if (tone === "ok" || tone === "stable") return styles.memberCardStable;
+  return styles.memberCardMuted;
+}
+
 function MemberCards<TMember extends MemberPriorityListItem>({
   members,
   keyForMember,
@@ -40,27 +50,35 @@ function MemberCards<TMember extends MemberPriorityListItem>({
 }: MemberCardsProps<TMember>) {
   return (
     <>
-      {members.map((member) => (
-        <PersonMiniCard
-          key={keyForMember(member)}
-          href={hrefForMember(member)}
-          name={member.name}
-          context={contextForMember?.(member)}
-          badgeLabel={badgeLabelForMember ? badgeLabelForMember(member) : member.badgeLabel}
-          badgeTone={member.badgeTone}
-          cardTone={cardToneForMember?.(member) ?? member.cardTone}
-          compact={compactForMember?.(member) ?? false}
-        />
-      ))}
+      {members.map((member) => {
+        const cardTone = cardToneForMember?.(member) ?? member.cardTone;
+        const effectiveTone = cardTone ?? member.badgeTone;
+
+        return (
+          <PersonMiniCard
+            key={keyForMember(member)}
+            href={hrefForMember(member)}
+            name={member.name}
+            context={contextForMember?.(member)}
+            badgeLabel={badgeLabelForMember ? badgeLabelForMember(member) : member.badgeLabel}
+            badgeTone={member.badgeTone}
+            cardTone={cardTone}
+            compact={compactForMember?.(member) ?? false}
+            className={cn(styles.memberCard, memberCardToneClass(effectiveTone))}
+          />
+        );
+      })}
     </>
   );
 }
 
 function MemberSectionHeader({ title, detail }: { title: string; detail: string }) {
   return (
-    <div>
-      <p className="k-item-title-sm">{title}</p>
-      <p className="k-item-detail-tight">{detail}</p>
+    <div className={styles.sectionHeader}>
+      <div>
+        <p className={styles.sectionTitle}>{title}</p>
+        <p className={styles.sectionDetail}>{detail}</p>
+      </div>
     </div>
   );
 }
@@ -106,7 +124,7 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
 }: MemberPriorityListProps<TMember>) {
   return (
     <>
-      <div className="k-filter-row mb-3">
+      <div className={styles.filterRow}>
         {MEMBERS_FILTERS.map((option) => {
           const active = option.value === activeFilter;
 
@@ -116,6 +134,7 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
               href={membersFilterHref(basePath, option.value)}
               aria-current={active ? "page" : undefined}
               active={active}
+              className={cn(styles.filterChip, active && styles.filterChipActive)}
             >
               {option.label}
             </FilterChip>
@@ -126,7 +145,7 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
       {activeFilter === FILTER_ALL ? (
         <div>
           {priorityMembers.length > 0 ? (
-            <div className="space-y-2">
+            <div className={styles.sectionStack}>
               <MemberSectionHeader
                 title={prioritySectionTitle}
                 detail={prioritySectionDetail ?? countLabel(priorityMembers.length, "pessoa no radar", "pessoas no radar")}
@@ -148,7 +167,7 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
           ) : null}
 
           {regularMembers.length > 0 ? (
-            <div className={cn("space-y-2", priorityMembers.length > 0 && "pt-1")}>
+            <div className={cn(styles.sectionStack, priorityMembers.length > 0 && styles.regularSection)}>
               {priorityMembers.length > 0 ? (
                 <MemberSectionHeader
                   title="Ativos"

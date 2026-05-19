@@ -1,0 +1,89 @@
+.encounterCard.encounterCard {
+  --encounter-accent: var(--brown-400);
+  display: grid;
+  min-height: 4.4rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  border-color: color-mix(in srgb, var(--encounter-accent) 24%, var(--color-border-card));
+  border-left: 4px solid color-mix(in srgb, var(--encounter-accent) 82%, var(--color-border-card));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--encounter-accent) 7%, transparent), transparent 56%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--brown-400) 6%), var(--color-bg-card) 64%);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--encounter-accent) 7%, transparent),
+    var(--color-shadow-card);
+}
+
+.encounterMain {
+  min-width: 0;
+}
+
+.encounterDate {
+  display: block;
+  overflow: hidden;
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  font-weight: 800;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.encounterMeta {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.5rem;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  font-weight: 650;
+  line-height: 1;
+}
+
+.presenceValue {
+  flex-shrink: 0;
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+.divider {
+  width: 1px;
+  height: 0.85rem;
+  flex-shrink: 0;
+  background: color-mix(in srgb, var(--encounter-accent) 16%, var(--color-border-divider));
+}
+
+.visitors {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.25rem;
+  overflow: hidden;
+  color: var(--color-text-secondary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.visitorsIcon {
+  width: 0.78rem;
+  height: 0.78rem;
+  flex-shrink: 0;
+}
+
+.action {
+  display: inline-flex;
+  min-height: 1.85rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--encounter-accent) 34%, var(--color-border-card));
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--encounter-accent) 8%, var(--color-bg-card));
+  padding: 0 0.65rem;
+  color: color-mix(in srgb, var(--encounter-accent) 76%, var(--color-text-primary));
+  font-size: var(--text-xs);
+  font-weight: 800;
+  line-height: 1;
+}

@@ -12,6 +12,7 @@ export function PersonMiniCard(props: {
   cardTone?: CardPriorityTone;
   ctaLabel?: string;
   compact?: boolean;
+  className?: string;
 }) {
   const {
     href,
@@ -22,6 +23,7 @@ export function PersonMiniCard(props: {
     cardTone,
     ctaLabel = "Acompanhar",
     compact = false,
+    className,
   } = props;
   return (
     <ListLinkCard
@@ -35,6 +37,7 @@ export function PersonMiniCard(props: {
       badgeSize={compact ? "sm" : undefined}
       priorityTone={cardTone ?? badgeTone}
       compact={compact}
+      className={className}
     />
   );
 }

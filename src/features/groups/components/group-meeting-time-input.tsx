@@ -6,9 +6,6 @@ import { timeOptionsWithCurrent } from "@/features/events/time-options";
 import { cn } from "@/lib/cn";
 import styles from "./group-form.module.css";
 
-const groupMeetingTimeInputClassName =
-  "min-h-12 bg-[var(--surface-alt)] font-medium transition focus:bg-[var(--color-bg-card)]";
-
 export function GroupMeetingTimeInput({
   defaultValue,
   ariaDescribedBy,
@@ -34,7 +31,7 @@ export function GroupMeetingTimeInput({
       onTimeSelect={markDirty ?? undefined}
       fieldClassName={styles.timeField}
       inputClassName={cn(
-        groupMeetingTimeInputClassName,
+        styles.timeInput,
         ariaInvalid && "border-[var(--color-metric-atencoes)] focus:border-[var(--color-metric-atencoes)]",
       )}
       popoverClassName={styles.timePopover}

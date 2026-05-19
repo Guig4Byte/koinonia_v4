@@ -1,13 +1,12 @@
-import { CalendarDays } from "lucide-react";
 import { BackLink, InfoCard } from "@/components/shared/base-cards";
 import { Card } from "@/components/ui/card";
-import { FieldError, InputField, SelectField } from "@/components/ui/field";
+import { FieldError, InputField } from "@/components/ui/field";
 import { GroupFormActions } from "@/features/groups/components/group-form-actions";
+import { GroupMeetingDayInput } from "@/features/groups/components/group-meeting-day-input";
 import { GroupMeetingTimeInput } from "@/features/groups/components/group-meeting-time-input";
 import {
   GROUP_LOCATION_MAX_LENGTH,
   GROUP_NAME_MAX_LENGTH,
-  WEEKDAY_OPTIONS,
   groupFormErrorMessage,
   groupFormFieldErrors,
   type GroupFormValues,
@@ -17,7 +16,7 @@ import styles from "./group-form.module.css";
 type GroupFormInitialValues = GroupFormValues;
 
 function FormSectionTitle({ children }: { children: string }) {
-  return <p className="k-section-kicker">{children}</p>;
+  return <p className={styles.sectionKicker}>{children}</p>;
 }
 
 export function GroupForm({
@@ -47,13 +46,13 @@ export function GroupForm({
   const scheduleDescribedBy = `${scheduleHintId}${hasScheduleError ? ` ${scheduleErrorId}` : ""}`;
 
   return (
-    <div className="space-y-5">
-      <BackLink href={backHref}>{backLabel}</BackLink>
+    <div className={styles.page}>
+      <BackLink href={backHref} className={styles.backLink}>{backLabel}</BackLink>
 
-      <Card padding="lg" radius="lg">
-        <p className="k-section-kicker">Célula</p>
-        <h2 className="mt-1 text-[length:var(--text-2xl)] font-semibold tracking-[-0.03em] text-[color:var(--color-text-primary)]">{title}</h2>
-        <p className="mt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{description}</p>
+      <Card padding="lg" radius="lg" className={styles.heroCard}>
+        <p className={styles.heroKicker}>Célula</p>
+        <h2 className={styles.heroTitle}>{title}</h2>
+        <p className={styles.heroDescription}>{description}</p>
       </Card>
 
       {errorMessage ? <InfoCard tone="error">{errorMessage}</InfoCard> : null}
@@ -62,9 +61,9 @@ export function GroupForm({
         action={action}
         backHref={backHref}
         submitLabel={submitLabel}
-        className="space-y-5 rounded-[1.35rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-5 shadow-card"
+        className={styles.formCard}
       >
-        <section className="space-y-4">
+        <section className={styles.formSection}>
           <FormSectionTitle>Dados básicos</FormSectionTitle>
 
           <InputField
@@ -77,6 +76,7 @@ export function GroupForm({
             required
             error={fieldErrors.name}
             placeholder="Ex.: Célula Central"
+            inputClassName={styles.control}
           />
 
           <InputField
@@ -89,32 +89,25 @@ export function GroupForm({
             error={fieldErrors.locationName}
             description="O local padrão é copiado para novos encontros, mas cada encontro pode ter local próprio."
             placeholder="Casa, bairro ou referência"
+            inputClassName={styles.control}
           />
         </section>
 
-        <section className="space-y-4 border-t border-[var(--color-border-divider)] pt-4">
+        <section className={styles.formSection}>
           <FormSectionTitle>Agenda padrão</FormSectionTitle>
 
           <div className={styles.scheduleFields}>
-            <SelectField
-              id="meeting-day-of-week"
-              name="meetingDayOfWeek"
-              label="Dia padrão"
-              labelVariant="item"
-              className="min-w-0"
-              defaultValue={initialValues.meetingDayOfWeek ?? ""}
-              aria-invalid={hasScheduleError || undefined}
-              aria-describedby={scheduleDescribedBy}
-              icon={<CalendarDays className="h-4 w-4" />}
-            >
-              <option value="">Sem dia fixo</option>
-              {WEEKDAY_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>{option.label}</option>
-              ))}
-            </SelectField>
+            <div className={styles.timeFieldShell}>
+              <label className={styles.fieldLabel} htmlFor="meeting-day-of-week">Dia padrão</label>
+              <GroupMeetingDayInput
+                defaultValue={initialValues.meetingDayOfWeek}
+                ariaInvalid={hasScheduleError}
+                ariaDescribedBy={scheduleDescribedBy}
+              />
+            </div>
 
-            <div className="block min-w-0 space-y-1.5">
-              <label className="k-item-title-sm block" htmlFor="meeting-time">Horário padrão</label>
+            <div className={styles.timeFieldShell}>
+              <label className={styles.fieldLabel} htmlFor="meeting-time">Horário padrão</label>
               <GroupMeetingTimeInput
                 defaultValue={initialValues.meetingTime}
                 ariaInvalid={hasScheduleError}
@@ -123,25 +116,28 @@ export function GroupForm({
             </div>
           </div>
 
-          <span id={scheduleHintId} className="block text-[length:var(--text-xs)] leading-relaxed text-[color:var(--color-text-secondary)]">
+          <span id={scheduleHintId} className={styles.hint}>
             Dia e horário precisam ser preenchidos juntos. Deixe os dois em branco se a célula não tiver agenda fixa.
           </span>
           <FieldError id={scheduleErrorId}>{fieldErrors.schedule}</FieldError>
         </section>
 
-        <section className="space-y-3 border-t border-[var(--color-border-divider)] pt-4">
+        <section className={styles.formSection}>
           <FormSectionTitle>Status</FormSectionTitle>
 
-          <label className="flex items-start gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-4">
+          <label className={styles.statusOption}>
             <input
               name="isActive"
               type="checkbox"
               defaultChecked={initialValues.isActive}
-              className="mt-1 h-4 w-4 rounded border-[var(--color-border-card)] accent-[var(--color-brand)]"
+              className={styles.statusCheckbox}
             />
-            <span>
-              <span className="k-item-title-sm block">Célula ativa</span>
-              <span className="mt-1 block text-[length:var(--text-xs)] leading-relaxed text-[color:var(--color-text-secondary)]">
+            <span className={styles.statusVisual} aria-hidden="true">
+              <span className={styles.statusKnob} />
+            </span>
+            <span className={styles.statusCopy}>
+              <span className={styles.statusTitle}>Célula ativa</span>
+              <span className={styles.statusDetail}>
                 Células inativas não aparecem nas superfícies padrão, encontros ou check-in.
               </span>
             </span>
