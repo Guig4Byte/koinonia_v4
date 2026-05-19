@@ -198,28 +198,48 @@
 
 .supervisorDisclosureAction {
   display: inline-flex;
-  min-height: 1.42rem;
+  min-width: 5.85rem;
+  min-height: 1.72rem;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  border: 1px solid color-mix(in srgb, var(--color-brand) 52%, var(--color-border-card));
+  gap: 0.22rem;
+  border: 1px solid color-mix(in srgb, var(--team-supervisor-warm) 54%, var(--color-border-card));
   border-radius: var(--radius-pill);
-  background: color-mix(in srgb, var(--color-bg-card) 74%, transparent);
-  color: var(--color-brand);
-  padding: 0 0.4rem;
-  font-size: 0.68rem;
-  font-weight: 720;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--team-supervisor-warm) 16%, var(--color-bg-card)), color-mix(in srgb, var(--team-supervisor-warm) 8%, var(--color-bg-card))),
+    var(--color-bg-card);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--surface-alt) 48%, transparent),
+    0 7px 14px color-mix(in srgb, var(--team-supervisor-warm) 8%, transparent);
+  color: color-mix(in srgb, var(--team-supervisor-warm) 82%, var(--color-text-primary));
+  padding: 0 0.5rem 0 0.62rem;
+  font-size: 0.62rem;
+  font-weight: 780;
   letter-spacing: 0;
   line-height: 1;
   text-transform: uppercase;
+  white-space: nowrap;
   transition:
     border-color 150ms ease,
     color 150ms ease,
-    background-color 150ms ease;
+    background 150ms ease,
+    box-shadow 150ms ease;
 }
 
-.supervisorDisclosureAction:hover {
-  border-color: var(--color-focus-ring);
+.supervisorDisclosureSummary:hover .supervisorDisclosureAction {
+  border-color: color-mix(in srgb, var(--team-supervisor-warm) 72%, var(--color-focus-ring));
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--team-supervisor-warm) 20%, var(--color-bg-card)), color-mix(in srgb, var(--team-supervisor-warm) 11%, var(--color-bg-card))),
+    var(--color-bg-card);
+  color: color-mix(in srgb, var(--team-supervisor-warm) 92%, var(--color-text-primary));
+}
+
+.supervisorDisclosureIcon {
+  width: 0.78rem;
+  height: 0.78rem;
+  flex-shrink: 0;
+  transition: transform 150ms ease;
 }
 
 .supervisorDisclosureOpen {
@@ -232,6 +252,10 @@
 
 .supervisorDisclosure[open] .supervisorDisclosureOpen {
   display: inline;
+}
+
+.supervisorDisclosure[open] .supervisorDisclosureIcon {
+  transform: rotate(90deg);
 }
 
 .cellList {

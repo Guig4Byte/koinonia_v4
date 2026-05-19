@@ -145,6 +145,7 @@ function SupervisorDisclosureAction() {
     <span className={styles.supervisorDisclosureAction}>
       <span className={styles.supervisorDisclosureClosed}>Ver células</span>
       <span className={styles.supervisorDisclosureOpen}>Mostrar menos</span>
+      <ChevronRight className={styles.supervisorDisclosureIcon} aria-hidden="true" />
     </span>
   );
 }
