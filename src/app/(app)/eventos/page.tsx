@@ -74,19 +74,23 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
             />
             <EventConsultationCards />
 
-            <SectionTitle>Hoje</SectionTitle>
-            {todayEvents.length > 0 ? (
-              <EventList events={todayEvents} user={user} now={now} />
-            ) : (
-              <EmptyState title="Agenda livre hoje">Nenhum encontro previsto para hoje. Use Próximos encontros para acompanhar a semana.</EmptyState>
-            )}
+            <section className={pageStyles.eventsHomeSection}>
+              <SectionTitle className={pageStyles.eventsHomeSectionTitle}>Hoje</SectionTitle>
+              {todayEvents.length > 0 ? (
+                <EventList events={todayEvents} user={user} now={now} />
+              ) : (
+                <EmptyState title="Agenda livre hoje">Nenhum encontro previsto para hoje. Use Próximos encontros para acompanhar a semana.</EmptyState>
+              )}
+            </section>
 
-            <SectionTitle>Próximos encontros</SectionTitle>
-            {weekEvents.length > 0 ? (
-              <EventList events={weekEvents} user={user} now={now} />
-            ) : (
-              <EmptyState title="Semana sem novos encontros">Nenhum outro encontro agendado para esta semana. Quando uma célula tiver agenda fixa, ela aparecerá aqui.</EmptyState>
-            )}
+            <section className={pageStyles.eventsHomeSection}>
+              <SectionTitle className={pageStyles.eventsHomeSectionTitle}>Próximos encontros</SectionTitle>
+              {weekEvents.length > 0 ? (
+                <EventList events={weekEvents} user={user} now={now} />
+              ) : (
+                <EmptyState title="Semana sem novos encontros">Nenhum outro encontro agendado para esta semana. Quando uma célula tiver agenda fixa, ela aparecerá aqui.</EmptyState>
+              )}
+            </section>
 
           </>
         )}

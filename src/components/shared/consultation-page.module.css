@@ -52,3 +52,11 @@
 .eventsPage > div:first-of-type {
   margin-top: 12px;
 }
+.eventsHomeSection {
+  margin-top: 1.5rem;
+}
+
+.eventsHomeSectionTitle {
+  margin-top: 0;
+}
+

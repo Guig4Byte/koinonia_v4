@@ -228,10 +228,10 @@
 .dayPopover {
   position: absolute;
   top: calc(100% + 0.45rem);
-  right: 0;
+  left: 0;
   z-index: 35;
   display: grid;
-  width: min(15rem, calc(100vw - 3rem));
+  width: 100%;
   gap: 0.35rem;
   border: 1px solid color-mix(in srgb, var(--brown-400) 24%, var(--color-border-card));
   border-radius: 1rem;
