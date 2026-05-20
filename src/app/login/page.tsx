@@ -1,4 +1,4 @@
-import { HeartHandshake } from "lucide-react";
+import { HeartHandshake, Mail } from "lucide-react";
 import { redirect } from "next/navigation";
 import { loginAction } from "@/app/login/actions";
 import { LoginErrorMessage, PasswordField } from "@/app/login/login-form-controls";
@@ -53,29 +53,32 @@ export default async function LoginPage({
             </p>
           </div>
 
-          <form action={loginAction} className="mt-6 flex flex-col gap-4">
+          <form action={loginAction} className={`${styles.form} mt-6`}>
             {nextPath ? <input type="hidden" name="next" value={nextPath} /> : null}
 
-            <label className="block">
-              <span className="mb-2 block text-[length:var(--text-xs)] font-extrabold uppercase tracking-[0.16em] text-[color:var(--login-muted)]">E-mail</span>
-              <input
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className={`${styles.input} min-h-[48px] w-full rounded-[16px] border px-4 text-[length:var(--text-base)] font-medium outline-none transition`}
-                placeholder="nome@igreja.com"
-              />
-            </label>
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="login-email">
+                E-mail
+              </label>
+              <div className={styles.inputShell}>
+                <Mail className={styles.inputIcon} aria-hidden="true" />
+                <input
+                  id="login-email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  className={styles.input}
+                  placeholder="nome@igreja.com"
+                />
+              </div>
+            </div>
 
             <PasswordField />
 
             <LoginErrorMessage show={hasError} />
 
-            <button
-              type="submit"
-              className={`${styles.submit} mt-1 inline-flex min-h-[48px] w-full items-center justify-center rounded-[16px] px-4 text-[length:var(--text-sm)] font-bold transition`}
-            >
+            <button type="submit" className={styles.submit}>
               Entrar
             </button>
           </form>

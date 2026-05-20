@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Lock } from "lucide-react";
 import { useEffect, useState } from "react";
 import styles from "./login.module.css";
 
@@ -18,10 +18,7 @@ export function LoginErrorMessage({ show }: { show: boolean }) {
   if (!show) return null;
 
   return (
-    <p
-      className="rounded-[16px] border border-[var(--color-badge-risco-border)] bg-[var(--color-badge-risco-bg)] px-4 py-3 text-[length:var(--text-sm)] font-medium text-[color:var(--color-badge-risco-text)]"
-      role="alert"
-    >
+    <p className={styles.errorMessage} role="alert">
       E-mail ou senha não conferem.
     </p>
   );
@@ -33,18 +30,20 @@ export function PasswordField() {
   const label = isVisible ? "Ocultar senha" : "Mostrar senha";
 
   return (
-    <label className="block">
-      <span className="mb-2 block text-[length:var(--text-xs)] font-extrabold uppercase tracking-[0.16em] text-[color:var(--login-muted)]">
+    <div className={styles.field}>
+      <label className={styles.label} htmlFor="login-password">
         Senha
-      </span>
-      <div className="relative">
+      </label>
+      <div className={styles.inputShell}>
+        <Lock className={styles.inputIcon} aria-hidden="true" />
         <input
+          id="login-password"
           name="password"
           type={isVisible ? "text" : "password"}
           autoComplete="current-password"
           required
-          className={`${styles.input} min-h-[48px] w-full rounded-[16px] border px-4 pr-14 text-[length:var(--text-base)] font-medium outline-none transition`}
-          placeholder="Sua senha"
+          className={styles.input}
+          placeholder="Digite sua senha"
         />
         <button
           type="button"
@@ -57,6 +56,6 @@ export function PasswordField() {
           <Icon className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
-    </label>
+    </div>
   );
 }
