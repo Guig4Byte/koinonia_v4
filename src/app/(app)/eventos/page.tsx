@@ -5,6 +5,7 @@ import { EventConsultationCards, EventList, EventsConsultationView } from "@/fea
 import {
   EVENTS_PAGE_HISTORY_LOOKBACK_DAYS,
   EVENTS_PAGE_QUERY_LIMIT,
+  buildEventsConsultationSummary,
   buildEventsHomeSections,
   readEventConsultationMode,
   readEventPeriod,
@@ -53,6 +54,7 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
   const mode = readEventConsultationMode(firstParam(resolvedSearchParams.consulta));
   const period = readEventPeriod(firstParam(resolvedSearchParams.periodo));
   const { todayEvents, weekEvents } = buildEventsHomeSections(events, now);
+  const consultationSummary = buildEventsConsultationSummary(events, now);
 
   return (
     <AppShell
@@ -72,7 +74,7 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
               title="Encontros"
               description="Encontros da semana e presença em um só lugar."
             />
-            <EventConsultationCards />
+            <EventConsultationCards summary={consultationSummary} />
 
             <section className={pageStyles.eventsHomeSection}>
               <SectionTitle className={pageStyles.eventsHomeSectionTitle}>Hoje</SectionTitle>

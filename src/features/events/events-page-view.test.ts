@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { AttendanceStatus, EventStatus, GroupResponsibilityRole, UserRole } from "@/generated/prisma/client";
 import {
   buildEventListCardState,
+  buildEventsConsultationSummary,
   buildEventsConsultationView,
   buildEventsHomeSections,
   eventMeta,
@@ -78,6 +79,34 @@ describe("events-page-view", () => {
     expect(view.title).toBe("Presenças pendentes");
     expect(view.description).toBe("2 encontros aguardando registro");
     expect(view.filteredEvents.map((item) => item.id)).toEqual(["older-pending", "past-pending"]);
+  });
+
+  it("resume pendências e histórico dos últimos 30 dias para os atalhos", () => {
+    const summary = buildEventsConsultationSummary([
+      event({ id: "pending", startsAt: new Date("2026-05-06T22:00:00.000Z") }),
+      event({ id: "registered", status: EventStatus.COMPLETED, attendances: [{ status: AttendanceStatus.PRESENT }] }),
+      event({ id: "future", startsAt: new Date("2026-05-09T18:00:00.000Z") }),
+    ], referenceDate);
+
+    expect(summary).toEqual({
+      pendingCount: 1,
+      pendingDescription: "aguardando registro",
+      historyCount: 1,
+      historyDescription: "registrados",
+    });
+  });
+
+  it("mantém uma leitura tranquila quando não há pendências nem histórico", () => {
+    const summary = buildEventsConsultationSummary([
+      event({ id: "future", startsAt: new Date("2026-05-09T18:00:00.000Z") }),
+    ], referenceDate);
+
+    expect(summary).toMatchObject({
+      pendingCount: 0,
+      pendingDescription: "tudo em dia",
+      historyCount: 0,
+      historyDescription: "sem histórico",
+    });
   });
 
   it("separa encontros de hoje dos próximos encontros da semana", () => {

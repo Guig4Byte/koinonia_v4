@@ -9,6 +9,7 @@ export type CareTouchHistoryItem = {
   title: string;
   actorName: string;
   happenedAtLabel: string;
+  contextLabel?: string | null;
   note?: string | null;
 };
 
@@ -30,7 +31,7 @@ export function CareTouchHistory({ items, className }: { items: CareTouchHistory
               <div className="min-w-0">
                 <p className="k-item-title">{item.title}</p>
                 <p className="k-item-meta">
-                  {item.actorName} · {item.happenedAtLabel}
+                  {item.actorName} · {item.happenedAtLabel}{item.contextLabel ? ` · ${item.contextLabel}` : ""}
                 </p>
               </div>
               {note ? <p className="mt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-primary)]">{note}</p> : null}
@@ -48,7 +49,7 @@ export function CareTouchHistory({ items, className }: { items: CareTouchHistory
           className="mt-3"
           onClick={() => setIsExpanded((current) => !current)}
         >
-          {isExpanded ? "Mostrar menos" : "Ver histórico"}
+          {isExpanded ? "Mostrar menos" : "Mostrar cuidados anteriores"}
         </Button>
       ) : null}
     </Card>

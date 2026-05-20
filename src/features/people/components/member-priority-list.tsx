@@ -13,6 +13,7 @@ export type MemberPriorityCardTone = BadgeTone | "stable" | "muted";
 
 export type MemberPriorityListItem = {
   name: string;
+  context?: string;
   badgeLabel?: string;
   badgeTone?: BadgeTone;
   cardTone?: MemberPriorityCardTone;
@@ -39,6 +40,12 @@ function memberCardToneClass(tone: MemberPriorityCardTone | undefined) {
   return styles.memberCardMuted;
 }
 
+function memberCtaLabel(member: MemberPriorityListItem) {
+  if (member.priorityRank <= 3) return "Entender motivo";
+  if (member.priorityRank === 4) return "Continuar cuidado";
+  return "Ver perfil pastoral";
+}
+
 function MemberCards<TMember extends MemberPriorityListItem>({
   members,
   keyForMember,
@@ -63,6 +70,7 @@ function MemberCards<TMember extends MemberPriorityListItem>({
             badgeLabel={badgeLabelForMember ? badgeLabelForMember(member) : member.badgeLabel}
             badgeTone={member.badgeTone}
             cardTone={cardTone}
+            ctaLabel={memberCtaLabel(member)}
             compact={compactForMember?.(member) ?? false}
             className={cn(styles.memberCard, memberCardToneClass(effectiveTone))}
           />
@@ -88,6 +96,7 @@ type MemberPriorityListProps<TMember extends MemberPriorityListItem> = {
   activeFilter: MembersFilter;
   priorityMembers: TMember[];
   regularMembers: TMember[];
+  filterCounts?: Partial<Record<MembersFilter, number>>;
   keyForMember: (member: TMember) => string;
   hrefForMember: (member: TMember) => string;
   priorityContextForMember?: (member: TMember) => string | undefined;
@@ -108,6 +117,7 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
   activeFilter,
   priorityMembers,
   regularMembers,
+  filterCounts,
   keyForMember,
   hrefForMember,
   priorityContextForMember,
@@ -136,7 +146,10 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
               active={active}
               className={cn(styles.filterChip, active && styles.filterChipActive)}
             >
-              {option.label}
+              <span>{option.label}</span>
+              {filterCounts?.[option.value] !== undefined ? (
+                <span className={styles.filterCount}>{filterCounts[option.value]}</span>
+              ) : null}
             </FilterChip>
           );
         })}
@@ -184,6 +197,7 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
                   members={regularMembers}
                   keyForMember={keyForMember}
                   hrefForMember={hrefForMember}
+                  contextForMember={(member) => member.context}
                   badgeLabelForMember={() => undefined}
                   cardToneForMember={() => "muted"}
                   compactForMember={() => true}

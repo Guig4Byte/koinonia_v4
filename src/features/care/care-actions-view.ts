@@ -1,3 +1,5 @@
+import type { CareContactMethod as CareContactMethodType } from "./care-copy";
+
 export type CareFlowStage = "idle" | "confirm" | "confirm-existing" | "ask-note" | "note" | "done";
 
 export type CareContactLinks = {
@@ -6,7 +8,7 @@ export type CareContactLinks = {
 };
 
 export { CARE_NOTE_MAX_LENGTH } from "./care-note";
-export { careSavedMessage } from "./care-copy";
+export { careSavedMessage, type CareContactMethod } from "./care-copy";
 
 export const CARE_PHONE_MIN_DIGITS = 10;
 
@@ -26,6 +28,12 @@ export function careContactInfo(phone?: string | null) {
       whatsapp: hasPhone ? `https://wa.me/${digits}` : undefined,
     } satisfies CareContactLinks,
   };
+}
+
+export function careKindForContactMethod(method?: CareContactMethodType) {
+  if (method === "call") return "CALL";
+  if (method === "whatsapp") return "WHATSAPP";
+  return "MARKED_CARED";
 }
 
 export function careNoteId(personId?: string) {

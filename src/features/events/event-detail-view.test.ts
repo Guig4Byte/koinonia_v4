@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { AttendanceStatus } from "@/generated/prisma/client";
 import {
   buildEventDetailState,
+  buildEventPastoralCue,
   buildEventReadOnlyAttendanceView,
   eventAttendanceStatusTone,
   eventReadOnlyEmptyMessage,
@@ -21,12 +22,31 @@ describe("event-detail-view", () => {
     expect(view.memberBreakdownLabel).toBe("1 presente · 1 ausente · 1 justificou · 1 pendente");
     expect(view.memberSummary).toBe("4 membros · 1 presente · 1 ausente · 1 justificou · 1 pendente");
     expect(view.hasPriorityAttention).toBe(true);
+    expect(view.pastoralCue).toMatchObject({
+      title: "Presença incompleta",
+      tone: "warn",
+    });
     expect(view.groups.map((group) => group.members.map((member) => member.fullName))).toEqual([
       ["Ana"],
       ["Bruno"],
       ["Daniel"],
     ]);
     expect(view.presentMembers.map((member) => member.fullName)).toEqual(["Carlos"]);
+  });
+
+  it("builds a pastoral cue from attendance exceptions", () => {
+    expect(buildEventPastoralCue({ absent: 1, justified: 1, pending: 0 })).toMatchObject({
+      title: "Olhar depois do encontro",
+      tone: "risk",
+    });
+    expect(buildEventPastoralCue({ absent: 0, justified: 1, pending: 0 })).toMatchObject({
+      title: "Olhar depois do encontro",
+      tone: "warn",
+    });
+    expect(buildEventPastoralCue({ absent: 0, justified: 0, pending: 0 })).toMatchObject({
+      title: "Encontro sem sinais imediatos",
+      tone: "ok",
+    });
   });
 
   it("keeps neutral read-only messages for cancelled, future and pending encounters", () => {

@@ -10,15 +10,24 @@ import {
   CareErrorMessage,
   CareNoteCard,
 } from "@/features/care/components/care-action-cards";
-import { careContactInfo, careNoteId, careSavedMessage, type CareFlowStage } from "@/features/care/care-actions-view";
+import {
+  careContactInfo,
+  careKindForContactMethod,
+  careNoteId,
+  careSavedMessage,
+  type CareContactMethod,
+  type CareFlowStage,
+} from "@/features/care/care-actions-view";
 import { CARE_COPY } from "@/features/care/care-copy";
 import { useApiAction } from "@/hooks/use-api-action";
 import { API_ROUTES } from "@/lib/api-routes";
+import { cn } from "@/lib/cn";
 
-export function CareActions({ personId, phone }: { personId?: string; phone?: string | null }) {
+export function CareActions({ personId, phone, className }: { personId?: string; phone?: string | null; className?: string }) {
   const router = useRouter();
   const [stage, setStage] = useState<CareFlowStage>("idle");
   const [note, setNote] = useState("");
+  const [contactMethod, setContactMethod] = useState<CareContactMethod>("existing");
   const [savedMessage, setSavedMessage] = useState("");
   const [resolvedMessage, setResolvedMessage] = useState("");
   const { isPending, errorMessage, clearError, runApiAction } = useApiAction();
@@ -28,6 +37,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
   function resetFlow() {
     setStage("idle");
     setNote("");
+    setContactMethod("existing");
     clearError();
   }
 
@@ -42,7 +52,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            kind: "MARKED_CARED",
+            kind: careKindForContactMethod(contactMethod),
             note: trimmedNote || undefined,
             resolveOpenSignals: true,
           }),
@@ -50,7 +60,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
       {
         fallbackErrorMessage: CARE_COPY.errors.registerFallback,
         onSuccess: (responseBody) => {
-          setSavedMessage(careSavedMessage(Boolean(trimmedNote)));
+          setSavedMessage(careSavedMessage(Boolean(trimmedNote), contactMethod));
           setResolvedMessage(responseBody?.message ?? CARE_COPY.feedback.noFormalFollowUp);
           setStage("done");
           setNote("");
@@ -65,7 +75,7 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
   }
 
   return (
-    <div className="mt-3 space-y-2.5">
+    <div className={cn("space-y-2.5", className)}>
       {errorMessage ? <CareErrorMessage message={errorMessage} /> : null}
 
       {stage === "idle" ? (
@@ -74,18 +84,29 @@ export function CareActions({ personId, phone }: { personId?: string; phone?: st
           hasPhone={contactInfo.hasPhone}
           canRegisterCare={canRegisterCare}
           isPending={isPending}
-          onContactAttempt={() => {
+          onContactAttempt={(method) => {
             clearError();
+            setContactMethod(method);
             setStage("confirm");
           }}
           onExistingContact={() => {
             clearError();
+            setContactMethod("existing");
             setStage("confirm-existing");
           }}
         />
       ) : null}
 
-      {stage === "confirm" ? <CareConfirmCard variant="contact" canRegisterCare={canRegisterCare} isPending={isPending} onConfirm={() => setStage("ask-note")} onCancel={resetFlow} /> : null}
+      {stage === "confirm" ? (
+        <CareConfirmCard
+          variant="contact"
+          method={contactMethod}
+          canRegisterCare={canRegisterCare}
+          isPending={isPending}
+          onConfirm={() => setStage("ask-note")}
+          onCancel={resetFlow}
+        />
+      ) : null}
 
       {stage === "confirm-existing" ? <CareConfirmCard variant="existing" canRegisterCare={canRegisterCare} isPending={isPending} onConfirm={() => setStage("ask-note")} onCancel={resetFlow} /> : null}
 

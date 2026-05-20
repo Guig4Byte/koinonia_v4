@@ -1,6 +1,6 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
-import { SectionTitle } from "@/components/shared/base-cards";
+import { ContextSummary, SectionTitle } from "@/components/shared/base-cards";
 import { PageHero } from "@/components/shared/page-hero";
 import { MemberPriorityList } from "@/features/people/components/member-priority-list";
 import { SearchBox } from "@/features/search/components/search-box";
@@ -31,6 +31,13 @@ export default async function PeoplePage({ searchParams }: PeoplePageProps) {
         description="Radar de cuidado, presença e acompanhamento em um só lugar."
       />
 
+      <ContextSummary
+        items={peopleView.summaryItems}
+        variant="balanced"
+        surface="card"
+        detailTone="strong"
+      />
+
       <SearchBox placeholder="Buscar membro..." />
 
       <section id="membros" className="scroll-mt-6">
@@ -40,10 +47,11 @@ export default async function PeoplePage({ searchParams }: PeoplePageProps) {
           activeFilter={activeMembersFilter}
           priorityMembers={peopleView.priorityMembers}
           regularMembers={peopleView.regularMembers}
+          filterCounts={peopleView.filterCounts}
           keyForMember={(member) => member.id}
           hrefForMember={(member) => ROUTES.person(member.id)}
           priorityContextForMember={(member) => member.subtitle ?? member.context}
-          filteredContextForMember={(member) => member.priorityRank >= 5 ? undefined : member.subtitle ?? member.context}
+          filteredContextForMember={(member) => member.subtitle ?? member.context}
           priorityMoreLabel="Ver mais pessoas no radar"
           priorityLessLabel="Mostrar menos pessoas no radar"
           regularInitialCount={6}

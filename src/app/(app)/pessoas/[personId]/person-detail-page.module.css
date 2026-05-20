@@ -169,6 +169,54 @@
   font-weight: 500;
 }
 
+
+.nextGestureCard.nextGestureCard {
+  border-color: color-mix(in srgb, var(--brown-400) 24%, var(--color-border-card));
+  border-left: 4px solid color-mix(in srgb, var(--brown-400) 72%, var(--color-border-card));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--brown-400) 6%, transparent), transparent 58%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--brown-400) 6%), var(--color-bg-card) 68%);
+}
+
+.nextGestureCard.nextGestureCard::before {
+  display: none;
+}
+
+.nextGestureHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.85rem;
+}
+
+.nextGestureCopy {
+  min-width: 0;
+}
+
+.nextGestureTitle {
+  color: var(--color-text-primary);
+  font-size: var(--text-base);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.nextGestureDescription {
+  margin-top: 0.3rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.careActions {
+  margin-top: 0.9rem;
+}
+
+.contextList {
+  display: grid;
+  gap: 0.75rem;
+}
+
 .contextCard.contextCard {
   border-color: color-mix(in srgb, var(--brown-400) 24%, var(--color-border-card));
   border-left: 4px solid color-mix(in srgb, var(--brown-400) 76%, var(--color-border-card));
@@ -231,6 +279,7 @@
   }
 
   .personHeader,
+  .nextGestureHeader,
   .contextHeader {
     align-items: flex-start;
   }

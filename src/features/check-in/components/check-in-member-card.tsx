@@ -8,6 +8,8 @@ import {
   ATTENDANCE,
   ATTENDANCE_LABELS,
   MEMBER_ATTENDANCE_OPTIONS,
+  checkInMemberStatusHint,
+  checkInStatusOptionDescription,
   type AttendanceSelection,
   type CheckInItem,
   type MemberAttendanceStatus,
@@ -51,6 +53,7 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
   const sheetRef = useRef<HTMLDivElement>(null);
 
   const statusLabel = item.status ? ATTENDANCE_LABELS[item.status] : "Pendente";
+  const statusHint = checkInMemberStatusHint(item.status);
 
   const closeSelector = useCallback(() => {
     setSelectorOpen(false);
@@ -58,6 +61,11 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
 
   function openSelector() {
     if (disabled) return;
+
+    statusButtonRef.current?.scrollIntoView({
+      block: "center",
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    });
     setSelectorOpen(true);
   }
 
@@ -128,8 +136,8 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="k-item-title truncate">{item.fullName}</p>
-          <p className="mt-1 text-[length:var(--text-xs)] text-[color:var(--color-text-muted)]">
-            Toque no status para alterar a presença.
+          <p className="mt-1 text-[length:var(--text-xs)] leading-snug text-[color:var(--color-text-muted)]">
+            {statusHint}
           </p>
         </div>
 
@@ -159,6 +167,7 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
           dismissLabel="Fechar seleção de presença"
           onDismiss={closeSelectorAndRestoreFocus}
           panelRef={sheetRef}
+          placement="center"
           tone="accent"
           panelProps={{
             role: "dialog",
@@ -172,7 +181,7 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
               {item.fullName}
             </h2>
             <p id={descriptionId} className="text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">
-              Escolha a presença deste encontro.
+              Marque com calma. Essa informação vira contexto de cuidado depois do encontro.
             </p>
           </div>
 
@@ -195,7 +204,12 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
                   aria-pressed={selected}
                   onClick={() => handleSelectStatus(status)}
                 >
-                  <span>{ATTENDANCE_LABELS[status]}</span>
+                  <span className="text-left">
+                    <span className="block">{ATTENDANCE_LABELS[status]}</span>
+                    <span className="mt-0.5 block font-medium opacity-80">
+                      {checkInStatusOptionDescription(status)}
+                    </span>
+                  </span>
                   {selected ? <span aria-hidden="true">✓</span> : null}
                 </button>
               );

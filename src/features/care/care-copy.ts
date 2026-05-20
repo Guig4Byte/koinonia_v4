@@ -1,5 +1,7 @@
 import type { CareKind } from "@/generated/prisma/client";
 
+export type CareContactMethod = "call" | "whatsapp" | "existing";
+
 export const CARE_COPY = {
   errors: {
     invalidPayload: "Dados de cuidado inválidos",
@@ -12,8 +14,12 @@ export const CARE_COPY = {
   },
 
   feedback: {
-    contactDone: "Contato feito.",
-    contactDoneWithNote: "Contato feito com anotação.",
+    contactDone: "Cuidado registrado.",
+    contactDoneWithNote: "Cuidado registrado com anotação.",
+    callDone: "Ligação registrada.",
+    callDoneWithNote: "Ligação registrada com anotação.",
+    whatsappDone: "WhatsApp registrado.",
+    whatsappDoneWithNote: "WhatsApp registrado com anotação.",
     recentCareRegistered: "Registrado no cuidado recente.",
     noFormalFollowUp: "A atenção ficou em dia sem criar acompanhamento formal.",
     noAttentionChanged: "Nenhum motivo de atenção foi alterado.",
@@ -39,25 +45,34 @@ export const CARE_COPY = {
     callLabel: "Ligar",
     whatsappLabel: "WhatsApp",
     existingContactLabel: "Já houve contato?",
+    noPhoneTitle: "Sem telefone cadastrado",
+    noPhoneDescription: "Cadastre um telefone depois para liberar ligação e WhatsApp. Por enquanto, registre apenas um cuidado que já aconteceu.",
+    registerWithoutPhoneLabel: "Registrar cuidado já realizado",
   },
 
   confirmContact: {
     title: "O contato aconteceu?",
+    callTitle: "Conseguiu falar por ligação?",
+    whatsappTitle: "Conseguiu conversar pelo WhatsApp?",
     description: "Nada será registrado se você ainda não conseguiu falar com a pessoa.",
+    callDescription: "Registre a ligação somente se ela aconteceu de fato. Se ainda não conseguiu falar, volte sem registrar.",
+    whatsappDescription: "Registre o WhatsApp somente se houve conversa real. Se a mensagem ficou sem resposta, volte sem registrar.",
     confirmLabel: "Sim, houve contato",
+    callConfirmLabel: "Sim, falei por ligação",
+    whatsappConfirmLabel: "Sim, conversei",
     cancelLabel: "Ainda não",
   },
 
   confirmExistingContact: {
     title: "O cuidado já aconteceu?",
-    description: "Use quando você já ligou, mandou mensagem ou conversou fora do Koinonia. A atenção só será fechada depois da próxima confirmação.",
+    description: "Use quando você já ligou, mandou mensagem ou conversou fora do Koinonia. Na próxima etapa, escolha se quer anotar algo antes de salvar.",
     confirmLabel: "Sim, já houve",
     cancelLabel: "Cancelar",
   },
 
   notePrompt: {
     title: "Quer deixar uma anotação?",
-    description: "Salvar sem anotação também registra o cuidado e mantém a pessoa no radar certo.",
+    description: "Salvar sem anotação também registra o cuidado e mantém o histórico pastoral coerente.",
     addNoteLabel: "Anotar",
     saveWithoutNoteLabel: "Salvar sem anotação",
     cancelLabel: "Cancelar e não registrar agora",
@@ -73,17 +88,46 @@ export const CARE_COPY = {
 } as const;
 
 export const careKindLabels: Record<CareKind, string> = {
-  CALL: CARE_COPY.feedback.contactDone,
-  WHATSAPP: CARE_COPY.feedback.contactDone,
-  VISIT: CARE_COPY.feedback.contactDone,
-  PRAYER: CARE_COPY.feedback.contactDone,
+  CALL: "Ligação registrada",
+  WHATSAPP: "WhatsApp registrado",
+  VISIT: "Visita registrada",
+  PRAYER: "Oração registrada",
   MARKED_CARED: CARE_COPY.feedback.contactDone,
   NOTE: "Anotação",
   REQUESTED_SUPPORT: "Pedido de apoio à supervisão",
   ESCALATED_TO_PASTOR: "Encaminhado ao cuidado pastoral",
 };
 
-export function careSavedMessage(hasNote: boolean) {
+export function careConfirmContactCopy(method?: CareContactMethod) {
+  if (method === "call") {
+    return {
+      title: CARE_COPY.confirmContact.callTitle,
+      description: CARE_COPY.confirmContact.callDescription,
+      confirmLabel: CARE_COPY.confirmContact.callConfirmLabel,
+      cancelLabel: CARE_COPY.confirmContact.cancelLabel,
+    };
+  }
+
+  if (method === "whatsapp") {
+    return {
+      title: CARE_COPY.confirmContact.whatsappTitle,
+      description: CARE_COPY.confirmContact.whatsappDescription,
+      confirmLabel: CARE_COPY.confirmContact.whatsappConfirmLabel,
+      cancelLabel: CARE_COPY.confirmContact.cancelLabel,
+    };
+  }
+
+  return {
+    title: CARE_COPY.confirmContact.title,
+    description: CARE_COPY.confirmContact.description,
+    confirmLabel: CARE_COPY.confirmContact.confirmLabel,
+    cancelLabel: CARE_COPY.confirmContact.cancelLabel,
+  };
+}
+
+export function careSavedMessage(hasNote: boolean, method?: CareContactMethod) {
+  if (method === "call") return hasNote ? CARE_COPY.feedback.callDoneWithNote : CARE_COPY.feedback.callDone;
+  if (method === "whatsapp") return hasNote ? CARE_COPY.feedback.whatsappDoneWithNote : CARE_COPY.feedback.whatsappDone;
   return hasNote ? CARE_COPY.feedback.contactDoneWithNote : CARE_COPY.feedback.contactDone;
 }
 

@@ -5,7 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Feedback } from "@/components/ui/feedback";
 import { formatPresenceRate, presenceTone } from "@/features/events/presence-display";
 import { PresenceMetricDisplay } from "@/components/shared/presence-metric";
-import { checkInMarkedLabel, checkInPendingLabel, type CheckInSummary } from "@/features/check-in/check-in-view";
+import {
+  checkInMarkedLabel,
+  checkInPastoralSignalMessage,
+  checkInPendingLabel,
+  type CheckInSummary,
+} from "@/features/check-in/check-in-view";
 import { countLabel } from "@/lib/format";
 import { cn } from "@/lib/cn";
 
@@ -55,6 +60,8 @@ export function CheckInSummaryCard({
   onConfirmMarkAllAsPresent,
   onMarkAllAsPresent,
 }: CheckInSummaryCardProps) {
+  const pastoralSignalMessage = checkInPastoralSignalMessage(summary);
+
   return (
     <Card tone="featured">
       <div className="flex items-start justify-between gap-4">
@@ -158,6 +165,12 @@ export function CheckInSummaryCard({
             {summary.pending === 1 ? "Falta marcar 1 pessoa." : `Falta marcar ${summary.pending} pessoas.`}
           </p>
           <p className="mt-1 leading-relaxed">Se todos vieram, use o atalho acima e ajuste só exceções.</p>
+        </Feedback>
+      ) : null}
+
+      {pastoralSignalMessage ? (
+        <Feedback tone="info" compact className="mt-4" title="Olhar pastoral depois do encontro">
+          <p>{pastoralSignalMessage}</p>
         </Feedback>
       ) : null}
 

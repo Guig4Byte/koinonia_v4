@@ -9,7 +9,7 @@ describe("care validation", () => {
 
     expect(result.success).toBe(true);
     if (!result.success) return;
-    expect(result.data.kind).toBe(CareKind.MARKED_CARED);
+    expect(result.data.kind).toBe(CareKind.CALL);
     expect(result.data.note).toBeUndefined();
     expect(result.data.resolveOpenSignals).toBe(true);
   });

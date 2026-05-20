@@ -88,6 +88,50 @@
   white-space: nowrap;
 }
 
+.pastoralCue {
+  --pastoral-cue-accent: var(--brown-400);
+  margin-top: 1rem;
+  border: 1px solid color-mix(in srgb, var(--pastoral-cue-accent) 22%, var(--color-border-card));
+  border-left: 4px solid color-mix(in srgb, var(--pastoral-cue-accent) 78%, var(--color-border-card));
+  border-radius: 1rem;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--pastoral-cue-accent) 7%, transparent), transparent 58%),
+    color-mix(in srgb, var(--color-bg-card) 94%, var(--surface-alt) 6%);
+  padding: 0.75rem 0.85rem;
+}
+
+.pastoralCue-ok {
+  --pastoral-cue-accent: var(--color-badge-estavel-text);
+}
+
+.pastoralCue-warn {
+  --pastoral-cue-accent: var(--color-badge-atencao-text);
+}
+
+.pastoralCue-risk {
+  --pastoral-cue-accent: var(--color-badge-risco-text);
+}
+
+.pastoralCue-info,
+.pastoralCue-neutral {
+  --pastoral-cue-accent: var(--brown-400);
+}
+
+.pastoralCueTitle {
+  color: color-mix(in srgb, var(--pastoral-cue-accent) 74%, var(--color-text-primary));
+  font-size: var(--text-sm);
+  font-weight: 850;
+  line-height: 1.25;
+}
+
+.pastoralCueDescription {
+  margin-top: 0.2rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.42;
+}
+
 .groupList {
   display: grid;
   gap: 1rem;
@@ -190,19 +234,6 @@
 
 .rowVisitor {
   --attendance-row-accent: var(--color-badge-info-text);
-}
-
-.notice {
-  margin-top: 1rem;
-  border: 1px solid color-mix(in srgb, var(--brown-400) 20%, var(--color-border-card));
-  border-left: 4px solid color-mix(in srgb, var(--brown-400) 78%, var(--color-border-card));
-  border-radius: 1rem;
-  background: color-mix(in srgb, var(--brown-400) 6%, var(--color-bg-card));
-  padding: 0.75rem 0.85rem;
-  color: var(--color-text-secondary);
-  font-size: var(--text-sm);
-  font-weight: 650;
-  line-height: 1.45;
 }
 
 .presentDisclosure {

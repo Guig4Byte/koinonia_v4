@@ -5,7 +5,7 @@ import { personEffectiveBadgeForViewer } from "@/features/people/status-display"
 import { signalTitleForViewer, type SignalBadgeTone, type SignalDetailLike } from "@/features/signals/display";
 import { isSupportRequest, isUrgentOrPastoralCase, type SectionSignalWithIdentity } from "@/features/signals/sections";
 import { countLabel } from "@/lib/format";
-import { FILTER_ALL } from "@/lib/filter-param";
+import { FILTER_ACTIVE, FILTER_ALL, FILTER_ATTENTION, FILTER_IN_CARE } from "@/lib/filter-param";
 import { compareByName } from "@/lib/text";
 
 export const PEOPLE_PAGE_ATTENTION_SIGNAL_QUERY_LIMIT = 80;
@@ -39,11 +39,22 @@ export type PeoplePageViewer = {
   role: UserRole;
 };
 
+export type PeoplePageFilterCounts = Record<MembersFilter, number>;
+
+export type PeoplePageSummaryItem = {
+  label: string;
+  value: string;
+  detail: string;
+  tone?: "risk" | "warm" | "ok";
+};
+
 export type PeoplePageView = {
   navIndicator?: "attention" | "care";
   members: PeoplePageMemberDisplay[];
   priorityMembers: PeoplePageMemberDisplay[];
   regularMembers: PeoplePageMemberDisplay[];
+  filterCounts: PeoplePageFilterCounts;
+  summaryItems: PeoplePageSummaryItem[];
   membersSectionDetail: string;
 };
 
@@ -154,6 +165,38 @@ export function peoplePageMembersSectionDetail({
   return priorityMembersCount > 0 ? `${totalLabel} · ${priorityMembersCount} no radar` : totalLabel;
 }
 
+export function peoplePageFilterCounts(members: PeoplePageMemberDisplay[]): PeoplePageFilterCounts {
+  return {
+    [FILTER_ALL]: members.length,
+    [FILTER_ATTENTION]: members.filter((member) => memberMatchesFilter(member, FILTER_ATTENTION, memberFilterOptions)).length,
+    [FILTER_IN_CARE]: members.filter((member) => memberMatchesFilter(member, FILTER_IN_CARE, memberFilterOptions)).length,
+    [FILTER_ACTIVE]: members.filter((member) => memberMatchesFilter(member, FILTER_ACTIVE, memberFilterOptions)).length,
+  };
+}
+
+export function peoplePageSummaryItems(filterCounts: PeoplePageFilterCounts): PeoplePageSummaryItem[] {
+  return [
+    {
+      label: "Radar",
+      value: String(filterCounts[FILTER_ATTENTION]),
+      detail: filterCounts[FILTER_ATTENTION] > 0 ? "pedem proximidade" : "sem atenção aberta",
+      tone: "risk",
+    },
+    {
+      label: "Em cuidado",
+      value: String(filterCounts[FILTER_IN_CARE]),
+      detail: filterCounts[FILTER_IN_CARE] > 0 ? "seguem acompanhadas" : "sem cuidado ativo",
+      tone: "warm",
+    },
+    {
+      label: "Ativos",
+      value: String(filterCounts[FILTER_ACTIVE]),
+      detail: "sem sinal aberto",
+      tone: "ok",
+    },
+  ];
+}
+
 export function buildPeoplePageView({
   people,
   attentionSignals,
@@ -172,12 +215,15 @@ export function buildPeoplePageView({
   const priorityMembers = members.filter((member) => member.priorityRank <= 4);
   const activeMembers = members.filter((member) => member.priorityRank >= 5);
   const regularMembers = activeFilter === FILTER_ALL ? activeMembers : visibleMembersForFilter;
+  const filterCounts = peoplePageFilterCounts(members);
 
   return {
-    navIndicator: peoplePageNavIndicator({ attentionCount: attentionSignals.length, inCareCount: inCarePeople.length }),
+    navIndicator: peoplePageNavIndicator({ attentionCount: filterCounts[FILTER_ATTENTION], inCareCount: filterCounts[FILTER_IN_CARE] }),
     members,
     priorityMembers,
     regularMembers,
+    filterCounts,
+    summaryItems: peoplePageSummaryItems(filterCounts),
     membersSectionDetail: peoplePageMembersSectionDetail({
       activeFilter,
       membersCount: members.length,

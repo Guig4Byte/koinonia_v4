@@ -4,6 +4,8 @@ import {
   buildPeoplePageMembers,
   buildPeoplePageView,
   memberPriorityRank,
+  peoplePageFilterCounts,
+  peoplePageSummaryItems,
   peoplePageMembersSectionDetail,
   peoplePageNavIndicator,
   type PeoplePagePerson,
@@ -67,6 +69,29 @@ describe("people-page-view", () => {
   it("monta detalhe da seção conforme filtro", () => {
     expect(peoplePageMembersSectionDetail({ activeFilter: "todos", membersCount: 3, priorityMembersCount: 2, visibleMembersForFilterCount: 3 })).toBe("3 membros · 2 no radar");
     expect(peoplePageMembersSectionDetail({ activeFilter: "ativos", membersCount: 3, priorityMembersCount: 2, visibleMembersForFilterCount: 1 })).toBe("1 pessoa neste recorte");
+  });
+
+
+  it("monta contadores e resumo pastoral da lista", () => {
+    const members = buildPeoplePageMembers({
+      viewer,
+      people: [
+        person({ id: "attention", fullName: "Ana" }),
+        person({ id: "care", fullName: "Bruno", status: PersonStatus.COOLING_AWAY }),
+        person({ id: "active", fullName: "Carla" }),
+      ],
+      attentionSignals: [signal({ personId: "attention" })],
+      inCarePeople: [person({ id: "care", status: PersonStatus.COOLING_AWAY })],
+    });
+
+    const counts = peoplePageFilterCounts(members);
+
+    expect(counts).toMatchObject({ todos: 3, atencao: 1, "em-cuidado": 1, ativos: 1 });
+    expect(peoplePageSummaryItems(counts)).toEqual([
+      { label: "Radar", value: "1", detail: "pedem proximidade", tone: "risk" },
+      { label: "Em cuidado", value: "1", detail: "seguem acompanhadas", tone: "warm" },
+      { label: "Ativos", value: "1", detail: "sem sinal aberto", tone: "ok" },
+    ]);
   });
 
   it("separa membros prioritários e regulares no view model", () => {

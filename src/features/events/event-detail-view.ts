@@ -23,6 +23,12 @@ export type EventAttendanceGroup = {
   members: EventReadOnlyMember[];
 };
 
+export type EventPastoralCue = {
+  title: string;
+  description: string;
+  tone: EventDetailBadgeTone;
+};
+
 export const eventAttendanceLabels: Record<AttendanceStatus, string> = {
   PRESENT: "Presente",
   ABSENT: "Ausente",
@@ -44,6 +50,48 @@ export function sortPeopleByName<T extends { fullName: string }>(people: T[]) {
 
 export function justifiedCountLabel(count: number) {
   return count === 1 ? "1 justificou" : `${count} justificaram`;
+}
+
+function joinAttentionParts(parts: string[]) {
+  if (parts.length <= 1) return parts[0] ?? "";
+  return `${parts.slice(0, -1).join(", ")} e ${parts[parts.length - 1]}`;
+}
+
+export function buildEventPastoralCue({
+  absent,
+  justified,
+  pending,
+}: {
+  absent: number;
+  justified: number;
+  pending: number;
+}): EventPastoralCue {
+  if (pending > 0) {
+    return {
+      title: "Presença incompleta",
+      description: `${countLabel(pending, "pessoa pendente", "pessoas pendentes")} ainda sem marcação. Complete antes de interpretar o encontro.`,
+      tone: "warn",
+    };
+  }
+
+  const attentionParts = [
+    absent > 0 ? countLabel(absent, "ausente") : null,
+    justified > 0 ? justifiedCountLabel(justified) : null,
+  ].filter((part): part is string => Boolean(part));
+
+  if (attentionParts.length > 0) {
+    return {
+      title: "Olhar depois do encontro",
+      description: `${joinAttentionParts(attentionParts)}. Comece por essas pessoas se for necessário acompanhar com cuidado.`,
+      tone: absent > 0 ? "risk" : "warn",
+    };
+  }
+
+  return {
+    title: "Encontro sem sinais imediatos",
+    description: "Todos os membros marcados estiveram presentes. Nenhuma ausência ou justificativa pede atenção agora.",
+    tone: "ok",
+  };
 }
 
 export function savedPresenceMessage(value?: string | null) {
@@ -73,23 +121,28 @@ export function buildEventReadOnlyAttendanceView(members: EventReadOnlyMember[])
     memberTotalLabel,
     memberBreakdownLabel,
     memberSummary,
+    pastoralCue: buildEventPastoralCue({
+      absent: absentMembers.length,
+      justified: justifiedMembers.length,
+      pending: pendingMembers.length,
+    }),
     presentMembers,
     visitorsTitle: "Visitantes",
     hasPriorityAttention: absentMembers.length > 0 || justifiedMembers.length > 0 || pendingMembers.length > 0,
     groups: [
       {
         title: `Ausentes (${absentMembers.length})`,
-        description: "Quem faltou neste encontro.",
+        description: "Comece por aqui se precisar acompanhar depois do encontro.",
         members: absentMembers,
       },
       {
         title: `Justificaram (${justifiedMembers.length})`,
-        description: "Quem avisou e justificou a ausência.",
+        description: "Houve contexto; talvez baste manter o vínculo próximo.",
         members: justifiedMembers,
       },
       {
         title: `Pendentes (${pendingMembers.length})`,
-        description: "Membros ainda sem marcação explícita.",
+        description: "Ainda não há marcação explícita para estas pessoas.",
         members: pendingMembers,
       },
     ] satisfies EventAttendanceGroup[],

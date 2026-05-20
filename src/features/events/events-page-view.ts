@@ -3,7 +3,7 @@ import { type AttendanceStatus } from "@/generated/prisma/client";
 import { eventEffectiveLocation, isClosedWithoutPresenceStatus, closedWithoutPresenceLabel as closedStatusLabel } from "@/features/events/event-display";
 import { summarizeEventPresence, type EventPresenceSummary } from "@/features/events/presence-summary";
 import { canCheckInEvent, type PermissionUser } from "@/features/permissions/permissions";
-import { formatShortDate, formatTime } from "@/lib/format";
+import { countLabel, formatShortDate, formatTime } from "@/lib/format";
 import { normalizeSearchText } from "@/lib/text";
 import { addBrasiliaDays, endOfBrasiliaWeek, isTodayInBrasilia, startOfBrasiliaDay, startOfBrasiliaWeek } from "@/lib/brasilia-time";
 
@@ -13,6 +13,13 @@ export const EVENTS_PAGE_QUERY_LIMIT = 120;
 
 export type EventConsultationMode = "sem-presenca" | "historico";
 export type EventPeriod = "semana" | "semana-passada" | "30d";
+
+export type EventsConsultationSummary = {
+  pendingCount: number;
+  pendingDescription: string;
+  historyCount: number;
+  historyDescription: string;
+};
 
 export type EventListEvent = {
   id: string;
@@ -154,9 +161,6 @@ export function buildEventListCardState(event: EventListEvent, user: PermissionU
   };
 }
 
-function pluralizeCount(count: number, singular: string, plural: string) {
-  return `${count} ${count === 1 ? singular : plural}`;
-}
 
 export function buildEventsConsultationView({
   mode,
@@ -183,7 +187,7 @@ export function buildEventsConsultationView({
       return b.startsAt.getTime() - a.startsAt.getTime();
     });
 
-  const eventCountLabel = pluralizeCount(filteredEvents.length, "encontro", "encontros");
+  const eventCountLabel = countLabel(filteredEvents.length, "encontro", "encontros");
 
   return {
     filteredEvents,
@@ -195,6 +199,32 @@ export function buildEventsConsultationView({
       ? "Nenhuma presença registrada neste período. Troque o filtro para conferir outros recortes."
       : "Nenhum encontro pendente neste período. Os encontros deste recorte estão em dia.",
     periodLabel: eventPeriodLabel(period),
+  };
+}
+
+export function buildEventsConsultationSummary(events: EventListEvent[], now: Date): EventsConsultationSummary {
+  const pendingCount = buildEventsConsultationView({
+    mode: "sem-presenca",
+    period: "30d",
+    events,
+    now,
+  }).filteredEvents.length;
+  const historyCount = buildEventsConsultationView({
+    mode: "historico",
+    period: "30d",
+    events,
+    now,
+  }).filteredEvents.length;
+
+  return {
+    pendingCount,
+    pendingDescription: pendingCount > 0
+      ? "aguardando registro"
+      : "tudo em dia",
+    historyCount,
+    historyDescription: historyCount > 0
+      ? "registrados"
+      : "sem histórico",
   };
 }
 

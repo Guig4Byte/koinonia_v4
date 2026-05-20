@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
-import { CareKind, GroupResponsibilityRole, UserRole } from "@/generated/prisma/client";
+import { CareKind, GroupResponsibilityRole, MembershipRole, UserRole } from "@/generated/prisma/client";
 import { AppShell } from "@/components/layout/app-shell";
 import { appNavForRole, homeHrefForRole, secondaryNavHrefForRole, secondaryNavLabelForRole } from "@/features/navigation/app-nav";
 import { CareActions } from "@/features/care/components/care-actions";
+import { careContactInfo } from "@/features/care/care-actions-view";
 import { CARE_COPY } from "@/features/care/care-copy";
 import { PersonStatusActions } from "@/features/care/components/person-status-actions";
 import { BackLink, EmptyState, SectionTitle } from "@/components/shared/base-cards";
@@ -29,6 +30,47 @@ import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { ROUTES } from "@/lib/routes";
 import styles from "./person-detail-page.module.css";
+
+const membershipRoleLabels: Record<MembershipRole, string> = {
+  MEMBER: "Membro",
+  VISITOR: "Visitante",
+  HOST: "Anfitrião",
+  LEADER: "Líder",
+};
+
+function membershipRoleLabel(role?: MembershipRole | null) {
+  return role ? membershipRoleLabels[role] : "Pessoa";
+}
+
+function personProfileEyebrow({
+  openSignalsCount,
+  isInCare,
+}: {
+  openSignalsCount: number;
+  isInCare: boolean;
+}) {
+  if (openSignalsCount > 0) return "Pessoa no radar";
+  if (isInCare) return "Pessoa em cuidado";
+  return "Perfil pastoral";
+}
+
+function nextGestureTitle(openSignalsCount: number, isInCare: boolean) {
+  if (openSignalsCount > 0) return "Próximo gesto de cuidado";
+  if (isInCare) return "Atualizar acompanhamento";
+  return "Registrar cuidado";
+}
+
+function nextGestureDescription(hasPhone: boolean, openSignalsCount: number) {
+  if (!hasPhone) {
+    return "Sem telefone cadastrado nesta ficha. Ainda é possível registrar um cuidado que já aconteceu fora do app.";
+  }
+
+  if (openSignalsCount > 0) {
+    return "Depois de entender a situação, registre apenas contatos reais para manter o radar pastoral em dia.";
+  }
+
+  return "Use quando houver um contato real, uma conversa ou uma anotação pastoral importante.";
+}
 
 export default async function PersonDetailPage({ params }: { params: Promise<{ personId: string }> }) {
   const user = await getCurrentUser();
@@ -75,13 +117,11 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
     }),
   ]);
 
-  const primaryMembership = person.memberships.find((membership) => canViewGroup(user, membership.group));
+  const visibleMemberships = person.memberships.filter((membership) => canViewGroup(user, membership.group));
+  const primaryMembership = visibleMemberships[0];
   const primaryGroup = primaryMembership?.group;
   const primaryLeadershipName = primaryGroup
     ? responsibilityNames(primaryGroup.responsibilities, GroupResponsibilityRole.LEADER, "")
-    : "";
-  const primarySupervisionName = primaryGroup
-    ? responsibilityNames(primaryGroup.responsibilities, GroupResponsibilityRole.SUPERVISOR, "")
     : "";
   const homeHref = homeHrefForRole(user.role);
   const openSignalsCount = signals.length;
@@ -91,18 +131,27 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const isLeader = user.role === UserRole.LEADER;
   const backHref = isLeader ? secondaryNavHref : homeHref;
   const backLabel = isLeader ? secondaryNavLabel : "Visão";
-  const canMarkActive = isInCarePerson(person) && canRegisterCare(user, person);
+  const personIsInCare = isInCarePerson(person);
+  const canMarkActive = personIsInCare && canRegisterCare(user, person);
   const hasRiskSignal = signals.some(isUrgentOrPastoralCase);
-  const navIndicator = hasRiskSignal ? "risk" : openSignalsCount > 0 ? "attention" : isInCarePerson(person) ? "care" : undefined;
+  const navIndicator = hasRiskSignal ? "risk" : openSignalsCount > 0 ? "attention" : personIsInCare ? "care" : undefined;
   const pastoralOrderedSignals = sortSignalsForPastoralViewer(signals, user);
   const primarySignal = pastoralOrderedSignals[0];
   const personBadge = personEffectiveBadgeForViewer(person, primarySignal, user);
   const presenceView = buildPersonPresenceView(attendances);
+  const profileEyebrow = personProfileEyebrow({ openSignalsCount, isInCare: personIsInCare });
+  const primaryGroupName = groupNameOrFallback(primaryGroup);
+  const primaryMembershipLabel = membershipRoleLabel(primaryMembership?.role);
+  const personMeta = primaryGroup
+    ? `${primaryMembershipLabel} · ${primaryGroupName}${primaryLeadershipName ? ` · ${primaryLeadershipName}` : ""}`
+    : primaryMembershipLabel;
+  const contactInfo = careContactInfo(person.phone);
   const careTouchHistoryItems: CareTouchHistoryItem[] = careTouches.map((touch) => ({
     id: touch.id,
     title: careKindLabels[touch.kind],
     actorName: touch.actor?.name ?? "Koinonia",
     happenedAtLabel: `${formatShortDate(touch.happenedAt)}, ${formatTime(touch.happenedAt)}`,
+    contextLabel: touch.group?.name ?? null,
     note: touch.note,
   }));
   const pastoralEscalationActorByGroupId = new Map<string, string>();
@@ -131,108 +180,131 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       headerVariant="compact"
     >
       <div className={styles.page}>
-      <BackLink href={backHref} className={styles.backLink}>{backLabel}</BackLink>
+        <BackLink href={backHref} className={styles.backLink}>{backLabel}</BackLink>
 
-      <PriorityCard as="section" priorityTone={personBadge.tone} radius="lg" className={cn("card-hover-lift", styles.personHero)}>
-        <div className={styles.personHeroContent}>
-          <Avatar name={person.fullName} size="xl" className={styles.avatar} />
-          <div className={styles.personMain}>
-            <div className={styles.personHeader}>
-              <div className={styles.personTitleBlock}>
-                <p className={styles.eyebrow}>Pessoa</p>
-                <h2 className={styles.personTitle}>{person.fullName}</h2>
-                <p className={styles.personMeta}>
-                  {groupNameOrFallback(primaryGroup)}
-                  {primaryLeadershipName ? ` · ${primaryLeadershipName}` : ""}
-                </p>
+        <PriorityCard as="section" priorityTone={personBadge.tone} radius="lg" className={cn("card-hover-lift", styles.personHero)}>
+          <div className={styles.personHeroContent}>
+            <Avatar name={person.fullName} size="xl" className={styles.avatar} />
+            <div className={styles.personMain}>
+              <div className={styles.personHeader}>
+                <div className={styles.personTitleBlock}>
+                  <p className={styles.eyebrow}>{profileEyebrow}</p>
+                  <h2 className={styles.personTitle}>{person.fullName}</h2>
+                  <p className={styles.personMeta}>{personMeta}</p>
+                </div>
+                <Badge tone={personBadge.tone} className={styles.personBadge}>{personBadge.label}</Badge>
               </div>
-              <Badge tone={personBadge.tone} className={styles.personBadge}>{personBadge.label}</Badge>
-            </div>
 
-            {person.shortNote ? (
-              <p className={styles.shortNote}>
-                {person.shortNote}
-              </p>
-            ) : null}
+              {person.shortNote ? (
+                <p className={styles.shortNote}>
+                  {person.shortNote}
+                </p>
+              ) : null}
+            </div>
           </div>
+        </PriorityCard>
+
+        <SectionTitle detail={openSignalsCount > 0 ? "Entenda o motivo antes de agir." : undefined}>
+          {openSignalsCount > 0 ? "Por que merece atenção" : "Situação atual"}
+        </SectionTitle>
+        <div className={styles.sectionStack}>
+          {pastoralOrderedSignals.map((signal) => {
+            const pastoralEscalationActorName = signal.groupId
+              ? pastoralEscalationActorByGroupId.get(signal.groupId)
+              : pastoralEscalationActorWithoutGroup;
+            const signalForDisplay = { ...signal, pastoralEscalationActorName };
+            const signalTone = signalBadgeForViewer(signalForDisplay, user).tone;
+            const signalDescription = signalDescriptionForViewer(signalForDisplay, user, { useDetailedDescription: true });
+            const assignmentMessage = escalationStatusChipForViewer(signalForDisplay, user);
+            const canRequestSupervisor = canRequestSupervisorSupport(user, signal);
+            const canEscalatePastor = canEscalateSignalToPastor(user, signal);
+
+            return (
+              <PriorityCard key={signal.id} priorityTone={signalTone} className={cn("card-hover-lift", styles.signalCard)}>
+                <div className={styles.signalHeader}>
+                  <p className={styles.signalTitle}>{signalTitleForViewer(signalForDisplay, user)}</p>
+                  <p className={styles.signalMeta}>
+                    {signal.group?.name ?? primaryGroupName} · {formatShortDate(signal.detectedAt)}, {formatTime(signal.detectedAt)}
+                  </p>
+                </div>
+                {signalDescription ? <p className={styles.signalDescription}>{signalDescription}</p> : null}
+                <SignalSupportActions
+                  signalId={signal.id}
+                  assignmentMessage={assignmentMessage}
+                  canRequestSupervisor={canRequestSupervisor}
+                  canEscalatePastor={canEscalatePastor}
+                />
+              </PriorityCard>
+            );
+          })}
+
+          {openSignalsCount === 0 ? (
+            <EmptyState className={styles.emptyState} title="Nada exige ação agora.">
+              {hasCareTouch
+                ? "O cuidado mais recente aparece abaixo, e a pessoa continua disponível para acompanhamento pastoral."
+                : "Esta pessoa segue disponível para consulta e para registro de cuidado quando houver um contato real."}
+            </EmptyState>
+          ) : null}
         </div>
 
-        <CareActions personId={person.id} phone={person.phone} />
-        {canMarkActive ? <PersonStatusActions personId={person.id} /> : null}
-      </PriorityCard>
+        <SectionTitle>Ritmo de presença</SectionTitle>
+        <PersonPresenceCard view={presenceView} />
 
-      <SectionTitle>Ritmo de presença</SectionTitle>
-      <PersonPresenceCard view={presenceView} />
+        <SectionTitle>Cuidado recente</SectionTitle>
+        {careTouchHistoryItems.length > 0 ? (
+          <CareTouchHistory items={careTouchHistoryItems} className={styles.historyCard} />
+        ) : (
+          <EmptyState className={styles.emptyState}>{CARE_COPY.history.empty}</EmptyState>
+        )}
 
-      <SectionTitle>{openSignalsCount > 0 ? "Por que merece atenção" : "Situação atual"}</SectionTitle>
-      <div className={styles.sectionStack}>
-        {pastoralOrderedSignals.map((signal) => {
-          const pastoralEscalationActorName = signal.groupId
-            ? pastoralEscalationActorByGroupId.get(signal.groupId)
-            : pastoralEscalationActorWithoutGroup;
-          const signalForDisplay = { ...signal, pastoralEscalationActorName };
-          const signalTone = signalBadgeForViewer(signalForDisplay, user).tone;
-          const signalDescription = signalDescriptionForViewer(signalForDisplay, user, { useDetailedDescription: true });
-          const assignmentMessage = escalationStatusChipForViewer(signalForDisplay, user);
-          const canRequestSupervisor = canRequestSupervisorSupport(user, signal);
-          const canEscalatePastor = canEscalateSignalToPastor(user, signal);
-
-          return (
-            <PriorityCard key={signal.id} priorityTone={signalTone} className={cn("card-hover-lift", styles.signalCard)}>
-              <div className={styles.signalHeader}>
-                <p className={styles.signalTitle}>{signalTitleForViewer(signalForDisplay, user)}</p>
-                <p className={styles.signalMeta}>
-                  {signal.group?.name ?? groupNameOrFallback(primaryGroup)} · {formatShortDate(signal.detectedAt)}, {formatTime(signal.detectedAt)}
-                </p>
-              </div>
-              {signalDescription ? <p className={styles.signalDescription}>{signalDescription}</p> : null}
-              <SignalSupportActions
-                signalId={signal.id}
-                assignmentMessage={assignmentMessage}
-                canRequestSupervisor={canRequestSupervisor}
-                canEscalatePastor={canEscalatePastor}
-              />
-            </PriorityCard>
-          );
-        })}
-
-        {openSignalsCount === 0 ? (
-          <EmptyState className={styles.emptyState}>
-            {hasCareTouch
-              ? "Sem motivo de atenção agora. O cuidado mais recente aparece abaixo, e a pessoa continua no radar enquanto estiver em cuidado."
-              : "Sem motivo de atenção agora. Esta pessoa pode ser consultada normalmente pela busca."}
-          </EmptyState>
-        ) : null}
-      </div>
-
-      <SectionTitle>Cuidado recente</SectionTitle>
-      {careTouchHistoryItems.length > 0 ? (
-        <CareTouchHistory items={careTouchHistoryItems} className={styles.historyCard} />
-      ) : (
-        <EmptyState className={styles.emptyState}>{CARE_COPY.history.empty}</EmptyState>
-      )}
-
-      {primaryGroup ? (
-        <>
-          <SectionTitle>Contexto da célula</SectionTitle>
-          <CardLink
-            href={ROUTES.group(primaryGroup.id)}
-            priorityTone="muted"
-            className={styles.contextCard}
-          >
-            <div className={styles.contextHeader}>
-              <div className={styles.contextCopy}>
-                <p className={styles.contextTitle}>{primaryGroup.name}</p>
-                <p className={styles.contextMeta}>
-                  Liderança: {primaryLeadershipName || FALLBACK_LEADER_NAME}
-                  {primarySupervisionName ? ` · Supervisão: ${primarySupervisionName}` : ""}
-                </p>
-              </div>
-              <span className={styles.contextAction}>Abrir célula →</span>
+        <SectionTitle detail="Registre somente o que aconteceu de fato.">Próximo gesto</SectionTitle>
+        <PriorityCard as="section" priorityTone={hasRiskSignal ? "risk" : openSignalsCount > 0 ? "warn" : personIsInCare ? "care" : "muted"} radius="lg" className={styles.nextGestureCard}>
+          <div className={styles.nextGestureHeader}>
+            <div className={styles.nextGestureCopy}>
+              <p className={styles.nextGestureTitle}>{nextGestureTitle(openSignalsCount, personIsInCare)}</p>
+              <p className={styles.nextGestureDescription}>{nextGestureDescription(contactInfo.hasPhone, openSignalsCount)}</p>
             </div>
-          </CardLink>
-        </>
-      ) : null}
+            <Badge tone={contactInfo.hasPhone ? "care" : "info"} size="sm" maxWidth="none" truncate={false}>
+              {contactInfo.hasPhone ? "Contato disponível" : "Sem telefone"}
+            </Badge>
+          </div>
+
+          <CareActions personId={person.id} phone={person.phone} className={styles.careActions} />
+          {canMarkActive ? <PersonStatusActions personId={person.id} /> : null}
+        </PriorityCard>
+
+        {visibleMemberships.length > 0 ? (
+          <>
+            <SectionTitle>{visibleMemberships.length > 1 ? "Contexto das células" : "Contexto da célula"}</SectionTitle>
+            <div className={styles.contextList}>
+              {visibleMemberships.map((membership) => {
+                const group = membership.group;
+                const leadershipName = responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, "");
+                const supervisionName = responsibilityNames(group.responsibilities, GroupResponsibilityRole.SUPERVISOR, "");
+
+                return (
+                  <CardLink
+                    key={membership.id}
+                    href={ROUTES.group(group.id)}
+                    priorityTone="muted"
+                    className={styles.contextCard}
+                  >
+                    <div className={styles.contextHeader}>
+                      <div className={styles.contextCopy}>
+                        <p className={styles.contextTitle}>{group.name}</p>
+                        <p className={styles.contextMeta}>
+                          {membershipRoleLabel(membership.role)} · Liderança: {leadershipName || FALLBACK_LEADER_NAME}
+                          {supervisionName ? ` · Supervisão: ${supervisionName}` : ""}
+                        </p>
+                      </div>
+                      <span className={styles.contextAction}>Abrir célula →</span>
+                    </div>
+                  </CardLink>
+                );
+              })}
+            </div>
+          </>
+        ) : null}
       </div>
     </AppShell>
   );

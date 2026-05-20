@@ -4,11 +4,11 @@ import { normalizeCareKind } from "./care-payload";
 import { CARE_NOTE_MAX_LENGTH, CARE_NOTE_TOO_LONG_MESSAGE, normalizeCareNote } from "./care-note";
 
 describe("care-payload", () => {
-  it("normaliza atalhos de contato para cuidado marcado", () => {
-    expect(normalizeCareKind(CareKind.CALL)).toBe(CareKind.MARKED_CARED);
-    expect(normalizeCareKind(CareKind.WHATSAPP)).toBe(CareKind.MARKED_CARED);
-    expect(normalizeCareKind(CareKind.VISIT)).toBe(CareKind.MARKED_CARED);
-    expect(normalizeCareKind(CareKind.PRAYER)).toBe(CareKind.MARKED_CARED);
+  it("preserva o tipo de cuidado recebido", () => {
+    expect(normalizeCareKind(CareKind.CALL)).toBe(CareKind.CALL);
+    expect(normalizeCareKind(CareKind.WHATSAPP)).toBe(CareKind.WHATSAPP);
+    expect(normalizeCareKind(CareKind.VISIT)).toBe(CareKind.VISIT);
+    expect(normalizeCareKind(CareKind.PRAYER)).toBe(CareKind.PRAYER);
     expect(normalizeCareKind(CareKind.MARKED_CARED)).toBe(CareKind.MARKED_CARED);
   });
 

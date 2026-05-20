@@ -133,17 +133,16 @@ export function EventReadOnlySummary({
           <span className={styles.statusPill}>Registrada</span>
         </div>
 
+        <div className={cn(styles.pastoralCue, styles[`pastoralCue-${attendanceView.pastoralCue.tone}`])}>
+          <p className={styles.pastoralCueTitle}>{attendanceView.pastoralCue.title}</p>
+          <p className={styles.pastoralCueDescription}>{attendanceView.pastoralCue.description}</p>
+        </div>
+
         <div className={styles.groupList}>
           {attendanceView.groups.map((group) => (
             <AttendanceGroup key={group.title} group={group} />
           ))}
         </div>
-
-        {!attendanceView.hasPriorityAttention ? (
-          <p className={styles.notice}>
-            Tudo certo por aqui. Nenhuma ausência, justificativa ou pendência registrada.
-          </p>
-        ) : null}
 
         {attendanceView.presentMembers.length > 0 ? (
           <details className={styles.presentDisclosure}>

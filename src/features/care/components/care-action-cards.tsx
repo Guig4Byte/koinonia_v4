@@ -1,7 +1,7 @@
 import type { MouseEvent } from "react";
 import { ArrowLeft, CheckCircle2, MessageCircleMore, NotebookPen, Phone } from "lucide-react";
-import { CARE_NOTE_MAX_LENGTH, type CareContactLinks } from "@/features/care/care-actions-view";
-import { CARE_COPY } from "@/features/care/care-copy";
+import { CARE_NOTE_MAX_LENGTH, type CareContactLinks, type CareContactMethod } from "@/features/care/care-actions-view";
+import { CARE_COPY, careConfirmContactCopy } from "@/features/care/care-copy";
 import { ActionTextareaPanel } from "@/components/shared/action-textarea-panel";
 import { ActionPanel } from "@/components/ui/action-panel";
 import { Button, buttonClassName } from "@/components/ui/button";
@@ -38,58 +38,64 @@ export function CareContactStart({
   hasPhone: boolean;
   canRegisterCare: boolean;
   isPending: boolean;
-  onContactAttempt: () => void;
+  onContactAttempt: (method: CareContactMethod) => void;
   onExistingContact: () => void;
 }) {
-  function handleContactClick(event: MouseEvent<HTMLAnchorElement>) {
+  function handleContactClick(event: MouseEvent<HTMLAnchorElement>, method: CareContactMethod) {
     if (!hasPhone) {
       event.preventDefault();
       return;
     }
 
-    onContactAttempt();
+    onContactAttempt(method);
   }
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-2">
-        <a
-          href={links.tel}
-          aria-disabled={!hasPhone}
-          className={cn(buttonClassName({ fullWidth: true }), "border", !hasPhone && disabledLinkClass)}
-          style={{
-            backgroundColor: "var(--color-action-call-bg)",
-            borderColor: "var(--color-action-call-border)",
-            color: "var(--color-action-call-text)",
-          }}
-          onClick={handleContactClick}
-        >
-          <Phone className="h-4 w-4" strokeWidth={2.3} />
-          {CARE_COPY.contactActions.callLabel}
-        </a>
+      {hasPhone ? (
+        <div className="grid grid-cols-2 gap-2">
+          <a
+            href={links.tel}
+            aria-disabled={!hasPhone}
+            className={cn(buttonClassName({ fullWidth: true }), "border", !hasPhone && disabledLinkClass)}
+            style={{
+              backgroundColor: "var(--color-action-call-bg)",
+              borderColor: "var(--color-action-call-border)",
+              color: "var(--color-action-call-text)",
+            }}
+            onClick={(event) => handleContactClick(event, "call")}
+          >
+            <Phone className="h-4 w-4" strokeWidth={2.3} />
+            {CARE_COPY.contactActions.callLabel}
+          </a>
 
-        <a
-          href={links.whatsapp}
-          target={hasPhone ? "_blank" : undefined}
-          rel={hasPhone ? "noreferrer" : undefined}
-          aria-disabled={!hasPhone}
-          className={cn(buttonClassName({ fullWidth: true }), "border", !hasPhone && disabledLinkClass)}
-          style={{
-            backgroundColor: "var(--color-action-whatsapp-bg)",
-            borderColor: "var(--color-action-whatsapp-border)",
-            color: "var(--color-action-whatsapp-text)",
-          }}
-          onClick={handleContactClick}
-        >
-          <MessageCircleMore className="h-4 w-4" strokeWidth={2.3} />
-          {CARE_COPY.contactActions.whatsappLabel}
-        </a>
-      </div>
+          <a
+            href={links.whatsapp}
+            target="_blank"
+            rel="noreferrer"
+            aria-disabled={!hasPhone}
+            className={cn(buttonClassName({ fullWidth: true }), "border", !hasPhone && disabledLinkClass)}
+            style={{
+              backgroundColor: "var(--color-action-whatsapp-bg)",
+              borderColor: "var(--color-action-whatsapp-border)",
+              color: "var(--color-action-whatsapp-text)",
+            }}
+            onClick={(event) => handleContactClick(event, "whatsapp")}
+          >
+            <MessageCircleMore className="h-4 w-4" strokeWidth={2.3} />
+            {CARE_COPY.contactActions.whatsappLabel}
+          </a>
+        </div>
+      ) : (
+        <Feedback tone="info" title={CARE_COPY.contactActions.noPhoneTitle} compact>
+          {CARE_COPY.contactActions.noPhoneDescription}
+        </Feedback>
+      )}
 
       {canRegisterCare ? (
         <div className="pt-2">
           <Button type="button" variant="quiet" size="sm" fullWidth disabled={isPending} onClick={onExistingContact}>
-            {CARE_COPY.contactActions.existingContactLabel}
+            {hasPhone ? CARE_COPY.contactActions.existingContactLabel : CARE_COPY.contactActions.registerWithoutPhoneLabel}
           </Button>
         </div>
       ) : null}
@@ -99,18 +105,20 @@ export function CareContactStart({
 
 export function CareConfirmCard({
   variant,
+  method,
   canRegisterCare,
   isPending,
   onConfirm,
   onCancel,
 }: {
   variant: "contact" | "existing";
+  method?: CareContactMethod;
   canRegisterCare: boolean;
   isPending: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 }) {
-  const content = variant === "contact" ? CARE_COPY.confirmContact : CARE_COPY.confirmExistingContact;
+  const content = variant === "contact" ? careConfirmContactCopy(method) : CARE_COPY.confirmExistingContact;
 
   return (
     <ActionPanel title={content.title} description={content.description}>

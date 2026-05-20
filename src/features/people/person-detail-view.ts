@@ -70,7 +70,7 @@ export function recentPresenceCountLabel(presentCount: number, encountersCount: 
 }
 
 export function recentPresenceTrendLabel(trend: PresenceTrend, currentTone: PresenceTone) {
-  if (trend.direction === "up") return "Presença mais constante que antes.";
+  if (trend.direction === "up") return "Presença mais constante que nos encontros anteriores.";
   if (currentTone === "ok") return "Boa presença, apesar da queda recente.";
   return "Presença caiu em relação aos encontros anteriores.";
 }
