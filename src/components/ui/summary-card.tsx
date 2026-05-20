@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import styles from "./summary-card.module.css";
 
-export type MetricTone = "ok" | "warn" | "risk" | "neutral";
+export type MetricTone = "ok" | "warn" | "risk" | "neutral" | "warm";
 export type SummaryCardSurface = "card" | "inset";
 export type SummaryCardVariant = "default" | "compact" | "prominent" | "balanced";
 
@@ -18,6 +18,7 @@ const metricToneClass: Record<MetricTone, string> = {
   warn: "text-[color:var(--color-badge-atencao-text)]",
   risk: "text-[color:var(--color-metric-atencoes)]",
   neutral: "text-[color:var(--color-text-primary)]",
+  warm: "text-[color:var(--color-brand-accent)]",
 };
 
 export function metricValueToneClass(tone: MetricTone = "neutral") {

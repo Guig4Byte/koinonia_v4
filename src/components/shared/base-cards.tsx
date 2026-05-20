@@ -7,7 +7,7 @@ import { CardLink } from "@/components/ui/card-link";
 import { MetricRow, SummaryCard } from "@/components/ui/summary-card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { cn } from "@/lib/cn";
-import { PresenceMetricDisplay, PresenceProgressDisplay, PresenceTrendDelta, type PresenceIndicatorContext, type PresenceIndicatorMode, type PresenceIndicatorSize, type PresenceIndicatorWeight, type PresenceTrend } from "@/components/shared/presence-metric";
+import { PresenceMetricDisplay, PresenceProgressDisplay, PresenceTrendDelta, type MetricTone, type PresenceIndicatorContext, type PresenceIndicatorMode, type PresenceIndicatorSize, type PresenceIndicatorWeight, type PresenceTrend } from "@/components/shared/presence-metric";
 
 export function PulseCard({
   title,
@@ -76,7 +76,7 @@ export function ContextSummary({
   presenceIndicatorMode = "ring",
   presenceValueClassName,
 }: {
-  items: Array<{ label: string; value: string; detail?: string; tone?: "ok" | "warn" | "risk" | "neutral"; trend?: PresenceTrend | null }>;
+  items: Array<{ label: string; value: string; detail?: string; tone?: MetricTone; trend?: PresenceTrend | null }>;
   detailTone?: "default" | "strong";
   trendLayout?: "inline" | "stacked";
   variant?: "default" | "compact" | "prominent" | "balanced";
@@ -211,11 +211,13 @@ export function InfoCard({
 
 export function EmptyState({
   children,
+  className,
   compact = false,
   title,
   action,
 }: {
   children: ReactNode;
+  className?: string;
   compact?: boolean;
   title?: ReactNode;
   action?: ReactNode;
@@ -225,6 +227,7 @@ export function EmptyState({
       className={cn(
         "flex items-start gap-3 rounded-2xl border border-dashed border-[var(--color-border-card)] bg-[var(--surface-alt)] text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]",
         compact ? "px-3 py-2.5" : "min-h-16 p-4",
+        className,
       )}
     >
       <span

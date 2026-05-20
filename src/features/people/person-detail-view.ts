@@ -48,19 +48,6 @@ export function attendanceTone(status?: AttendanceStatus | null): AttendanceTone
   return "info";
 }
 
-export function presenceToneClass(tone: PresenceTone) {
-  if (tone === "risk") return "text-[color:var(--color-metric-atencoes)]";
-  if (tone === "warn") return "text-[color:var(--color-badge-atencao-text)]";
-  if (tone === "ok") return "text-[color:var(--color-metric-presenca)]";
-  return "text-[color:var(--color-text-primary)]";
-}
-
-export function presenceTrendToneClass(direction: PresenceTrend["direction"], currentTone: PresenceTone) {
-  if (direction === "up") return "text-[color:var(--color-metric-presenca)]";
-  if (currentTone === "ok") return "text-[color:var(--color-badge-atencao-text)]";
-  return "text-[color:var(--color-metric-atencoes)]";
-}
-
 export function recentPresenceCountLabel(presentCount: number, encountersCount: number) {
   if (encountersCount === 1) {
     return presentCount === 1 ? "Presente no único encontro" : "Faltou no único encontro";
@@ -83,9 +70,9 @@ export function recentPresenceCountLabel(presentCount: number, encountersCount: 
 }
 
 export function recentPresenceTrendLabel(trend: PresenceTrend, currentTone: PresenceTone) {
-  if (trend.direction === "up") return "Presença mais constante que nos encontros anteriores.";
-  if (currentTone === "ok") return "Ainda há boa presença, mesmo com queda nos encontros recentes.";
-  return "A presença caiu em relação aos encontros anteriores. Vale se aproximar com cuidado.";
+  if (trend.direction === "up") return "Presença mais constante que antes.";
+  if (currentTone === "ok") return "Boa presença, apesar da queda recente.";
+  return "Presença caiu em relação aos encontros anteriores.";
 }
 
 export function buildPersonPresenceView(attendances: PersonRecentAttendance[]): PersonPresenceView {

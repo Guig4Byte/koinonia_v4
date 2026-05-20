@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import { CalendarCheck2, ChartNoAxesCombined, UserRoundCheck, UsersRound, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/cn";
 
-export type MetricTone = "ok" | "warn" | "risk" | "neutral";
+export type MetricTone = "ok" | "warn" | "risk" | "neutral" | "warm";
 
 export type PresenceTrend = {
   direction: "up" | "down";
@@ -18,10 +18,12 @@ export function metricTextClass(tone: MetricTone): string {
   if (tone === "ok") return "text-[color:var(--color-metric-presenca)]";
   if (tone === "warn") return "text-[color:var(--color-badge-atencao-text)]";
   if (tone === "risk") return "text-[color:var(--color-metric-atencoes)]";
+  if (tone === "warm") return "text-[color:var(--color-brand-accent)]";
   return "text-[color:var(--color-text-secondary)]";
 }
 
 function trendTextClass(trend: PresenceTrend, tone: MetricTone): string {
+  if (tone === "warm") return "text-[color:var(--color-brand-accent)]";
   if (trend.direction === "up") return "text-[color:var(--color-metric-presenca)]";
   if (tone === "ok") return "text-[color:var(--color-badge-atencao-text)]";
   return "text-[color:var(--color-metric-atencoes)]";
@@ -177,6 +179,13 @@ export function presenceIndicatorStyle(tone: MetricTone, hasPresenceData: boolea
       track: "color-mix(in srgb, var(--color-text-muted) 18%, var(--color-border-divider))",
       bg: "color-mix(in srgb, var(--color-text-muted) 8%, var(--color-bg-card))",
       glow: "transparent",
+    },
+    warm: {
+      ring: "var(--brown-400)",
+      soft: "color-mix(in srgb, var(--brown-400) 12%, var(--color-bg-card))",
+      track: "color-mix(in srgb, var(--brown-400) 20%, var(--color-border-divider))",
+      bg: "color-mix(in srgb, var(--brown-400) 10%, var(--color-bg-card))",
+      glow: "color-mix(in srgb, var(--brown-400) 18%, transparent)",
     },
   } satisfies Record<MetricTone, {
     ring: string;

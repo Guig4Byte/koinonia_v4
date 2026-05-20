@@ -14,13 +14,13 @@ export type CareTouchHistoryItem = {
 
 const INITIAL_VISIBLE_COUNT = 3;
 
-export function CareTouchHistory({ items }: { items: CareTouchHistoryItem[] }) {
+export function CareTouchHistory({ items, className }: { items: CareTouchHistoryItem[]; className?: string }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const visibleItems = isExpanded ? items : items.slice(0, INITIAL_VISIBLE_COUNT);
   const hasHiddenItems = items.length > INITIAL_VISIBLE_COUNT;
 
   return (
-    <Card>
+    <Card className={className}>
       <div className="divide-y divide-[var(--color-border-divider)]">
         {visibleItems.map((item) => {
           const note = item.note?.trim();

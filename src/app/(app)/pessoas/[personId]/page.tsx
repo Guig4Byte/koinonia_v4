@@ -5,12 +5,13 @@ import { appNavForRole, homeHrefForRole, secondaryNavHrefForRole, secondaryNavLa
 import { CareActions } from "@/features/care/components/care-actions";
 import { CARE_COPY } from "@/features/care/care-copy";
 import { PersonStatusActions } from "@/features/care/components/person-status-actions";
-import { BackLink, DetailLinkCard, EmptyState, SectionTitle } from "@/components/shared/base-cards";
+import { BackLink, EmptyState, SectionTitle } from "@/components/shared/base-cards";
 import { SignalSupportActions } from "@/features/signals/components/signal-support-actions";
 import { CareTouchHistory, type CareTouchHistoryItem } from "@/features/care/components/care-touch-history";
 import { PersonPresenceCard } from "@/features/people/components/person-presence-card";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { CardLink } from "@/components/ui/card-link";
 import { PriorityCard } from "@/components/ui/priority-card";
 import { canRegisterCare, canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
@@ -23,9 +24,11 @@ import { activeGroupResponsibilitiesInclude } from "@/features/groups/group-quer
 import { responsibilityNames } from "@/features/groups/responsibility-display";
 import { isInCarePerson } from "@/features/people/person-status";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { cn } from "@/lib/cn";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { ROUTES } from "@/lib/routes";
+import styles from "./person-detail-page.module.css";
 
 export default async function PersonDetailPage({ params }: { params: Promise<{ personId: string }> }) {
   const user = await getCurrentUser();
@@ -127,26 +130,27 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       nav={appNavForRole(user, { active: isLeader ? "secondary" : "none", indicator: navIndicator })}
       headerVariant="compact"
     >
-      <BackLink href={backHref}>{backLabel}</BackLink>
+      <div className={styles.page}>
+      <BackLink href={backHref} className={styles.backLink}>{backLabel}</BackLink>
 
-      <PriorityCard as="section" priorityTone={personBadge.tone} className="card-hover-lift k-detail-hero">
-        <div className="flex items-start gap-3">
-          <Avatar name={person.fullName} size="xl" />
-          <div className="min-w-0 flex-1">
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0">
-                <p className="k-eyebrow mb-1">Pessoa</p>
-                <h2 className="k-detail-title">{person.fullName}</h2>
-                <p className="k-item-meta">
+      <PriorityCard as="section" priorityTone={personBadge.tone} radius="lg" className={cn("card-hover-lift", styles.personHero)}>
+        <div className={styles.personHeroContent}>
+          <Avatar name={person.fullName} size="xl" className={styles.avatar} />
+          <div className={styles.personMain}>
+            <div className={styles.personHeader}>
+              <div className={styles.personTitleBlock}>
+                <p className={styles.eyebrow}>Pessoa</p>
+                <h2 className={styles.personTitle}>{person.fullName}</h2>
+                <p className={styles.personMeta}>
                   {groupNameOrFallback(primaryGroup)}
                   {primaryLeadershipName ? ` · ${primaryLeadershipName}` : ""}
                 </p>
               </div>
-              <Badge tone={personBadge.tone}>{personBadge.label}</Badge>
+              <Badge tone={personBadge.tone} className={styles.personBadge}>{personBadge.label}</Badge>
             </div>
 
             {person.shortNote ? (
-              <p className="mt-3 rounded-2xl border border-[var(--color-border-divider)] bg-[var(--metric-card-bg)] px-3 py-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-primary)]">
+              <p className={styles.shortNote}>
                 {person.shortNote}
               </p>
             ) : null}
@@ -161,7 +165,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       <PersonPresenceCard view={presenceView} />
 
       <SectionTitle>{openSignalsCount > 0 ? "Por que merece atenção" : "Situação atual"}</SectionTitle>
-      <div className="space-y-3">
+      <div className={styles.sectionStack}>
         {pastoralOrderedSignals.map((signal) => {
           const pastoralEscalationActorName = signal.groupId
             ? pastoralEscalationActorByGroupId.get(signal.groupId)
@@ -174,14 +178,14 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           const canEscalatePastor = canEscalateSignalToPastor(user, signal);
 
           return (
-            <PriorityCard key={signal.id} priorityTone={signalTone} className="card-hover-lift">
-              <div className="min-w-0">
-                <p className="k-item-title">{signalTitleForViewer(signalForDisplay, user)}</p>
-                <p className="k-item-meta">
+            <PriorityCard key={signal.id} priorityTone={signalTone} className={cn("card-hover-lift", styles.signalCard)}>
+              <div className={styles.signalHeader}>
+                <p className={styles.signalTitle}>{signalTitleForViewer(signalForDisplay, user)}</p>
+                <p className={styles.signalMeta}>
                   {signal.group?.name ?? groupNameOrFallback(primaryGroup)} · {formatShortDate(signal.detectedAt)}, {formatTime(signal.detectedAt)}
                 </p>
               </div>
-              {signalDescription ? <p className="mt-3 whitespace-pre-line border-t border-[var(--color-border-divider)] pt-3 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{signalDescription}</p> : null}
+              {signalDescription ? <p className={styles.signalDescription}>{signalDescription}</p> : null}
               <SignalSupportActions
                 signalId={signal.id}
                 assignmentMessage={assignmentMessage}
@@ -193,7 +197,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
         })}
 
         {openSignalsCount === 0 ? (
-          <EmptyState>
+          <EmptyState className={styles.emptyState}>
             {hasCareTouch
               ? "Sem motivo de atenção agora. O cuidado mais recente aparece abaixo, e a pessoa continua no radar enquanto estiver em cuidado."
               : "Sem motivo de atenção agora. Esta pessoa pode ser consultada normalmente pela busca."}
@@ -203,27 +207,33 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
 
       <SectionTitle>Cuidado recente</SectionTitle>
       {careTouchHistoryItems.length > 0 ? (
-        <CareTouchHistory items={careTouchHistoryItems} />
+        <CareTouchHistory items={careTouchHistoryItems} className={styles.historyCard} />
       ) : (
-        <EmptyState>{CARE_COPY.history.empty}</EmptyState>
+        <EmptyState className={styles.emptyState}>{CARE_COPY.history.empty}</EmptyState>
       )}
 
       {primaryGroup ? (
         <>
           <SectionTitle>Contexto da célula</SectionTitle>
-          <DetailLinkCard
+          <CardLink
             href={ROUTES.group(primaryGroup.id)}
-            title={primaryGroup.name}
-            meta={
-              <>
-                Liderança: {primaryLeadershipName || FALLBACK_LEADER_NAME}
-                {primarySupervisionName ? ` · Supervisão: ${primarySupervisionName}` : ""}
-              </>
-            }
-            actionLabel="Abrir célula"
-          />
+            priorityTone="muted"
+            className={styles.contextCard}
+          >
+            <div className={styles.contextHeader}>
+              <div className={styles.contextCopy}>
+                <p className={styles.contextTitle}>{primaryGroup.name}</p>
+                <p className={styles.contextMeta}>
+                  Liderança: {primaryLeadershipName || FALLBACK_LEADER_NAME}
+                  {primarySupervisionName ? ` · Supervisão: ${primarySupervisionName}` : ""}
+                </p>
+              </div>
+              <span className={styles.contextAction}>Abrir célula →</span>
+            </div>
+          </CardLink>
         </>
       ) : null}
+      </div>
     </AppShell>
   );
 }
