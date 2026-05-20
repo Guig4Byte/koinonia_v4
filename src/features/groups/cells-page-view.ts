@@ -5,6 +5,8 @@ import {
   groupPastoralPriorityScore,
   groupRiskCount,
   groupUrgentCount,
+  groupSupportRequestsCount,
+  groupLocalAttentionCount,
   hasLowPresence,
 } from "@/features/groups/group-pastoral-priority";
 import { FALLBACK_LEADER_NAME } from "@/features/groups/group-display";
@@ -14,7 +16,8 @@ import { groupAttentionLabel, type SignalBadge } from "@/features/signals/displa
 import { compareByName, matchesNormalizedQuery, normalizeSearchText } from "@/lib/text";
 import { countLabel } from "@/lib/format";
 import type { CellsFilter } from "@/features/groups/cells-page-filters";
-import { FILTER_ALL, FILTER_ATTENTION, FILTER_NO_RECENT_PRESENCE, NO_RECENT_PRESENCE_LABEL } from "@/lib/filter-param";
+import { FILTER_ALL, FILTER_ATTENTION, FILTER_NO_RECENT_PRESENCE, FILTER_PASTORAL, FILTER_SUPPORT, FILTER_URGENT, NO_RECENT_PRESENCE_LABEL } from "@/lib/filter-param";
+import { routeWithQuery } from "@/lib/routes";
 
 export const CELLS_PAGE_SECTION_LIMIT = 4;
 
@@ -22,24 +25,27 @@ export type SupervisorDashboard = Awaited<ReturnType<typeof getSupervisorDashboa
 export type SupervisorGroup = SupervisorDashboard["groups"][number];
 export type GroupSectionKey = "care" | "presence" | "stable";
 
-export const GROUP_SECTIONS: Array<{ key: GroupSectionKey; title: string }> = [
+export const GROUP_SECTIONS: Array<{ key: GroupSectionKey; title: string; detail: string }> = [
   {
     key: "care",
     title: "Cuidado próximo",
+    detail: "Sinais abertos, pedidos de apoio ou pessoas já em cuidado.",
   },
   {
     key: "presence",
     title: "Presença em atenção",
+    detail: "Células com registro ausente ou presença abaixo do esperado.",
   },
   {
     key: "stable",
     title: "Acompanhamento estável",
+    detail: "Sem sinal aberto pedindo cuidado agora.",
   },
 ];
 
 export type CellsPageView = {
   groups: SupervisorGroup[];
-  groupedSections: Array<{ key: GroupSectionKey; title: string; groups: SupervisorGroup[] }>;
+  groupedSections: Array<{ key: GroupSectionKey; title: string; detail: string; groups: SupervisorGroup[] }>;
   groupsNeedingAttentionCount: number;
   groupsWithoutPresenceCount: number;
   navIndicator?: "risk" | "attention" | "care";
@@ -99,6 +105,27 @@ export function filterCellsPageGroups(groups: SupervisorGroup[], normalizedQuery
     .filter((group) => groupMatchesFilter(group, filter))
     .filter((group) => matchesNormalizedQuery(groupSearchText(group), normalizedQuery))
     .sort(compareGroups);
+}
+
+export type GroupDetailNavigationFocus =
+  | typeof FILTER_URGENT
+  | typeof FILTER_PASTORAL
+  | typeof FILTER_SUPPORT
+  | typeof FILTER_ATTENTION
+  | typeof FILTER_NO_RECENT_PRESENCE;
+
+export function groupDetailNavigationFocus(group: SupervisorGroup): GroupDetailNavigationFocus | null {
+  if (groupUrgentCount(group) > 0) return FILTER_URGENT;
+  if (groupPastoralEscalatedCount(group) > 0) return FILTER_PASTORAL;
+  if (groupSupportRequestsCount(group) > 0) return FILTER_SUPPORT;
+  if (groupLocalAttentionCount(group) > 0 || group.inCareCount > 0) return FILTER_ATTENTION;
+  if (!group.hasPresenceData) return FILTER_NO_RECENT_PRESENCE;
+
+  return null;
+}
+
+export function groupDetailHref(group: SupervisorGroup) {
+  return routeWithQuery(`/celulas/${group.id}`, { foco: groupDetailNavigationFocus(group) });
 }
 
 export function groupBadge(group: SupervisorGroup): SignalBadge | null {

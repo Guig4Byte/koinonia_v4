@@ -4,6 +4,8 @@ import {
   buildCellsPageView,
   filterCellsPageGroups,
   groupBadge,
+  groupDetailHref,
+  groupDetailNavigationFocus,
   groupLeadershipName,
   groupSectionKey,
   groupSubtitle,
@@ -107,6 +109,20 @@ describe("cells-page-view", () => {
     expect(groupSectionKey(group())).toBe("stable");
   });
 
+
+  it("abre o detalhe da célula já no recorte pastoral mais relevante", () => {
+    expect(groupDetailNavigationFocus(group({ signals: [signal({ severity: SignalSeverity.URGENT, assignedTo: null })] }))).toBe("urgentes");
+    expect(groupDetailNavigationFocus(group({ signals: [signal({ severity: SignalSeverity.ATTENTION, assignedTo: { role: UserRole.PASTOR } as SupervisorGroup["signals"][number]["assignedTo"] })] }))).toBe("encaminhadas");
+    expect(groupDetailNavigationFocus(group({ supportRequestsCount: 1 }))).toBe("apoio");
+    expect(groupDetailNavigationFocus(group({ attentionCount: 1 }))).toBe("atencao");
+    expect(groupDetailNavigationFocus(group({ inCareCount: 1 }))).toBe("atencao");
+    expect(groupDetailNavigationFocus(group({ hasPresenceData: false }))).toBe("sem-presenca");
+    expect(groupDetailNavigationFocus(group())).toBeNull();
+
+    expect(groupDetailHref(group({ id: "group-care", supportRequestsCount: 1 }))).toBe("/celulas/group-care?foco=apoio");
+    expect(groupDetailHref(group({ id: "group-stable" }))).toBe("/celulas/group-stable");
+  });
+
   it("resolve selo pastoral por prioridade", () => {
     expect(groupBadge(group({ signals: [signal({ severity: SignalSeverity.URGENT, assignedTo: null })] }))).toEqual({ label: "1 urgente", tone: "risk" });
     expect(groupBadge(group({ supportRequestsCount: 2 }))).toEqual({ label: "2 pedidos de apoio", tone: "support" });
@@ -122,6 +138,7 @@ describe("cells-page-view", () => {
 
     expect(view.groups).toHaveLength(2);
     expect(view.groupedSections.map((section) => section.key)).toEqual(["care", "presence"]);
+    expect(view.groupedSections[0].detail).toBe("Sinais abertos, pedidos de apoio ou pessoas já em cuidado.");
     expect(view.groupsNeedingAttentionCount).toBe(1);
     expect(view.groupsWithoutPresenceCount).toBe(1);
     expect(view.navIndicator).toBe("risk");

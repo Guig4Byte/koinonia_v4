@@ -3,6 +3,7 @@ import { ProgressiveList } from "@/components/shared/progressive-list";
 import {
   CELLS_PAGE_SECTION_LIMIT,
   groupBadge,
+  groupDetailHref,
   groupSubtitle,
   sectionCardTone,
   type CellsPageView,
@@ -10,7 +11,6 @@ import {
   type SupervisorGroup,
 } from "@/features/groups/cells-page-view";
 import { NO_RECENT_PRESENCE_LABEL } from "@/lib/filter-param";
-import { ROUTES } from "@/lib/routes";
 import styles from "./cells-page-sections.module.css";
 
 function CellsGroupCard({ group, sectionKey }: { group: SupervisorGroup; sectionKey: GroupSectionKey }) {
@@ -26,7 +26,7 @@ function CellsGroupCard({ group, sectionKey }: { group: SupervisorGroup; section
       badgeTone={badge?.tone}
       showBadge={Boolean(badge)}
       cardTone={sectionCardTone(sectionKey)}
-      href={ROUTES.group(group.id)}
+      href={groupDetailHref(group)}
       hasPresenceData={group.hasPresenceData}
       presenceTrend={group.presenceTrend}
       noPresenceLabel={NO_RECENT_PRESENCE_LABEL}
@@ -41,6 +41,7 @@ export function CellsPageSections({ sections }: { sections: CellsPageView["group
         <div key={section.key} className={styles.section}>
           <div className={styles.heading}>
             <h3>{section.title}</h3>
+            <p>{section.detail}</p>
           </div>
           <ProgressiveList
             initialCount={CELLS_PAGE_SECTION_LIMIT}
