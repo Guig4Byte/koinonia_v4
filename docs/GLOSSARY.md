@@ -110,15 +110,15 @@ Use:
 
 - `Ligar`;
 - `WhatsApp`;
-- `Já houve contato?`;
+- `Registrar contato pastoral`;
 - `Sim, houve contato`;
 - `Ainda não consegui contato`;
 - `Contato feito`;
 - `Registrar cuidado`;
 - `Anotar cuidado`;
 - `Salvar sem anotação`;
-- `Cuidado recente`;
-- `Ver histórico`;
+- `Histórico de cuidado`;
+- `Mostrar histórico completo`;
 - `Em cuidado`;
 - `Acolhidos em cuidado`.
 
@@ -178,13 +178,14 @@ Não rebaixe `Urgente` para `Em atenção`. O contexto pode mudar a mensagem, ma
 
 | Contexto | CTA preferencial |
 | --- | --- |
-| Login | `Entrar` |
+| Login | `Entrar`, `Entrando...` |
 | Senha no login | `Mostrar senha`, `Ocultar senha` |
+| Senha esquecida | `Esqueceu a senha? Procure a liderança responsável pelo seu acesso.` |
 | Sessão | `Sair` |
 | Lista de pessoas/casos | `Abrir pessoa` |
 | Pedido recebido pelo supervisor | `Abrir apoio` |
 | Lista com muitos itens | `Ver mais`, `Mostrar menos` |
-| Detalhe da pessoa | `Ligar`, `WhatsApp`, `Já houve contato?` |
+| Detalhe da pessoa | `Ligar`, `WhatsApp`, `Registrar contato pastoral` |
 | Célula | `Abrir célula`, `Editar célula`, `Salvar célula` |
 | Encontro futuro | `Ver encontro`, `Remarcar encontro`, `Cancelar encontro` |
 | Encontro pendente | `Registrar presença`, `Não houve encontro` |
@@ -199,12 +200,14 @@ Evite `Abrir cuidado` em listas, porque sugere módulo formal de acompanhamento.
 Login:
 
 - `Entrar`;
+- `Entrando...`;
 - `E-mail`;
 - `Senha`;
 - `Mostrar senha`;
 - `Ocultar senha`;
 - `Sair`;
-- `E-mail ou senha não conferem.`
+- `E-mail ou senha não conferem.`;
+- `Esqueceu a senha? Procure a liderança responsável pelo seu acesso.`
 
 Tema:
 

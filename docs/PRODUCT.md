@@ -36,6 +36,11 @@ Presença não é fiscalização. Sinal não é tarefa. Cuidado não é prontuá
 
 ## Escopo Atual
 
+### Login
+
+O login deve permanecer curto e pastoral. A recuperação pública de senha não faz parte do MVP, mas a tela pode orientar o usuário a procurar a liderança responsável pelo acesso. O envio do formulário deve comunicar estado de carregamento para evitar toque repetido, e erros de credenciais devem ser associados aos campos e desaparecer quando o usuário voltar a digitar.
+
+
 Inclui:
 
 - autenticação por e-mail e senha;
@@ -61,7 +66,7 @@ Inclui:
 Não inclui:
 
 - cadastro público;
-- recuperação de senha;
+- recuperação pública de senha;
 - gestão avançada de usuários;
 - cadastro completo de pessoas, membros, responsáveis ou usuários;
 - importação em massa de planilhas;
@@ -224,6 +229,12 @@ Ordem de prioridade recomendada:
 
 A ação deve levar para a lista ou detalhe apropriado e usar verbo específico, como `Acompanhar pessoa`, `Ver pedido` ou `Ver células em atenção`.
 
+## Orientação pastoral em detalhes
+
+Telas de detalhe devem ajudar a interpretar o contexto sem transformar todo diagnóstico em tarefa. No detalhe de célula, o usuário já encontra prioridades por pulso, filtros, membros e encontros; por isso, não há card extra de próxima ação.
+
+No detalhe de encontro com presença registrada, ausentes, justificativas e pendentes aparecem antes dos presentes, mas a ausência isolada não deve ser tratada automaticamente como problema. Use uma mensagem de leitura pastoral calma, sem CTA obrigatório, para lembrar que o contexto vem antes de qualquer encaminhamento.
+
 ## Seções Pastorais
 
 As telas principais organizam pessoas por intenção pastoral.
@@ -250,22 +261,36 @@ Regras:
 Fluxo base:
 
 ```txt
-Pessoa em atenção -> Abrir pessoa -> Já houve contato? -> confirmar -> anotar se precisar -> salvar
+Pessoa em atenção -> Abrir pessoa -> Registrar contato pastoral -> confirmar -> anotar se precisar -> salvar
 ```
 
 Regras:
 
 - `Ligar` e `WhatsApp` são atalhos, não categorias administrativas do histórico;
-- `Já houve contato?` exige confirmação;
+- `Registrar contato pastoral` exige confirmação;
 - contato confirmado aparece como `Contato feito`, com anotação opcional;
 - `Salvar sem anotação` é válido;
 - pedir apoio ou encaminhar pode registrar contexto breve e opcional;
 - para líder, pedir apoio à supervisão é o caminho comum;
 - encaminhar direto ao pastor fica para gravidade ou sensibilidade;
-- anotação de apoio/encaminhamento aparece em `Cuidado recente`, mas não resolve o sinal sozinha;
+- anotação de apoio/encaminhamento aparece em `Histórico de cuidado`, mas não resolve o sinal sozinha;
 - cuidado resolve sinais ativos dentro do escopo do usuário;
 - se resolver todos os sinais ativos, a pessoa fica `Em cuidado`;
 - a pessoa só volta para `Ativo` por ação explícita.
+
+
+### Detalhe da pessoa
+
+O detalhe da pessoa deve ajudar o usuário a decidir com segurança antes de registrar algo. A ordem recomendada é:
+
+1. identificação e status efetivo;
+2. acompanhamento atual: responsável, último cuidado e próximo passo;
+3. motivo de atenção, quando houver;
+4. ritmo de presença;
+5. histórico de cuidado em linha do tempo;
+6. registro de contato pastoral.
+
+`Registrar contato pastoral` substitui rótulos ambíguos como pergunta solta. A ação continua exigindo confirmação e só deve salvar quando houve contato real, conversa ou anotação pastoral relevante.
 
 ## Busca
 

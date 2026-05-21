@@ -103,6 +103,17 @@
   transform: translateY(-1px);
 }
 
+.inputShell[data-invalid="true"] {
+  border-color: var(--color-badge-risco-border);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--color-badge-risco-border) 28%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--cream-50) 12%, transparent);
+}
+
+.inputShell[data-invalid="true"] .inputIcon {
+  color: var(--color-badge-risco-text);
+}
+
 .inputIcon {
   width: 18px;
   height: 18px;
@@ -115,6 +126,11 @@
 .inputShell:focus-within .inputIcon,
 .inputShell:hover .inputIcon {
   color: var(--login-input-icon-hover, var(--login-input-focus-border));
+}
+
+.inputShell[data-invalid="true"]:focus-within .inputIcon,
+.inputShell[data-invalid="true"]:hover .inputIcon {
+  color: var(--color-badge-risco-text);
 }
 
 .input {
@@ -174,6 +190,15 @@
   padding: 12px 14px;
 }
 
+.supportNote {
+  margin-top: -2px;
+  color: var(--login-muted);
+  font-size: var(--text-xs);
+  font-weight: 650;
+  line-height: 1.4;
+  text-align: center;
+}
+
 .submit {
   display: inline-flex;
   width: 100%;
@@ -205,11 +230,42 @@
   transform: scale(0.985);
 }
 
+.submitContent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.submitSpinner {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  animation: login-spin 850ms linear infinite;
+}
+
 .submit:disabled {
   cursor: not-allowed;
   filter: grayscale(0.15);
   opacity: 0.58;
   box-shadow: none;
+}
+
+.submit:disabled:hover {
+  filter: grayscale(0.15);
+  box-shadow: none;
+}
+
+@keyframes login-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .submitSpinner {
+    animation: none;
+  }
 }
 
 .card :where(button, a):focus-visible {

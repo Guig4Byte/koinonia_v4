@@ -122,6 +122,18 @@ Regras de manutenção:
 
 Ao alterar uma primitive, valide pelo menos: login, dashboard, lista com filtros, formulário, detalhe e check-in em claro, pergaminho e escuro.
 
+
+## Login e autenticação visual
+
+A tela de login é pública, mas deve seguir as mesmas regras de acessibilidade visual do app autenticado:
+
+- o botão principal deve ter estado de envio para impedir duplo clique/toque;
+- erro de credenciais deve usar `role="alert"`, ser associado aos campos por `aria-describedby` e marcar `aria-invalid`;
+- o erro deve ser limpo da URL e também desaparecer quando o usuário editar e-mail ou senha;
+- o campo de e-mail deve usar teclado adequado em mobile;
+- a ação de mostrar/ocultar senha deve ter `aria-label` e `aria-pressed`;
+- orientação sobre senha esquecida deve ser texto de suporte, não fluxo público de recuperação, enquanto isso estiver fora do escopo do MVP.
+
 ## Primitives de UI
 
 Antes de criar markup visual novo, confira `src/components/ui` e o guia detalhado em `docs/UI_PRIMITIVES_GUIDE.md`.
@@ -207,7 +219,9 @@ Use estes componentes antes de criar variações locais:
 | `PresenceMetricDisplay` | métrica compacta de presença com indicador visual |
 | `PresenceIndicator` | anel visual de presença |
 | `PresenceProgressDisplay` | percentual com barra de progresso |
-| `NextPastoralActionCard` | card de domínio para destacar a próxima ação pastoral nos dashboards de líder, supervisor e pastor |
+| `NextActionCard` | card compartilhado usado pelo wrapper de próxima ação pastoral dos dashboards |
+| `NextPastoralActionCard` | wrapper de domínio para destacar a próxima ação pastoral nos dashboards de líder, supervisor e pastor |
+| `CareOverviewCard` | card de domínio no detalhe da pessoa para resumir responsável, último cuidado e próximo passo |
 
 Regras:
 
@@ -230,7 +244,9 @@ Regras:
 - evitar import visual entre features diferentes;
 - se duas features precisarem do mesmo padrão, subir para `src/components/shared` ou `src/components/ui`;
 - lógica de ordenação, filtros e labels complexos deve ficar em `*-view.ts`, não no meio do JSX;
-- cartões de próxima ação devem receber dados já resolvidos pelo `*-view.ts`, mantendo prioridade, destino e CTA fora do JSX da página.
+- cartões de próxima ação dos dashboards devem receber dados já resolvidos pelo `*-view.ts`, mantendo prioridade, destino e CTA fora do JSX da página.
+- detalhes consultivos devem evitar CTAs redundantes quando a própria tela já oferece filtros, listas ou ações naturais; nesses casos, prefira mensagem contextual ou diagnóstico.
+- o detalhe da pessoa deve começar o acompanhamento por um resumo decisório antes do histórico: responsável atual, último cuidado e próximo passo.
 - componente client-side não deve importar Prisma Client nem helper server-only.
 
 ### Dashboards pastorais
@@ -243,6 +259,17 @@ Regras:
 - priorizar urgente, pedido de apoio, atenção, cuidado ativo e, por fim, estabilidade;
 - usar CTA específico (`Ver pedido`, `Acompanhar pessoa`, `Ver células em atenção`, `Ver equipe`), evitando `Abrir` genérico;
 - manter listas abaixo mais compactas e com `Ver mais` quando necessário.
+
+### Detalhe de célula
+
+O detalhe de célula deve priorizar diagnóstico, resumo e listas filtráveis. Não use card de próxima ação nesse detalhe: o usuário já consegue chegar às prioridades por pulso, filtros, membros e encontros.
+
+Regras:
+
+- manter o pulso pastoral como leitura de contexto, não como tarefa obrigatória;
+- evitar CTAs redundantes para recortes que a própria tela já mostra;
+- presença pendente continua visível no card próprio de encontro, sem virar um segundo CTA de próxima ação;
+- links de ação devem existir apenas nos cards naturais da tela, como encontro pendente, edição de célula ou pessoa da lista.
 
 ### Encontros
 

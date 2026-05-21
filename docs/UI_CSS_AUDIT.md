@@ -18,13 +18,13 @@ A auditoria não alterou regra de negócio, vocabulário de produto, permissões
 | --- | ---: | ---: | ---: | ---: |
 | Após criação do guardrail inicial | 274 | 4 | 72 | 198 |
 | Fechamento da etapa 9 | 177 | 0 | 0 | 177 |
-| Após patches estruturais de UX | 196 | 0 | 62 | 134 |
+| Após patches estruturais de UX | 195 | 0 | 62 | 133 |
 
 Leitura correta do resultado atual:
 
 - `alta: 0` continua sendo o principal bloqueio de merge: não há alertas estáticos de camada fixa, z-index local crítico ou override direto de tamanho em primitives críticas.
 - `média: 62` reflete achados conservadores em superfícies e composição local após os patches de UX; eles não são regressões bloqueantes, mas devem ser revisados por lote antes de novas expansões visuais.
-- `baixa: 134` não significa bug visual. A regra baixa aponta classes arbitrárias com tokens e serve como lembrete de revisão, não como bloqueio automático.
+- `baixa: 133` não significa bug visual. A regra baixa aponta classes arbitrárias com tokens e serve como lembrete de revisão, não como bloqueio automático.
 
 A revisão histórica de baixos separava os 177 achados em categorias operacionais. Após novos patches, use `npm run audit:ui-css` e `npm run audit:ui-css:lows` para obter a fotografia atual antes de promover novos padrões.
 
@@ -32,20 +32,20 @@ A revisão de baixos histórica separava os 177 achados em categorias operaciona
 
 | Disposição | Quantidade atual | Leitura | Ação |
 | --- | ---: | --- | --- |
-| Aceitável | 114 | Uso local de tokens, skeleton/loading state ou implementação interna de primitive | Manter, salvo repetição clara |
-| Candidato | 51 | Pode representar superfície, ação ou densidade que talvez mereça primitive | Revisar por lote |
-| Revisar | 12 | Visual isolado, principalmente login | Avaliar contexto antes de refatorar |
+| Aceitável | 98 | Uso local de tokens, skeleton/loading state ou implementação interna de primitive | Manter, salvo repetição clara |
+| Candidato | 29 | Pode representar superfície, ação ou densidade que talvez mereça primitive | Revisar por lote |
+| Revisar | 6 | Visual isolado, principalmente login | Avaliar contexto antes de refatorar |
 
 Categorias atuais:
 
 | Categoria | Quantidade | Interpretação |
 | --- | ---: | --- |
-| `tokens/typography-color` | 73 | Tokens de texto/cor aplicados em composição local |
-| `layout/skeleton-loading` | 28 | Skeletons e estados de carregamento |
+| `tokens/typography-color` | 51 | Tokens de texto/cor aplicados em composição local |
+| `layout/skeleton-loading` | 34 | Skeletons e estados de carregamento |
 | `system/primitive-internal` | 13 | Implementação interna de primitive ou layout global |
-| `candidate/local-surface` | 43 | Possíveis superfícies locais ainda não promovidas para primitive |
-| `candidate/control-or-action` | 8 | Possíveis controles/ações locais |
-| `review/login-contained` | 12 | Visual especial da tela de login |
+| `candidate/local-surface` | 22 | Possíveis superfícies locais ainda não promovidas para primitive |
+| `candidate/control-or-action` | 7 | Possíveis controles/ações locais |
+| `review/login-contained` | 6 | Visual especial da tela de login |
 
 ## Guardrail disponível
 
@@ -218,9 +218,10 @@ Casos que devem virar nova tarefa:
 - [ ] Home pastoral.
 - [ ] Card de próxima ação pastoral aparece antes de listas densas quando há prioridade clara.
 - [ ] Lista de células.
-- [ ] Detalhe de célula.
+- [ ] Detalhe de célula sem card redundante de próxima ação, mantendo pulso, filtros e listas claros.
+- [ ] Detalhe de pessoa com acompanhamento atual, histórico de cuidado e registro pastoral.
 - [ ] Lista de eventos.
-- [ ] Detalhe de evento.
+- [ ] Detalhe de evento com orientação pastoral não obrigatória quando houver ausente/justificado/pendente.
 - [ ] Check-in com save bar.
 - [ ] Check-in com status sheet aberto.
 - [ ] Estrutura/equipe com disclosures.
@@ -228,7 +229,8 @@ Casos que devem virar nova tarefa:
 
 ### Sobreposição
 
-- [ ] Cards de próxima ação não competem visualmente com busca, radar ou cards analíticos.
+- [ ] Cards de próxima ação dos dashboards não competem visualmente com busca, radar, hero, pulso ou cards analíticos.
+- [ ] Card de acompanhamento atual no detalhe da pessoa não compete com sinal aberto nem com registro de cuidado.
 - [ ] Último item de lista não fica atrás de `BottomNav`.
 - [ ] Último item de check-in não fica atrás de `FixedActionBar`.
 - [ ] `BottomSheet` não compete com `FixedActionBar`.

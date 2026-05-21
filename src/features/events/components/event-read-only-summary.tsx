@@ -152,7 +152,7 @@ export function EventReadOnlySummary({
                 <span className={styles.groupDescription}>Lista completa dos presentes.</span>
               </span>
               <span className={styles.presentAction} aria-hidden="true">
-                <span className={styles.closedLabel}>Mostrar</span>
+                <span className={styles.closedLabel}>Mostrar presentes</span>
                 <span className={styles.openLabel}>Ocultar</span>
               </span>
             </summary>

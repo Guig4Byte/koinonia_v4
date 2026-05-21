@@ -1,7 +1,7 @@
-import { HeartHandshake, Mail } from "lucide-react";
+import { HeartHandshake } from "lucide-react";
 import { redirect } from "next/navigation";
 import { loginAction } from "@/app/login/actions";
-import { LoginErrorMessage, PasswordField } from "@/app/login/login-form-controls";
+import { LoginFormControls } from "@/app/login/login-form-controls";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { getAuthenticatedUser } from "@/lib/auth/current-user";
 import { homeForRole } from "@/lib/auth/redirects";
@@ -56,31 +56,7 @@ export default async function LoginPage({
           <form action={loginAction} className={`${styles.form} mt-6`}>
             {nextPath ? <input type="hidden" name="next" value={nextPath} /> : null}
 
-            <div className={styles.field}>
-              <label className={styles.label} htmlFor="login-email">
-                E-mail
-              </label>
-              <div className={styles.inputShell}>
-                <Mail className={styles.inputIcon} aria-hidden="true" />
-                <input
-                  id="login-email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  className={styles.input}
-                  placeholder="nome@igreja.com"
-                />
-              </div>
-            </div>
-
-            <PasswordField />
-
-            <LoginErrorMessage show={hasError} />
-
-            <button type="submit" className={styles.submit}>
-              Entrar
-            </button>
+            <LoginFormControls hasError={hasError} />
           </form>
         </div>
       </section>

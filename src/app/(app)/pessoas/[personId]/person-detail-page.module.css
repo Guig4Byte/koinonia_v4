@@ -99,6 +99,10 @@
   gap: 0.75rem;
 }
 
+.anchorSection {
+  scroll-margin-top: 1rem;
+}
+
 .signalCard.signalCard {
   border-color: color-mix(in srgb, var(--brown-400) 28%, var(--color-border-card));
   border-left: 4px solid color-mix(in srgb, var(--brown-400) 78%, var(--color-border-card));
@@ -149,24 +153,6 @@
   background:
     linear-gradient(90deg, color-mix(in srgb, var(--brown-400) 6%, transparent), transparent 60%),
     color-mix(in srgb, var(--surface-alt) 82%, var(--color-bg-card));
-}
-
-.historyCard.historyCard {
-  border-color: color-mix(in srgb, var(--brown-400) 28%, var(--color-border-card));
-  background:
-    linear-gradient(90deg, color-mix(in srgb, var(--brown-400) 7%, transparent), transparent 58%),
-    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 93%, var(--brown-400) 7%), var(--color-bg-card) 68%);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--brown-400) 8%, transparent),
-    var(--color-shadow-card);
-}
-
-.historyCard.historyCard :global(.k-item-title) {
-  font-weight: 700;
-}
-
-.historyCard.historyCard :global(.k-item-meta) {
-  font-weight: 500;
 }
 
 

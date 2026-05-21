@@ -28,7 +28,7 @@ export const CARE_COPY = {
   },
 
   history: {
-    empty: "Nenhum cuidado registrado ainda. Use “Já houve contato?” quando houver um contato real para guardar.",
+    empty: "Nenhum cuidado registrado ainda. Use “Registrar contato pastoral” quando houver um contato real para guardar.",
   },
 
   statusActions: {
@@ -44,7 +44,7 @@ export const CARE_COPY = {
   contactActions: {
     callLabel: "Ligar",
     whatsappLabel: "WhatsApp",
-    existingContactLabel: "Já houve contato?",
+    existingContactLabel: "Registrar contato pastoral",
     noPhoneTitle: "Sem telefone cadastrado",
     noPhoneDescription: "Cadastre um telefone depois para liberar ligação e WhatsApp. Por enquanto, registre apenas um cuidado que já aconteceu.",
     registerWithoutPhoneLabel: "Registrar cuidado já realizado",

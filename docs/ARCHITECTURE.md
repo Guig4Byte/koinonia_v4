@@ -161,13 +161,14 @@ Regras:
 - segredo via `KOINONIA_SESSION_SECRET`, `AUTH_SECRET` ou `NEXTAUTH_SECRET`;
 - em produção, segredo de sessão é obrigatório;
 - `/login` redireciona usuário autenticado para a visão do papel;
+- o formulário de login usa server action e componente cliente apenas para estados visuais, loading, erro e mostrar/ocultar senha;
 - `/logout` limpa a sessão;
 - middleware redireciona páginas privadas sem sessão para `/login`;
 - middleware responde `401` para API privada sem sessão;
 - `getAuthenticatedUser()` retorna usuário ou `null`;
 - `getCurrentUser()` redireciona para `/login` quando não há usuário autenticado.
 
-Não existe fallback demo nem troca manual de perfil.
+Não existe fallback demo, troca manual de perfil nem recuperação pública de senha.
 
 ## Redirecionamento e navegação
 
@@ -455,7 +456,7 @@ Regras:
 
 `Ligar` e `WhatsApp` são atalhos externos de aproximação. O registro persistido de contato confirmado usa `MARKED_CARED` e aparece como `Contato feito`, sem classificar o canal.
 
-`Já houve contato?` só chama a rota depois de confirmação explícita. O detalhe da pessoa mostra poucos itens em `Cuidado recente` e revela o restante com `Ver histórico`.
+`Registrar contato pastoral` só chama a rota depois de confirmação explícita. O detalhe da pessoa mostra poucos itens em `Histórico de cuidado` e revela o restante com `Mostrar histórico completo`.
 
 Componentes client-side que chamam APIs devem preferir `src/hooks/use-api-action.ts` para manter o padrão de `useTransition`, leitura de erro e `router.refresh()`. Rotas de API devem preferir `src/lib/api-response.ts` para respostas JSON simples sem mudar o contrato de payload.
 
@@ -476,7 +477,7 @@ Regras:
 - a ação cria um `CareTouch` com `REQUESTED_SUPPORT` ou `ESCALATED_TO_PASTOR`;
 - a anotação é opcional, limitada e não resolve o sinal automaticamente;
 - o histórico da pessoa mostra esse registro como cuidado recente, sem virar tarefa ou prontuário;
-- o detalhe da pessoa mostra poucos registros inicialmente e usa `Ver histórico` para revelar os demais.
+- o detalhe da pessoa mostra poucos registros inicialmente e usa `Mostrar histórico completo` para revelar os demais.
 
 ## Queries de visão
 
@@ -635,3 +636,8 @@ npm run typecheck
 npm test
 npm run build
 ```
+
+
+## Próximas ações pastorais
+
+Use `src/components/shared/next-action-card.tsx` como superfície visual compartilhada para a próxima ação pastoral dos dashboards. A decisão de prioridade, rota e CTA deve vir de helpers de view da home correspondente, não do JSX da página. Detalhes consultivos, como célula ou encontro, devem preferir diagnóstico e orientação pastoral sem criar um CTA quando o usuário já tem caminhos naturais na tela.

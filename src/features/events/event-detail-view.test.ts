@@ -36,11 +36,12 @@ describe("event-detail-view", () => {
 
   it("builds a pastoral cue from attendance exceptions", () => {
     expect(buildEventPastoralCue({ absent: 1, justified: 1, pending: 0 })).toMatchObject({
-      title: "Olhar depois do encontro",
+      title: "Olhar com calma",
+      description: expect.stringContaining("nem sempre indica problema"),
       tone: "risk",
     });
     expect(buildEventPastoralCue({ absent: 0, justified: 1, pending: 0 })).toMatchObject({
-      title: "Olhar depois do encontro",
+      title: "Olhar com calma",
       tone: "warn",
     });
     expect(buildEventPastoralCue({ absent: 0, justified: 0, pending: 0 })).toMatchObject({

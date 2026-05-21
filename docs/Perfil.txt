@@ -38,9 +38,11 @@ A tela atual deve permanecer curta:
 - e-mail;
 - senha com opção discreta de mostrar/ocultar;
 - erro curto de credenciais que não reaparece depois de atualizar;
-- botão `Entrar`.
+- erro que desaparece quando o usuário volta a digitar;
+- botão `Entrar` com estado `Entrando...` durante envio;
+- orientação discreta para procurar a liderança responsável quando esquecer a senha, sem abrir fluxo público de recuperação.
 
-Não mostrar credenciais de desenvolvimento, seletor de perfil, onboarding, cadastro público ou configurações extensas.
+Não mostrar credenciais de desenvolvimento, seletor de perfil, onboarding, cadastro público, recuperação pública de senha ou configurações extensas.
 
 ## Primeira leitura após login
 
@@ -253,3 +255,17 @@ Frase guia:
 ```txt
 Mostre só o que ajuda alguém a cuidar melhor de alguém.
 ```
+
+
+## Detalhe da pessoa como acompanhamento
+
+A tela de pessoa deve responder rapidamente:
+
+- quem acompanha agora;
+- qual foi o último cuidado registrado;
+- qual é o próximo passo seguro.
+
+Use `Registrar contato pastoral` para o registro manual de cuidado já realizado. Evite rótulos ambíguos em formato de pergunta quando o usuário precisa entender a ação. O histórico deve parecer uma linha do tempo pastoral curta, com expansão apenas quando necessário.
+
+
+Patch 8: dashboards mantêm próxima ação pastoral; detalhe de célula voltou a ser consultivo, sem card de próxima ação redundante; resumo de encontro registrado usa orientação pastoral calma em vez de CTA automático para acompanhar pessoa.

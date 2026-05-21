@@ -69,7 +69,7 @@ export function buildEventPastoralCue({
   if (pending > 0) {
     return {
       title: "Presença incompleta",
-      description: `${countLabel(pending, "pessoa pendente", "pessoas pendentes")} ainda sem marcação. Complete antes de interpretar o encontro.`,
+      description: `${countLabel(pending, "pessoa pendente", "pessoas pendentes")} ainda sem marcação. Complete o registro antes de tirar conclusões pastorais sobre o encontro.`,
       tone: "warn",
     };
   }
@@ -81,8 +81,8 @@ export function buildEventPastoralCue({
 
   if (attentionParts.length > 0) {
     return {
-      title: "Olhar depois do encontro",
-      description: `${joinAttentionParts(attentionParts)}. Comece por essas pessoas se for necessário acompanhar com cuidado.`,
+      title: "Olhar com calma",
+      description: `${joinAttentionParts(attentionParts)}. Ausência ou justificativa isolada nem sempre indica problema; vale observar o contexto antes de decidir qualquer cuidado.`,
       tone: absent > 0 ? "risk" : "warn",
     };
   }
@@ -132,17 +132,17 @@ export function buildEventReadOnlyAttendanceView(members: EventReadOnlyMember[])
     groups: [
       {
         title: `Ausentes (${absentMembers.length})`,
-        description: "Comece por aqui se precisar acompanhar depois do encontro.",
+        description: "Ausência isolada nem sempre indica algo; observe o contexto antes de qualquer encaminhamento.",
         members: absentMembers,
       },
       {
         title: `Justificaram (${justifiedMembers.length})`,
-        description: "Houve contexto; talvez baste manter o vínculo próximo.",
+        description: "Houve contexto registrado; mantenha apenas o vínculo próximo quando fizer sentido.",
         members: justifiedMembers,
       },
       {
         title: `Pendentes (${pendingMembers.length})`,
-        description: "Ainda não há marcação explícita para estas pessoas.",
+        description: "Ainda sem marcação explícita; complete o registro para ter uma leitura fiel.",
         members: pendingMembers,
       },
     ] satisfies EventAttendanceGroup[],

@@ -3,6 +3,7 @@ import { CareKind, GroupResponsibilityRole, MembershipRole, UserRole } from "@/g
 import { AppShell } from "@/components/layout/app-shell";
 import { appNavForRole, homeHrefForRole, secondaryNavHrefForRole, secondaryNavLabelForRole } from "@/features/navigation/app-nav";
 import { CareActions } from "@/features/care/components/care-actions";
+import { CareOverviewCard } from "@/features/care/components/care-overview-card";
 import { careContactInfo } from "@/features/care/care-actions-view";
 import { CARE_COPY } from "@/features/care/care-copy";
 import { PersonStatusActions } from "@/features/care/components/person-status-actions";
@@ -17,6 +18,7 @@ import { PriorityCard } from "@/components/ui/priority-card";
 import { canRegisterCare, canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { PERSON_DETAIL_ATTENDANCE_HISTORY_LIMIT, buildPersonPresenceView, careKindLabels } from "@/features/people/person-detail-view";
+import { buildPersonCareOverviewView } from "@/features/people/person-care-overview";
 import { canEscalateSignalToPastor, canRequestSupervisorSupport, escalationStatusChipForViewer } from "@/features/signals/escalation";
 import { signalBadgeForViewer, signalDescriptionForViewer, signalTitleForViewer } from "@/features/signals/display";
 import { isUrgentOrPastoralCase, sortSignalsForPastoralViewer } from "@/features/signals/sections";
@@ -57,7 +59,7 @@ function personProfileEyebrow({
 function nextGestureTitle(openSignalsCount: number, isInCare: boolean) {
   if (openSignalsCount > 0) return "Próximo gesto de cuidado";
   if (isInCare) return "Atualizar acompanhamento";
-  return "Registrar cuidado";
+  return "Registrar contato pastoral";
 }
 
 function nextGestureDescription(hasPhone: boolean, openSignalsCount: number) {
@@ -132,7 +134,8 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const backHref = isLeader ? secondaryNavHref : homeHref;
   const backLabel = isLeader ? secondaryNavLabel : "Visão";
   const personIsInCare = isInCarePerson(person);
-  const canMarkActive = personIsInCare && canRegisterCare(user, person);
+  const canRegisterPersonCare = canRegisterCare(user, person);
+  const canMarkActive = personIsInCare && canRegisterPersonCare;
   const hasRiskSignal = signals.some(isUrgentOrPastoralCase);
   const navIndicator = hasRiskSignal ? "risk" : openSignalsCount > 0 ? "attention" : personIsInCare ? "care" : undefined;
   const pastoralOrderedSignals = sortSignalsForPastoralViewer(signals, user);
@@ -154,6 +157,17 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
     contextLabel: touch.group?.name ?? null,
     note: touch.note,
   }));
+  const careOverviewView = buildPersonCareOverviewView({
+    openSignalsCount,
+    hasRiskSignal,
+    isInCare: personIsInCare,
+    hasPhone: contactInfo.hasPhone,
+    canRegisterCare: canRegisterPersonCare,
+    primaryGroupName,
+    primaryLeadershipName,
+    assignedActorName: primarySignal?.assignedTo?.name,
+    latestTouch: careTouchHistoryItems[0],
+  });
   const pastoralEscalationActorByGroupId = new Map<string, string>();
   let pastoralEscalationActorWithoutGroup: string | undefined;
 
@@ -204,6 +218,9 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           </div>
         </PriorityCard>
 
+        <SectionTitle detail="Responsável, último cuidado e próximo passo antes do registro.">Acompanhamento atual</SectionTitle>
+        <CareOverviewCard view={careOverviewView} />
+
         <SectionTitle detail={openSignalsCount > 0 ? "Entenda o motivo antes de agir." : undefined}>
           {openSignalsCount > 0 ? "Por que merece atenção" : "Situação atual"}
         </SectionTitle>
@@ -250,15 +267,17 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
         <SectionTitle>Ritmo de presença</SectionTitle>
         <PersonPresenceCard view={presenceView} />
 
-        <SectionTitle>Cuidado recente</SectionTitle>
-        {careTouchHistoryItems.length > 0 ? (
-          <CareTouchHistory items={careTouchHistoryItems} className={styles.historyCard} />
-        ) : (
-          <EmptyState className={styles.emptyState}>{CARE_COPY.history.empty}</EmptyState>
-        )}
+        <div id="historico-cuidado" className={styles.anchorSection}>
+          <SectionTitle detail="Linha do tempo dos contatos e encaminhamentos registrados.">Histórico de cuidado</SectionTitle>
+          {careTouchHistoryItems.length > 0 ? (
+            <CareTouchHistory items={careTouchHistoryItems} />
+          ) : (
+            <EmptyState className={styles.emptyState}>{CARE_COPY.history.empty}</EmptyState>
+          )}
+        </div>
 
-        <SectionTitle detail="Registre somente o que aconteceu de fato.">Próximo gesto</SectionTitle>
-        <PriorityCard as="section" priorityTone={hasRiskSignal ? "risk" : openSignalsCount > 0 ? "warn" : personIsInCare ? "care" : "muted"} radius="lg" className={styles.nextGestureCard}>
+        <SectionTitle detail="Registre somente o que aconteceu de fato.">Registrar contato pastoral</SectionTitle>
+        <PriorityCard id="registrar-cuidado" as="section" priorityTone={hasRiskSignal ? "risk" : openSignalsCount > 0 ? "warn" : personIsInCare ? "care" : "muted"} radius="lg" className={styles.nextGestureCard}>
           <div className={styles.nextGestureHeader}>
             <div className={styles.nextGestureCopy}>
               <p className={styles.nextGestureTitle}>{nextGestureTitle(openSignalsCount, personIsInCare)}</p>
