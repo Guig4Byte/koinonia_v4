@@ -198,7 +198,7 @@ Regras:
 - visitante duplicado no mesmo encontro deve ser bloqueado por nome normalizado;
 - `Marcar todos como presentes` confirma antes de sobrescrever ausências/justificativas.
 
-No modo de registro/ajuste, a tela usa header compacto, oculta a navegação inferior e mostra uma barra fixa de salvar. Formulários comuns, como nova/editar célula, mantêm a navegação inferior no comportamento real.
+No modo de registro/ajuste, a tela usa header compacto, oculta a navegação inferior, mostra uma barra fixa de salvar, protege saída com alterações não salvas e permite revisar membros por status de presença. Formulários de criação/edição, como nova/editar célula, também ocultam a navegação inferior para reduzir saída acidental e manter foco na ação principal.
 
 ## Métricas De Presença
 
@@ -209,6 +209,20 @@ A métrica dá contexto pastoral, não ranking.
 - `0%` só aparece quando há dado real.
 - Célula sem check-in recente entra como `Sem presença recente` ou `Sem registro`, não como risco automático.
 - Histórico de pessoa mostra últimos encontros registrados e tendência apenas quando há base suficiente.
+
+## Prioridade do Dia
+
+As homes de líder, supervisor e pastor podem exibir uma única próxima ação pastoral logo após o pulso/radar. Essa superfície não cria uma tarefa nova; ela apenas aponta o caminho mais seguro quando já existe um dado prioritário.
+
+Ordem de prioridade recomendada:
+
+1. urgente ou encaminhado;
+2. pedido de apoio;
+3. atenção comum;
+4. pessoa em cuidado ativo;
+5. estabilidade, quando não houver pendência.
+
+A ação deve levar para a lista ou detalhe apropriado e usar verbo específico, como `Acompanhar pessoa`, `Ver pedido` ou `Ver células em atenção`.
 
 ## Seções Pastorais
 
@@ -223,10 +237,12 @@ As telas principais organizam pessoas por intenção pastoral.
 
 Regras:
 
+- manter uma única prioridade acima das seções quando houver muitos sinais competindo;
 - mostrar poucos registros por seção;
 - usar `Ver mais` quando houver excedente;
 - evitar duplicar a mesma pessoa na mesma superfície;
 - manter busca de pessoa para consulta explícita;
+- usar CTAs específicos por intenção, evitando `Abrir` quando a ação puder ser mais clara.
 - não criar fila, SLA ou tarefa a partir dessas seções.
 
 ## Contato, Apoio E Cuidado

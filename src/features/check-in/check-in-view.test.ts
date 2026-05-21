@@ -1,13 +1,18 @@
 import { describe, expect, it } from "vitest";
 import {
   ATTENDANCE,
+  CHECK_IN_MEMBER_FILTERS,
   checkInConfirmationParam,
+  checkInFilterCount,
+  checkInFilterLabel,
+  checkInFilteredEmptyMessage,
   checkInHelperText,
   checkInMarkedLabel,
   checkInMemberStatusHint,
   checkInPastoralSignalMessage,
   checkInPendingLabel,
   checkInStatusOptionDescription,
+  filterCheckInItems,
   getInitialMemberStatus,
   markedMembersCount,
   summarizeCheckInItems,
@@ -68,6 +73,26 @@ describe("check-in view helpers", () => {
 
     expect(checkInMarkedLabel(summary)).toBe("2 de 2 marcados");
     expect(checkInPendingLabel(summary)).toBe("Todos marcados");
+  });
+
+  it("filters members by check-in status", () => {
+    const items = [
+      { personId: "1", fullName: "Ana", status: ATTENDANCE.PRESENT },
+      { personId: "2", fullName: "Bia", status: ATTENDANCE.JUSTIFIED },
+      { personId: "3", fullName: "Caio", status: ATTENDANCE.ABSENT },
+      { personId: "4", fullName: "Davi", status: null },
+    ];
+    const summary = summarizeCheckInItems(items, 0);
+
+    expect(CHECK_IN_MEMBER_FILTERS).toEqual(["all", "pending", "present", "absent", "justified"]);
+    expect(checkInFilterLabel("absent")).toBe("Ausentes");
+    expect(checkInFilterCount(summary, "all")).toBe(4);
+    expect(checkInFilterCount(summary, "pending")).toBe(1);
+    expect(filterCheckInItems(items, "pending").map((item) => item.fullName)).toEqual(["Davi"]);
+    expect(filterCheckInItems(items, "present").map((item) => item.fullName)).toEqual(["Ana"]);
+    expect(filterCheckInItems(items, "absent").map((item) => item.fullName)).toEqual(["Caio"]);
+    expect(filterCheckInItems(items, "justified").map((item) => item.fullName)).toEqual(["Bia"]);
+    expect(checkInFilteredEmptyMessage("absent")).toContain("ausência");
   });
 
   it("keeps mode-specific copy in one place", () => {

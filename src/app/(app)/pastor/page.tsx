@@ -4,6 +4,7 @@ import { PastoralHealthCard } from "@/features/dashboard/components/pastoral-hea
 import { PastorPresenceCard } from "@/features/pastoral-home/components/pastor-presence-card";
 import { PastorRadarCard } from "@/features/pastoral-home/components/pastor-radar-card";
 import { PastorTeamSummaryCard } from "@/features/pastoral-home/components/pastor-team-summary-card";
+import { NextPastoralActionCard } from "@/features/pastoral-home/components/next-pastoral-action-card";
 import { SearchBox } from "@/features/search/components/search-box";
 import { getPastorDashboard } from "@/features/dashboard/queries";
 import { canUsePastorDashboard } from "@/features/permissions/permissions";
@@ -29,6 +30,8 @@ export default async function PastorPage() {
       nav={appNavForRole(user, { active: "home", indicator: view.navIndicator })}
     >
       <PastorRadarCard pulse={view.pastoralPulse} />
+
+      {view.nextAction ? <NextPastoralActionCard action={view.nextAction} /> : null}
 
       <SearchBox placeholder="Buscar qualquer pessoa..." />
 

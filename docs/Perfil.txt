@@ -125,9 +125,11 @@ No modo de registro/ajuste:
 - preserve botões grandes para evitar toque errado;
 - use cores suaves por status para orientar, não pressionar;
 - mantenha a barra de salvar clara e sem competir com a navegação;
+- proteja saída quando houver presença alterada ou visitante ainda não salvo;
+- permita revisar rapidamente pendentes, presentes, ausentes e justificativas;
 - `Marcar todos como presentes` é atalho, não substituto da revisão pastoral.
 
-Em formulários comuns do app, como nova/editar célula, a navegação inferior permanece visível. O check-in é exceção porque vira modo operacional.
+Em formulários de criação/edição dentro do app, como nova/editar célula, a navegação inferior fica oculta. Esses fluxos usam cabeçalho compacto, confirmação de saída quando há alterações não salvas e barra fixa de ação para reduzir saída acidental e competição com o botão de salvar.
 
 ## Local, cancelamento e remarcação
 
@@ -152,6 +154,12 @@ Alguém menciona uma pessoa no corredor -> usuário busca o nome -> abre pessoa 
 
 Busca deve ser rápida, simples e contextual. No MVP atual, é busca de pessoa.
 
+## Próxima ação antes da exploração
+
+Quando a home tiver muitos sinais, o usuário deve ver primeiro uma orientação simples: qual é o próximo passo pastoral mais importante. Esse card deve reduzir ansiedade, não aumentar cobrança.
+
+A prioridade deve ser calculada pelo contexto, não por uma nova fila de tarefas: urgente, apoio, atenção, cuidado ativo e estabilidade.
+
 ## Feed pastoral, não planilha
 
 Listas devem parecer feed de cuidado, não tabela operacional.
@@ -162,7 +170,7 @@ Cada card deve mostrar:
 - contexto curto;
 - motivo de atenção;
 - status claro;
-- CTA simples, normalmente `Abrir pessoa`.
+- CTA específico à intenção do card, como `Acompanhar pessoa`, `Ver pedido` ou `Continuar cuidado`.
 
 Ações sensíveis pertencem ao detalhe da pessoa ou ao modo operacional adequado.
 
@@ -199,6 +207,8 @@ Encaminhado ao cuidado pastoral.
 ## Tema e tamanho do texto
 
 Tema e tamanho do texto são escolhas visuais leves. Tema deve funcionar no login e continuar no app. Tamanho do texto deve ajudar a leitura no app sem virar configuração administrativa.
+
+Os três temas devem preservar legibilidade, contraste e separação entre superfícies. Pergaminho pode ter personalidade, mas não pode reduzir leitura em cards, campos, filtros ou badges. Escuro deve manter textos secundários, bordas, ícones pequenos e indicadores de estado claramente visíveis.
 
 Use os rótulos de tema:
 

@@ -3,6 +3,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { EmptyState, PulseCard } from "@/components/shared/base-cards";
 import { PastoralSectionTitle } from "@/features/pastoral-home/components/pastoral-section";
 import { LeaderCurrentEventCard } from "@/features/leader/components/leader-current-event-card";
+import { NextPastoralActionCard } from "@/features/pastoral-home/components/next-pastoral-action-card";
 import { InCareSection, PastoralSignalSection } from "@/features/pastoral-home/components/pastoral-list-cards";
 import { buildLeaderPageView } from "@/features/leader/leader-page-view";
 import { appNavForRole } from "@/features/navigation/app-nav";
@@ -36,6 +37,8 @@ export default async function LeaderPage() {
           tone={view.pastoralPulse.tone}
           className="mb-0"
         />
+
+        {view.nextAction ? <NextPastoralActionCard action={view.nextAction} className="mb-0" /> : null}
 
         {view.hasPeopleInRadar ? (
           <>

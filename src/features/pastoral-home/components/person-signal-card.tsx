@@ -34,7 +34,7 @@ export function PersonSignalCard(props: {
     badgeTone,
     detailHref,
     href,
-    ctaLabel = "Acompanhar",
+    ctaLabel = "Acompanhar pessoa",
   } = props;
   const resolvedBadgeTone = badgeTone ?? (severity === "risk" ? "risk" : severity === "ok" ? "ok" : severity === "info" ? "info" : "warn");
   const resolvedBadgeLabel = badgeLabel ?? (severity === "risk" ? "Urgente" : "Em atenção");
@@ -42,9 +42,9 @@ export function PersonSignalCard(props: {
   const priorityTone = signalCardPriorityTone(resolvedBadgeTone, severity);
 
   const content = (
-    <PriorityCard priorityTone={priorityTone} padding="sm" interactive className="group">
+    <PriorityCard priorityTone={priorityTone} padding="xs" minHeight="sm" interactive className="group">
       <div className="flex items-start gap-2.5">
-        <Avatar name={name} />
+        <Avatar name={name} size="sm" />
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
@@ -53,9 +53,9 @@ export function PersonSignalCard(props: {
             </div>
             <Badge tone={resolvedBadgeTone} size="sm" maxWidth="header">{resolvedBadgeLabel}</Badge>
           </div>
-          {reason ? <p className="mt-2 whitespace-pre-line border-t border-[var(--color-border-divider)] pt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-primary)]">{reason}</p> : null}
+          {reason ? <p className="mt-2 line-clamp-3 whitespace-pre-line border-t border-[var(--color-border-divider)] pt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-primary)]">{reason}</p> : null}
           {cardHref ? (
-            <p className="mt-2 inline-flex min-h-9 items-center rounded-full pr-1 text-[length:var(--text-sm)] font-bold text-[color:var(--color-brand)]">
+            <p className="mt-2 inline-flex min-h-8 items-center rounded-full pr-1 text-[length:var(--text-sm)] font-bold text-[color:var(--color-brand)]">
               {ctaLabel} <span className="ml-1 inline-block transition group-active:translate-x-0.5">→</span>
             </p>
           ) : null}

@@ -2,6 +2,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { EmptyState, PulseCard } from "@/components/shared/base-cards";
 import { InCareSection, PastoralSignalSection } from "@/features/pastoral-home/components/pastoral-list-cards";
+import { NextPastoralActionCard } from "@/features/pastoral-home/components/next-pastoral-action-card";
 import { SearchBox } from "@/features/search/components/search-box";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { canUseSupervisorDashboard } from "@/features/permissions/permissions";
@@ -37,6 +38,8 @@ export default async function SupervisorPage() {
         tone={view.pastoralPulse.tone}
       />
 
+      {view.nextAction ? <NextPastoralActionCard action={view.nextAction} /> : null}
+
       <SearchBox placeholder="Buscar pessoa..." />
 
       {hasPastoralRadar ? (
@@ -60,7 +63,7 @@ export default async function SupervisorPage() {
               signals={view.supportSignals}
               viewer={user}
               contextForSignal={(signal) => groupNameOrFallback(signal.group)}
-              ctaLabelForSignal={() => "Abrir apoio"}
+              ctaLabelForSignal={() => "Ver pedido"}
             />
           ) : null}
 

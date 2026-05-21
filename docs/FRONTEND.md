@@ -106,6 +106,22 @@ Regras:
 
 O Tailwind v4 pode detectar classes dentro de Markdown. Em documentação, evite exemplos literais de classes arbitrárias, principalmente com placeholders. Descreva a regra em texto ou use tokens isolados. Nunca escreva exemplos com `...` dentro de uma classe arbitrária.
 
+
+## Temas, contraste e estados visuais
+
+A interface mantém três temas locais: claro, pergaminho e escuro. Todos devem preservar a mesma hierarquia, não apenas trocar a paleta.
+
+Regras de manutenção:
+
+- tokens em `src/styles/tokens.css` são a fonte para superfícies, texto, estados, bordas, foco e sombras;
+- textos primários e secundários devem manter contraste confortável nos três temas;
+- placeholders, ícones de campo, chips, badges e indicadores pequenos não devem depender de tons de borda muito claros;
+- badges de risco, atenção, cuidado, apoio e estabilidade devem usar par `fundo + borda + texto` do token sem sobrescrever cor localmente;
+- tema pergaminho deve ter separação clara entre fundo, cards e controles, evitando superfície translúcida que misture texto e textura;
+- tema escuro deve reforçar borda/divisor/foco o suficiente para cards e filtros não desaparecerem.
+
+Ao alterar uma primitive, valide pelo menos: login, dashboard, lista com filtros, formulário, detalhe e check-in em claro, pergaminho e escuro.
+
 ## Primitives de UI
 
 Antes de criar markup visual novo, confira `src/components/ui` e o guia detalhado em `docs/UI_PRIMITIVES_GUIDE.md`.
@@ -183,7 +199,7 @@ Use estes componentes antes de criar variações locais:
 | Componente | Uso |
 | --- | --- |
 | `AppShell` | header, conteúdo e navegação inferior do app autenticado |
-| `BottomNav` | navegação mobile por papel; não deve aparecer em modo de check-in |
+| `BottomNav` | navegação mobile por papel; não deve aparecer em check-in, formulários de criação/edição ou fluxos com ação crítica |
 | `ThemeToggle` | alternância de tema |
 | `TextSizeToggle` | alternância de tamanho do texto |
 | `ProgressiveList` | listas curtas com `Ver mais` / `Mostrar menos` |
@@ -191,14 +207,18 @@ Use estes componentes antes de criar variações locais:
 | `PresenceMetricDisplay` | métrica compacta de presença com indicador visual |
 | `PresenceIndicator` | anel visual de presença |
 | `PresenceProgressDisplay` | percentual com barra de progresso |
+| `NextPastoralActionCard` | card de domínio para destacar a próxima ação pastoral nos dashboards de líder, supervisor e pastor |
 
 Regras:
 
-- check-in usa barra fixa própria e oculta `BottomNav`;
-- formulários comuns dentro do app, como nova/editar célula, mantêm `BottomNav`;
+- check-in usa barra fixa própria, oculta `BottomNav`, protege saída quando existem alterações não salvas e oferece filtros rápidos por status de presença;
+- formulários de criação/edição dentro do app, como nova/editar célula, ocultam `BottomNav`, usam barra fixa de ação e protegem saída quando existem alterações não salvas;
+- telas consultivas e listagens mantêm `BottomNav`;
 - full-page screenshots ou validações visuais podem ocultar `BottomNav`, mas isso não muda o comportamento real da tela;
 - indicadores de presença devem reutilizar `src/components/shared/presence-metric.tsx`;
 - quando não houver dado de presença, indicador e texto devem comunicar ausência de dado, não risco.
+- formulários com alteração sensível, como desativar célula ativa, devem pedir confirmação antes de enviar.
+- dashboards pastorais devem exibir uma única próxima ação quando houver prioridade clara, antes de busca, listas densas ou cards analíticos;
 
 ## Componentes de domínio
 
@@ -210,7 +230,19 @@ Regras:
 - evitar import visual entre features diferentes;
 - se duas features precisarem do mesmo padrão, subir para `src/components/shared` ou `src/components/ui`;
 - lógica de ordenação, filtros e labels complexos deve ficar em `*-view.ts`, não no meio do JSX;
+- cartões de próxima ação devem receber dados já resolvidos pelo `*-view.ts`, mantendo prioridade, destino e CTA fora do JSX da página.
 - componente client-side não deve importar Prisma Client nem helper server-only.
+
+### Dashboards pastorais
+
+As homes de líder, supervisor e pastor devem começar com pulso/contexto e, quando houver prioridade operacional, um `NextPastoralActionCard`. O card resume apenas o próximo melhor passo e direciona para a superfície adequada, sem substituir as seções pastorais completas.
+
+Regras:
+
+- calcular prioridade em `leader-page-view.ts`, `supervisor-page-view.ts` ou `pastor-page-view.ts`;
+- priorizar urgente, pedido de apoio, atenção, cuidado ativo e, por fim, estabilidade;
+- usar CTA específico (`Ver pedido`, `Acompanhar pessoa`, `Ver células em atenção`, `Ver equipe`), evitando `Abrir` genérico;
+- manter listas abaixo mais compactas e com `Ver mais` quando necessário.
 
 ### Encontros
 
@@ -276,7 +308,7 @@ import { GroupPendingEventCard } from "@/features/groups/components/group-pendin
 7. O import respeita `ui`, `layout`, `shared` e `features/*/components`?
 8. Nenhuma classe global específica de tela foi adicionada?
 9. Métricas de presença usam os componentes compartilhados?
-10. Telas operacionais, como check-in, tratam navegação fixa e barras fixas sem sobrepor conteúdo?
+10. Telas operacionais, como check-in, tratam navegação fixa, barras fixas e filtros de revisão sem sobrepor conteúdo?
 11. `npm run audit:ui-css` não introduziu achado alto ou médio?
 12. Se apareceu achado baixo novo, ele é caso único e justificado?
 13. A mudança foi validada em viewport mobile pequena e nos temas claro, escuro e pergaminho?

@@ -16,6 +16,7 @@ type CheckInSaveBarProps = {
   isPending: boolean;
   errorMessage: string | null;
   submitLabel: string;
+  onCancelAttempt?: () => boolean;
   onSave: () => void;
 };
 
@@ -73,6 +74,7 @@ export function CheckInSaveBar({
   isPending,
   errorMessage,
   submitLabel,
+  onCancelAttempt,
   onSave,
 }: CheckInSaveBarProps) {
   const title = saveBarTitle({ summary, mode, hasUnsavedChanges, isPending, errorMessage });
@@ -88,7 +90,7 @@ export function CheckInSaveBar({
       <div className="grid gap-2 min-[390px]:grid-cols-[minmax(0,1fr)_auto] min-[390px]:items-center">
         <div className="min-w-0">
           <p className="k-item-title-sm truncate">{title}</p>
-          <p className="mt-0.5 truncate text-[length:var(--text-xs)] text-[color:var(--color-text-secondary)]">
+          <p className="mt-0.5 text-[length:var(--text-xs)] leading-snug text-[color:var(--color-text-secondary)]">
             {description}
           </p>
         </div>
@@ -102,6 +104,9 @@ export function CheckInSaveBar({
               shape="pill"
               responsiveWidth="fullUntilSm"
               className={cn(isPending && "pointer-events-none saturate-75")}
+              onClick={(event) => {
+                if (onCancelAttempt && !onCancelAttempt()) event.preventDefault();
+              }}
             >
               {cancelLabel}
             </ButtonLink>

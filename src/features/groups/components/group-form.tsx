@@ -1,7 +1,7 @@
-import { BackLink, InfoCard } from "@/components/shared/base-cards";
+import { InfoCard } from "@/components/shared/base-cards";
 import { Card } from "@/components/ui/card";
 import { FieldError, InputField } from "@/components/ui/field";
-import { GroupFormActions } from "@/features/groups/components/group-form-actions";
+import { GroupFormActions, GroupFormBackLink, GroupFormGuard } from "@/features/groups/components/group-form-actions";
 import { GroupMeetingDayInput } from "@/features/groups/components/group-meeting-day-input";
 import { GroupMeetingTimeInput } from "@/features/groups/components/group-meeting-time-input";
 import {
@@ -44,106 +44,120 @@ export function GroupForm({
   const scheduleErrorId = "group-schedule-error";
   const hasScheduleError = Boolean(fieldErrors.schedule);
   const scheduleDescribedBy = `${scheduleHintId}${hasScheduleError ? ` ${scheduleErrorId}` : ""}`;
+  const isEditingExistingCell = initialValues.name.trim().length > 0;
+  const idleMessage = isEditingExistingCell
+    ? "Nenhuma alteração pendente."
+    : "Preencha os dados da célula para salvar.";
 
   return (
-    <div className={styles.page}>
-      <BackLink href={backHref} className={styles.backLink}>{backLabel}</BackLink>
+    <GroupFormGuard>
+      <div className={styles.page}>
+        <GroupFormBackLink href={backHref} className={styles.backLink}>
+          {backLabel}
+        </GroupFormBackLink>
 
-      <Card padding="lg" radius="lg" className={styles.heroCard}>
-        <p className={styles.heroKicker}>Célula</p>
-        <h2 className={styles.heroTitle}>{title}</h2>
-        <p className={styles.heroDescription}>{description}</p>
-      </Card>
+        <Card padding="lg" radius="lg" className={styles.heroCard}>
+          <p className={styles.heroKicker}>Célula</p>
+          <h2 className={styles.heroTitle}>{title}</h2>
+          <p className={styles.heroDescription}>{description}</p>
+        </Card>
 
-      {errorMessage ? <InfoCard tone="error">{errorMessage}</InfoCard> : null}
+        {errorMessage ? <InfoCard tone="error">{errorMessage}</InfoCard> : null}
 
-      <GroupFormActions
-        action={action}
-        backHref={backHref}
-        submitLabel={submitLabel}
-        className={styles.formCard}
-      >
-        <section className={styles.formSection}>
-          <FormSectionTitle>Dados básicos</FormSectionTitle>
+        <GroupFormActions
+          action={action}
+          backHref={backHref}
+          submitLabel={submitLabel}
+          idleMessage={idleMessage}
+          confirmDeactivation={initialValues.isActive && isEditingExistingCell}
+          className={styles.formCard}
+        >
+          <section className={styles.formSection}>
+            <FormSectionTitle>Dados básicos</FormSectionTitle>
 
-          <InputField
-            id="group-name"
-            name="name"
-            label="Nome"
-            labelVariant="item"
-            defaultValue={initialValues.name}
-            maxLength={GROUP_NAME_MAX_LENGTH}
-            required
-            error={fieldErrors.name}
-            placeholder="Ex.: Célula Central"
-            inputClassName={styles.control}
-          />
-
-          <InputField
-            id="group-location"
-            name="locationName"
-            label="Local padrão"
-            labelVariant="item"
-            defaultValue={initialValues.locationName ?? ""}
-            maxLength={GROUP_LOCATION_MAX_LENGTH}
-            error={fieldErrors.locationName}
-            description="O local padrão é copiado para novos encontros, mas cada encontro pode ter local próprio."
-            placeholder="Casa, bairro ou referência"
-            inputClassName={styles.control}
-          />
-        </section>
-
-        <section className={styles.formSection}>
-          <FormSectionTitle>Agenda padrão</FormSectionTitle>
-
-          <div className={styles.scheduleFields}>
-            <div className={styles.timeFieldShell}>
-              <label className={styles.fieldLabel} htmlFor="meeting-day-of-week">Dia padrão</label>
-              <GroupMeetingDayInput
-                defaultValue={initialValues.meetingDayOfWeek}
-                ariaInvalid={hasScheduleError}
-                ariaDescribedBy={scheduleDescribedBy}
-              />
-            </div>
-
-            <div className={styles.timeFieldShell}>
-              <label className={styles.fieldLabel} htmlFor="meeting-time">Horário padrão</label>
-              <GroupMeetingTimeInput
-                defaultValue={initialValues.meetingTime}
-                ariaInvalid={hasScheduleError}
-                ariaDescribedBy={scheduleDescribedBy}
-              />
-            </div>
-          </div>
-
-          <span id={scheduleHintId} className={styles.hint}>
-            Dia e horário precisam ser preenchidos juntos. Deixe os dois em branco se a célula não tiver agenda fixa.
-          </span>
-          <FieldError id={scheduleErrorId}>{fieldErrors.schedule}</FieldError>
-        </section>
-
-        <section className={styles.formSection}>
-          <FormSectionTitle>Status</FormSectionTitle>
-
-          <label className={styles.statusOption}>
-            <input
-              name="isActive"
-              type="checkbox"
-              defaultChecked={initialValues.isActive}
-              className={styles.statusCheckbox}
+            <InputField
+              id="group-name"
+              name="name"
+              label="Nome"
+              labelVariant="item"
+              defaultValue={initialValues.name}
+              maxLength={GROUP_NAME_MAX_LENGTH}
+              required
+              error={fieldErrors.name}
+              placeholder="Ex.: Célula Central"
+              inputClassName={styles.control}
             />
-            <span className={styles.statusVisual} aria-hidden="true">
-              <span className={styles.statusKnob} />
+
+            <InputField
+              id="group-location"
+              name="locationName"
+              label="Local padrão"
+              labelVariant="item"
+              defaultValue={initialValues.locationName ?? ""}
+              maxLength={GROUP_LOCATION_MAX_LENGTH}
+              error={fieldErrors.locationName}
+              description="O local padrão é copiado para novos encontros, mas cada encontro pode ter local próprio."
+              placeholder="Casa, bairro ou referência"
+              inputClassName={styles.control}
+            />
+          </section>
+
+          <section className={styles.formSection}>
+            <FormSectionTitle>Agenda padrão</FormSectionTitle>
+
+            <div className={styles.scheduleFields}>
+              <div className={styles.timeFieldShell}>
+                <label className={styles.fieldLabel} htmlFor="meeting-day-of-week">
+                  Dia padrão
+                </label>
+                <GroupMeetingDayInput
+                  defaultValue={initialValues.meetingDayOfWeek}
+                  ariaInvalid={hasScheduleError}
+                  ariaDescribedBy={scheduleDescribedBy}
+                />
+              </div>
+
+              <div className={styles.timeFieldShell}>
+                <label className={styles.fieldLabel} htmlFor="meeting-time">
+                  Horário padrão
+                </label>
+                <GroupMeetingTimeInput
+                  defaultValue={initialValues.meetingTime}
+                  ariaInvalid={hasScheduleError}
+                  ariaDescribedBy={scheduleDescribedBy}
+                />
+              </div>
+            </div>
+
+            <span id={scheduleHintId} className={styles.hint}>
+              Dia e horário precisam ser preenchidos juntos. Deixe os dois em branco se a célula não tiver agenda fixa.
             </span>
-            <span className={styles.statusCopy}>
-              <span className={styles.statusTitle}>Célula ativa</span>
-              <span className={styles.statusDetail}>
-                Células inativas não aparecem nas superfícies padrão, encontros ou check-in.
+            <FieldError id={scheduleErrorId}>{fieldErrors.schedule}</FieldError>
+          </section>
+
+          <section className={styles.formSection}>
+            <FormSectionTitle>Status</FormSectionTitle>
+
+            <label className={styles.statusOption}>
+              <input
+                name="isActive"
+                type="checkbox"
+                defaultChecked={initialValues.isActive}
+                className={styles.statusCheckbox}
+              />
+              <span className={styles.statusVisual} aria-hidden="true">
+                <span className={styles.statusKnob} />
               </span>
-            </span>
-          </label>
-        </section>
-      </GroupFormActions>
-    </div>
+              <span className={styles.statusCopy}>
+                <span className={styles.statusTitle}>Célula ativa</span>
+                <span className={styles.statusDetail}>
+                  Células inativas não aparecem nas superfícies padrão, encontros ou check-in.
+                </span>
+              </span>
+            </label>
+          </section>
+        </GroupFormActions>
+      </div>
+    </GroupFormGuard>
   );
 }

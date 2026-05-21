@@ -183,7 +183,7 @@
 }
 
 .supervisorBody {
-  margin-top: 0.9rem;
+  margin-top: 0.75rem;
 }
 
 .supervisorDisclosureSummary {
@@ -260,11 +260,11 @@
 
 .cellList {
   overflow: hidden;
-  margin: 0 0.3rem 0.8rem;
+  margin: 0 0.25rem 0.65rem;
   border: 1px solid color-mix(in srgb, var(--color-border-card) 84%, var(--team-supervisor-warm));
   border-radius: 1rem;
   background: color-mix(in srgb, var(--surface-alt) 52%, transparent);
-  padding: 0.45rem;
+  padding: 0.4rem;
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-bg-card) 54%, transparent);
 }
 
@@ -273,7 +273,7 @@
   position: relative;
   isolation: isolate;
   display: grid;
-  min-height: 82px;
+  min-height: 72px;
   grid-template-columns: minmax(0, 1fr) max-content;
   gap: 0.65rem;
   align-items: center;
@@ -284,7 +284,7 @@
   background:
     linear-gradient(90deg, color-mix(in srgb, var(--team-cell-accent) 5%, transparent), transparent 54%),
     color-mix(in srgb, var(--color-bg-card) 42%, transparent);
-  padding: 0.95rem 0.65rem 0.95rem 0.9rem;
+  padding: 0.78rem 0.6rem 0.78rem 0.78rem;
   transition:
     border-color 150ms ease,
     background 150ms ease,

@@ -13,7 +13,6 @@ import { e2ePrisma } from "./support/db";
 type ThemeId = "light" | "dark" | "parchment";
 type ThemeDir = "claro" | "escuro" | "pergaminho";
 type ProfileId = "publico" | "lider" | "supervisor" | "pastor";
-type CaptureType = "viewport-com-nav" | "bottom-com-nav" | "fullpage-sem-nav";
 
 type ScreenDefinition = {
   slug: string;

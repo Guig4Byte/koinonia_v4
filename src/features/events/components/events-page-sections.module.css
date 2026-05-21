@@ -1,5 +1,5 @@
 .header {
-  gap: 10px;
+  gap: 8px;
 }
 
 .eventCard.eventCard,
@@ -148,7 +148,7 @@
 .locationLine {
   display: inline-flex;
   max-width: 100%;
-  min-height: 28px;
+  min-height: 26px;
   align-items: center;
   gap: 6px;
   border: 1px solid color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 12%, transparent);
@@ -171,9 +171,9 @@
 .stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-top: 12px;
+  margin-top: 10px;
   border-top: 1px solid color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 16%, var(--color-border-divider));
-  padding-top: 10px;
+  padding-top: 8px;
 }
 
 .stats p {
@@ -214,9 +214,9 @@
 .footer {
   display: flex;
   justify-content: flex-end;
-  margin-top: 12px;
+  margin-top: 10px;
   border-top: 1px solid color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 16%, var(--color-border-divider));
-  padding-top: 10px;
+  padding-top: 8px;
 }
 
 .stats + .footer {
@@ -245,8 +245,8 @@
 .consultationActions {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 14px;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 .consultationLayout {

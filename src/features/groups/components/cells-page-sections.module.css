@@ -1,13 +1,13 @@
 .sections {
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 22px;
 }
 
 .section {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .heading {
@@ -16,7 +16,7 @@
 
 .heading h3 {
   margin: 0;
-  color: var(--color-text-secondary);
+  color: var(--color-text-primary);
   font-size: var(--text-xs);
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -25,7 +25,7 @@
 }
 
 .heading p {
-  margin: 4px 0 0;
+  margin: 3px 0 0;
   color: var(--color-text-secondary);
   font-size: var(--text-sm);
   line-height: 1.45;

@@ -1,5 +1,5 @@
 .pageFlow {
-  --leader-section-gap: 1.75rem;
+  --leader-section-gap: 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 0;

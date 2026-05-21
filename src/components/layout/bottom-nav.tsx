@@ -23,9 +23,9 @@ const iconMap: Record<NavIcon, LucideIcon> = {
 };
 
 const indicatorClass: Record<NavIndicatorTone, string> = {
-  risk: "bg-[var(--color-badge-risco-border)]",
-  attention: "bg-[var(--color-badge-atencao-border)]",
-  care: "bg-[var(--color-badge-cuidado-border)]",
+  risk: "bg-[var(--color-badge-risco-text)]",
+  attention: "bg-[var(--color-badge-atencao-text)]",
+  care: "bg-[var(--color-badge-cuidado-text)]",
 };
 
 const indicatorLabel: Record<NavIndicatorTone, string> = {

@@ -4,7 +4,7 @@
   overflow-x: auto;
   overscroll-behavior-inline: contain;
   margin: 0 -0.15rem 0.85rem;
-  padding: 0.1rem 0.15rem 0.25rem;
+  padding: 0.1rem 0.15rem 0.35rem;
   scrollbar-width: none;
 }
 
@@ -45,11 +45,11 @@
 
 .sectionStack {
   display: grid;
-  gap: 0.65rem;
+  gap: 0.55rem;
 }
 
 .regularSection {
-  padding-top: 0.4rem;
+  padding-top: 0.25rem;
 }
 
 .sectionHeader {

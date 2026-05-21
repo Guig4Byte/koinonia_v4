@@ -18,14 +18,17 @@ A auditoria não alterou regra de negócio, vocabulário de produto, permissões
 | --- | ---: | ---: | ---: | ---: |
 | Após criação do guardrail inicial | 274 | 4 | 72 | 198 |
 | Fechamento da etapa 9 | 177 | 0 | 0 | 177 |
+| Após patches estruturais de UX | 196 | 0 | 62 | 134 |
 
-Leitura correta do resultado final:
+Leitura correta do resultado atual:
 
-- `alta: 0` significa que não há mais alertas estáticos de camada fixa, z-index local crítico ou override direto de tamanho em primitives críticas.
-- `média: 0` significa que os principais casos de superfície, densidade e CSS Module competindo com componente base foram tratados.
-- `baixa: 177` não significa bug visual. A regra baixa é intencionalmente conservadora e aponta classes arbitrárias com tokens. Ela serve como lembrete de revisão, não como bloqueio automático.
+- `alta: 0` continua sendo o principal bloqueio de merge: não há alertas estáticos de camada fixa, z-index local crítico ou override direto de tamanho em primitives críticas.
+- `média: 62` reflete achados conservadores em superfícies e composição local após os patches de UX; eles não são regressões bloqueantes, mas devem ser revisados por lote antes de novas expansões visuais.
+- `baixa: 134` não significa bug visual. A regra baixa aponta classes arbitrárias com tokens e serve como lembrete de revisão, não como bloqueio automático.
 
-A revisão de baixos agora separa os 177 achados em categorias operacionais:
+A revisão histórica de baixos separava os 177 achados em categorias operacionais. Após novos patches, use `npm run audit:ui-css` e `npm run audit:ui-css:lows` para obter a fotografia atual antes de promover novos padrões.
+
+A revisão de baixos histórica separava os 177 achados em categorias operacionais:
 
 | Disposição | Quantidade atual | Leitura | Ação |
 | --- | ---: | --- | --- |
@@ -213,6 +216,7 @@ Casos que devem virar nova tarefa:
 
 - [ ] Login.
 - [ ] Home pastoral.
+- [ ] Card de próxima ação pastoral aparece antes de listas densas quando há prioridade clara.
 - [ ] Lista de células.
 - [ ] Detalhe de célula.
 - [ ] Lista de eventos.
@@ -224,6 +228,7 @@ Casos que devem virar nova tarefa:
 
 ### Sobreposição
 
+- [ ] Cards de próxima ação não competem visualmente com busca, radar ou cards analíticos.
 - [ ] Último item de lista não fica atrás de `BottomNav`.
 - [ ] Último item de check-in não fica atrás de `FixedActionBar`.
 - [ ] `BottomSheet` não compete com `FixedActionBar`.
@@ -234,6 +239,9 @@ Casos que devem virar nova tarefa:
 
 - [ ] Foco visível aparece em botões, links, chips, campos, disclosures e sheets.
 - [ ] Badges mantêm contraste suficiente nos três temas.
+- [ ] Placeholders, ícones pequenos, chips e indicadores da bottom nav continuam legíveis em claro, pergaminho e escuro.
+- [ ] Tema pergaminho separa claramente fundo, card, controle e borda sem depender de transparência excessiva.
+- [ ] Tema escuro reforça bordas/divisores o suficiente para listas, filtros e barras fixas.
 - [ ] Estados hover/active/focus não mudam drasticamente entre primitives.
 - [ ] Texto auxiliar e conteúdo de badges continuam legíveis em telas pequenas.
 - [ ] Ações compactas continuam com alvo de toque confortável.
