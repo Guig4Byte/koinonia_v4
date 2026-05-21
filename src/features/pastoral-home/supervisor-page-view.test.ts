@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { PersonStatus, SignalSeverity, UserRole } from "@/generated/prisma/client";
-import { buildSupervisorPageView, type SupervisorPageDashboard, type SupervisorPageSignal } from "./supervisor-page-view";
+import { GroupResponsibilityRole, PersonStatus, SignalSeverity, UserRole } from "@/generated/prisma/client";
+import type { SupervisorGroup } from "@/features/groups/cells-page-view";
+import {
+  buildSupervisorPageView,
+  type SupervisorPageDashboard,
+  type SupervisorPageSignal,
+} from "./supervisor-page-view";
 
 const user = { id: "supervisor-1", role: UserRole.SUPERVISOR };
 
@@ -18,6 +23,30 @@ function signal(overrides: Partial<SupervisorPageSignal> = {}): SupervisorPageSi
   };
 }
 
+function group(overrides: Partial<SupervisorGroup> = {}): SupervisorGroup {
+  return {
+    id: "group-1",
+    name: "Célula Central",
+    responsibilities: [
+      {
+        role: GroupResponsibilityRole.LEADER,
+        user: { name: "Bruno" },
+      },
+    ],
+    memberships: [
+      { person: { id: "p1", fullName: "Ana", status: PersonStatus.ACTIVE } },
+    ],
+    signals: [],
+    presenceRate: 90,
+    presenceTrend: null,
+    hasPresenceData: true,
+    attentionCount: 0,
+    supportRequestsCount: 0,
+    inCareCount: 0,
+    ...overrides,
+  } as SupervisorGroup;
+}
+
 function dashboard(overrides: Partial<SupervisorPageDashboard> = {}): SupervisorPageDashboard {
   return {
     attentionPeople: overrides.attentionPeople ?? [],
@@ -26,7 +55,7 @@ function dashboard(overrides: Partial<SupervisorPageDashboard> = {}): Supervisor
 }
 
 describe("supervisor-page-view", () => {
-  it("separa urgentes, pedidos de apoio e atenção local", () => {
+  it("separa urgentes, apoio com líderes e atenção local", () => {
     const view = buildSupervisorPageView({
       dashboard: dashboard({
         attentionPeople: [
@@ -48,13 +77,14 @@ describe("supervisor-page-view", () => {
     const view = buildSupervisorPageView({
       dashboard: dashboard({
         groups: [
-          {
+          group({
             name: "Célula Central",
+            inCareCount: 1,
             memberships: [
               { person: { id: "p1", fullName: "Ana", status: PersonStatus.COOLING_AWAY } },
               { person: { id: "p2", fullName: "Bruno", status: PersonStatus.ACTIVE } },
-            ],
-          },
+            ] as SupervisorGroup["memberships"],
+          }),
         ],
       }),
       user,
@@ -62,5 +92,46 @@ describe("supervisor-page-view", () => {
 
     expect(view.navIndicator).toBe("care");
     expect(view.inCarePeople).toEqual([{ id: "p1", fullName: "Ana", status: PersonStatus.COOLING_AWAY, groupName: "Célula Central" }]);
+    expect(view.focusItems.map((item) => item.key)).toEqual(["care"]);
+    expect(view.focusItems[0].title).toBe("Memória de cuidado");
+    expect(view.focusItems[0].href).toBe("/celulas/group-1?foco=em-cuidado");
+  });
+
+  it("transforma apoio com líderes em foco agregado, sem apontar para uma célula específica", () => {
+    const view = buildSupervisorPageView({
+      dashboard: dashboard({
+        attentionPeople: [
+          signal({ id: "support", personId: "p2", assignedToId: user.id }),
+        ],
+        groups: [
+          group({
+            id: "group-support",
+            supportRequestsCount: 1,
+          }),
+        ],
+      }),
+      user,
+    });
+
+    expect(view.focusItems.map((item) => item.key)).toEqual(["support"]);
+    expect(view.focusItems[0].title).toBe("Apoio com líderes");
+    expect(view.nextAction?.label).toBe("Acompanhar com liderança");
+    expect(view.nextAction?.href).toBe("/celulas/group-support?foco=apoio");
+  });
+
+  it("usa presença sem registro como foco agregado de supervisão", () => {
+    const view = buildSupervisorPageView({
+      dashboard: dashboard({
+        groups: [
+          group({ id: "group-no-presence", hasPresenceData: false }),
+        ],
+      }),
+      user,
+    });
+
+    expect(view.navIndicator).toBe("attention");
+    expect(view.focusItems.map((item) => item.key)).toEqual(["presence"]);
+    expect(view.nextAction?.label).toBe("Revisar presença");
+    expect(view.nextAction?.href).toBe("/celulas/group-no-presence?foco=sem-presenca");
   });
 });

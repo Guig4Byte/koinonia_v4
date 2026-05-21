@@ -1,12 +1,30 @@
-import { UserRole, type SignalSeverity, type PersonStatus } from "@/generated/prisma/client";
+import { UserRole, type PersonStatus, type SignalSeverity } from "@/generated/prisma/client";
+import { cellsFilterHref, type CellsFilter } from "@/features/groups/cells-page-filters";
+import type { SupervisorGroup } from "@/features/groups/cells-page-view";
+import {
+  groupLocalAttentionCount,
+  groupPastoralEscalatedCount,
+  groupPastoralPriorityScore,
+  groupRiskCount,
+  groupSupportRequestsCount,
+  groupUrgentCount,
+  hasLowPresence,
+} from "@/features/groups/group-pastoral-priority";
+import type { NextPastoralAction, NextPastoralActionTone } from "@/features/pastoral-home/components/next-pastoral-action-card";
 import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features/pastoral-pulse";
 import { signalTitleForViewer } from "@/features/signals/display";
-import type { NextPastoralAction } from "@/features/pastoral-home/components/next-pastoral-action-card";
-import { membersFilterHref } from "@/features/people/member-filters";
-import { FILTER_ATTENTION, FILTER_IN_CARE } from "@/lib/filter-param";
-import { countLabel } from "@/lib/format";
-import { ROUTES } from "@/lib/routes";
 import { splitPastoralSections } from "@/features/signals/sections";
+import {
+  FILTER_ATTENTION,
+  FILTER_IN_CARE,
+  FILTER_LOW_PRESENCE,
+  FILTER_NO_RECENT_PRESENCE,
+  FILTER_PASTORAL,
+  FILTER_SUPPORT,
+  FILTER_URGENT,
+} from "@/lib/filter-param";
+import { countLabel } from "@/lib/format";
+import { routeWithQuery, ROUTES } from "@/lib/routes";
 
 export type SupervisorPageViewer = {
   id: string;
@@ -34,10 +52,19 @@ export type SupervisorPageInCarePerson = {
 
 export type SupervisorPageDashboard = {
   attentionPeople: SupervisorPageSignal[];
-  groups: Array<{
-    name: string;
-    memberships: Array<{ person: Omit<SupervisorPageInCarePerson, "groupName"> }>;
-  }>;
+  groups: SupervisorGroup[];
+};
+
+export type SupervisorFocusKey = "urgent" | "support" | "presence" | "attention" | "care";
+
+export type SupervisorFocusItem = {
+  key: SupervisorFocusKey;
+  valueLabel: string;
+  title: string;
+  detail: string;
+  href: string;
+  actionLabel: string;
+  tone: Exclude<NextPastoralActionTone, "ok">;
 };
 
 export type SupervisorPageView = {
@@ -47,6 +74,7 @@ export type SupervisorPageView = {
   supportSignals: SupervisorPageSignal[];
   attentionSignals: SupervisorPageSignal[];
   inCarePeople: SupervisorPageInCarePerson[];
+  focusItems: SupervisorFocusItem[];
   nextAction: NextPastoralAction | null;
 };
 
@@ -56,62 +84,175 @@ function supervisorInCarePeople(dashboard: SupervisorPageDashboard): SupervisorP
   ));
 }
 
-export function buildSupervisorNextPastoralAction({
+function focusCount(groupCount: number, itemCount: number) {
+  return groupCount > 0 ? groupCount : itemCount;
+}
+
+function hasPresenceFocus(group: SupervisorGroup) {
+  return !group.hasPresenceData || hasLowPresence(group);
+}
+
+function focusHrefForGroups(groups: SupervisorGroup[], listFilter: CellsFilter, detailFocus?: string) {
+  if (groups.length === 1) {
+    return routeWithQuery(ROUTES.group(groups[0].id), { foco: detailFocus });
+  }
+
+  return cellsFilterHref(listFilter);
+}
+
+function riskListFilter(groups: SupervisorGroup[]): CellsFilter {
+  if (groups.length > 0 && groups.every((group) => groupUrgentCount(group) > 0)) return FILTER_URGENT;
+  if (groups.length > 0 && groups.every((group) => groupPastoralEscalatedCount(group) > 0)) return FILTER_PASTORAL;
+  return FILTER_ATTENTION;
+}
+
+function riskDetailFocus(group: SupervisorGroup | undefined) {
+  if (!group) return undefined;
+  return groupUrgentCount(group) > 0 ? FILTER_URGENT : FILTER_PASTORAL;
+}
+
+function presenceListFilter(groups: SupervisorGroup[]): CellsFilter {
+  if (groups.length > 0 && groups.every((group) => !group.hasPresenceData)) return FILTER_NO_RECENT_PRESENCE;
+  if (groups.length > 0 && groups.every(hasLowPresence)) return FILTER_LOW_PRESENCE;
+  return FILTER_ATTENTION;
+}
+
+function presenceDetailFocus(group: SupervisorGroup | undefined) {
+  if (!group) return undefined;
+  return !group.hasPresenceData ? FILTER_NO_RECENT_PRESENCE : undefined;
+}
+
+function buildFocusItem({
+  key,
+  count,
+  singular,
+  plural,
+  title,
+  detail,
+  href,
+  actionLabel,
+  tone,
+}: {
+  key: SupervisorFocusKey;
+  count: number;
+  singular: string;
+  plural: string;
+  title: string;
+  detail: string;
+  href: string;
+  actionLabel: string;
+  tone: SupervisorFocusItem["tone"];
+}): SupervisorFocusItem | null {
+  if (count <= 0) return null;
+
+  return {
+    key,
+    valueLabel: countLabel(count, singular, plural),
+    title,
+    detail,
+    href,
+    actionLabel,
+    tone,
+  };
+}
+
+export function buildSupervisorFocusItems({
+  groups,
   urgentSignals,
   supportSignals,
   attentionSignals,
   inCarePeople,
 }: {
+  groups: SupervisorGroup[];
   urgentSignals: SupervisorPageSignal[];
   supportSignals: SupervisorPageSignal[];
   attentionSignals: SupervisorPageSignal[];
   inCarePeople: SupervisorPageInCarePerson[];
-}): NextPastoralAction | null {
-  if (urgentSignals.length > 0) {
-    return {
-      eyebrow: "Prioridade de hoje",
-      title: `${countLabel(urgentSignals.length, "caso urgente", "casos urgentes")} nas células`,
-      detail: "Comece pelas pessoas que pedem intervenção ou leitura pastoral mais próxima.",
-      href: membersFilterHref(ROUTES.people, FILTER_ATTENTION),
-      label: "Ver pessoas no radar",
+}): SupervisorFocusItem[] {
+  const groupsWithPastoralFocus = groups.filter((group) => groupPastoralPriorityScore(group) > 0);
+  const riskGroups = groupsWithPastoralFocus.filter((group) => groupRiskCount(group) > 0);
+  const supportGroups = groupsWithPastoralFocus.filter((group) => groupSupportRequestsCount(group) > 0);
+  const presenceGroups = groups.filter(hasPresenceFocus);
+  const attentionGroups = groupsWithPastoralFocus.filter((group) => groupLocalAttentionCount(group) > 0);
+  const careGroups = groupsWithPastoralFocus.filter((group) => group.inCareCount > 0);
+  const urgentCount = focusCount(riskGroups.length, urgentSignals.length);
+  const supportCount = focusCount(supportGroups.length, supportSignals.length);
+  const presenceCount = presenceGroups.length;
+  const attentionCount = focusCount(attentionGroups.length, attentionSignals.length);
+  const careCount = focusCount(careGroups.length, inCarePeople.length);
+
+  return [
+    buildFocusItem({
+      key: "urgent",
+      count: urgentCount,
+      singular: "caso pastoral no radar",
+      plural: "casos pastorais no radar",
+      title: "Acompanhamento próximo",
+      detail: "Há situações que pedem conversa, leitura pastoral ou alinhamento mais cuidadoso com a liderança.",
+      href: focusHrefForGroups(riskGroups, riskListFilter(riskGroups), riskDetailFocus(riskGroups[0])),
+      actionLabel: "Ver contexto nas células",
       tone: "risk",
-    };
-  }
-
-  if (supportSignals.length > 0) {
-    return {
-      eyebrow: "Pedidos de apoio",
-      title: `${countLabel(supportSignals.length, "pedido de líder", "pedidos de líderes")} aguardando retorno`,
-      detail: "Abra os pedidos antes de revisar acompanhamentos menos urgentes.",
-      href: membersFilterHref(ROUTES.people, FILTER_ATTENTION),
-      label: "Responder pedidos",
+    }),
+    buildFocusItem({
+      key: "support",
+      count: supportCount,
+      singular: "apoio sinalizado",
+      plural: "apoios sinalizados",
+      title: "Apoio com líderes",
+      detail: "Líderes trouxeram pontos para caminhar junto, mesmo que a conversa aconteça fora do sistema.",
+      href: focusHrefForGroups(supportGroups, FILTER_SUPPORT, FILTER_SUPPORT),
+      actionLabel: "Acompanhar com liderança",
       tone: "support",
-    };
-  }
-
-  if (attentionSignals.length > 0) {
-    return {
-      eyebrow: "Acompanhamento",
-      title: `${countLabel(attentionSignals.length, "pessoa em atenção", "pessoas em atenção")} para supervisionar`,
-      detail: "Revise o contexto de cada célula e combine o próximo passo com o líder.",
-      href: membersFilterHref(ROUTES.people, FILTER_ATTENTION),
-      label: "Acompanhar pessoas",
+    }),
+    buildFocusItem({
+      key: "presence",
+      count: presenceCount,
+      singular: "célula para entender",
+      plural: "células para entender",
+      title: "Presença pede leitura",
+      detail: "Registro ausente ou presença baixa pode indicar só rotina, ou pode pedir uma conversa pastoral.",
+      href: focusHrefForGroups(presenceGroups, presenceListFilter(presenceGroups), presenceDetailFocus(presenceGroups[0])),
+      actionLabel: "Revisar presença",
       tone: "warn",
-    };
-  }
-
-  if (inCarePeople.length > 0) {
-    return {
-      eyebrow: "Cuidado ativo",
-      title: `${countLabel(inCarePeople.length, "pessoa em cuidado", "pessoas em cuidado")} sob acompanhamento`,
-      detail: "Confira se o cuidado segue com dono claro e próximo passo registrado.",
-      href: membersFilterHref(ROUTES.people, FILTER_IN_CARE),
-      label: "Ver cuidados",
+    }),
+    buildFocusItem({
+      key: "attention",
+      count: attentionCount,
+      singular: "sinal pastoral",
+      plural: "sinais pastorais",
+      title: "Sinais nas células",
+      detail: "Pontos de atenção continuam no radar para você acompanhar o movimento com os líderes.",
+      href: focusHrefForGroups(attentionGroups, FILTER_ATTENTION, FILTER_ATTENTION),
+      actionLabel: "Ver contexto",
+      tone: "warn",
+    }),
+    buildFocusItem({
+      key: "care",
+      count: careCount,
+      singular: "cuidado em andamento",
+      plural: "cuidados em andamento",
+      title: "Memória de cuidado",
+      detail: "Acompanhamentos ativos precisam permanecer visíveis, mesmo quando o cuidado acontece nas conversas da semana.",
+      href: focusHrefForGroups(careGroups, FILTER_IN_CARE, FILTER_IN_CARE),
+      actionLabel: "Revisar cuidado",
       tone: "care",
-    };
-  }
+    }),
+  ].filter((item): item is SupervisorFocusItem => item !== null);
+}
 
-  return null;
+export function buildSupervisorNextPastoralAction(focusItems: SupervisorFocusItem[]): NextPastoralAction | null {
+  const primaryFocus = focusItems[0];
+
+  if (!primaryFocus) return null;
+
+  return {
+    eyebrow: "Foco de acompanhamento",
+    title: primaryFocus.valueLabel,
+    detail: primaryFocus.detail,
+    href: primaryFocus.href,
+    label: primaryFocus.actionLabel,
+    tone: primaryFocus.tone,
+  };
 }
 
 export function buildSupervisorPageView({
@@ -130,13 +271,29 @@ export function buildSupervisorPageView({
   const supportSignals = pastoralSections.supportRequests;
   const attentionSignals = pastoralSections.localAttention;
   const inCarePeople = pastoralSections.inCarePeople;
+  const focusItems = buildSupervisorFocusItems({
+    groups: dashboard.groups,
+    urgentSignals,
+    supportSignals,
+    attentionSignals,
+    inCarePeople,
+  });
   const firstUrgentSignal = urgentSignals[0];
   const firstSupportRequest = supportSignals[0];
   const firstAttentionSignal = attentionSignals[0];
   const firstInCarePerson = inCarePeople[0];
+  const hasRisk = urgentSignals.length > 0 || dashboard.groups.some((group) => groupRiskCount(group) > 0);
+  const hasAttention = supportSignals.length > 0
+    || attentionSignals.length > 0
+    || dashboard.groups.some((group) => (
+      groupSupportRequestsCount(group) > 0
+      || groupLocalAttentionCount(group) > 0
+      || hasPresenceFocus(group)
+    ));
+  const hasCare = inCarePeople.length > 0 || dashboard.groups.some((group) => group.inCareCount > 0);
 
   return {
-    navIndicator: urgentSignals.length > 0 ? "risk" : dashboard.attentionPeople.length > 0 ? "attention" : inCarePeople.length > 0 ? "care" : undefined,
+    navIndicator: hasRisk ? "risk" : hasAttention ? "attention" : hasCare ? "care" : undefined,
     pastoralPulse: buildPastoralPulseMessage({
       viewerRole: user.role,
       scope: "supervisorDashboard",
@@ -157,6 +314,7 @@ export function buildSupervisorPageView({
     supportSignals,
     attentionSignals,
     inCarePeople,
-    nextAction: buildSupervisorNextPastoralAction({ urgentSignals, supportSignals, attentionSignals, inCarePeople }),
+    focusItems,
+    nextAction: buildSupervisorNextPastoralAction(focusItems),
   };
 }

@@ -85,6 +85,9 @@ function signal(overrides: Partial<SupervisorGroup["signals"][number]> = {}): Su
 describe("cells-page-view", () => {
   it("normaliza filtro inválido para todos", () => {
     expect(readCellsFilter("sem-presenca")).toBe("sem-presenca");
+    expect(readCellsFilter("apoio")).toBe("apoio");
+    expect(readCellsFilter("em-cuidado")).toBe("em-cuidado");
+    expect(readCellsFilter("presenca-baixa")).toBe("presenca-baixa");
     expect(readCellsFilter("qualquer-coisa")).toBe("todos");
   });
 
@@ -98,9 +101,15 @@ describe("cells-page-view", () => {
   it("filtra por busca e por atenção pastoral", () => {
     const regular = group({ id: "regular", name: "Célula Norte" });
     const attention = group({ id: "attention", name: "Célula Sul", attentionCount: 1 });
+    const support = group({ id: "support", name: "Célula Leste", supportRequestsCount: 1 });
+    const inCare = group({ id: "in-care", name: "Célula Vale", inCareCount: 1 });
+    const lowPresence = group({ id: "low-presence", name: "Célula Oeste", presenceRate: 62 });
 
     expect(filterCellsPageGroups([regular, attention], "sul", "todos").map((item) => item.id)).toEqual(["attention"]);
     expect(filterCellsPageGroups([regular, attention], "", "atencao").map((item) => item.id)).toEqual(["attention"]);
+    expect(filterCellsPageGroups([regular, support], "", "apoio").map((item) => item.id)).toEqual(["support"]);
+    expect(filterCellsPageGroups([regular, inCare], "", "em-cuidado").map((item) => item.id)).toEqual(["in-care"]);
+    expect(filterCellsPageGroups([regular, lowPresence], "", "presenca-baixa").map((item) => item.id)).toEqual(["low-presence"]);
   });
 
   it("separa células por cuidado, presença e estabilidade", () => {
@@ -115,7 +124,7 @@ describe("cells-page-view", () => {
     expect(groupDetailNavigationFocus(group({ signals: [signal({ severity: SignalSeverity.ATTENTION, assignedTo: { role: UserRole.PASTOR } as SupervisorGroup["signals"][number]["assignedTo"] })] }))).toBe("encaminhadas");
     expect(groupDetailNavigationFocus(group({ supportRequestsCount: 1 }))).toBe("apoio");
     expect(groupDetailNavigationFocus(group({ attentionCount: 1 }))).toBe("atencao");
-    expect(groupDetailNavigationFocus(group({ inCareCount: 1 }))).toBe("atencao");
+    expect(groupDetailNavigationFocus(group({ inCareCount: 1 }))).toBe("em-cuidado");
     expect(groupDetailNavigationFocus(group({ hasPresenceData: false }))).toBe("sem-presenca");
     expect(groupDetailNavigationFocus(group())).toBeNull();
 
@@ -126,6 +135,7 @@ describe("cells-page-view", () => {
   it("resolve selo pastoral por prioridade", () => {
     expect(groupBadge(group({ signals: [signal({ severity: SignalSeverity.URGENT, assignedTo: null })] }))).toEqual({ label: "1 urgente", tone: "risk" });
     expect(groupBadge(group({ supportRequestsCount: 2 }))).toEqual({ label: "2 pedidos de apoio", tone: "support" });
+    expect(groupBadge(group({ inCareCount: 2 }))).toEqual({ label: "2 em cuidado", tone: "care" });
     expect(groupBadge(group({ hasPresenceData: false }))).toEqual({ label: "Sem presença recente", tone: "neutral" });
     expect(groupBadge(group({ presenceRate: 60 }))).toEqual({ label: "Presença baixa", tone: "warn" });
     expect(groupBadge(group({ signals: [signal({ severity: SignalSeverity.ATTENTION, assignedTo: { role: UserRole.PASTOR } as SupervisorGroup["signals"][number]["assignedTo"] })] }))).toEqual({ label: "1 encaminhado", tone: "risk" });

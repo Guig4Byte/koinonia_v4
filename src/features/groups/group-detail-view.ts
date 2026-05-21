@@ -13,6 +13,7 @@ import { countLabel } from "@/lib/format";
 import {
   FILTER_ALL,
   FILTER_ATTENTION,
+  FILTER_IN_CARE,
   FILTER_NO_RECENT_PRESENCE,
   FILTER_PASTORAL,
   FILTER_STABLE,
@@ -31,6 +32,7 @@ export type GroupDetailFocus =
   | typeof FILTER_PASTORAL
   | typeof FILTER_SUPPORT
   | typeof FILTER_ATTENTION
+  | typeof FILTER_IN_CARE
   | typeof FILTER_NO_RECENT_PRESENCE
   | typeof FILTER_STABLE;
 
@@ -39,6 +41,7 @@ const GROUP_DETAIL_FOCUS_VALUES: ReadonlyArray<GroupDetailFocus> = [
   FILTER_PASTORAL,
   FILTER_SUPPORT,
   FILTER_ATTENTION,
+  FILTER_IN_CARE,
   FILTER_NO_RECENT_PRESENCE,
   FILTER_STABLE,
 ];
@@ -137,16 +140,18 @@ export function groupMemberFocusKeys(
   personStatus: PersonStatus,
   viewer: GroupDetailViewer,
 ): GroupDetailFocus[] {
+  const focusKeys: GroupDetailFocus[] = [];
+
   if (signal) {
-    if (isUrgentSignal(signal)) return [FILTER_URGENT];
-    if (isPastoralCaseSignal(signal)) return [FILTER_PASTORAL];
-    if (isSupportRequest(signal, viewer)) return [FILTER_SUPPORT];
-    return [FILTER_ATTENTION];
+    if (isUrgentSignal(signal)) focusKeys.push(FILTER_URGENT);
+    else if (isPastoralCaseSignal(signal)) focusKeys.push(FILTER_PASTORAL);
+    else if (isSupportRequest(signal, viewer)) focusKeys.push(FILTER_SUPPORT);
+    else focusKeys.push(FILTER_ATTENTION);
   }
 
-  if (isInCareStatus(personStatus)) return [FILTER_ATTENTION];
+  if (isInCareStatus(personStatus)) focusKeys.push(FILTER_IN_CARE);
 
-  return [];
+  return focusKeys;
 }
 
 export function groupMemberMatchesFocus(member: Pick<MemberDisplay, "focusKeys">, focus: GroupDetailFocus) {
@@ -195,6 +200,14 @@ export function groupDetailFocusCard(
     };
   }
 
+  if (focus === FILTER_IN_CARE) {
+    return {
+      title: "Em cuidado nesta célula",
+      detail: focusedMembersCount > 0 ? `${peopleDetail} Acompanhamentos ativos para manter no radar.` : "Acompanhamentos ativos para manter no radar.",
+      tone: "default",
+    };
+  }
+
   if (focus === FILTER_NO_RECENT_PRESENCE) {
     return {
       title: "Sem presença recente",
@@ -215,6 +228,7 @@ export function groupFocusSectionTitle(focus: GroupDetailFocus | null) {
   if (focus === FILTER_PASTORAL) return "Encaminhados ao pastor";
   if (focus === FILTER_SUPPORT) return "Pedidos de apoio nesta célula";
   if (focus === FILTER_ATTENTION) return "Atenção nesta célula";
+  if (focus === FILTER_IN_CARE) return "Em cuidado nesta célula";
   return undefined;
 }
 

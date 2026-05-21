@@ -16,7 +16,17 @@ import { groupAttentionLabel, type SignalBadge } from "@/features/signals/displa
 import { compareByName, matchesNormalizedQuery, normalizeSearchText } from "@/lib/text";
 import { countLabel } from "@/lib/format";
 import type { CellsFilter } from "@/features/groups/cells-page-filters";
-import { FILTER_ALL, FILTER_ATTENTION, FILTER_NO_RECENT_PRESENCE, FILTER_PASTORAL, FILTER_SUPPORT, FILTER_URGENT, NO_RECENT_PRESENCE_LABEL } from "@/lib/filter-param";
+import {
+  FILTER_ALL,
+  FILTER_ATTENTION,
+  FILTER_IN_CARE,
+  FILTER_LOW_PRESENCE,
+  FILTER_NO_RECENT_PRESENCE,
+  FILTER_PASTORAL,
+  FILTER_SUPPORT,
+  FILTER_URGENT,
+  NO_RECENT_PRESENCE_LABEL,
+} from "@/lib/filter-param";
 import { routeWithQuery } from "@/lib/routes";
 
 export const CELLS_PAGE_SECTION_LIMIT = 4;
@@ -95,8 +105,13 @@ export function compareGroups(left: SupervisorGroup, right: SupervisorGroup) {
 }
 
 export function groupMatchesFilter(group: SupervisorGroup, filter: CellsFilter) {
+  if (filter === FILTER_URGENT) return groupUrgentCount(group) > 0;
+  if (filter === FILTER_PASTORAL) return groupPastoralEscalatedCount(group) > 0;
+  if (filter === FILTER_SUPPORT) return groupSupportRequestsCount(group) > 0;
   if (filter === FILTER_ATTENTION) return groupNeedsPastoralAttention(group);
+  if (filter === FILTER_IN_CARE) return group.inCareCount > 0;
   if (filter === FILTER_NO_RECENT_PRESENCE) return !group.hasPresenceData;
+  if (filter === FILTER_LOW_PRESENCE) return hasLowPresence(group);
   return true;
 }
 
@@ -112,13 +127,15 @@ export type GroupDetailNavigationFocus =
   | typeof FILTER_PASTORAL
   | typeof FILTER_SUPPORT
   | typeof FILTER_ATTENTION
+  | typeof FILTER_IN_CARE
   | typeof FILTER_NO_RECENT_PRESENCE;
 
 export function groupDetailNavigationFocus(group: SupervisorGroup): GroupDetailNavigationFocus | null {
   if (groupUrgentCount(group) > 0) return FILTER_URGENT;
   if (groupPastoralEscalatedCount(group) > 0) return FILTER_PASTORAL;
   if (groupSupportRequestsCount(group) > 0) return FILTER_SUPPORT;
-  if (groupLocalAttentionCount(group) > 0 || group.inCareCount > 0) return FILTER_ATTENTION;
+  if (groupLocalAttentionCount(group) > 0) return FILTER_ATTENTION;
+  if (group.inCareCount > 0) return FILTER_IN_CARE;
   if (!group.hasPresenceData) return FILTER_NO_RECENT_PRESENCE;
 
   return null;
