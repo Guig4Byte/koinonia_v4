@@ -52,15 +52,16 @@
 }
 
 .k-filter-row {
-  --k-horizontal-fade-width: 42px;
+  --k-horizontal-fade-width: 32px;
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 7px;
   margin-inline: -2px;
   overflow-x: auto;
   overscroll-behavior-x: contain;
-  padding: 2px 42px 4px 2px;
+  padding: 3px 32px 5px 2px;
   scrollbar-width: none;
-  scroll-padding-inline: 2px 42px;
+  scroll-padding-inline: 2px 32px;
   -webkit-mask-image: linear-gradient(to right, black calc(100% - var(--k-horizontal-fade-width)), transparent 100%);
   mask-image: linear-gradient(to right, black calc(100% - var(--k-horizontal-fade-width)), transparent 100%);
 }

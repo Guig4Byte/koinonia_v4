@@ -84,9 +84,11 @@ function signal(overrides: Partial<SupervisorGroup["signals"][number]> = {}): Su
 
 describe("cells-page-view", () => {
   it("normaliza filtro inválido para todos", () => {
-    expect(readCellsFilter("sem-presenca")).toBe("sem-presenca");
+    expect(readCellsFilter("atencao")).toBe("atencao");
     expect(readCellsFilter("apoio")).toBe("apoio");
     expect(readCellsFilter("em-cuidado")).toBe("em-cuidado");
+    expect(readCellsFilter("presenca")).toBe("presenca");
+    expect(readCellsFilter("sem-presenca")).toBe("sem-presenca");
     expect(readCellsFilter("presenca-baixa")).toBe("presenca-baixa");
     expect(readCellsFilter("qualquer-coisa")).toBe("todos");
   });
@@ -104,11 +106,13 @@ describe("cells-page-view", () => {
     const support = group({ id: "support", name: "Célula Leste", supportRequestsCount: 1 });
     const inCare = group({ id: "in-care", name: "Célula Vale", inCareCount: 1 });
     const lowPresence = group({ id: "low-presence", name: "Célula Oeste", presenceRate: 62 });
+    const noPresence = group({ id: "no-presence", name: "Célula Sem Registro", hasPresenceData: false });
 
     expect(filterCellsPageGroups([regular, attention], "sul", "todos").map((item) => item.id)).toEqual(["attention"]);
     expect(filterCellsPageGroups([regular, attention], "", "atencao").map((item) => item.id)).toEqual(["attention"]);
     expect(filterCellsPageGroups([regular, support], "", "apoio").map((item) => item.id)).toEqual(["support"]);
     expect(filterCellsPageGroups([regular, inCare], "", "em-cuidado").map((item) => item.id)).toEqual(["in-care"]);
+    expect(filterCellsPageGroups([regular, lowPresence, noPresence], "", "presenca").map((item) => item.id)).toEqual(["no-presence", "low-presence"]);
     expect(filterCellsPageGroups([regular, lowPresence], "", "presenca-baixa").map((item) => item.id)).toEqual(["low-presence"]);
   });
 

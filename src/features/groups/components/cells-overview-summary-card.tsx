@@ -57,7 +57,7 @@ function HeaderMetric({ cellsCount }: { cellsCount: number }) {
           </p>
         </div>
       </div>
-      <p className="shrink-0 text-[length:var(--text-2xl)] font-extrabold leading-none tracking-[-0.03em] text-[color:var(--color-text-primary)] tabular-nums">
+      <p className="shrink-0 text-[length:var(--text-2xl)] font-[720] leading-none tracking-normal text-[color:var(--color-text-primary)] tabular-nums">
         {cellsCount}
       </p>
     </div>
@@ -94,7 +94,7 @@ function WeeklyPresenceSpotlight({ weeklyPresence }: { weeklyPresence: WeeklyPre
             className={cn(
               "font-extrabold leading-none tabular-nums",
               weeklyPresence.hasPresenceData
-                ? "text-[length:var(--text-2xl)] tracking-[-0.04em]"
+                ? "text-[length:var(--text-2xl)] tracking-normal"
                 : "text-[length:var(--text-xs)] uppercase tracking-[0.08em]",
               weeklyPresence.hasPresenceData ? metricTextClass(tone) : "text-[color:var(--color-text-muted)]",
             )}
@@ -154,7 +154,7 @@ function FooterMetric({
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-3">
           <p className="k-item-title leading-tight">{label}</p>
-          <p className={cn("shrink-0 text-[length:var(--text-xl)] font-extrabold leading-none tracking-[-0.03em] tabular-nums", summaryValueTextClass(tone))}>
+          <p className={cn("shrink-0 text-[length:var(--text-xl)] font-[720] leading-none tracking-normal tabular-nums", summaryValueTextClass(tone))}>
             {value}
           </p>
         </div>

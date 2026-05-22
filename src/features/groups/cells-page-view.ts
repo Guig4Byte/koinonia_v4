@@ -23,6 +23,7 @@ import {
   FILTER_LOW_PRESENCE,
   FILTER_NO_RECENT_PRESENCE,
   FILTER_PASTORAL,
+  FILTER_PRESENCE,
   FILTER_SUPPORT,
   FILTER_URGENT,
   NO_RECENT_PRESENCE_LABEL,
@@ -110,6 +111,7 @@ export function groupMatchesFilter(group: SupervisorGroup, filter: CellsFilter) 
   if (filter === FILTER_SUPPORT) return groupSupportRequestsCount(group) > 0;
   if (filter === FILTER_ATTENTION) return groupNeedsPastoralAttention(group);
   if (filter === FILTER_IN_CARE) return group.inCareCount > 0;
+  if (filter === FILTER_PRESENCE) return !group.hasPresenceData || hasLowPresence(group);
   if (filter === FILTER_NO_RECENT_PRESENCE) return !group.hasPresenceData;
   if (filter === FILTER_LOW_PRESENCE) return hasLowPresence(group);
   return true;

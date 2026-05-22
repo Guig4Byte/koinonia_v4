@@ -298,8 +298,8 @@
   flex: 0 0 auto;
   color: var(--color-text-primary);
   font-size: 1.35rem;
-  font-weight: 850;
-  letter-spacing: -0.03em;
+  font-weight: 720;
+  letter-spacing: 0;
   line-height: 0.95;
   font-variant-numeric: tabular-nums;
 }

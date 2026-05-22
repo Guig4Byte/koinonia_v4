@@ -1,5 +1,4 @@
-import { AlertCircle, ArrowRight, CalendarDays, HeartHandshake, Info, UsersRound, type LucideIcon } from "lucide-react";
-import { ActionPill } from "@/components/ui/action-pill";
+import { AlertCircle, CalendarDays, ChevronRight, HeartHandshake, Info, UsersRound, type LucideIcon } from "lucide-react";
 import { CardLink } from "@/components/ui/card-link";
 import { NextActionCard } from "@/components/shared/next-action-card";
 import type { SupervisorFocusItem, SupervisorFocusKey } from "@/features/pastoral-home/supervisor-page-view";
@@ -42,23 +41,14 @@ function SecondaryFocusCard({ item }: { item: SupervisorFocusItem }) {
         </span>
 
         <span className={styles.secondaryCopy}>
-          <span className={styles.secondaryTopline}>
-            <span className={styles.secondaryEyebrow}>{item.title}</span>
-            <span className={styles.secondaryValue}>{item.valueLabel}</span>
-          </span>
+          <span className={styles.secondaryEyebrow}>{item.title}</span>
+          <span className={styles.secondaryValue}>{item.valueLabel}</span>
           <span className={styles.secondaryDetail}>{item.detail}</span>
         </span>
 
-        <ActionPill
-          tone="prioritySoft"
-          size="xs"
-          iconAfter={<ArrowRight />}
-          shiftIcon
-          pressOnGroupActive
-          className={styles.secondaryAction}
-        >
-          {item.actionLabel}
-        </ActionPill>
+        <span className={styles.secondaryAction} aria-hidden="true">
+          <ChevronRight className="h-4 w-4" strokeWidth={2.2} />
+        </span>
       </span>
     </CardLink>
   );
@@ -95,8 +85,11 @@ export function SupervisorFocusPanel({ items }: { items: SupervisorFocusItem[] }
       {secondaryItems.length > 0 ? (
         <div className={styles.secondaryArea}>
           <div className={styles.secondaryHeader}>
-            <strong>Também no radar</strong>
-            <span>{secondaryItems.length} {secondaryItems.length === 1 ? "frente" : "frentes"}</span>
+            <div className={styles.secondaryHeadingCopy}>
+              <strong>Também no radar</strong>
+              <span>Sinais que seguem visíveis na supervisão.</span>
+            </div>
+            <span className={styles.secondaryCount}>{secondaryItems.length} {secondaryItems.length === 1 ? "frente" : "frentes"}</span>
           </div>
 
           <div className={styles.secondaryList}>

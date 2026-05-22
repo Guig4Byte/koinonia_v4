@@ -5,6 +5,7 @@ export const FILTER_SUPPORT = "apoio";
 export const FILTER_ATTENTION = "atencao";
 export const FILTER_NO_RECENT_PRESENCE = "sem-presenca";
 export const FILTER_LOW_PRESENCE = "presenca-baixa";
+export const FILTER_PRESENCE = "presenca";
 export const FILTER_STABLE = "estaveis";
 export const FILTER_IN_CARE = "em-cuidado";
 export const FILTER_ACTIVE = "ativos";

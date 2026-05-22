@@ -23,7 +23,7 @@ export function ProgressiveList({
   const isExpanded = visibleCount >= items.length && items.length > initialCount;
 
   return (
-    <div className="stagger-children space-y-3">
+    <div className="stagger-children min-w-0 w-full space-y-3">
       {visibleItems}
       {hasHiddenItems ? (
         <Button
