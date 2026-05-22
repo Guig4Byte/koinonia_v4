@@ -69,6 +69,7 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
         visitorsCount={visitorsCount}
         membersCount={members.length}
         showGroupLink={!showCheckInForm}
+        showContextSummary={!showCheckInForm}
       />
 
       <SectionTitle>{detailState.checkInSectionTitle}</SectionTitle>

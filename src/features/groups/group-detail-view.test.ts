@@ -86,7 +86,7 @@ describe("buildGroupMemberDisplays", () => {
       viewer,
     });
 
-    expect(member.badgeLabel).toBe("Pedido de apoio");
+    expect(member.badgeLabel).toBe("Apoio solicitado");
     expect(member.subtitle).toContain("Em cuidado");
     expect(memberBadgeLabelForCareContext(member)).toBe("Em cuidado");
     expect(memberBadgeToneForCareContext(member)).toBe("care");

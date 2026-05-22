@@ -24,6 +24,7 @@ export function EventDetailHeaderCard({
   visitorsCount,
   membersCount,
   showGroupLink,
+  showContextSummary = true,
 }: {
   title: string;
   groupId?: string | null;
@@ -38,6 +39,7 @@ export function EventDetailHeaderCard({
   visitorsCount: number;
   membersCount: number;
   showGroupLink: boolean;
+  showContextSummary?: boolean;
 }) {
   return (
     <Card tone="featured">
@@ -64,37 +66,39 @@ export function EventDetailHeaderCard({
         detailClassName=""
       />
 
-      <div className="mt-4">
-        <ContextSummary
-          surface="inset"
-          variant="compact"
-          presenceContext="event"
-          presenceMetricSize="sm"
-          presenceIndicatorWeight="light"
-          presenceIndicatorMode="plain"
-          presenceValueClassName="text-[length:var(--text-sm)] font-extrabold"
-          items={[
-            {
-              label: "Presença",
-              detail: hasPresenceData ? "Ritmo do encontro registrado." : "Ainda sem presença registrada.",
-              value: formatPresenceRate(hasPresenceData, presenceRate),
-              tone: presenceTone,
-            },
-            {
-              label: "Visitantes",
-              detail: visitorsCount > 0 ? "Pessoas novas ou visitantes marcados." : "Nenhum visitante marcado neste encontro.",
-              value: String(visitorsCount),
-              tone: "neutral",
-            },
-            {
-              label: "Membros da célula",
-              detail: "Base do encontro, sem contar visitantes.",
-              value: String(membersCount),
-              tone: "neutral",
-            },
-          ]}
-        />
-      </div>
+      {showContextSummary ? (
+        <div className="mt-4">
+          <ContextSummary
+            surface="inset"
+            variant="compact"
+            presenceContext="event"
+            presenceMetricSize="sm"
+            presenceIndicatorWeight="light"
+            presenceIndicatorMode="plain"
+            presenceValueClassName="text-[length:var(--text-sm)] font-extrabold"
+            items={[
+              {
+                label: "Presença",
+                detail: hasPresenceData ? "Ritmo do encontro registrado." : "Ainda sem presença registrada.",
+                value: formatPresenceRate(hasPresenceData, presenceRate),
+                tone: presenceTone,
+              },
+              {
+                label: "Visitantes",
+                detail: visitorsCount > 0 ? "Pessoas novas ou visitantes marcados." : "Nenhum visitante marcado neste encontro.",
+                value: String(visitorsCount),
+                tone: "neutral",
+              },
+              {
+                label: "Membros da célula",
+                detail: "Base do encontro, sem contar visitantes.",
+                value: String(membersCount),
+                tone: "neutral",
+              },
+            ]}
+          />
+        </div>
+      ) : null}
     </Card>
   );
 }

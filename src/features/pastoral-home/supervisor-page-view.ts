@@ -112,7 +112,7 @@ function riskDetailFocus(group: SupervisorGroup | undefined) {
   return groupUrgentCount(group) > 0 ? FILTER_URGENT : FILTER_PASTORAL;
 }
 
-function presenceListFilter(_groups: SupervisorGroup[]): CellsFilter {
+function presenceListFilter(): CellsFilter {
   return FILTER_PRESENCE;
 }
 
@@ -212,7 +212,7 @@ export function buildSupervisorFocusItems({
       plural: "células para entender",
       title: "Presença pede leitura",
       detail: "Registro ausente ou presença baixa pode indicar só rotina, ou pode pedir uma conversa pastoral.",
-      href: focusHrefForGroups(presenceGroups, presenceListFilter(presenceGroups), presenceDetailFocus(presenceGroups[0])),
+      href: focusHrefForGroups(presenceGroups, presenceListFilter(), presenceDetailFocus(presenceGroups[0])),
       actionLabel: "Revisar presença",
       tone: "warn",
     }),
