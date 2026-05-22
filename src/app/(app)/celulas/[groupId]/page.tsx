@@ -11,9 +11,12 @@ import {
   groupMeetingText,
   GROUP_REGULAR_MEMBER_INITIAL_COUNT,
   GROUP_REGULAR_MEMBER_STEP,
+  memberBadgeLabelForCareContext,
+  memberBadgeToneForCareContext,
 } from "@/features/groups/group-detail-view";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { ROUTES } from "@/lib/routes";
+import { FILTER_IN_CARE } from "@/lib/filter-param";
 import styles from "./group-detail-page.module.css";
 
 type GroupDetailPageProps = {
@@ -26,6 +29,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
   const { groupId } = await params;
   const queryParams = searchParams ? await searchParams : {};
   const {
+    activeFocus,
     activeMembersFilter,
     backHref,
     backLabel,
@@ -123,6 +127,10 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
             hrefForMember={(member) => ROUTES.person(member.personId)}
             priorityContextForMember={(member) => member.subtitle}
             filteredContextForMember={(member) => member.subtitle}
+            priorityBadgeLabelForMember={activeFocus === FILTER_IN_CARE ? memberBadgeLabelForCareContext : undefined}
+            priorityBadgeToneForMember={activeFocus === FILTER_IN_CARE ? memberBadgeToneForCareContext : undefined}
+            filteredBadgeLabelForMember={activeMembersFilter === FILTER_IN_CARE ? memberBadgeLabelForCareContext : undefined}
+            filteredBadgeToneForMember={activeMembersFilter === FILTER_IN_CARE ? memberBadgeToneForCareContext : undefined}
             prioritySectionTitle={membersView.prioritySectionTitle}
             prioritySectionDetail={membersView.prioritySectionDetail}
             priorityMoreLabel="Ver mais pessoas em atenção"

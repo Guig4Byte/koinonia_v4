@@ -132,7 +132,20 @@ export type GroupDetailNavigationFocus =
   | typeof FILTER_IN_CARE
   | typeof FILTER_NO_RECENT_PRESENCE;
 
-export function groupDetailNavigationFocus(group: SupervisorGroup): GroupDetailNavigationFocus | null {
+function contextualGroupFocus(group: SupervisorGroup, filter: CellsFilter): GroupDetailNavigationFocus | null {
+  if (filter === FILTER_URGENT && groupUrgentCount(group) > 0) return FILTER_URGENT;
+  if (filter === FILTER_PASTORAL && groupPastoralEscalatedCount(group) > 0) return FILTER_PASTORAL;
+  if (filter === FILTER_SUPPORT && groupSupportRequestsCount(group) > 0) return FILTER_SUPPORT;
+  if (filter === FILTER_IN_CARE && group.inCareCount > 0) return FILTER_IN_CARE;
+  if (filter === FILTER_NO_RECENT_PRESENCE && !group.hasPresenceData) return FILTER_NO_RECENT_PRESENCE;
+
+  return null;
+}
+
+export function groupDetailNavigationFocus(group: SupervisorGroup, filter: CellsFilter = FILTER_ALL): GroupDetailNavigationFocus | null {
+  const contextualFocus = contextualGroupFocus(group, filter);
+  if (contextualFocus) return contextualFocus;
+
   if (groupUrgentCount(group) > 0) return FILTER_URGENT;
   if (groupPastoralEscalatedCount(group) > 0) return FILTER_PASTORAL;
   if (groupSupportRequestsCount(group) > 0) return FILTER_SUPPORT;
@@ -143,11 +156,47 @@ export function groupDetailNavigationFocus(group: SupervisorGroup): GroupDetailN
   return null;
 }
 
-export function groupDetailHref(group: SupervisorGroup) {
-  return routeWithQuery(`/celulas/${group.id}`, { foco: groupDetailNavigationFocus(group) });
+export function groupDetailHref(group: SupervisorGroup, filter: CellsFilter = FILTER_ALL) {
+  return routeWithQuery(`/celulas/${group.id}`, { foco: groupDetailNavigationFocus(group, filter) });
 }
 
-export function groupBadge(group: SupervisorGroup): SignalBadge | null {
+function contextualGroupBadge(group: SupervisorGroup, filter: CellsFilter): SignalBadge | null {
+  if (filter === FILTER_URGENT && groupUrgentCount(group) > 0) {
+    return { label: groupAttentionLabel(groupUrgentCount(group), "urgente", "urgentes"), tone: "risk" };
+  }
+
+  if (filter === FILTER_PASTORAL && groupPastoralEscalatedCount(group) > 0) {
+    return { label: groupAttentionLabel(groupPastoralEscalatedCount(group), "encaminhado", "encaminhados"), tone: "risk" };
+  }
+
+  if (filter === FILTER_SUPPORT && groupSupportRequestsCount(group) > 0) {
+    return { label: groupAttentionLabel(groupSupportRequestsCount(group), "pedido de apoio", "pedidos de apoio"), tone: "support" };
+  }
+
+  if (filter === FILTER_IN_CARE && group.inCareCount > 0) {
+    return { label: groupAttentionLabel(group.inCareCount, "em cuidado", "em cuidado"), tone: "care" };
+  }
+
+  if (filter === FILTER_NO_RECENT_PRESENCE && !group.hasPresenceData) {
+    return { label: NO_RECENT_PRESENCE_LABEL, tone: "neutral" };
+  }
+
+  if (filter === FILTER_LOW_PRESENCE && hasLowPresence(group)) {
+    return { label: "Presença baixa", tone: "warn" };
+  }
+
+  if (filter === FILTER_PRESENCE) {
+    if (!group.hasPresenceData) return { label: NO_RECENT_PRESENCE_LABEL, tone: "neutral" };
+    if (hasLowPresence(group)) return { label: "Presença baixa", tone: "warn" };
+  }
+
+  return null;
+}
+
+export function groupBadge(group: SupervisorGroup, filter: CellsFilter = FILTER_ALL): SignalBadge | null {
+  const contextualBadge = contextualGroupBadge(group, filter);
+  if (contextualBadge) return contextualBadge;
+
   const urgent = groupUrgentCount(group);
   const escalated = groupPastoralEscalatedCount(group);
 

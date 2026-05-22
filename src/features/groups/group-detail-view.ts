@@ -79,6 +79,8 @@ export type MemberDisplay = {
   subtitle?: string;
   badgeLabel: string;
   badgeTone: BadgeTone;
+  careBadgeLabel?: string;
+  careBadgeTone?: BadgeTone;
   cardTone?: SignalBadgeTone | "stable" | "muted";
   priorityRank: number;
   status: PersonStatus;
@@ -253,11 +255,13 @@ export function buildGroupMemberDisplays({
   return memberships
     .map((membership) => {
       const attentionSignal = attentionSignalsByPersonId.get(membership.personId);
+      const isInCare = isInCarePerson(membership.person);
       const memberBadge = personEffectiveBadgeForViewer(membership.person, attentionSignal, viewer);
       const escalationSubtitle = attentionSignal ? escalationStatusDetailForViewer(attentionSignal, viewer) : null;
       const signalSubtitle = attentionSignal ? escalationSubtitle ?? signalTitleForViewer(attentionSignal, viewer) : undefined;
       const subtitle = signalSubtitle
-        ?? (isInCarePerson(membership.person) ? "Em cuidado" : undefined);
+        ? isInCare ? `${signalSubtitle} · Em cuidado` : signalSubtitle
+        : isInCare ? "Em cuidado" : undefined;
 
       return {
         membershipId: membership.id,
@@ -266,6 +270,8 @@ export function buildGroupMemberDisplays({
         subtitle,
         badgeLabel: memberBadge.label,
         badgeTone: memberBadge.tone,
+        careBadgeLabel: isInCare ? "Em cuidado" : undefined,
+        careBadgeTone: isInCare ? "care" : undefined,
         cardTone: memberCardTone(memberBadge.tone),
         priorityRank: groupMemberPriorityRank(attentionSignal, membership.person.status, viewer),
         status: membership.person.status,
@@ -273,6 +279,14 @@ export function buildGroupMemberDisplays({
       };
     })
     .sort(compareGroupMembers);
+}
+
+export function memberBadgeLabelForCareContext(member: MemberDisplay) {
+  return member.careBadgeLabel ?? member.badgeLabel;
+}
+
+export function memberBadgeToneForCareContext(member: MemberDisplay) {
+  return member.careBadgeTone ?? member.badgeTone;
 }
 
 export function compareGroupMembers(left: MemberDisplay, right: MemberDisplay) {

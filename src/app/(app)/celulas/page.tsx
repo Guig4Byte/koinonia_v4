@@ -78,7 +78,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
 
           <div className="mt-6">
             {view.groups.length > 0 ? (
-              <CellsPageSections sections={view.groupedSections} />
+              <CellsPageSections sections={view.groupedSections} activeFilter={activeFilter} />
             ) : (
               <EmptyState title={view.isFiltered ? "Nenhuma célula encontrada" : "Nenhuma célula ativa neste escopo"}>
                 {view.isFiltered

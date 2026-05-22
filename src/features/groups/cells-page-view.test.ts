@@ -131,14 +131,17 @@ describe("cells-page-view", () => {
     expect(groupDetailNavigationFocus(group({ inCareCount: 1 }))).toBe("em-cuidado");
     expect(groupDetailNavigationFocus(group({ hasPresenceData: false }))).toBe("sem-presenca");
     expect(groupDetailNavigationFocus(group())).toBeNull();
+    expect(groupDetailNavigationFocus(group({ supportRequestsCount: 1, inCareCount: 1 }), "em-cuidado")).toBe("em-cuidado");
 
     expect(groupDetailHref(group({ id: "group-care", supportRequestsCount: 1 }))).toBe("/celulas/group-care?foco=apoio");
+    expect(groupDetailHref(group({ id: "group-care", supportRequestsCount: 1, inCareCount: 1 }), "em-cuidado")).toBe("/celulas/group-care?foco=em-cuidado");
     expect(groupDetailHref(group({ id: "group-stable" }))).toBe("/celulas/group-stable");
   });
 
   it("resolve selo pastoral por prioridade", () => {
     expect(groupBadge(group({ signals: [signal({ severity: SignalSeverity.URGENT, assignedTo: null })] }))).toEqual({ label: "1 urgente", tone: "risk" });
     expect(groupBadge(group({ supportRequestsCount: 2 }))).toEqual({ label: "2 pedidos de apoio", tone: "support" });
+    expect(groupBadge(group({ supportRequestsCount: 1, inCareCount: 2 }), "em-cuidado")).toEqual({ label: "2 em cuidado", tone: "care" });
     expect(groupBadge(group({ inCareCount: 2 }))).toEqual({ label: "2 em cuidado", tone: "care" });
     expect(groupBadge(group({ hasPresenceData: false }))).toEqual({ label: "Sem presença recente", tone: "neutral" });
     expect(groupBadge(group({ presenceRate: 60 }))).toEqual({ label: "Presença baixa", tone: "warn" });

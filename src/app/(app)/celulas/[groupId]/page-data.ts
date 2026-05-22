@@ -186,6 +186,7 @@ export async function getGroupDetailPageData({
   };
 
   return {
+    activeFocus,
     activeMembersFilter,
     backHref,
     backLabel,

@@ -27,6 +27,7 @@ type MemberCardsProps<TMember extends MemberPriorityListItem> = {
   hrefForMember: (member: TMember) => string;
   contextForMember?: (member: TMember) => string | undefined;
   badgeLabelForMember?: (member: TMember) => string | undefined;
+  badgeToneForMember?: (member: TMember) => BadgeTone | undefined;
   cardToneForMember?: (member: TMember) => MemberPriorityCardTone | undefined;
   compactForMember?: (member: TMember) => boolean;
 };
@@ -52,6 +53,7 @@ function MemberCards<TMember extends MemberPriorityListItem>({
   hrefForMember,
   contextForMember,
   badgeLabelForMember,
+  badgeToneForMember,
   cardToneForMember,
   compactForMember,
 }: MemberCardsProps<TMember>) {
@@ -68,7 +70,7 @@ function MemberCards<TMember extends MemberPriorityListItem>({
             name={member.name}
             context={contextForMember?.(member)}
             badgeLabel={badgeLabelForMember ? badgeLabelForMember(member) : member.badgeLabel}
-            badgeTone={member.badgeTone}
+            badgeTone={badgeToneForMember ? badgeToneForMember(member) ?? member.badgeTone : member.badgeTone}
             cardTone={cardTone}
             ctaLabel={memberCtaLabel(member)}
             compact={compactForMember?.(member) ?? false}
@@ -101,6 +103,10 @@ type MemberPriorityListProps<TMember extends MemberPriorityListItem> = {
   hrefForMember: (member: TMember) => string;
   priorityContextForMember?: (member: TMember) => string | undefined;
   filteredContextForMember?: (member: TMember) => string | undefined;
+  priorityBadgeLabelForMember?: (member: TMember) => string | undefined;
+  priorityBadgeToneForMember?: (member: TMember) => BadgeTone | undefined;
+  filteredBadgeLabelForMember?: (member: TMember) => string | undefined;
+  filteredBadgeToneForMember?: (member: TMember) => BadgeTone | undefined;
   prioritySectionTitle?: string;
   prioritySectionDetail?: string;
   priorityMoreLabel?: string;
@@ -122,6 +128,10 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
   hrefForMember,
   priorityContextForMember,
   filteredContextForMember,
+  priorityBadgeLabelForMember,
+  priorityBadgeToneForMember,
+  filteredBadgeLabelForMember,
+  filteredBadgeToneForMember,
   prioritySectionTitle = "Quem merece proximidade",
   prioritySectionDetail,
   priorityMoreLabel = "Ver mais pessoas no radar",
@@ -174,6 +184,8 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
                   keyForMember={keyForMember}
                   hrefForMember={hrefForMember}
                   contextForMember={priorityContextForMember}
+                  badgeLabelForMember={priorityBadgeLabelForMember}
+                  badgeToneForMember={priorityBadgeToneForMember}
                 />
               </ProgressiveList>
             </div>
@@ -223,7 +235,12 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
               keyForMember={keyForMember}
               hrefForMember={hrefForMember}
               contextForMember={filteredContextForMember}
-              badgeLabelForMember={(member) => member.priorityRank >= 5 ? undefined : member.badgeLabel}
+              badgeLabelForMember={(member) => filteredBadgeLabelForMember
+                ? filteredBadgeLabelForMember(member)
+                : member.priorityRank >= 5 ? undefined : member.badgeLabel}
+              badgeToneForMember={(member) => filteredBadgeToneForMember
+                ? filteredBadgeToneForMember(member)
+                : member.badgeTone}
               cardToneForMember={(member) => member.priorityRank >= 5 ? "muted" : member.cardTone}
               compactForMember={(member) => member.priorityRank >= 5}
             />

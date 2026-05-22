@@ -10,12 +10,13 @@ import {
   type GroupSectionKey,
   type SupervisorGroup,
 } from "@/features/groups/cells-page-view";
+import type { CellsFilter } from "@/features/groups/cells-page-filters";
 import { NO_RECENT_PRESENCE_LABEL } from "@/lib/filter-param";
 import { countLabel } from "@/lib/format";
 import styles from "./cells-page-sections.module.css";
 
-function CellsGroupCard({ group, sectionKey }: { group: SupervisorGroup; sectionKey: GroupSectionKey }) {
-  const badge = groupBadge(group);
+function CellsGroupCard({ group, sectionKey, activeFilter }: { group: SupervisorGroup; sectionKey: GroupSectionKey; activeFilter: CellsFilter }) {
+  const badge = groupBadge(group, activeFilter);
 
   return (
     <GroupCard
@@ -27,7 +28,7 @@ function CellsGroupCard({ group, sectionKey }: { group: SupervisorGroup; section
       badgeTone={badge?.tone}
       showBadge={Boolean(badge)}
       cardTone={sectionCardTone(sectionKey)}
-      href={groupDetailHref(group)}
+      href={groupDetailHref(group, activeFilter)}
       hasPresenceData={group.hasPresenceData}
       presenceTrend={group.presenceTrend}
       noPresenceLabel={NO_RECENT_PRESENCE_LABEL}
@@ -35,7 +36,7 @@ function CellsGroupCard({ group, sectionKey }: { group: SupervisorGroup; section
   );
 }
 
-export function CellsPageSections({ sections }: { sections: CellsPageView["groupedSections"] }) {
+export function CellsPageSections({ sections, activeFilter }: { sections: CellsPageView["groupedSections"]; activeFilter: CellsFilter }) {
   return (
     <div className={styles.sections}>
       {sections.map((section) => (
@@ -54,7 +55,7 @@ export function CellsPageSections({ sections }: { sections: CellsPageView["group
             lessLabel="Mostrar menos células"
           >
             {section.groups.map((group) => (
-              <CellsGroupCard key={group.id} group={group} sectionKey={section.key} />
+              <CellsGroupCard key={group.id} group={group} sectionKey={section.key} activeFilter={activeFilter} />
             ))}
           </ProgressiveList>
         </div>

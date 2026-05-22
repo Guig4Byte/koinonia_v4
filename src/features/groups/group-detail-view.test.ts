@@ -6,6 +6,8 @@ import {
   groupDetailFocusCard,
   groupMemberFocusKeys,
   groupMeetingText,
+  memberBadgeLabelForCareContext,
+  memberBadgeToneForCareContext,
   groupMemberPriorityRank,
   groupMembersSectionDetail,
   readGroupDetailFocus,
@@ -74,6 +76,20 @@ describe("buildGroupMemberDisplays", () => {
     });
 
     expect(members.map((member) => member.name)).toEqual(["Ana", "Camila", "Bruno"]);
+  });
+
+  it("mantém o motivo do sinal e também expõe o status em cuidado", () => {
+    const supportSignal = signal({ personId: "person-1", assignedTo: { role: UserRole.SUPERVISOR } });
+    const [member] = buildGroupMemberDisplays({
+      memberships: [membership("1", "Ana", PersonStatus.COOLING_AWAY)],
+      attentionSignalsByPersonId: new Map([[supportSignal.personId, supportSignal]]),
+      viewer,
+    });
+
+    expect(member.badgeLabel).toBe("Pedido de apoio");
+    expect(member.subtitle).toContain("Em cuidado");
+    expect(memberBadgeLabelForCareContext(member)).toBe("Em cuidado");
+    expect(memberBadgeToneForCareContext(member)).toBe("care");
   });
 });
 
