@@ -104,5 +104,5 @@ export function GroupCard({
     </PriorityCard>
   );
 
-  return href ? <Link href={href} aria-label={`Abrir célula: ${name}`} className="block">{content}</Link> : content;
+  return href ? <Link href={href} aria-label={`Abrir célula: ${name}`} className="block min-w-0 max-w-full">{content}</Link> : content;
 }

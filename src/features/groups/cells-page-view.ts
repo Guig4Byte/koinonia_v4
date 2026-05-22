@@ -130,7 +130,8 @@ export type GroupDetailNavigationFocus =
   | typeof FILTER_SUPPORT
   | typeof FILTER_ATTENTION
   | typeof FILTER_IN_CARE
-  | typeof FILTER_NO_RECENT_PRESENCE;
+  | typeof FILTER_NO_RECENT_PRESENCE
+  | typeof FILTER_LOW_PRESENCE;
 
 function contextualGroupFocus(group: SupervisorGroup, filter: CellsFilter): GroupDetailNavigationFocus | null {
   if (filter === FILTER_URGENT && groupUrgentCount(group) > 0) return FILTER_URGENT;
@@ -138,6 +139,12 @@ function contextualGroupFocus(group: SupervisorGroup, filter: CellsFilter): Grou
   if (filter === FILTER_SUPPORT && groupSupportRequestsCount(group) > 0) return FILTER_SUPPORT;
   if (filter === FILTER_IN_CARE && group.inCareCount > 0) return FILTER_IN_CARE;
   if (filter === FILTER_NO_RECENT_PRESENCE && !group.hasPresenceData) return FILTER_NO_RECENT_PRESENCE;
+  if (filter === FILTER_LOW_PRESENCE && hasLowPresence(group)) return FILTER_LOW_PRESENCE;
+
+  if (filter === FILTER_PRESENCE) {
+    if (!group.hasPresenceData) return FILTER_NO_RECENT_PRESENCE;
+    if (hasLowPresence(group)) return FILTER_LOW_PRESENCE;
+  }
 
   return null;
 }
@@ -152,6 +159,7 @@ export function groupDetailNavigationFocus(group: SupervisorGroup, filter: Cells
   if (groupLocalAttentionCount(group) > 0) return FILTER_ATTENTION;
   if (group.inCareCount > 0) return FILTER_IN_CARE;
   if (!group.hasPresenceData) return FILTER_NO_RECENT_PRESENCE;
+  if (hasLowPresence(group)) return FILTER_LOW_PRESENCE;
 
   return null;
 }

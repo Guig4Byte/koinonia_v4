@@ -12,7 +12,7 @@ import {
   type SupervisorDashboard,
   type SupervisorGroup,
 } from "./cells-page-view";
-import { readCellsFilter } from "./cells-page-filters";
+import { readCellsFilter, visibleCellsFilter } from "./cells-page-filters";
 
 function group(overrides: Partial<SupervisorGroup> = {}): SupervisorGroup {
   return {
@@ -93,6 +93,14 @@ describe("cells-page-view", () => {
     expect(readCellsFilter("qualquer-coisa")).toBe("todos");
   });
 
+  it("mapeia filtros internos para chips visíveis", () => {
+    expect(visibleCellsFilter("urgentes")).toBe("atencao");
+    expect(visibleCellsFilter("encaminhadas")).toBe("atencao");
+    expect(visibleCellsFilter("sem-presenca")).toBe("presenca");
+    expect(visibleCellsFilter("presenca-baixa")).toBe("presenca");
+    expect(visibleCellsFilter("em-cuidado")).toBe("em-cuidado");
+  });
+
   it("usa responsabilidade ativa para liderança e subtítulo", () => {
     const current = group({ memberships: [{ id: "m1" }, { id: "m2" }] as SupervisorGroup["memberships"] });
 
@@ -130,11 +138,14 @@ describe("cells-page-view", () => {
     expect(groupDetailNavigationFocus(group({ attentionCount: 1 }))).toBe("atencao");
     expect(groupDetailNavigationFocus(group({ inCareCount: 1 }))).toBe("em-cuidado");
     expect(groupDetailNavigationFocus(group({ hasPresenceData: false }))).toBe("sem-presenca");
+    expect(groupDetailNavigationFocus(group({ presenceRate: 60 }))).toBe("presenca-baixa");
     expect(groupDetailNavigationFocus(group())).toBeNull();
     expect(groupDetailNavigationFocus(group({ supportRequestsCount: 1, inCareCount: 1 }), "em-cuidado")).toBe("em-cuidado");
+    expect(groupDetailNavigationFocus(group({ presenceRate: 60 }), "presenca")).toBe("presenca-baixa");
 
     expect(groupDetailHref(group({ id: "group-care", supportRequestsCount: 1 }))).toBe("/celulas/group-care?foco=apoio");
     expect(groupDetailHref(group({ id: "group-care", supportRequestsCount: 1, inCareCount: 1 }), "em-cuidado")).toBe("/celulas/group-care?foco=em-cuidado");
+    expect(groupDetailHref(group({ id: "group-low-presence", presenceRate: 60 }), "presenca")).toBe("/celulas/group-low-presence?foco=presenca-baixa");
     expect(groupDetailHref(group({ id: "group-stable" }))).toBe("/celulas/group-stable");
   });
 

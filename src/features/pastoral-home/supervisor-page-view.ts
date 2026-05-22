@@ -20,6 +20,7 @@ import {
   FILTER_LOW_PRESENCE,
   FILTER_NO_RECENT_PRESENCE,
   FILTER_PASTORAL,
+  FILTER_PRESENCE,
   FILTER_SUPPORT,
   FILTER_URGENT,
 } from "@/lib/filter-param";
@@ -111,15 +112,15 @@ function riskDetailFocus(group: SupervisorGroup | undefined) {
   return groupUrgentCount(group) > 0 ? FILTER_URGENT : FILTER_PASTORAL;
 }
 
-function presenceListFilter(groups: SupervisorGroup[]): CellsFilter {
-  if (groups.length > 0 && groups.every((group) => !group.hasPresenceData)) return FILTER_NO_RECENT_PRESENCE;
-  if (groups.length > 0 && groups.every(hasLowPresence)) return FILTER_LOW_PRESENCE;
-  return FILTER_ATTENTION;
+function presenceListFilter(_groups: SupervisorGroup[]): CellsFilter {
+  return FILTER_PRESENCE;
 }
 
 function presenceDetailFocus(group: SupervisorGroup | undefined) {
   if (!group) return undefined;
-  return !group.hasPresenceData ? FILTER_NO_RECENT_PRESENCE : undefined;
+  if (!group.hasPresenceData) return FILTER_NO_RECENT_PRESENCE;
+  if (hasLowPresence(group)) return FILTER_LOW_PRESENCE;
+  return undefined;
 }
 
 function buildFocusItem({

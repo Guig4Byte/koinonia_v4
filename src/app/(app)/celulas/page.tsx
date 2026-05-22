@@ -80,9 +80,9 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
             {view.groups.length > 0 ? (
               <CellsPageSections sections={view.groupedSections} activeFilter={activeFilter} />
             ) : (
-              <EmptyState title={view.isFiltered ? "Nenhuma célula encontrada" : "Nenhuma célula ativa neste escopo"}>
+              <EmptyState title={view.isFiltered ? "Nenhuma célula nesse recorte" : "Nenhuma célula ativa neste escopo"}>
                 {view.isFiltered
-                  ? "Ajuste a busca ou limpe os filtros para ver outras células supervisionadas."
+                  ? "Ajuste a busca ou limpe os filtros para ver as demais células supervisionadas."
                   : "Quando uma célula ativa for vinculada à sua supervisão, ela aparecerá aqui."
                 }
               </EmptyState>

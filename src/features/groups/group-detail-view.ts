@@ -14,6 +14,7 @@ import {
   FILTER_ALL,
   FILTER_ATTENTION,
   FILTER_IN_CARE,
+  FILTER_LOW_PRESENCE,
   FILTER_NO_RECENT_PRESENCE,
   FILTER_PASTORAL,
   FILTER_STABLE,
@@ -34,6 +35,7 @@ export type GroupDetailFocus =
   | typeof FILTER_ATTENTION
   | typeof FILTER_IN_CARE
   | typeof FILTER_NO_RECENT_PRESENCE
+  | typeof FILTER_LOW_PRESENCE
   | typeof FILTER_STABLE;
 
 const GROUP_DETAIL_FOCUS_VALUES: ReadonlyArray<GroupDetailFocus> = [
@@ -43,6 +45,7 @@ const GROUP_DETAIL_FOCUS_VALUES: ReadonlyArray<GroupDetailFocus> = [
   FILTER_ATTENTION,
   FILTER_IN_CARE,
   FILTER_NO_RECENT_PRESENCE,
+  FILTER_LOW_PRESENCE,
   FILTER_STABLE,
 ];
 
@@ -218,6 +221,14 @@ export function groupDetailFocusCard(
     };
   }
 
+  if (focus === FILTER_LOW_PRESENCE) {
+    return {
+      title: "Presença baixa nesta célula",
+      detail: "A média recente está abaixo do esperado. Vale ler o contexto antes de agir.",
+      tone: "warning",
+    };
+  }
+
   return {
     title: "Célula estável",
     detail: "Sem sinal prioritário neste recorte.",
@@ -231,6 +242,7 @@ export function groupFocusSectionTitle(focus: GroupDetailFocus | null) {
   if (focus === FILTER_SUPPORT) return "Pedidos de apoio nesta célula";
   if (focus === FILTER_ATTENTION) return "Atenção nesta célula";
   if (focus === FILTER_IN_CARE) return "Em cuidado nesta célula";
+  if (focus === FILTER_LOW_PRESENCE) return "Presença em atenção";
   return undefined;
 }
 

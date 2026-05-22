@@ -46,6 +46,13 @@ export function readCellsFilter(value: string | null | undefined): CellsFilter {
   return readFilterParam(ACCEPTED_CELLS_FILTERS, value, FILTER_ALL);
 }
 
+export function visibleCellsFilter(filter: CellsFilter): CellsFilter {
+  if (filter === FILTER_URGENT || filter === FILTER_PASTORAL) return FILTER_ATTENTION;
+  if (filter === FILTER_NO_RECENT_PRESENCE || filter === FILTER_LOW_PRESENCE) return FILTER_PRESENCE;
+
+  return filter;
+}
+
 export function cellsFilterHref(filter: CellsFilter) {
   const path = filter === FILTER_ALL
     ? ROUTES.cells

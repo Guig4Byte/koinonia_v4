@@ -134,4 +134,20 @@ describe("supervisor-page-view", () => {
     expect(view.nextAction?.label).toBe("Revisar presença");
     expect(view.nextAction?.href).toBe("/celulas/group-no-presence?foco=sem-presenca");
   });
+
+  it("leva o recorte misto de presença para o filtro Presença", () => {
+    const view = buildSupervisorPageView({
+      dashboard: dashboard({
+        groups: [
+          group({ id: "group-no-presence", hasPresenceData: false }),
+          group({ id: "group-low-presence", presenceRate: 60 }),
+        ],
+      }),
+      user,
+    });
+
+    expect(view.focusItems.map((item) => item.key)).toEqual(["presence"]);
+    expect(view.nextAction?.href).toBe("/celulas?filtro=presenca#celulas-supervisionadas");
+  });
+
 });

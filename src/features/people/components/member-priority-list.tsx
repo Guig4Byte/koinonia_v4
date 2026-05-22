@@ -140,7 +140,7 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
   regularStep = 6,
   regularMoreLabel = "Ver mais membros",
   regularLessLabel = "Mostrar menos membros",
-  emptyText = "Nenhum membro encontrado nesse recorte.",
+  emptyText = "Nenhuma pessoa nesse recorte.",
 }: MemberPriorityListProps<TMember>) {
   return (
     <>

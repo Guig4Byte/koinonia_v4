@@ -99,6 +99,7 @@ describe("group detail focus", () => {
     expect(readGroupDetailFocus("apoio")).toBe("apoio");
     expect(readGroupDetailFocus("urgentes")).toBe("urgentes");
     expect(readGroupDetailFocus("em-cuidado")).toBe("em-cuidado");
+    expect(readGroupDetailFocus("presenca-baixa")).toBe("presenca-baixa");
     expect(readGroupDetailFocus("todos")).toBeNull();
     expect(readGroupDetailFocus("outro")).toBeNull();
   });
@@ -115,6 +116,7 @@ describe("group detail focus", () => {
     expect(groupDetailFocusCard("apoio", 2)).toMatchObject({ title: "Pedido de apoio nesta célula", tone: "default" });
     expect(groupDetailFocusCard("em-cuidado", 1)).toMatchObject({ title: "Em cuidado nesta célula", tone: "default" });
     expect(groupDetailFocusCard("sem-presenca", 0)).toMatchObject({ title: "Sem presença recente" });
+    expect(groupDetailFocusCard("presenca-baixa", 0)).toMatchObject({ title: "Presença baixa nesta célula", tone: "warning" });
     expect(groupDetailFocusCard(null, 0)).toBeNull();
   });
 });

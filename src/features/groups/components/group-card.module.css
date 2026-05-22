@@ -1,9 +1,13 @@
 .card {
   min-height: 7.1rem;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .header {
   position: relative;
+  min-width: 0;
   z-index: 1;
   padding: 0.92rem 0.92rem 0.78rem;
 }
@@ -24,6 +28,7 @@
 
 .footer {
   position: relative;
+  min-width: 0;
   z-index: 1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -66,6 +71,7 @@
 
 .action {
   display: inline-flex;
+  max-width: 100%;
   min-height: 2.25rem;
   align-items: center;
   justify-content: center;
