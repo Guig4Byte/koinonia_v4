@@ -1,0 +1,158 @@
+.panel {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.header {
+  padding: 0 2px;
+}
+
+.kicker {
+  color: var(--color-brand-accent);
+  font-size: var(--text-xs);
+  font-weight: 850;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.title {
+  margin-top: 0.36rem;
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 650;
+  letter-spacing: -0.026em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.detail {
+  margin-top: 0.28rem;
+  max-width: 26rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.45;
+}
+
+.primaryCard {
+  margin-bottom: 0;
+}
+
+.secondaryArea {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.1rem;
+}
+
+.secondaryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-inline: 2px;
+}
+
+.secondaryHeader strong {
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.secondaryHeader span {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  font-weight: 750;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.secondaryList {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.secondaryCard {
+  min-height: 5.25rem;
+}
+
+.secondaryContent {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.72rem;
+  align-items: start;
+  padding: 0.8rem;
+}
+
+.secondaryIcon {
+  display: grid;
+  width: 2.05rem;
+  height: 2.05rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--priority-accent) 30%, var(--color-border-card));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--priority-accent) 10%, var(--surface-alt));
+  color: color-mix(in srgb, var(--priority-accent) 86%, var(--color-text-primary));
+}
+
+.secondaryCopy {
+  min-width: 0;
+}
+
+.secondaryTopline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.5rem;
+}
+
+.secondaryEyebrow {
+  color: color-mix(in srgb, var(--priority-accent) 78%, var(--color-text-secondary));
+  font-size: var(--text-xs);
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
+.secondaryValue {
+  color: var(--color-text-primary);
+  font-size: var(--text-base);
+  font-weight: 760;
+  line-height: 1.16;
+}
+
+.secondaryDetail {
+  display: -webkit-box;
+  margin-top: 0.28rem;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.38;
+}
+
+.secondaryAction {
+  grid-column: 2;
+  justify-self: start;
+  margin-top: -0.05rem;
+}
+
+@media (min-width: 410px) {
+  .secondaryContent {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+  }
+
+  .secondaryAction {
+    grid-column: auto;
+    justify-self: end;
+    margin-top: 0;
+  }
+}

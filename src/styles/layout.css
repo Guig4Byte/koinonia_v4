@@ -1,14 +1,14 @@
 /* Shared page layout primitives. */
 
 .safe-page {
-  --bottom-nav-height: 64px;
-  --bottom-nav-offset: 12px;
+  --bottom-nav-height: 60px;
+  --bottom-nav-offset: 10px;
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
   min-height: 100vh;
-  padding: 14px 16px calc(var(--bottom-nav-height) + var(--bottom-nav-offset) + env(safe-area-inset-bottom) + 24px);
-  scroll-padding-bottom: calc(var(--bottom-nav-height) + var(--bottom-nav-offset) + env(safe-area-inset-bottom) + 32px);
+  padding: 14px 16px calc(var(--bottom-nav-height) + var(--bottom-nav-offset) + env(safe-area-inset-bottom) + 20px);
+  scroll-padding-bottom: calc(var(--bottom-nav-height) + var(--bottom-nav-offset) + env(safe-area-inset-bottom) + 28px);
 }
 
 .safe-page-focus {

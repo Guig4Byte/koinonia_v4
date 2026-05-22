@@ -11,6 +11,7 @@ import {
   type SupervisorGroup,
 } from "@/features/groups/cells-page-view";
 import { NO_RECENT_PRESENCE_LABEL } from "@/lib/filter-param";
+import { countLabel } from "@/lib/format";
 import styles from "./cells-page-sections.module.css";
 
 function CellsGroupCard({ group, sectionKey }: { group: SupervisorGroup; sectionKey: GroupSectionKey }) {
@@ -40,7 +41,10 @@ export function CellsPageSections({ sections }: { sections: CellsPageView["group
       {sections.map((section) => (
         <div key={section.key} className={styles.section}>
           <div className={styles.heading}>
-            <h3>{section.title}</h3>
+            <div className={styles.headingTopline}>
+              <h3>{section.title}</h3>
+              <span>{countLabel(section.groups.length, "célula", "células")}</span>
+            </div>
             <p>{section.detail}</p>
           </div>
           <ProgressiveList

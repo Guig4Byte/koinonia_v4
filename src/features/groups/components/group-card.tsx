@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import type { BadgeTone } from "@/components/ui/badge";
 import { CardHeader } from "@/components/ui/card-header";
 import { PriorityCard } from "@/components/ui/priority-card";
@@ -6,6 +7,7 @@ import { DEFAULT_PRESENCE_TONE_THRESHOLDS, formatPresenceRate, presenceTone } fr
 import type { CardPriorityTone } from "@/lib/card-priority";
 import { PresenceMetricDisplay, PresenceTrendDelta, type PresenceTrend } from "@/components/shared/presence-metric";
 import { countLabel } from "@/lib/format";
+import styles from "./group-card.module.css";
 
 function groupAttentionLabel(count: number, kind: "default" | "local" | "pastoral") {
   if (kind === "pastoral") return countLabel(count, "caso pastoral", "casos pastorais");
@@ -56,32 +58,48 @@ export function GroupCard({
   const priorityTone = cardTone ?? (resolvedBadgeTone === "neutral" || resolvedBadgeTone === "ok" || resolvedBadgeTone === "info" ? undefined : resolvedBadgeTone);
   const presenceText = formatPresenceRate(hasPresenceData, presenceRate);
   const presenceLabel = !hasPresenceData
-    ? "Registro de presença"
+    ? "Sem presença recente"
     : presenceRate < DEFAULT_PRESENCE_TONE_THRESHOLDS.risk ? "Presença baixa" : "Presença recente";
   const content = (
-    <PriorityCard priorityTone={priorityTone} padding="sm" interactive className="group">
-      <CardHeader
-        title={name}
-        subtitle={subtitle}
-        badgeLabel={showBadge ? resolvedBadgeLabel : undefined}
-        badgeTone={resolvedBadgeTone}
-      />
-      <div className="mt-3 flex items-center justify-between gap-3 border-t border-[var(--color-border-divider)] pt-2 text-[length:var(--text-xs)] text-[color:var(--color-text-secondary)]">
-        <span className="min-w-0">
-          {presenceLabel}:{" "}
-          <PresenceMetricDisplay
-            hasPresenceData={hasPresenceData}
-            presenceRate={presenceRate}
-            tone={tone}
-            value={presenceText}
-            context="cell"
-            size="sm"
-          />
-          {presenceTrend ? (
-            <PresenceTrendDelta trend={presenceTrend} tone={tone} className="ml-1" />
-          ) : null}
+    <PriorityCard priorityTone={priorityTone} padding="none" interactive className={["group", styles.card].join(" ")}>
+      <div className={styles.header}>
+        <CardHeader
+          title={name}
+          subtitle={subtitle}
+          badgeLabel={showBadge ? resolvedBadgeLabel : undefined}
+          badgeTone={resolvedBadgeTone}
+          badgeSize="sm"
+          badgeShape="rounded"
+          badgeMaxWidth="row"
+          titleClassName={styles.title}
+          subtitleClassName={styles.subtitle}
+        />
+      </div>
+
+      <div className={styles.footer}>
+        <span className={styles.metricBlock}>
+          <span className={styles.metricLabel}>{presenceLabel}</span>
+          <span className={styles.metricValue}>
+            <PresenceMetricDisplay
+              hasPresenceData={hasPresenceData}
+              presenceRate={presenceRate}
+              tone={tone}
+              value={presenceText}
+              context="cell"
+              size="compact"
+              minHeight="sm"
+            />
+            {presenceTrend ? (
+              <PresenceTrendDelta trend={presenceTrend} tone={tone} className={styles.trend} />
+            ) : null}
+          </span>
         </span>
-        {href ? <span className="font-semibold text-[color:var(--color-brand)]">Abrir célula <span className="inline-block transition group-active:translate-x-0.5">→</span></span> : null}
+        {href ? (
+          <span className={styles.action}>
+            Abrir célula
+            <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.35} aria-hidden="true" />
+          </span>
+        ) : null}
       </div>
     </PriorityCard>
   );

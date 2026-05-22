@@ -1,0 +1,101 @@
+.card {
+  min-height: 7.1rem;
+}
+
+.header {
+  position: relative;
+  z-index: 1;
+  padding: 0.92rem 0.92rem 0.78rem;
+}
+
+.title {
+  font-size: var(--text-lg);
+  font-weight: 720;
+  letter-spacing: -0.02em;
+  line-height: 1.14;
+}
+
+.subtitle {
+  margin-top: 0.22rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.48;
+}
+
+.footer {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.8rem;
+  align-items: center;
+  min-height: 3.35rem;
+  border-top: 1px solid var(--color-border-divider);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-alt) 46%, transparent), transparent),
+    color-mix(in srgb, var(--color-bg-card) 94%, var(--surface-alt));
+  padding: 0.68rem 0.92rem 0.78rem;
+}
+
+.metricBlock {
+  min-width: 0;
+}
+
+.metricLabel {
+  display: block;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  font-weight: 760;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+}
+
+.metricValue {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.18rem 0.42rem;
+  margin-top: 0.24rem;
+}
+
+.trend {
+  font-size: var(--text-xs);
+  line-height: 1;
+}
+
+.action {
+  display: inline-flex;
+  min-height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.28rem;
+  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 30%, var(--color-border-card));
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--color-brand-accent) 8%, transparent);
+  color: var(--color-brand);
+  padding: 0.42rem 0.58rem;
+  font-size: var(--text-xs);
+  font-weight: 850;
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease;
+}
+
+:global(.group:active) .action {
+  transform: translateX(1px);
+}
+
+@media (max-width: 380px) {
+  .footer {
+    grid-template-columns: 1fr;
+    gap: 0.56rem;
+  }
+
+  .action {
+    justify-self: start;
+  }
+}
