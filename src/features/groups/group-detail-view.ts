@@ -253,7 +253,7 @@ export function buildGroupMemberDisplays({
   viewer: GroupDetailViewer;
 }): MemberDisplay[] {
   return memberships
-    .map((membership) => {
+    .map((membership): MemberDisplay => {
       const attentionSignal = attentionSignalsByPersonId.get(membership.personId);
       const isInCare = isInCarePerson(membership.person);
       const memberBadge = personEffectiveBadgeForViewer(membership.person, attentionSignal, viewer);
