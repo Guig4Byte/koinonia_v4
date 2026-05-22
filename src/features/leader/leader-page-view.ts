@@ -141,7 +141,7 @@ export function buildLeaderNextPastoralAction(sections: LeaderPastoralSections):
       eyebrow: "Prioridade de hoje",
       title: `${countLabel(urgentCount, "pessoa urgente", "pessoas urgentes")} no radar`,
       detail: "Comece pelos casos com maior risco antes de revisar os demais acompanhamentos.",
-      href: membersFilterHref(ROUTES.people, FILTER_ATTENTION),
+      href: membersFilterHref(ROUTES.cells, FILTER_ATTENTION),
       label: "Ver pessoas no radar",
       tone: "risk",
     };
@@ -152,7 +152,7 @@ export function buildLeaderNextPastoralAction(sections: LeaderPastoralSections):
       eyebrow: "Pedido de apoio",
       title: `${countLabel(supportCount, "pedido aberto", "pedidos abertos")} para revisar`,
       detail: "Veja o contexto do pedido e registre o próximo passo com a supervisão.",
-      href: membersFilterHref(ROUTES.people, FILTER_ATTENTION),
+      href: membersFilterHref(ROUTES.cells, FILTER_ATTENTION),
       label: "Ver pedidos",
       tone: "support",
     };
@@ -163,7 +163,7 @@ export function buildLeaderNextPastoralAction(sections: LeaderPastoralSections):
       eyebrow: "Acompanhamento",
       title: `${countLabel(attentionCount, "pessoa em atenção", "pessoas em atenção")} na célula`,
       detail: "Revise quem precisa de proximidade antes de abrir a lista completa de membros.",
-      href: membersFilterHref(ROUTES.people, FILTER_ATTENTION),
+      href: membersFilterHref(ROUTES.cells, FILTER_ATTENTION),
       label: "Ver pessoas em atenção",
       tone: "warn",
     };
@@ -174,7 +174,7 @@ export function buildLeaderNextPastoralAction(sections: LeaderPastoralSections):
       eyebrow: "Cuidado ativo",
       title: `${countLabel(inCareCount, "pessoa em cuidado", "pessoas em cuidado")} para seguir`,
       detail: "Confira quem já recebeu cuidado e mantenha o acompanhamento atualizado.",
-      href: membersFilterHref(ROUTES.people, FILTER_IN_CARE),
+      href: membersFilterHref(ROUTES.cells, FILTER_IN_CARE),
       label: "Continuar cuidado",
       tone: "care",
     };

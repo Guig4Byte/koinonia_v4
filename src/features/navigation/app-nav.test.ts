@@ -12,7 +12,7 @@ describe("app navigation", () => {
   });
 
   it("maps the secondary section for each role", () => {
-    expect(secondaryNavForRole(UserRole.LEADER)).toMatchObject({ href: ROUTES.people, label: "Membros" });
+    expect(secondaryNavForRole(UserRole.LEADER)).toMatchObject({ href: ROUTES.cells, label: "Célula" });
     expect(secondaryNavForRole(UserRole.SUPERVISOR)).toMatchObject({ href: ROUTES.cells, label: "Células" });
     expect(secondaryNavForRole(UserRole.PASTOR)).toMatchObject({ href: ROUTES.team, label: "Equipe" });
     expect(secondaryNavForRole(UserRole.ADMIN)).toMatchObject({ href: ROUTES.team, label: "Equipe" });
@@ -21,7 +21,7 @@ describe("app navigation", () => {
   it("marks only the selected tab as active and receives the indicator", () => {
     const nav = appNavForRole(UserRole.LEADER, { active: "secondary", indicator: "attention" });
 
-    expect(nav.map((item) => item.label)).toEqual(["Visão", "Membros", "Encontros"]);
+    expect(nav.map((item) => item.label)).toEqual(["Visão", "Célula", "Encontros"]);
     expect(nav.map((item) => item.active)).toEqual([false, true, false]);
     expect(nav.map((item) => item.indicator)).toEqual([undefined, "attention", undefined]);
   });

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { Plus } from "lucide-react";
+import { GroupKind, UserRole } from "@/generated/prisma/client";
 import { AppShell } from "@/components/layout/app-shell";
 import { CellsPageSections } from "@/features/groups/components/cells-page-sections";
 import { CellsStructureSearch } from "@/features/groups/components/cells-structure-search";
@@ -11,11 +12,12 @@ import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { CELLS_SECTION_ID, readCellsFilter } from "@/features/groups/cells-page-filters";
 import { buildCellsPageView } from "@/features/groups/cells-page-view";
 import { appNavForRole } from "@/features/navigation/app-nav";
-import { canManageGroups, canUseSupervisorDashboard } from "@/features/permissions/permissions";
+import { canManageGroups, canUseSupervisorDashboard, getVisibleGroupWhere } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { membersFilterHref, readMembersFilter } from "@/features/people/member-filters";
 import { firstParam } from "@/lib/search-params";
 import { normalizeSearchText } from "@/lib/text";
-import { UserRole } from "@/generated/prisma/client";
+import { prisma } from "@/lib/prisma";
 import { ROUTES } from "@/lib/routes";
 import pageStyles from "@/components/shared/consultation-page.module.css";
 
@@ -25,12 +27,29 @@ type CellsPageProps = {
 
 export default async function CellsPage({ searchParams }: CellsPageProps) {
   const user = await getCurrentUser();
+  const params = searchParams ? await searchParams : {};
 
-  if (!canUseSupervisorDashboard(user)) {
-    redirect(user.role === UserRole.PASTOR || user.role === UserRole.ADMIN ? ROUTES.team : user.role === UserRole.LEADER ? ROUTES.people : ROUTES.root);
+  if (user.role === UserRole.LEADER) {
+    const primaryGroup = await prisma.smallGroup.findFirst({
+      where: {
+        ...getVisibleGroupWhere(user),
+        kind: GroupKind.CELL,
+      },
+      select: { id: true },
+      orderBy: { name: "asc" },
+    });
+
+    if (!primaryGroup) {
+      redirect(ROUTES.leader);
+    }
+
+    redirect(membersFilterHref(ROUTES.group(primaryGroup.id), readMembersFilter(firstParam(params.membros))));
   }
 
-  const params = searchParams ? await searchParams : {};
+  if (!canUseSupervisorDashboard(user)) {
+    redirect(user.role === UserRole.PASTOR || user.role === UserRole.ADMIN ? ROUTES.team : ROUTES.root);
+  }
+
   const query = firstParam(params.q).trim();
   const activeFilter = readCellsFilter(firstParam(params.filtro));
   const dashboard = await getSupervisorDashboard(user);

@@ -6,7 +6,7 @@ import {
   getVisiblePersonWhere,
   type PermissionUser,
 } from "@/features/permissions/permissions";
-import { readMembersFilter } from "@/features/people/member-filters";
+import { membersFilterHref, readMembersFilter } from "@/features/people/member-filters";
 import { IN_CARE_STATUS } from "@/features/people/person-status";
 import {
   PEOPLE_PAGE_ATTENTION_SIGNAL_QUERY_LIMIT,
@@ -24,6 +24,10 @@ type PeoplePageSearchParams = Record<string, string | string[] | undefined>;
 
 export async function getPeoplePageData(user: PermissionUser, queryParams: PeoplePageSearchParams) {
   const activeMembersFilter = readMembersFilter(firstParam(queryParams.membros));
+
+  if (user.role === UserRole.LEADER) {
+    redirect(membersFilterHref(ROUTES.cells, activeMembersFilter));
+  }
 
   if (user.role === UserRole.SUPERVISOR) {
     redirect(ROUTES.cells);

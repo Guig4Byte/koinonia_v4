@@ -66,7 +66,7 @@ export function stableMessage(scope: PastoralPulseScope): PastoralPulseMessage {
   if (scope === "leaderDashboard") {
     return {
       title: "Sua célula está tranquila agora.",
-      subtitle: "A visão mostra primeiro quem pede cuidado. A lista completa fica em Membros.",
+      subtitle: "A visão mostra primeiro quem pede cuidado. A lista completa fica em Célula.",
       tone: "ok",
     };
   }

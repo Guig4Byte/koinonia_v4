@@ -88,7 +88,7 @@ export default async function LeaderPage() {
           <section className={styles.eventSection}>
             <PastoralSectionTitle>Quem precisa de cuidado</PastoralSectionTitle>
             <EmptyState>
-              Nenhum membro da sua célula pede atenção agora. Para consultar a lista completa, abra Membros.
+              Nenhum membro da sua célula pede atenção agora. Para consultar a lista completa, abra Célula.
             </EmptyState>
           </section>
         )}

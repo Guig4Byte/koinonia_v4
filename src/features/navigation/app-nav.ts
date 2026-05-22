@@ -15,7 +15,7 @@ export function homeHrefForRole(role: UserRole) {
 
 export function secondaryNavForRole(role: UserRole): NavItem {
   if (role === UserRole.LEADER) {
-    return { href: ROUTES.people, label: "Membros", icon: "people" };
+    return { href: ROUTES.cells, label: "Célula", icon: "people" };
   }
 
   if (role === UserRole.SUPERVISOR) {
