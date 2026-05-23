@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { PriorityCard } from "@/components/ui/priority-card";
 import type { CardPriorityTone } from "@/lib/card-priority";
+import styles from "./person-signal-card.module.css";
 
 function signalCardPriorityTone(resolvedBadgeTone: BadgeTone, severity: "ok" | "warn" | "risk" | "info"): CardPriorityTone | undefined {
   if (resolvedBadgeTone !== "neutral" && resolvedBadgeTone !== "ok" && resolvedBadgeTone !== "info") {
@@ -42,30 +44,41 @@ export function PersonSignalCard(props: {
   const priorityTone = signalCardPriorityTone(resolvedBadgeTone, severity);
 
   const content = (
-    <PriorityCard priorityTone={priorityTone} padding="xs" minHeight="sm" interactive className="group">
-      <div className="flex items-start gap-2.5">
-        <Avatar name={name} size="sm" />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <p className="k-item-title">{name}</p>
-              <p className="mt-0.5 text-[length:var(--text-sm)] leading-snug text-[color:var(--color-text-secondary)]">{context}</p>
+    <PriorityCard
+      priorityTone={priorityTone}
+      padding="none"
+      minHeight="sm"
+      containment="hidden"
+      interactive={Boolean(cardHref)}
+      className={["group", styles.card].join(" ")}
+    >
+      <div className={styles.body}>
+        <Avatar name={name} size="sm" className={styles.avatar} />
+        <div className={styles.copy}>
+          <div className={styles.headerRow}>
+            <div className={styles.identity}>
+              <p className={styles.name}>{name}</p>
+              <p className={styles.context}>{context}</p>
             </div>
             <Badge tone={resolvedBadgeTone} size="sm" maxWidth="header">{resolvedBadgeLabel}</Badge>
           </div>
-          {reason ? <p className="mt-2 line-clamp-3 whitespace-pre-line border-t border-[var(--color-border-divider)] pt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-primary)]">{reason}</p> : null}
-          {cardHref ? (
-            <p className="mt-2 inline-flex min-h-8 items-center rounded-full pr-1 text-[length:var(--text-sm)] font-bold text-[color:var(--color-brand)]">
-              {ctaLabel} <span className="ml-1 inline-block transition group-active:translate-x-0.5">→</span>
-            </p>
-          ) : null}
+          {reason ? <p className={styles.reason}>{reason}</p> : null}
         </div>
       </div>
+
+      {cardHref ? (
+        <div className={styles.footer} aria-hidden="true">
+          <span className={styles.action}>
+            {ctaLabel}
+            <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.35} />
+          </span>
+        </div>
+      ) : null}
     </PriorityCard>
   );
 
   return cardHref ? (
-    <Link href={cardHref} aria-label={`${ctaLabel}: ${name}`} className="block">
+    <Link href={cardHref} aria-label={`${ctaLabel}: ${name}`} className="block min-w-0 max-w-full">
       {content}
     </Link>
   ) : content;

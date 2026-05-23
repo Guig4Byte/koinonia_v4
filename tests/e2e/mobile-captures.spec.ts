@@ -50,27 +50,32 @@ const PROFILE_LOGIN = {
 const PROFILE_SCREENS: Record<Exclude<ProfileId, "publico">, ScreenDefinition[]> = {
   lider: [
     { slug: "lider", path: () => "/lider" },
+    { slug: "celula", path: () => "/celulas" },
+    { slug: "detalhe-celula", path: ({ groupId }) => `/celulas/${groupId}` },
+    { slug: "pessoas", path: () => "/pessoas" },
+    { slug: "detalhe-pessoa", path: ({ personId }) => `/pessoas/${personId}` },
+    { slug: "encontros", path: () => "/eventos" },
+    { slug: "encontros-sem-presenca", path: () => "/eventos?consulta=sem-presenca&periodo=30d" },
+    { slug: "historico-presenca", path: () => "/eventos?consulta=historico&periodo=30d" },
+    { slug: "resumo-encontro", path: ({ eventId }) => `/eventos/${eventId}` },
+    { slug: "detalhe-encontro", path: ({ eventId }) => `/eventos/${eventId}?modo=ajuste`, isFormOrCheckIn: true },
+  ],
+  supervisor: [
+    { slug: "supervisor", path: () => "/supervisor" },
+    { slug: "celulas", path: () => "/celulas" },
     { slug: "pessoas", path: () => "/pessoas" },
     { slug: "detalhe-pessoa", path: ({ personId }) => `/pessoas/${personId}` },
     { slug: "detalhe-celula", path: ({ groupId }) => `/celulas/${groupId}` },
     { slug: "encontros", path: () => "/eventos" },
     { slug: "encontros-sem-presenca", path: () => "/eventos?consulta=sem-presenca&periodo=30d" },
     { slug: "historico-presenca", path: () => "/eventos?consulta=historico&periodo=30d" },
-    { slug: "detalhe-encontro", path: ({ eventId }) => `/eventos/${eventId}?modo=ajuste`, isFormOrCheckIn: true },
-  ],
-  supervisor: [
-    { slug: "supervisor", path: () => "/supervisor" },
-    { slug: "celulas", path: () => "/celulas" },
-    { slug: "detalhe-pessoa", path: ({ personId }) => `/pessoas/${personId}` },
-    { slug: "detalhe-celula", path: ({ groupId }) => `/celulas/${groupId}` },
-    { slug: "encontros", path: () => "/eventos" },
-    { slug: "encontros-sem-presenca", path: () => "/eventos?consulta=sem-presenca&periodo=30d" },
-    { slug: "historico-presenca", path: () => "/eventos?consulta=historico&periodo=30d" },
+    { slug: "resumo-encontro", path: ({ eventId }) => `/eventos/${eventId}` },
     { slug: "detalhe-encontro", path: ({ eventId }) => `/eventos/${eventId}?modo=ajuste`, isFormOrCheckIn: true },
   ],
   pastor: [
     { slug: "pastor", path: () => "/pastor" },
     { slug: "equipe", path: () => "/equipe" },
+    { slug: "pessoas", path: () => "/pessoas" },
     { slug: "detalhe-pessoa", path: ({ personId }) => `/pessoas/${personId}` },
     { slug: "detalhe-celula", path: ({ groupId }) => `/celulas/${groupId}` },
     { slug: "nova-celula", path: () => "/celulas/nova", isFormOrCheckIn: true },
@@ -78,6 +83,7 @@ const PROFILE_SCREENS: Record<Exclude<ProfileId, "publico">, ScreenDefinition[]>
     { slug: "encontros", path: () => "/eventos" },
     { slug: "encontros-sem-presenca", path: () => "/eventos?consulta=sem-presenca&periodo=30d" },
     { slug: "historico-presenca", path: () => "/eventos?consulta=historico&periodo=30d" },
+    { slug: "resumo-encontro", path: ({ eventId }) => `/eventos/${eventId}` },
     { slug: "detalhe-encontro", path: ({ eventId }) => `/eventos/${eventId}?modo=ajuste`, isFormOrCheckIn: true },
   ],
 };
@@ -132,6 +138,19 @@ async function resolveTargets(): Promise<CaptureTargets> {
           },
         },
       ],
+      events: {
+        some: {
+          status: EventStatus.COMPLETED,
+          startsAt: { lte: new Date() },
+          attendances: {
+            some: {
+              status: {
+                in: [AttendanceStatus.PRESENT, AttendanceStatus.ABSENT, AttendanceStatus.JUSTIFIED],
+              },
+            },
+          },
+        },
+      },
     },
     select: { id: true },
   });
