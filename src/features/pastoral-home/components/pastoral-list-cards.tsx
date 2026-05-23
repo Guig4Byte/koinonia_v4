@@ -1,6 +1,6 @@
 import { PersonMiniCard } from "@/components/shared/person-cards";
-import { PersonSignalCard } from "@/features/pastoral-home/components/person-signal-card";
-import { PastoralListSection } from "@/features/pastoral-home/components/pastoral-section";
+import { PersonSignalCard, type PersonSignalCardActionDisplay, type PersonSignalCardEmphasis } from "@/features/pastoral-home/components/person-signal-card";
+import { PastoralListSection, type PastoralSectionTone } from "@/features/pastoral-home/components/pastoral-section";
 import { groupNameOrFallback } from "@/features/groups/group-display";
 import { signalBadgeForViewer, signalDescriptionForViewer } from "@/features/signals/display";
 import { isSupportRequest } from "@/features/signals/sections";
@@ -46,12 +46,16 @@ function pastoralSignalCards<TSignal extends PastoralSignalCardItem>({
   contextForSignal = defaultSignalContext,
   reasonForSignal = (signal, currentViewer) => signalDescriptionForViewer(signal, currentViewer),
   ctaLabelForSignal = (signal, currentViewer) => isSupportRequest(signal, currentViewer) ? "Ver pedido" : "Acompanhar pessoa",
+  actionDisplay = "icon",
+  emphasisForSignal = (signal) => signal.severity === SignalSeverity.URGENT ? "strong" : "subtle",
 }: {
   signals: TSignal[];
   viewer: PastoralViewer;
-  contextForSignal?: (signal: TSignal, viewer: PastoralViewer) => string;
+  contextForSignal?: (signal: TSignal, viewer: PastoralViewer) => string | undefined;
   reasonForSignal?: (signal: TSignal, viewer: PastoralViewer) => string | undefined;
   ctaLabelForSignal?: (signal: TSignal, viewer: PastoralViewer) => string;
+  actionDisplay?: PersonSignalCardActionDisplay;
+  emphasisForSignal?: (signal: TSignal, viewer: PastoralViewer) => PersonSignalCardEmphasis;
 }) {
   return signals.map((signal) => {
     const badge = signalBadgeForViewer(signal, viewer);
@@ -67,6 +71,8 @@ function pastoralSignalCards<TSignal extends PastoralSignalCardItem>({
         badgeLabel={badge.label}
         badgeTone={badge.tone}
         ctaLabel={ctaLabelForSignal(signal, viewer)}
+        actionDisplay={actionDisplay}
+        emphasis={emphasisForSignal(signal, viewer)}
       />
     );
   });
@@ -81,15 +87,21 @@ export function PastoralSignalSection<TSignal extends PastoralSignalCardItem>({
   contextForSignal,
   reasonForSignal,
   ctaLabelForSignal,
+  actionDisplay,
+  emphasisForSignal,
+  tone,
 }: {
   title: string;
   detail?: string;
   emptyMessage: string;
   signals: TSignal[];
   viewer: PastoralViewer;
-  contextForSignal?: (signal: TSignal, viewer: PastoralViewer) => string;
+  contextForSignal?: (signal: TSignal, viewer: PastoralViewer) => string | undefined;
   reasonForSignal?: (signal: TSignal, viewer: PastoralViewer) => string | undefined;
   ctaLabelForSignal?: (signal: TSignal, viewer: PastoralViewer) => string;
+  actionDisplay?: PersonSignalCardActionDisplay;
+  emphasisForSignal?: (signal: TSignal, viewer: PastoralViewer) => PersonSignalCardEmphasis;
+  tone?: PastoralSectionTone;
 }) {
   const visibleCards = pastoralSignalCards({
     signals: signals.slice(0, PASTORAL_SECTION_LIMIT),
@@ -97,6 +109,8 @@ export function PastoralSignalSection<TSignal extends PastoralSignalCardItem>({
     contextForSignal,
     reasonForSignal,
     ctaLabelForSignal,
+    actionDisplay,
+    emphasisForSignal,
   });
   const hiddenCards = pastoralSignalCards({
     signals: signals.slice(PASTORAL_SECTION_LIMIT),
@@ -104,6 +118,8 @@ export function PastoralSignalSection<TSignal extends PastoralSignalCardItem>({
     contextForSignal,
     reasonForSignal,
     ctaLabelForSignal,
+    actionDisplay,
+    emphasisForSignal,
   });
 
   return (
@@ -112,6 +128,7 @@ export function PastoralSignalSection<TSignal extends PastoralSignalCardItem>({
       detail={detail}
       emptyMessage={emptyMessage}
       hiddenChildren={hiddenCards}
+      tone={tone}
     >
       {visibleCards}
     </PastoralListSection>
@@ -134,6 +151,7 @@ function inCarePersonCards<TPerson extends InCarePersonCardItem>({
       badgeLabel="Em cuidado"
       badgeTone="care"
       ctaLabel="Continuar cuidado"
+      compact
     />
   ));
 }
@@ -144,12 +162,14 @@ export function InCareSection<TPerson extends InCarePersonCardItem>({
   emptyMessage,
   people,
   contextForPerson,
+  tone,
 }: {
   title: string;
   detail?: string;
   emptyMessage: string;
   people: TPerson[];
   contextForPerson?: (person: TPerson) => string;
+  tone?: PastoralSectionTone;
 }) {
   const visibleCards = inCarePersonCards({ people: people.slice(0, PASTORAL_SECTION_LIMIT), contextForPerson });
   const hiddenCards = inCarePersonCards({ people: people.slice(PASTORAL_SECTION_LIMIT), contextForPerson });
@@ -160,6 +180,7 @@ export function InCareSection<TPerson extends InCarePersonCardItem>({
       detail={detail}
       emptyMessage={emptyMessage}
       hiddenChildren={hiddenCards}
+      tone={tone}
     >
       {visibleCards}
     </PastoralListSection>

@@ -14,6 +14,16 @@
   opacity: 0.72;
 }
 
+.titleWrapRisk::before {
+  width: 4px;
+  background: color-mix(in srgb, var(--color-metric-atencoes) 86%, var(--color-brand-accent));
+  opacity: 0.95;
+}
+
+.titleWrapQuiet::before {
+  opacity: 0.48;
+}
+
 .title {
   color: var(--color-text-primary);
   font-family: var(--font-display);
@@ -25,11 +35,19 @@
   text-wrap: balance;
 }
 
+.titleWrapQuiet .title {
+  font-size: var(--text-lg);
+}
+
 .detail {
   margin-top: 4px;
   color: var(--color-text-secondary);
   font-size: var(--text-sm);
   line-height: 1.45;
+}
+
+.titleWrapQuiet .detail {
+  color: color-mix(in srgb, var(--color-text-secondary) 88%, var(--color-text-muted));
 }
 
 .section {
@@ -38,8 +56,25 @@
   gap: 0.65rem;
 }
 
+.sectionRisk {
+  gap: 0.72rem;
+}
+
+.sectionQuiet {
+  gap: 0.55rem;
+}
+
 .section + .section {
   margin-top: 1.05rem;
+}
+
+.sectionRisk + .section,
+.section + .sectionRisk {
+  margin-top: 1.2rem;
+}
+
+.sectionQuiet + .sectionQuiet {
+  margin-top: 0.95rem;
 }
 
 .cards {

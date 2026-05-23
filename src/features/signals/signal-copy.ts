@@ -68,7 +68,7 @@ export const SIGNAL_COPY = {
       startLabel: "Encaminhar ao pastor",
     },
     guidance: {
-      both: "Pedir apoio à supervisão é o caminho comum. Encaminhe ao pastor quando o cuidado pedir um olhar pastoral mais próximo ou envolver algo sensível.",
+      both: "Quando desejar apoio no cuidado, você pode contar com a supervisão. Encaminhe ao pastor quando a situação pedir um olhar pastoral mais próximo ou envolver algo sensível.",
       supervisorOnly: "O apoio à supervisão ajuda quando o próximo gesto pede outra liderança. A responsabilidade local continua simples.",
       pastorOnly: "O encaminhamento ao pastor fica para cuidados que pedem um olhar pastoral mais próximo ou envolvem algo sensível.",
     },
@@ -144,7 +144,7 @@ export const SIGNAL_COPY = {
       description: "Vale manter esse vínculo no radar com leveza.",
     },
     attention: {
-      title: "Cuidado percebido pela liderança.",
+      title: "Atenção percebida",
       description: "Há um contexto que vale acompanhar com calma.",
     },
     informational: {

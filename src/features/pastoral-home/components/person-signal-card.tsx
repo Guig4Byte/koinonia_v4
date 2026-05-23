@@ -4,7 +4,11 @@ import { Avatar } from "@/components/ui/avatar";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { PriorityCard } from "@/components/ui/priority-card";
 import type { CardPriorityTone } from "@/lib/card-priority";
+import { cn } from "@/lib/cn";
 import styles from "./person-signal-card.module.css";
+
+export type PersonSignalCardActionDisplay = "icon" | "footer";
+export type PersonSignalCardEmphasis = "default" | "strong" | "subtle";
 
 function signalCardPriorityTone(resolvedBadgeTone: BadgeTone, severity: "ok" | "warn" | "risk" | "info"): CardPriorityTone | undefined {
   if (resolvedBadgeTone !== "neutral" && resolvedBadgeTone !== "ok" && resolvedBadgeTone !== "info") {
@@ -18,7 +22,7 @@ function signalCardPriorityTone(resolvedBadgeTone: BadgeTone, severity: "ok" | "
 
 export function PersonSignalCard(props: {
   name: string;
-  context: string;
+  context?: string;
   reason?: string;
   severity?: "ok" | "warn" | "risk" | "info";
   badgeLabel?: string;
@@ -26,6 +30,8 @@ export function PersonSignalCard(props: {
   detailHref?: string;
   href?: string;
   ctaLabel?: string;
+  actionDisplay?: PersonSignalCardActionDisplay;
+  emphasis?: PersonSignalCardEmphasis;
 }) {
   const {
     name,
@@ -37,20 +43,33 @@ export function PersonSignalCard(props: {
     detailHref,
     href,
     ctaLabel = "Acompanhar pessoa",
+    actionDisplay = "icon",
+    emphasis = "default",
   } = props;
   const resolvedBadgeTone = badgeTone ?? (severity === "risk" ? "risk" : severity === "ok" ? "ok" : severity === "info" ? "info" : "warn");
   const resolvedBadgeLabel = badgeLabel ?? (severity === "risk" ? "Urgente" : "Em atenção");
   const cardHref = detailHref ?? href;
   const priorityTone = signalCardPriorityTone(resolvedBadgeTone, severity);
+  const showIconAction = Boolean(cardHref) && actionDisplay === "icon";
+  const showFooterAction = Boolean(cardHref) && actionDisplay === "footer";
+  const normalizedContext = context?.trim();
 
   const content = (
     <PriorityCard
       priorityTone={priorityTone}
       padding="none"
-      minHeight="sm"
+      minHeight={reason || showFooterAction ? "sm" : "none"}
       containment="hidden"
+      surface={emphasis === "strong" ? "spotlightCompact" : "default"}
       interactive={Boolean(cardHref)}
-      className={["group", styles.card].join(" ")}
+      className={cn(
+        "group",
+        styles.card,
+        emphasis === "strong" && styles.strong,
+        emphasis === "subtle" && styles.subtle,
+        showIconAction && styles.iconMode,
+        !normalizedContext && !reason && styles.singleLine,
+      )}
     >
       <div className={styles.body}>
         <Avatar name={name} size="sm" className={styles.avatar} />
@@ -58,15 +77,22 @@ export function PersonSignalCard(props: {
           <div className={styles.headerRow}>
             <div className={styles.identity}>
               <p className={styles.name}>{name}</p>
-              <p className={styles.context}>{context}</p>
+              {normalizedContext ? <p className={styles.context}>{normalizedContext}</p> : null}
             </div>
-            <Badge tone={resolvedBadgeTone} size="sm" maxWidth="header">{resolvedBadgeLabel}</Badge>
+            <span className={styles.headerActions}>
+              <Badge tone={resolvedBadgeTone} size="sm" maxWidth={showIconAction ? "row" : "header"}>{resolvedBadgeLabel}</Badge>
+              {showIconAction ? (
+                <span className={styles.iconAction} aria-hidden="true">
+                  <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.35} />
+                </span>
+              ) : null}
+            </span>
           </div>
           {reason ? <p className={styles.reason}>{reason}</p> : null}
         </div>
       </div>
 
-      {cardHref ? (
+      {showFooterAction ? (
         <div className={styles.footer} aria-hidden="true">
           <span className={styles.action}>
             {ctaLabel}

@@ -1,11 +1,21 @@
 import { Children, type ReactNode } from "react";
 import { EmptyState } from "@/components/shared/base-cards";
 import { DisclosureCard } from "@/components/ui/disclosure-card";
+import { cn } from "@/lib/cn";
 import styles from "./pastoral-section.module.css";
 
-export function PastoralSectionTitle({ children, detail }: { children: ReactNode; detail?: string }) {
+export type PastoralSectionTone = "default" | "risk" | "quiet";
+
+export function PastoralSectionTitle({ children, detail, tone = "default" }: { children: ReactNode; detail?: string; tone?: PastoralSectionTone }) {
   return (
-    <div className={`mb-3 ${styles.titleWrap}`}>
+    <div
+      className={cn(
+        "mb-3",
+        styles.titleWrap,
+        tone === "risk" && styles.titleWrapRisk,
+        tone === "quiet" && styles.titleWrapQuiet,
+      )}
+    >
       <h2 className={styles.title}>{children}</h2>
       {detail ? <p className={styles.detail}>{detail}</p> : null}
     </div>
@@ -19,6 +29,7 @@ export function PastoralListSection({
   hiddenChildren,
   emptyMessage,
   moreLabel = "Ver mais",
+  tone = "default",
 }: {
   title: ReactNode;
   detail?: string;
@@ -26,13 +37,14 @@ export function PastoralListSection({
   hiddenChildren?: ReactNode;
   emptyMessage?: string;
   moreLabel?: string;
+  tone?: PastoralSectionTone;
 }) {
   const hasChildren = Children.count(children) > 0;
   const hasHiddenChildren = Children.count(hiddenChildren) > 0;
 
   return (
-    <section className={styles.section}>
-      <PastoralSectionTitle detail={detail}>{title}</PastoralSectionTitle>
+    <section className={cn(styles.section, tone === "risk" && styles.sectionRisk, tone === "quiet" && styles.sectionQuiet)}>
+      <PastoralSectionTitle detail={detail} tone={tone}>{title}</PastoralSectionTitle>
       <div className={`stagger-children ${styles.cards}`}>
         {children}
       </div>

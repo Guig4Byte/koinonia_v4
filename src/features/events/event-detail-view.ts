@@ -132,7 +132,7 @@ export function buildEventReadOnlyAttendanceView(members: EventReadOnlyMember[])
     groups: [
       {
         title: `Ausentes (${absentMembers.length})`,
-        description: "Ausência isolada nem sempre indica algo; observe o contexto antes de qualquer encaminhamento.",
+        description: "Ausência isolada nem sempre indica algo; observar o contexto pode ser importante.",
         members: absentMembers,
       },
       {
