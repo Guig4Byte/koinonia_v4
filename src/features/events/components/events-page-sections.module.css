@@ -276,13 +276,11 @@
 .consultationTitle {
   grid-area: title;
   min-width: 0;
-  overflow: hidden;
+  overflow-wrap: anywhere;
   color: var(--color-text-primary);
   font-size: var(--text-sm);
   font-weight: 800;
   line-height: 1.2;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .consultationStatus {
@@ -310,13 +308,10 @@
 
 .consultationDescription {
   min-width: 0;
-  overflow: hidden;
   color: var(--color-text-secondary);
   font-size: var(--text-xs);
   font-weight: 650;
   line-height: 1.25;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .consultationArrow {

@@ -41,11 +41,11 @@ export function BottomNav({ items }: { items: NavItem[] }) {
       className="fixed left-1/2 z-50 max-w-[424px] -translate-x-1/2"
       style={{
         bottom: "calc(env(safe-area-inset-bottom) + var(--bottom-nav-offset))",
-        width: "calc(100% - 36px)",
+        width: "calc(100% - 24px)",
       }}
     >
       <div
-        className="grid h-[var(--bottom-nav-height)] gap-0.5 rounded-[1.18rem] border border-[var(--color-border-tab)] bg-[var(--color-bg-tab)] p-0.5 shadow-[var(--color-shadow-nav)] backdrop-blur-xl"
+        className="grid h-[var(--bottom-nav-height)] gap-1 rounded-[1.25rem] border border-[var(--color-border-tab)] bg-[var(--color-bg-tab)] p-1 shadow-[var(--color-shadow-nav)] backdrop-blur-xl"
         style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
       >
         {items.map((item) => {
@@ -61,7 +61,7 @@ export function BottomNav({ items }: { items: NavItem[] }) {
               aria-label={ariaLabel}
               aria-current={item.active ? "page" : undefined}
               className={cn(
-                "relative flex min-h-11 flex-col items-center justify-center rounded-[0.95rem] px-2 py-1 text-[length:var(--text-xs)] font-semibold transition active:scale-[0.98]",
+                "relative flex min-h-12 flex-col items-center justify-center rounded-[1rem] px-1.5 py-1 text-[length:var(--text-xs)] font-semibold leading-tight transition active:scale-[0.98]",
                 item.active
                   ? "bg-[var(--color-bg-tab-active)] text-[color:var(--color-tab-label-active)] shadow-[var(--color-shadow-nav-active)]"
                   : "text-[color:var(--color-tab-label-inactive)] hover:bg-[var(--surface-alt)]",
@@ -86,7 +86,7 @@ export function BottomNav({ items }: { items: NavItem[] }) {
                   strokeWidth={2.25}
                 />
               </span>
-              <span className="mt-0.5 truncate">{item.label}</span>
+              <span className="mt-0.5 max-w-full truncate">{item.label}</span>
             </Link>
           );
         })}

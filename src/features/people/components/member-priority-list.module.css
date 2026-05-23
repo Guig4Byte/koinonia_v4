@@ -1,20 +1,10 @@
 .filterRow {
-  --k-horizontal-fade-width: 32px;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 7px;
   margin: 0 -2px 0.85rem;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  padding: 3px 32px 5px 2px;
-  scrollbar-width: none;
-  scroll-padding-inline: 2px 32px;
-  -webkit-mask-image: linear-gradient(to right, black calc(100% - var(--k-horizontal-fade-width)), transparent 100%);
-  mask-image: linear-gradient(to right, black calc(100% - var(--k-horizontal-fade-width)), transparent 100%);
-}
-
-.filterRow::-webkit-scrollbar {
-  display: none;
+  padding: 3px 2px 5px;
 }
 
 .filterChip.filterChip {

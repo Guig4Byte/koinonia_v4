@@ -4,8 +4,8 @@
   left: 50%;
   bottom: calc(var(--fixed-action-bar-offset) + env(safe-area-inset-bottom));
   z-index: var(--z-fixed-action-bar, 60);
-  width: calc(100% - 32px);
-  max-width: 448px;
+  width: calc(100% - 24px);
+  max-width: 424px;
   transform: translateX(-50%);
 }
 

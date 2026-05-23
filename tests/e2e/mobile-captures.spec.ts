@@ -52,7 +52,6 @@ const PROFILE_SCREENS: Record<Exclude<ProfileId, "publico">, ScreenDefinition[]>
     { slug: "lider", path: () => "/lider" },
     { slug: "celula", path: () => "/celulas" },
     { slug: "detalhe-celula", path: ({ groupId }) => `/celulas/${groupId}` },
-    { slug: "pessoas", path: () => "/pessoas" },
     { slug: "detalhe-pessoa", path: ({ personId }) => `/pessoas/${personId}` },
     { slug: "encontros", path: () => "/eventos" },
     { slug: "encontros-sem-presenca", path: () => "/eventos?consulta=sem-presenca&periodo=30d" },
@@ -63,7 +62,6 @@ const PROFILE_SCREENS: Record<Exclude<ProfileId, "publico">, ScreenDefinition[]>
   supervisor: [
     { slug: "supervisor", path: () => "/supervisor" },
     { slug: "celulas", path: () => "/celulas" },
-    { slug: "pessoas", path: () => "/pessoas" },
     { slug: "detalhe-pessoa", path: ({ personId }) => `/pessoas/${personId}` },
     { slug: "detalhe-celula", path: ({ groupId }) => `/celulas/${groupId}` },
     { slug: "encontros", path: () => "/eventos" },
@@ -75,7 +73,6 @@ const PROFILE_SCREENS: Record<Exclude<ProfileId, "publico">, ScreenDefinition[]>
   pastor: [
     { slug: "pastor", path: () => "/pastor" },
     { slug: "equipe", path: () => "/equipe" },
-    { slug: "pessoas", path: () => "/pessoas" },
     { slug: "detalhe-pessoa", path: ({ personId }) => `/pessoas/${personId}` },
     { slug: "detalhe-celula", path: ({ groupId }) => `/celulas/${groupId}` },
     { slug: "nova-celula", path: () => "/celulas/nova", isFormOrCheckIn: true },

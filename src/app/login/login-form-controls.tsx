@@ -49,7 +49,7 @@ function EmailField({
           aria-invalid={hasError}
           aria-describedby={hasError ? LOGIN_ERROR_ID : undefined}
           className={styles.input}
-          placeholder="nome@igreja.com"
+          placeholder="Digite seu e-mail"
           onChange={onValueChange}
         />
       </div>

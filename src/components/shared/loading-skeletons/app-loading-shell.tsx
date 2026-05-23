@@ -55,15 +55,15 @@ export function AppLoadingShell({
 
       <nav
         aria-hidden="true"
-        className="fixed left-1/2 z-50 max-w-[448px] -translate-x-1/2"
+        className="fixed left-1/2 z-50 max-w-[424px] -translate-x-1/2"
         style={{
           bottom: "calc(env(safe-area-inset-bottom) + var(--bottom-nav-offset))",
-          width: "calc(100% - 32px)",
+          width: "calc(100% - 24px)",
         }}
       >
-        <div className="grid h-[var(--bottom-nav-height)] grid-cols-3 gap-1 rounded-[1.35rem] border border-[var(--color-border-tab)] bg-[var(--color-bg-tab)] p-1 shadow-[var(--color-shadow-nav)] backdrop-blur-[2px]">
+        <div className="grid h-[var(--bottom-nav-height)] grid-cols-3 gap-1 rounded-[1.25rem] border border-[var(--color-border-tab)] bg-[var(--color-bg-tab)] p-1 shadow-[var(--color-shadow-nav)] backdrop-blur-[2px]">
           {Array.from({ length: 3 }).map((_, index) => (
-            <div key={index} className="flex min-h-12 flex-col items-center justify-center rounded-[1rem] px-2 py-1">
+            <div key={index} className="flex min-h-12 flex-col items-center justify-center rounded-[1rem] px-1.5 py-1">
               <Skeleton className="h-[18px] w-[18px] bg-[var(--color-bg-tab-active)] opacity-70" />
               <SkeletonText className="mt-2 h-2.5 w-12 bg-[var(--color-bg-tab-active)] opacity-60" />
             </div>

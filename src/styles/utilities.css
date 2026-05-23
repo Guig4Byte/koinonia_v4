@@ -52,22 +52,12 @@
 }
 
 .k-filter-row {
-  --k-horizontal-fade-width: 32px;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 7px;
   margin-inline: -2px;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  padding: 3px 32px 5px 2px;
-  scrollbar-width: none;
-  scroll-padding-inline: 2px 32px;
-  -webkit-mask-image: linear-gradient(to right, black calc(100% - var(--k-horizontal-fade-width)), transparent 100%);
-  mask-image: linear-gradient(to right, black calc(100% - var(--k-horizontal-fade-width)), transparent 100%);
-}
-
-.k-filter-row::-webkit-scrollbar {
-  display: none;
+  padding: 3px 2px 5px;
 }
 
 .k-item-title {
