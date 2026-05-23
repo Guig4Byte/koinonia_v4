@@ -280,12 +280,20 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
         <PriorityCard id="registrar-cuidado" as="section" priorityTone={hasRiskSignal ? "risk" : openSignalsCount > 0 ? "warn" : personIsInCare ? "care" : "muted"} radius="lg" className={styles.nextGestureCard}>
           <div className={styles.nextGestureHeader}>
             <div className={styles.nextGestureCopy}>
-              <p className={styles.nextGestureTitle}>{nextGestureTitle(openSignalsCount, personIsInCare)}</p>
+              <div className={styles.nextGestureTopline}>
+                <p className={styles.nextGestureTitle}>{nextGestureTitle(openSignalsCount, personIsInCare)}</p>
+                <Badge
+                  tone={contactInfo.hasPhone ? "care" : "info"}
+                  size="sm"
+                  maxWidth="none"
+                  truncate={false}
+                  className={styles.nextGestureBadge}
+                >
+                  {contactInfo.hasPhone ? "Contato disponível" : "Sem telefone"}
+                </Badge>
+              </div>
               <p className={styles.nextGestureDescription}>{nextGestureDescription(contactInfo.hasPhone, openSignalsCount)}</p>
             </div>
-            <Badge tone={contactInfo.hasPhone ? "care" : "info"} size="sm" maxWidth="none" truncate={false}>
-              {contactInfo.hasPhone ? "Contato disponível" : "Sem telefone"}
-            </Badge>
           </div>
 
           <CareActions personId={person.id} phone={person.phone} className={styles.careActions} />
