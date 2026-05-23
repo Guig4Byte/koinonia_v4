@@ -4,7 +4,6 @@ import { createContext, useContext, useEffect, useMemo, useState, type FormEvent
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { FixedActionBar, FixedActionBarContent } from "@/components/ui/fixed-action-bar";
@@ -148,9 +147,15 @@ export function GroupFormActions({
   children,
 }: GroupFormActionsProps) {
   const { isDirty, markDirty, resetDirty, confirmLeave } = useGroupFormGuard();
+  const [submitted, setSubmitted] = useState(false);
 
   function confirmCancel(event: MouseEvent<HTMLAnchorElement>) {
     if (!confirmLeave()) event.preventDefault();
+  }
+
+  function handleDirtySignal() {
+    setSubmitted(false);
+    markDirty();
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -170,35 +175,37 @@ export function GroupFormActions({
       }
     }
 
+    setSubmitted(true);
     resetDirty();
   }
 
   const statusMessage = isDirty ? dirtyMessage : idleMessage;
+  const showActionBar = isDirty || submitted;
 
   return (
     <form
       action={action}
       className={className}
-      onChange={() => markDirty()}
-      onInput={() => markDirty()}
+      onChange={handleDirtySignal}
+      onInput={handleDirtySignal}
       onSubmit={handleSubmit}
     >
-      <FixedActionBarContent>{children}</FixedActionBarContent>
+      <FixedActionBarContent reserveSpace={showActionBar}>{children}</FixedActionBarContent>
 
-      <FixedActionBar tone="muted">
-        <div className={styles.actionBar}>
-          <Badge tone={isDirty ? "warn" : "neutral"} shape="rounded" truncate={false} className="w-full" aria-live="polite">
-            {statusMessage}
-          </Badge>
+      {showActionBar ? (
+        <FixedActionBar tone="muted">
+          <div className={styles.actionBar}>
+            {isDirty ? <p className={styles.actionStatus} aria-live="polite">{statusMessage}</p> : null}
 
-          <div className={styles.actionButtons}>
-            <ButtonLink href={backHref} variant="secondary" size="lg" onClick={confirmCancel} fullWidth>
-              {cancelLabel}
-            </ButtonLink>
-            <SubmitButton label={submitLabel} disabled={!isDirty} />
+            <div className={styles.actionButtons}>
+              <ButtonLink href={backHref} variant="secondary" size="lg" onClick={confirmCancel} fullWidth>
+                {cancelLabel}
+              </ButtonLink>
+              <SubmitButton label={submitLabel} disabled={!isDirty} />
+            </div>
           </div>
-        </div>
-      </FixedActionBar>
+        </FixedActionBar>
+      ) : null}
     </form>
   );
 }

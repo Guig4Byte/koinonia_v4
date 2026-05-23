@@ -68,7 +68,7 @@ const PROFILE_SCREENS: Record<Exclude<ProfileId, "publico">, ScreenDefinition[]>
     { slug: "encontros-sem-presenca", path: () => "/eventos?consulta=sem-presenca&periodo=30d" },
     { slug: "historico-presenca", path: () => "/eventos?consulta=historico&periodo=30d" },
     { slug: "resumo-encontro", path: ({ eventId }) => `/eventos/${eventId}` },
-    { slug: "detalhe-encontro", path: ({ eventId }) => `/eventos/${eventId}?modo=ajuste`, isFormOrCheckIn: true },
+    { slug: "resumo-encontro-sem-ajuste", path: ({ eventId }) => `/eventos/${eventId}?modo=ajuste` },
   ],
   pastor: [
     { slug: "pastor", path: () => "/pastor" },
@@ -81,7 +81,7 @@ const PROFILE_SCREENS: Record<Exclude<ProfileId, "publico">, ScreenDefinition[]>
     { slug: "encontros-sem-presenca", path: () => "/eventos?consulta=sem-presenca&periodo=30d" },
     { slug: "historico-presenca", path: () => "/eventos?consulta=historico&periodo=30d" },
     { slug: "resumo-encontro", path: ({ eventId }) => `/eventos/${eventId}` },
-    { slug: "detalhe-encontro", path: ({ eventId }) => `/eventos/${eventId}?modo=ajuste`, isFormOrCheckIn: true },
+    { slug: "resumo-encontro-sem-ajuste", path: ({ eventId }) => `/eventos/${eventId}?modo=ajuste` },
   ],
 };
 

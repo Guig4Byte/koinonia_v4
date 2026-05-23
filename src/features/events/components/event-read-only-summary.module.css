@@ -4,6 +4,15 @@
   padding-bottom: 2rem;
 }
 
+.permissionHint.permissionHint {
+  border-color: color-mix(in srgb, var(--brown-400) 18%, var(--color-border-card));
+  background: color-mix(in srgb, var(--surface-alt) 78%, var(--color-bg-card));
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 650;
+  line-height: 1.42;
+}
+
 .attendanceCard.attendanceCard {
   --summary-accent: var(--brown-400);
   position: relative;

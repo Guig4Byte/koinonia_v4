@@ -20,20 +20,14 @@ type CheckInSaveBarProps = {
   onSave: () => void;
 };
 
-export function shouldShowCheckInSaveBar({
-  summary,
-  mode,
-  hasUnsavedChanges,
-  isPending,
-  errorMessage,
-}: {
+export function shouldShowCheckInSaveBar(_options: {
   summary: CheckInSummary;
   mode: CheckInMode;
   hasUnsavedChanges: boolean;
   isPending: boolean;
   errorMessage: string | null;
 }) {
-  return !(mode === "adjust" && !hasUnsavedChanges && !isPending && !errorMessage && summary.pending === 0);
+  return true;
 }
 
 function saveBarTitle({

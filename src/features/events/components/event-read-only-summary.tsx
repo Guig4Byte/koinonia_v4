@@ -101,6 +101,7 @@ export function EventReadOnlySummary({
   closedLabel,
   members,
   visitors,
+  permissionHint,
 }: {
   completed: boolean;
   isFutureEvent: boolean;
@@ -108,6 +109,7 @@ export function EventReadOnlySummary({
   closedLabel: string;
   members: EventReadOnlyMember[];
   visitors: EventReadOnlyVisitor[];
+  permissionHint?: string;
 }) {
   const emptyMessage = eventReadOnlyEmptyMessage({ completed, isFutureEvent, isCancelled, closedLabel });
 
@@ -123,6 +125,12 @@ export function EventReadOnlySummary({
 
   return (
     <section className={styles.summarySection}>
+      {permissionHint ? (
+        <Card className={styles.permissionHint}>
+          {permissionHint}
+        </Card>
+      ) : null}
+
       <Card className={styles.attendanceCard}>
         <div className={styles.cardHeader}>
           <div className={styles.heading}>
