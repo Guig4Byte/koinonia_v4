@@ -5,7 +5,7 @@ import { filterChipClassName } from "@/components/ui/filter-chip";
 import { FixedActionBarContent } from "@/components/ui/fixed-action-bar";
 import { Feedback } from "@/components/ui/feedback";
 import { CheckInMemberCard } from "@/features/check-in/components/check-in-member-card";
-import { CheckInSaveBar } from "@/features/check-in/components/check-in-save-bar";
+import { CheckInSaveBar, shouldShowCheckInSaveBar } from "@/features/check-in/components/check-in-save-bar";
 import { CheckInSummaryCard } from "@/features/check-in/components/check-in-summary-card";
 import { CheckInVisitorsCard } from "@/features/check-in/components/check-in-visitors-card";
 import { useCheckInController, type CheckInMember, type CheckInVisitorRecord } from "@/hooks/use-check-in-controller";
@@ -86,9 +86,17 @@ export function CheckInList({
     return window.confirm(unsavedCheckInMessage);
   }
 
+  const showSaveBar = shouldShowCheckInSaveBar({
+    summary: checkIn.summary,
+    mode,
+    hasUnsavedChanges: checkIn.hasUnsavedChanges,
+    isPending: checkIn.isPending,
+    errorMessage: checkIn.errorMessage,
+  });
+
   return (
     <section className={styles.list}>
-      <FixedActionBarContent className={styles.content} data-testid="check-in-content">
+      <FixedActionBarContent className={styles.content} reserveSpace={showSaveBar} data-testid="check-in-content">
         <CheckInSummaryCard
           summary={checkIn.summary}
           helperText={checkInHelperText(mode)}
@@ -160,19 +168,21 @@ export function CheckInList({
         </div>
       </FixedActionBarContent>
 
-      <CheckInSaveBar
-        summary={checkIn.summary}
-        mode={mode}
-        cancelHref={cancelHref}
-        cancelLabel={cancelLabel}
-        canSave={checkIn.canSave}
-        hasUnsavedChanges={checkIn.hasUnsavedChanges}
-        isPending={checkIn.isPending}
-        errorMessage={checkIn.errorMessage}
-        submitLabel={submitLabel}
-        onCancelAttempt={confirmCancel}
-        onSave={checkIn.save}
-      />
+      {showSaveBar ? (
+        <CheckInSaveBar
+          summary={checkIn.summary}
+          mode={mode}
+          cancelHref={cancelHref}
+          cancelLabel={cancelLabel}
+          canSave={checkIn.canSave}
+          hasUnsavedChanges={checkIn.hasUnsavedChanges}
+          isPending={checkIn.isPending}
+          errorMessage={checkIn.errorMessage}
+          submitLabel={submitLabel}
+          onCancelAttempt={confirmCancel}
+          onSave={checkIn.save}
+        />
+      ) : null}
     </section>
   );
 }

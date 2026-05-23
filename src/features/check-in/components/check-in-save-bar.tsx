@@ -20,6 +20,22 @@ type CheckInSaveBarProps = {
   onSave: () => void;
 };
 
+export function shouldShowCheckInSaveBar({
+  summary,
+  mode,
+  hasUnsavedChanges,
+  isPending,
+  errorMessage,
+}: {
+  summary: CheckInSummary;
+  mode: CheckInMode;
+  hasUnsavedChanges: boolean;
+  isPending: boolean;
+  errorMessage: string | null;
+}) {
+  return !(mode === "adjust" && !hasUnsavedChanges && !isPending && !errorMessage && summary.pending === 0);
+}
+
 function saveBarTitle({
   summary,
   mode,
@@ -77,6 +93,12 @@ export function CheckInSaveBar({
   onCancelAttempt,
   onSave,
 }: CheckInSaveBarProps) {
+  const showSaveBar = shouldShowCheckInSaveBar({ summary, mode, hasUnsavedChanges, isPending, errorMessage });
+
+  if (!showSaveBar) {
+    return null;
+  }
+
   const title = saveBarTitle({ summary, mode, hasUnsavedChanges, isPending, errorMessage });
   const description = saveBarDescription({ summary, isPending, errorMessage, mode, hasUnsavedChanges });
 

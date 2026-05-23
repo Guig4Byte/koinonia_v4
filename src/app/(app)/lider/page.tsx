@@ -55,8 +55,8 @@ export default async function LeaderPage() {
 
             {view.supportSignals.length > 0 ? (
               <PastoralSignalSection
-                title="Pessoas com pedido de apoio"
-                detail="Você continua perto da pessoa, com a supervisão caminhando junto."
+                title="Pedidos de apoio"
+                detail="Você continua perto do membro, com a supervisão caminhando junto."
                 emptyMessage="Nenhum pedido de apoio aberto agora."
                 signals={view.supportSignals}
                 viewer={user}
@@ -67,7 +67,7 @@ export default async function LeaderPage() {
 
             {view.attentionSignals.length > 0 ? (
               <PastoralSignalSection
-                title="Pessoas em atenção"
+                title="Membros em atenção"
                 detail="Um gesto simples de proximidade pode evitar que o vínculo esfrie."
                 emptyMessage="Nenhum membro da sua célula está em atenção agora."
                 signals={view.attentionSignals}
@@ -79,18 +79,18 @@ export default async function LeaderPage() {
 
             {view.inCarePeople.length > 0 ? (
               <InCareSection
-                title="Pessoas em cuidado"
+                title="Membros em cuidado"
                 detail="O cuidado já começou; agora importa manter constância e presença."
-                emptyMessage="Nenhuma pessoa em cuidado agora."
+                emptyMessage="Nenhum membro em cuidado agora."
                 people={view.inCarePeople}
               />
             ) : null}
           </>
         ) : (
           <section className={styles.eventSection}>
-            <PastoralSectionTitle detail="Sinais pessoais aparecem aqui; a lista completa fica em Célula.">Cuidado com pessoas</PastoralSectionTitle>
+            <PastoralSectionTitle detail="Sinais pastorais aparecem aqui; a lista completa fica em Célula.">Cuidado com membros</PastoralSectionTitle>
             <EmptyState>
-              Nenhum irmão da sua célula pede atenção agora. Para consultar a lista completa, abra Célula.
+              Nenhum membro da sua célula pede atenção agora. Para consultar a lista completa, abra Célula.
             </EmptyState>
           </section>
         )}

@@ -4,7 +4,6 @@ export {
   EventsPageSkeleton,
   GroupDetailPageSkeleton,
   PastorPageSkeleton,
-  PeoplePageSkeleton,
   PersonDetailPageSkeleton,
   TeamPageSkeleton,
 } from "./loading-skeletons";

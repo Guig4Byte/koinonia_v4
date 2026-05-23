@@ -89,7 +89,7 @@ export function CheckInSummaryCard({
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-2 min-[390px]:grid-cols-4">
+      <div className="mt-4 grid grid-cols-2 gap-2">
         <SummaryPill label="Presentes" value={summary.present} tone="present" />
         <SummaryPill label="Justificaram" value={summary.justified} tone="justified" />
         <SummaryPill label="Ausentes" value={summary.absent} tone="absent" />
@@ -100,24 +100,23 @@ export function CheckInSummaryCard({
 
       {!allMembersPresent ? (
         <div className="mt-4 rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3">
-          <div className="flex flex-col gap-3 min-[390px]:flex-row min-[390px]:items-center min-[390px]:justify-between">
+          <div className="flex flex-col gap-3">
             <div>
               <p className="text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.08em] text-[color:var(--color-text-muted)]">
                 Ação rápida
               </p>
-              <p className="mt-1 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">
+              <p className="mt-1 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">
                 Use quando todos os membros estiveram presentes.
               </p>
             </div>
             <Button
               type="button"
               variant="secondary"
-              size="sm"
+              size="md"
               onClick={onMarkAllAsPresent}
               disabled={isPending || bulkConfirmationOpen}
-              density="compact"
-              responsiveWidth="fullUntilSm"
-              className="shrink-0"
+              fullWidth
+              className="whitespace-normal px-4"
             >
               Marcar todos como presentes
             </Button>

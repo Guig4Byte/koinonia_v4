@@ -164,7 +164,7 @@ export async function getGroupDetailPageData({
   const summaryCard: GroupDetailSummaryCardData = {
     members: {
       count: group.memberships.length,
-      detail: "Pessoas sob cuidado e convivência desta célula.",
+      detail: "Membros sob cuidado e convivência desta célula.",
     },
     presence: {
       hasPresenceData: hasRecentPresence,
@@ -179,7 +179,7 @@ export async function getGroupDetailPageData({
       label: isPastorView ? "Pedem cuidado" : "Pedem proximidade",
       count: attentionPeople.length,
       detail: attentionPeople.length > 0
-        ? "Pessoas que merecem acompanhamento próximo."
+        ? "Membros que merecem acompanhamento próximo."
         : "Nenhum sinal aberto pedindo cuidado agora.",
       tone: attentionPeople.length > 0 ? hasRiskSignal ? "risk" : "warn" : "ok",
     },

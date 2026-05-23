@@ -8,39 +8,11 @@ import {
   FilterChipsSkeleton,
   GroupCardSkeleton,
   PageIntroSkeleton,
-  PersonCardSkeleton,
   SearchSkeleton,
   SummarySkeleton,
   TeamSupervisorSkeleton,
 } from "./common";
 import { AppLoadingShell } from "./app-loading-shell";
-
-export function PeoplePageSkeleton() {
-  return (
-    <AppLoadingShell>
-      <SearchSkeleton />
-      <SkeletonSection titleWidth="w-28" detailWidth="w-56">
-        <FilterChipsSkeleton />
-        <div>
-          <div className="space-y-2">
-            <div>
-              <SkeletonText className="h-4 w-44" />
-              <SkeletonText className="mt-2 h-3 w-32" />
-            </div>
-            <SkeletonList count={4}>{() => <PersonCardSkeleton />}</SkeletonList>
-          </div>
-          <div className="space-y-2 pt-1">
-            <div>
-              <SkeletonText className="h-4 w-20" />
-              <SkeletonText className="mt-2 h-3 w-44" />
-            </div>
-            <SkeletonList count={3}>{() => <PersonCardSkeleton compact />}</SkeletonList>
-          </div>
-        </div>
-      </SkeletonSection>
-    </AppLoadingShell>
-  );
-}
 
 export function CellsPageSkeleton() {
   return (

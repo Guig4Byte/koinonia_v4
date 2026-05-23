@@ -15,6 +15,7 @@ type FixedActionBarProps = HTMLAttributes<HTMLDivElement> & {
 
 type FixedActionBarContentProps = HTMLAttributes<HTMLDivElement> & {
   children: ReactNode;
+  reserveSpace?: boolean;
 };
 
 const heightVariableName = "--fixed-action-bar-height";
@@ -73,9 +74,9 @@ export function FixedActionBar({
   );
 }
 
-export function FixedActionBarContent({ children, className, ...props }: FixedActionBarContentProps) {
+export function FixedActionBarContent({ children, className, reserveSpace = true, ...props }: FixedActionBarContentProps) {
   return (
-    <div className={cn(styles.contentInset, className)} {...props}>
+    <div className={cn(reserveSpace && styles.contentInset, className)} {...props}>
       {children}
     </div>
   );

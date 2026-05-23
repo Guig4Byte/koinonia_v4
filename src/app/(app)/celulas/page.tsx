@@ -43,7 +43,12 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
       redirect(ROUTES.leader);
     }
 
-    redirect(membersFilterHref(ROUTES.group(primaryGroup.id), readMembersFilter(firstParam(params.membros))));
+    const requestedMembersFilter = firstParam(params.membros);
+    const leaderGroupHref = requestedMembersFilter
+      ? membersFilterHref(ROUTES.group(primaryGroup.id), readMembersFilter(requestedMembersFilter))
+      : ROUTES.group(primaryGroup.id);
+
+    redirect(leaderGroupHref);
   }
 
   if (!canUseSupervisorDashboard(user)) {

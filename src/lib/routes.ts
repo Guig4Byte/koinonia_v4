@@ -28,7 +28,6 @@ export const ROUTES = {
   cells: "/celulas",
   newCell: "/celulas/nova",
 
-  people: "/pessoas",
   events: "/eventos",
 
   group: (groupId: string) => `/celulas/${groupId}`,
