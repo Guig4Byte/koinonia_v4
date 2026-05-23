@@ -271,8 +271,8 @@ Regras:
 - contato confirmado aparece como `Contato feito`, com anotação opcional;
 - `Salvar sem anotação` é válido;
 - pedir apoio ou encaminhar pode registrar contexto breve e opcional;
-- para líder, pedir apoio à supervisão é o caminho comum;
-- encaminhar direto ao pastor fica para gravidade ou sensibilidade;
+- para o líder, a supervisão está disponível como apoio quando ajudar no discernimento;
+- encaminhar ao pastor fica para situações que pedem um olhar pastoral mais próximo ou envolvem algo sensível;
 - anotação de apoio/encaminhamento aparece em `Histórico de cuidado`, mas não resolve o sinal sozinha;
 - cuidado resolve sinais ativos dentro do escopo do usuário;
 - se resolver todos os sinais ativos, a pessoa fica `Em cuidado`;

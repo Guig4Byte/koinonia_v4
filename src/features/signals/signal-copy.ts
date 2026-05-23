@@ -63,12 +63,12 @@ export const SIGNAL_COPY = {
     escalatePastor: {
       title: "Encaminhar ao pastor?",
       detail: "Use quando este cuidado pedir um olhar pastoral mais próximo ou envolver algo sensível.",
-      detailWithSupervisorOption: "Use quando este cuidado pedir um olhar pastoral mais próximo ou envolver algo sensível. O caminho comum continua sendo pedir apoio à supervisão.",
+      detailWithSupervisorOption: "O pastor pode ser envolvido quando este cuidado pedir um olhar pastoral mais próximo ou envolver algo sensível. A supervisão também está disponível como apoio, quando ajudar no discernimento.",
       label: "Encaminhar",
       startLabel: "Encaminhar ao pastor",
     },
     guidance: {
-      both: "Quando desejar apoio no cuidado, você pode contar com a supervisão. Encaminhe ao pastor quando a situação pedir um olhar pastoral mais próximo ou envolver algo sensível.",
+      both: "Quando desejar apoio no cuidado, você pode contar com a supervisão. O pastor pode ser envolvido quando a situação pedir um olhar pastoral mais próximo ou envolver algo sensível.",
       supervisorOnly: "O apoio à supervisão ajuda quando o próximo gesto pede outra liderança. A responsabilidade local continua simples.",
       pastorOnly: "O encaminhamento ao pastor fica para cuidados que pedem um olhar pastoral mais próximo ou envolvem algo sensível.",
     },
