@@ -33,8 +33,8 @@ test.describe("leader page spacing", () => {
     await loginAsLeader(page);
     await page.goto("/lider");
 
-    await expect(page.getByRole("heading", { name: "Pedidos de apoio", exact: true })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Encontro da célula", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Pessoas com pedido de apoio", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Rotina da célula", exact: true })).toBeVisible();
 
     const gaps = await page.evaluate(() => {
       function sectionGap(title: string) {
@@ -53,8 +53,8 @@ test.describe("leader page spacing", () => {
       }
 
       return {
-        currentEvent: sectionGap("Encontro da célula"),
-        supportRequests: sectionGap("Pedidos de apoio"),
+        currentEvent: sectionGap("Rotina da célula"),
+        supportRequests: sectionGap("Pessoas com pedido de apoio"),
       };
     });
 

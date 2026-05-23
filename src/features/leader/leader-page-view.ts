@@ -2,11 +2,6 @@ import { UserRole } from "@/generated/prisma/client";
 import { hasRecordedPresence, type RelevantEventCandidate } from "@/features/events/relevant-event";
 import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features/pastoral-pulse";
 import { signalTitleForViewer, type SignalDetailLike } from "@/features/signals/display";
-import type { NextPastoralAction } from "@/features/pastoral-home/components/next-pastoral-action-card";
-import { membersFilterHref } from "@/features/people/member-filters";
-import { FILTER_ATTENTION, FILTER_IN_CARE } from "@/lib/filter-param";
-import { countLabel } from "@/lib/format";
-import { ROUTES } from "@/lib/routes";
 import { splitPastoralSections, type SectionPersonWithIdentity, type SectionSignalWithIdentity } from "@/features/signals/sections";
 import type { LeaderDashboard } from "@/features/dashboard/queries";
 
@@ -35,7 +30,6 @@ export type LeaderPageView = LeaderPastoralSections & {
   navIndicator?: "risk" | "attention" | "care";
   hasPeopleInRadar: boolean;
   pastoralPulse: PastoralPulseMessage;
-  nextAction: NextPastoralAction | null;
 };
 
 export type LeaderCurrentEvent = RelevantEventCandidate & {
@@ -130,59 +124,6 @@ export function buildLeaderPastoralPulse({
   });
 }
 
-export function buildLeaderNextPastoralAction(sections: LeaderPastoralSections): NextPastoralAction | null {
-  const urgentCount = sections.urgentSignals.length;
-  const supportCount = sections.supportSignals.length;
-  const attentionCount = sections.attentionSignals.length;
-  const inCareCount = sections.inCarePeople.length;
-
-  if (urgentCount > 0) {
-    return {
-      eyebrow: "Prioridade de hoje",
-      title: `${countLabel(urgentCount, "pessoa urgente", "pessoas urgentes")} no radar`,
-      detail: "Comece pelos casos com maior risco antes de revisar os demais acompanhamentos.",
-      href: membersFilterHref(ROUTES.cells, FILTER_ATTENTION),
-      label: "Ver pessoas no radar",
-      tone: "risk",
-    };
-  }
-
-  if (supportCount > 0) {
-    return {
-      eyebrow: "Pedido de apoio",
-      title: `${countLabel(supportCount, "pedido aberto", "pedidos abertos")} para revisar`,
-      detail: "Veja o contexto do pedido e registre o próximo passo com a supervisão.",
-      href: membersFilterHref(ROUTES.cells, FILTER_ATTENTION),
-      label: "Ver pedidos",
-      tone: "support",
-    };
-  }
-
-  if (attentionCount > 0) {
-    return {
-      eyebrow: "Acompanhamento",
-      title: `${countLabel(attentionCount, "pessoa em atenção", "pessoas em atenção")} na célula`,
-      detail: "Revise quem precisa de proximidade antes de abrir a lista completa de membros.",
-      href: membersFilterHref(ROUTES.cells, FILTER_ATTENTION),
-      label: "Ver pessoas em atenção",
-      tone: "warn",
-    };
-  }
-
-  if (inCareCount > 0) {
-    return {
-      eyebrow: "Cuidado ativo",
-      title: `${countLabel(inCareCount, "pessoa em cuidado", "pessoas em cuidado")} para seguir`,
-      detail: "Confira quem já recebeu cuidado e mantenha o acompanhamento atualizado.",
-      href: membersFilterHref(ROUTES.cells, FILTER_IN_CARE),
-      label: "Continuar cuidado",
-      tone: "care",
-    };
-  }
-
-  return null;
-}
-
 export function buildLeaderPageView({
   dashboard,
   viewer,
@@ -205,7 +146,6 @@ export function buildLeaderPageView({
       inCareCount: sections.inCarePeople.length,
     }),
     pastoralPulse: buildLeaderPastoralPulse({ sections, viewer }),
-    nextAction: buildLeaderNextPastoralAction(sections),
   };
 }
 

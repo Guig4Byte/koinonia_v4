@@ -240,6 +240,11 @@ const seedSignalText = {
     evidence:
       "A liderança pediu ajuda para acompanhar este cuidado com mais proximidade.",
   },
+  urgentCare: {
+    reason: "Cuidado urgente no radar.",
+    evidence:
+      "A liderança percebeu que este irmão precisa de atenção imediata e acompanhamento próximo.",
+  },
   pastoralForwarded: {
     reason: "Encaminhado ao cuidado pastoral.",
     evidence: "Este cuidado foi encaminhado para um olhar pastoral mais próximo.",
@@ -576,6 +581,40 @@ async function createCareTouch({
     kind,
     note,
     happenedAt: daysFromNow(days, hour),
+  });
+}
+
+async function markMemberInCare({
+  churchId,
+  group,
+  personIndex,
+  actorId,
+  note,
+  days,
+  hour,
+}: {
+  churchId: string;
+  group: SeedGroup;
+  personIndex: number;
+  actorId?: string | null;
+  note?: string | null;
+  days: number;
+  hour: number;
+}) {
+  await prisma.person.update({
+    where: { id: group.members[personIndex].id },
+    data: { status: PersonStatus.COOLING_AWAY },
+  });
+
+  return createCareTouch({
+    churchId,
+    group,
+    personIndex,
+    actorId,
+    kind: CareKind.MARKED_CARED,
+    note,
+    days,
+    hour,
   });
 }
 
@@ -999,6 +1038,101 @@ async function main() {
     hour: 13,
   });
 
+  // Cenários principais da visão do líder Bruno:
+  // - vários tipos ao mesmo tempo: urgente, apoio, atenção local, em cuidado e rotina da célula;
+  // - vários sinais do mesmo tipo: dois urgentes, dois pedidos de apoio e duas pessoas em cuidado;
+  // - mesma pessoa com mais de um sinal: Cláudio fica urgente, com pedido de apoio e também em cuidado;
+  // - cards de pessoa devem abrir o perfil/pedido; rotina deve continuar apontando para a célula/encontro.
+  await createSignal({
+    churchId,
+    group: esperanca,
+    personIndex: 0,
+    assignedToId: null,
+    severity: SignalSeverity.URGENT,
+    source: SignalSource.MANUAL,
+    reason: seedSignalText.urgentCare.reason,
+    evidence:
+      "A família pediu uma aproximação ainda hoje; o líder já iniciou contato e pediu oração.",
+  });
+
+  await createSignal({
+    churchId,
+    group: esperanca,
+    personIndex: 0,
+    assignedToId: ana.id,
+    severity: SignalSeverity.ATTENTION,
+    source: SignalSource.MANUAL,
+    reason: seedSignalText.supportRequested.reason,
+    evidence:
+      "Mesmo com o cuidado urgente aberto, também há apoio solicitado à supervisão para acompanhar o caso.",
+  });
+
+  await markMemberInCare({
+    churchId,
+    group: esperanca,
+    personIndex: 0,
+    actorId: bruno.id,
+    note: "Contato iniciado. Este cenário valida Urgente + Pedido de apoio + Em cuidado na mesma pessoa.",
+    days: -1,
+    hour: 18,
+  });
+
+  await createSignal({
+    churchId,
+    group: esperanca,
+    personIndex: 2,
+    assignedToId: ana.id,
+    severity: SignalSeverity.ATTENTION,
+    source: SignalSource.MANUAL,
+    reason: seedSignalText.supportRequested.reason,
+    evidence:
+      "Segundo pedido aberto na mesma célula para validar agrupamento de múltiplos pedidos de apoio.",
+  });
+
+  await createSignal({
+    churchId,
+    group: esperanca,
+    personIndex: 3,
+    assignedToId: null,
+    severity: SignalSeverity.ATTENTION,
+    source: SignalSource.MANUAL,
+    reason: seedSignalText.localCare.reason,
+    evidence:
+      "Pessoa em atenção local, sem pedido de apoio e sem urgência, para manter a seção de atenção separada.",
+  });
+
+  await markMemberInCare({
+    churchId,
+    group: esperanca,
+    personIndex: 4,
+    actorId: bruno.id,
+    note: "Conversa pelo WhatsApp. Sem sinal aberto; deve aparecer somente em Pessoas em cuidado.",
+    days: -2,
+    hour: 16,
+  });
+
+  await markMemberInCare({
+    churchId,
+    group: esperanca,
+    personIndex: 5,
+    actorId: bruno.id,
+    note: "Contato iniciado após ausência pontual. Segundo cuidado ativo para validar lista com múltiplos itens.",
+    days: -3,
+    hour: 17,
+  });
+
+  await createSignal({
+    churchId,
+    group: esperanca,
+    personIndex: 6,
+    assignedToId: null,
+    severity: SignalSeverity.URGENT,
+    source: SignalSource.MANUAL,
+    reason: seedSignalText.urgentCare.reason,
+    evidence:
+      "Segundo cuidado urgente na mesma célula para validar pluralização e ordenação da visão do líder.",
+  });
+
   await createSignal({
     churchId,
     group: agape,
@@ -1278,7 +1412,7 @@ async function main() {
     `Outros usuários da seed: ${marcos.email} / ${helena.email} / ${paulo.email} / ${carla.email} / ${diego.email} / ${fernanda.email} / ${gabriel.email} / ${juliana.email} / ${lucas.email}`,
   );
   console.log(
-    "Cenários de regressão: saúde pastoral com urgentes, encaminhadas ao pastor, pedido de apoio, atenção local, sem presença recente e estáveis; presença da semana com tendência positiva para o pastor; histórico de presença nas células com registro; 4 encontros no mês atual para a Célula Semente; faltas consecutivas, faltas intercaladas, justificativas, urgente sem atribuição, apoio à supervisão, múltiplos sinais, encaminhamento pastoral, cuidado pastoral realizado, histórico compacto de cuidado com e sem anotação, sinal resolvido, célula sem registro, célula sem supervisor, evento sem presença e célula inativa. Os textos visíveis dos sinais foram padronizados por família pastoral para não sugerir regras automáticas que não existem.",
+    "Cenários de regressão: saúde pastoral com urgentes, encaminhadas ao pastor, pedido de apoio, atenção local, sem presença recente e estáveis; presença da semana com tendência positiva para o pastor; histórico de presença nas células com registro; 4 encontros no mês atual para a Célula Semente; faltas consecutivas, faltas intercaladas, justificativas, urgente sem atribuição, apoio à supervisão, múltiplos sinais, encaminhamento pastoral, cuidado pastoral realizado, histórico compacto de cuidado com e sem anotação, sinal resolvido, célula sem registro, célula sem supervisor, evento sem presença e célula inativa. Na visão do líder Bruno, a Célula Esperança concentra múltiplos cenários visuais: urgentes, pedidos de apoio, atenção local, pessoas em cuidado, múltiplos itens do mesmo tipo, uma pessoa com Urgente + Apoio + Em cuidado e a rotina da célula. Os textos visíveis dos sinais foram padronizados por família pastoral para não sugerir regras automáticas que não existem.",
   );
   console.log("Senha local da seed: koinonia123");
 }

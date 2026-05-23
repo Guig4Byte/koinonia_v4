@@ -66,27 +66,6 @@ describe("leader-page-view", () => {
     expect(view.inCarePeople.map((item) => item.id)).toEqual(["care-person"]);
     expect(view.hasPeopleInRadar).toBe(true);
     expect(view.navIndicator).toBe("risk");
-    expect(view.nextAction).toMatchObject({
-      href: "/celulas?membros=atencao#membros",
-      label: "Ver pessoas no radar",
-    });
-  });
-
-
-  it("aponta ações de cuidado para a célula do líder", () => {
-    const view = buildLeaderPageView({
-      dashboard: {
-        attentionPeople: [],
-        inCarePeople: [person("care-person", "Ana")],
-        currentEvent: null,
-      },
-      viewer,
-    });
-
-    expect(view.nextAction).toMatchObject({
-      href: "/celulas?membros=em-cuidado#membros",
-      label: "Continuar cuidado",
-    });
   });
 
   it("monta estado do encontro atual com presença pendente ou registrada", () => {
