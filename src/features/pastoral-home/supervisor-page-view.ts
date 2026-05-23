@@ -211,7 +211,7 @@ export function buildSupervisorFocusItems({
       singular: "célula para entender",
       plural: "células para entender",
       title: "Presença pede leitura",
-      detail: "Registro ausente ou presença baixa pode indicar só rotina, ou pode pedir uma conversa pastoral.",
+      detail: "Sem presença recente ou presença baixa pode indicar só rotina, ou pode pedir uma conversa pastoral.",
       href: focusHrefForGroups(presenceGroups, presenceListFilter(), presenceDetailFocus(presenceGroups[0])),
       actionLabel: "Revisar presença",
       tone: "warn",

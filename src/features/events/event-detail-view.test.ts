@@ -19,11 +19,11 @@ describe("event-detail-view", () => {
     ]);
 
     expect(view.memberTotalLabel).toBe("4 membros");
-    expect(view.memberBreakdownLabel).toBe("1 presente · 1 ausente · 1 justificou · 1 pendente");
-    expect(view.memberSummary).toBe("4 membros · 1 presente · 1 ausente · 1 justificou · 1 pendente");
+    expect(view.memberBreakdownLabel).toBe("1 presente · 1 ausente · 1 justificou · 1 sem marcação");
+    expect(view.memberSummary).toBe("4 membros · 1 presente · 1 ausente · 1 justificou · 1 sem marcação");
     expect(view.hasPriorityAttention).toBe(true);
     expect(view.pastoralCue).toMatchObject({
-      title: "Presença incompleta",
+      title: "Presença ainda incompleta",
       tone: "warn",
     });
     expect(view.groups.map((group) => group.members.map((member) => member.fullName))).toEqual([
@@ -60,7 +60,7 @@ describe("event-detail-view", () => {
     expect(buildEventDetailState({ status: "SCHEDULED", completed: false, isFutureEvent: false, canEditCheckIn: true, showCheckInForm: false })).toMatchObject({
       checkInLabel: "Resumo de presença",
       checkInSectionTitle: "Detalhes da presença",
-      eventStatusLabel: "Presença pendente",
+      eventStatusLabel: "Aguardando presença",
       eventStatusTone: "warn",
     });
 

@@ -25,7 +25,7 @@ describe("care-actions-view", () => {
     });
   });
 
-  it("preserva o canal usado no registro do cuidado", () => {
+  it("preserva o canal usado ao guardar o cuidado", () => {
     expect(careKindForContactMethod("call")).toBe("CALL");
     expect(careKindForContactMethod("whatsapp")).toBe("WHATSAPP");
     expect(careKindForContactMethod("existing")).toBe("MARKED_CARED");

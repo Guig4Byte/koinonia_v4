@@ -23,7 +23,7 @@ describe("buildPersonCareOverviewView", () => {
     expect(view.priorityTone).toBe("risk");
     expect(view.badgeLabel).toBe("Ação prioritária");
     expect(view.ownerLabel).toBe("Ana");
-    expect(view.nextStepLabel).toBe("Registrar contato pastoral");
+    expect(view.nextStepLabel).toBe("Guardar contato pastoral");
   });
 
   it("describes in-care people as ongoing follow-up", () => {

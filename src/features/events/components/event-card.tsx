@@ -62,7 +62,7 @@ export function EventCard({
           <div className={styles.pendingBody}>
             <div className={styles.pendingHeader}>
               <p className={cn(styles.title, styles.pendingTitle)}>{consultationTitle}</p>
-              <Badge tone={state.badgeTone} size="md" shape="rounded" maxWidth="tightHeader">Pendente</Badge>
+              <Badge tone={state.badgeTone} size="md" shape="rounded" maxWidth="tightHeader">Aguardando</Badge>
             </div>
 
             <p className={styles.pendingMeta}>

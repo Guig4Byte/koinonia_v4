@@ -196,7 +196,7 @@ export function CellsOverviewSummaryCard({
         <FooterMetric
           icon={<CalendarClock className="h-4 w-4" strokeWidth={2.35} absoluteStrokeWidth />}
           label={NO_RECENT_PRESENCE_LABEL}
-          detail={groupsWithoutPresenceCount > 0 ? "Confira encontros pendentes." : "Todas com registro recente."}
+          detail={groupsWithoutPresenceCount > 0 ? "Confira encontros aguardando registro." : "Todas com registro recente."}
           value={groupsWithoutPresenceCount}
           tone={groupsWithoutPresenceCount > 0 ? "neutral" : "ok"}
         />

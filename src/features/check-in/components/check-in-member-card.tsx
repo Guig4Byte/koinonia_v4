@@ -52,7 +52,7 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
   const firstOptionRef = useRef<HTMLButtonElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
 
-  const statusLabel = item.status ? ATTENDANCE_LABELS[item.status] : "Pendente";
+  const statusLabel = item.status ? ATTENDANCE_LABELS[item.status] : "Sem marcação";
   const statusHint = checkInMemberStatusHint(item.status);
 
   const closeSelector = useCallback(() => {

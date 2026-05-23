@@ -20,7 +20,7 @@ type GroupFormGuardContextValue = {
 const GroupFormGuardContext = createContext<GroupFormGuardContextValue | null>(null);
 const GroupFormDirtyContext = createContext<(() => void) | null>(null);
 
-const unsavedChangesMessage = "Você tem alterações não salvas. Deseja sair sem salvar?";
+const unsavedChangesMessage = "Há mudanças não salvas. Deseja sair sem salvar?";
 
 function useGroupFormGuard() {
   const context = useContext(GroupFormGuardContext);
@@ -140,8 +140,8 @@ export function GroupFormActions({
   backHref,
   cancelLabel = "Cancelar",
   submitLabel,
-  idleMessage = "Nenhuma alteração pendente.",
-  dirtyMessage = "Alterações não salvas.",
+  idleMessage = "Nada para salvar agora.",
+  dirtyMessage = "Há mudanças para salvar.",
   confirmDeactivation = false,
   className,
   children,
@@ -165,7 +165,7 @@ export function GroupFormActions({
 
       if (willDeactivate) {
         const shouldDeactivate = window.confirm(
-          "Você está desativando esta célula. Ela sairá das superfícies padrão, encontros e check-in. Deseja continuar?",
+          "Você está desativando esta célula. Ela ficará fora das listas principais, encontros e check-in. Deseja continuar?",
         );
 
         if (!shouldDeactivate) {

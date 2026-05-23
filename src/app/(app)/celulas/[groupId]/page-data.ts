@@ -138,7 +138,7 @@ export async function getGroupDetailPageData({
     hasPendingEvent: Boolean(pendingEvent),
   });
   const canRegisterPendingEvent = user.role === UserRole.LEADER && isGroupLeader(user, group);
-  const pendingEventStatusLabel = canRegisterPendingEvent ? "Presença pendente" : "Aguardando registro";
+  const pendingEventStatusLabel = canRegisterPendingEvent ? "Aguardando presença" : "Aguardando registro";
   const pendingEventActionLabel = canRegisterPendingEvent ? "Registrar presença" : "Abrir encontro";
   const members = buildGroupMemberDisplays({
     memberships: group.memberships,

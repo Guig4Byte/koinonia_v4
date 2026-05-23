@@ -59,16 +59,16 @@ function personProfileEyebrow({
 function nextGestureTitle(openSignalsCount: number, isInCare: boolean) {
   if (openSignalsCount > 0) return "Próximo gesto de cuidado";
   if (isInCare) return "Atualizar acompanhamento";
-  return "Registrar contato pastoral";
+  return "Guardar contato pastoral";
 }
 
 function nextGestureDescription(hasPhone: boolean, openSignalsCount: number) {
   if (!hasPhone) {
-    return "Sem telefone cadastrado nesta ficha. Ainda é possível registrar um cuidado que já aconteceu fora do app.";
+    return "Sem telefone cadastrado nesta ficha. Ainda é possível guardar um cuidado que já aconteceu fora do app.";
   }
 
   if (openSignalsCount > 0) {
-    return "Depois de entender a situação, registre apenas contatos reais para manter o radar pastoral em dia.";
+    return "Depois de entender a situação, guarde apenas contatos reais para manter o radar pastoral em dia.";
   }
 
   return "Use quando houver um contato real, uma conversa ou uma anotação pastoral importante.";
@@ -218,7 +218,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           </div>
         </PriorityCard>
 
-        <SectionTitle detail="Responsável, último cuidado e próximo passo antes do registro.">Acompanhamento atual</SectionTitle>
+        <SectionTitle detail="Responsável, último cuidado e próximo gesto de cuidado.">Acompanhamento atual</SectionTitle>
         <CareOverviewCard view={careOverviewView} />
 
         <SectionTitle detail={openSignalsCount > 0 ? "Entenda o motivo antes de agir." : undefined}>
@@ -259,7 +259,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
             <EmptyState className={styles.emptyState} title="Nada exige ação agora.">
               {hasCareTouch
                 ? "O cuidado mais recente aparece abaixo, e a pessoa continua disponível para acompanhamento pastoral."
-                : "Esta pessoa segue disponível para consulta e para registro de cuidado quando houver um contato real."}
+                : "Esta pessoa segue disponível para consulta quando houver um contato real de cuidado."}
             </EmptyState>
           ) : null}
         </div>
@@ -268,7 +268,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
         <PersonPresenceCard view={presenceView} />
 
         <div id="historico-cuidado" className={styles.anchorSection}>
-          <SectionTitle detail="Linha do tempo dos contatos e encaminhamentos registrados.">Histórico de cuidado</SectionTitle>
+          <SectionTitle detail="Linha do tempo dos contatos, anotações e encaminhamentos.">Histórico de cuidado</SectionTitle>
           {careTouchHistoryItems.length > 0 ? (
             <CareTouchHistory items={careTouchHistoryItems} />
           ) : (
@@ -276,7 +276,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           )}
         </div>
 
-        <SectionTitle detail="Registre somente o que aconteceu de fato.">Registrar contato pastoral</SectionTitle>
+        <SectionTitle detail="Guarde somente o que aconteceu de fato.">Guardar contato pastoral</SectionTitle>
         <PriorityCard id="registrar-cuidado" as="section" priorityTone={hasRiskSignal ? "risk" : openSignalsCount > 0 ? "warn" : personIsInCare ? "care" : "muted"} radius="lg" className={styles.nextGestureCard}>
           <div className={styles.nextGestureHeader}>
             <div className={styles.nextGestureCopy}>

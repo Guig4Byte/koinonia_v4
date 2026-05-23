@@ -66,7 +66,7 @@ function AttendanceMemberRow({ member }: { member: EventReadOnlyMember }) {
       href={ROUTES.person(member.personId)}
       name={member.fullName}
       badgeTone={eventAttendanceStatusTone(member.currentStatus)}
-      badgeLabel={member.currentStatus ? eventAttendanceLabels[member.currentStatus] : "Pendente"}
+      badgeLabel={member.currentStatus ? eventAttendanceLabels[member.currentStatus] : "Sem marcação"}
       status={member.currentStatus}
     />
   );

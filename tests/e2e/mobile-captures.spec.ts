@@ -214,34 +214,57 @@ async function ensureTheme(context: import("@playwright/test").BrowserContext, t
   }, theme);
 }
 
+function isNavigationTransitionError(error: unknown) {
+  return error instanceof Error && error.message.includes("Execution context was destroyed");
+}
+
 async function disableAnimations(page: import("@playwright/test").Page) {
-  await page.addStyleTag({
-    content: `
-      *, *::before, *::after {
-        transition-duration: 0s !important;
-        animation-duration: 0s !important;
-        animation-delay: 0s !important;
-        caret-color: transparent !important;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      await page.waitForLoadState("domcontentloaded");
+      await page.addStyleTag({
+        content: `
+          *, *::before, *::after {
+            transition-duration: 0s !important;
+            animation-duration: 0s !important;
+            animation-delay: 0s !important;
+            caret-color: transparent !important;
+          }
+          html { scroll-behavior: auto !important; }
+        `,
+      });
+      return;
+    } catch (error) {
+      if (!isNavigationTransitionError(error) || attempt === 2) {
+        throw error;
       }
-      html { scroll-behavior: auto !important; }
-    `,
-  });
+    }
+  }
 }
 
 async function waitForStablePage(page: import("@playwright/test").Page) {
-  await page.waitForLoadState("domcontentloaded");
-  await page.waitForLoadState("networkidle");
-  await page.evaluate(async () => {
-    if (document.fonts?.ready) {
-      await document.fonts.ready;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      await page.waitForLoadState("domcontentloaded");
+      await page.waitForLoadState("networkidle");
+      await page.evaluate(async () => {
+        if (document.fonts?.ready) {
+          await document.fonts.ready;
+        }
+      });
+      await page.waitForFunction(() => {
+        const hasBusy = Boolean(document.querySelector('[aria-busy="true"]'));
+        const hasSkeleton = Boolean(document.querySelector(".animate-pulse"));
+        return !hasBusy && !hasSkeleton;
+      }, undefined, { timeout: 15000 });
+      await page.waitForTimeout(200);
+      return;
+    } catch (error) {
+      if (!isNavigationTransitionError(error) || attempt === 2) {
+        throw error;
+      }
     }
-  });
-  await page.waitForFunction(() => {
-    const hasBusy = Boolean(document.querySelector('[aria-busy="true"]'));
-    const hasSkeleton = Boolean(document.querySelector(".animate-pulse"));
-    return !hasBusy && !hasSkeleton;
-  }, undefined, { timeout: 15000 });
-  await page.waitForTimeout(200);
+  }
 }
 
 async function removeTemporaryOverlays(page: import("@playwright/test").Page) {
@@ -321,8 +344,8 @@ async function captureScreen({
   const number = String(screenIndex).padStart(2, "0");
   const urlPath = screen.path(targets);
   await page.goto(urlPath, { waitUntil: "domcontentloaded" });
-  await disableAnimations(page);
   await waitForStablePage(page);
+  await disableAnimations(page);
   await removeTemporaryOverlays(page);
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.waitForTimeout(120);

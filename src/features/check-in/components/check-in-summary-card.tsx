@@ -93,7 +93,7 @@ export function CheckInSummaryCard({
         <SummaryPill label="Presentes" value={summary.present} tone="present" />
         <SummaryPill label="Justificaram" value={summary.justified} tone="justified" />
         <SummaryPill label="Ausentes" value={summary.absent} tone="absent" />
-        <SummaryPill label="Pendentes" value={summary.pending} tone="pending" />
+        <SummaryPill label="Sem marcação" value={summary.pending} tone="pending" />
       </div>
 
       <p className="mt-3 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{helperText}</p>
@@ -159,11 +159,11 @@ export function CheckInSummaryCard({
       ) : null}
 
       {summary.pending > 0 ? (
-        <Feedback tone="warning" compact className="mt-4" title="Marcações pendentes">
+        <Feedback tone="warning" compact className="mt-4" title="Ainda falta marcar">
           <p>
-            {summary.pending === 1 ? "Falta marcar 1 pessoa." : `Falta marcar ${summary.pending} pessoas.`}
+            {summary.pending === 1 ? "Ainda falta marcar 1 pessoa." : `Ainda falta marcar ${summary.pending} pessoas.`}
           </p>
-          <p className="mt-1 leading-relaxed">Se todos vieram, use o atalho acima e ajuste só exceções.</p>
+          <p className="mt-1 leading-relaxed">Se todos vieram, use o atalho acima e ajuste só as exceções.</p>
         </Feedback>
       ) : null}
 

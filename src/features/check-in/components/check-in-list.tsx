@@ -86,13 +86,7 @@ export function CheckInList({
     return window.confirm(unsavedCheckInMessage);
   }
 
-  const showSaveBar = shouldShowCheckInSaveBar({
-    summary: checkIn.summary,
-    mode,
-    hasUnsavedChanges: checkIn.hasUnsavedChanges,
-    isPending: checkIn.isPending,
-    errorMessage: checkIn.errorMessage,
-  });
+  const showSaveBar = shouldShowCheckInSaveBar();
 
   return (
     <section className={styles.list}>
@@ -125,7 +119,7 @@ export function CheckInList({
             <div className="min-w-0">
               <p className="k-item-title">Membros da célula</p>
               <p className="mt-1 text-[length:var(--text-xs)] leading-snug text-[color:var(--color-text-secondary)]">
-                Revise por status para encontrar pendências, ausências e justificativas sem rolar a lista inteira.
+                Revise por status para encontrar quem ainda está sem marcação, ausências e justificativas sem rolar a lista inteira.
               </p>
             </div>
             <span className={styles.memberCount} aria-live="polite">

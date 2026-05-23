@@ -76,12 +76,12 @@ describe("events-page-view", () => {
 
     const view = buildEventsConsultationView({ mode: "sem-presenca", period: "semana", events, now: referenceDate });
 
-    expect(view.title).toBe("Presenças pendentes");
+    expect(view.title).toBe("Encontros aguardando presença");
     expect(view.description).toBe("2 encontros aguardando registro");
     expect(view.filteredEvents.map((item) => item.id)).toEqual(["older-pending", "past-pending"]);
   });
 
-  it("resume pendências e histórico dos últimos 30 dias para os atalhos", () => {
+  it("resume encontros aguardando registro e histórico dos últimos 30 dias para os atalhos", () => {
     const summary = buildEventsConsultationSummary([
       event({ id: "pending", startsAt: new Date("2026-05-06T22:00:00.000Z") }),
       event({ id: "registered", status: EventStatus.COMPLETED, attendances: [{ status: AttendanceStatus.PRESENT }] }),
@@ -96,7 +96,7 @@ describe("events-page-view", () => {
     });
   });
 
-  it("mantém uma leitura tranquila quando não há pendências nem histórico", () => {
+  it("mantém uma leitura tranquila quando não há encontros aguardando registro nem histórico", () => {
     const summary = buildEventsConsultationSummary([
       event({ id: "future", startsAt: new Date("2026-05-09T18:00:00.000Z") }),
     ], referenceDate);
@@ -122,20 +122,20 @@ describe("events-page-view", () => {
     expect(sections.weekEvents.map((item) => item.id)).toEqual(["week"]);
   });
 
-  it("descreve o card de presença pendente para líder da célula", () => {
+  it("descreve o card de presença aguardando registro para líder da célula", () => {
     const state = buildEventListCardState(
       event(),
       { id: "leader-1", churchId: "church-1", role: UserRole.LEADER },
       referenceDate,
     );
 
-    expect(state.label).toBe("Presença pendente");
+    expect(state.label).toBe("Aguardando presença");
     expect(state.actionLabel).toBe("Registrar presença");
     expect(state.badgeTone).toBe("warn");
     expect(state.pendingAgeLabel).toBe("hoje");
   });
 
-  it("informa há quantos dias um encontro está pendente", () => {
+  it("informa há quantos dias um encontro aguarda registro", () => {
     const state = buildEventListCardState(
       event({ startsAt: new Date("2026-05-06T22:00:00.000Z") }),
       { id: "leader-1", churchId: "church-1", role: UserRole.LEADER },

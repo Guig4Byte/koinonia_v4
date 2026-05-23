@@ -34,7 +34,7 @@ export function GroupRegisteredEncountersList({ events }: { events: GroupRegiste
           {events.map((event) => {
             const metrics = summarizeEventPresence(event);
             const presenceBadgeTone = presenceTone(metrics.hasPresenceData, metrics.presenceRate);
-            const presenceLabel = formatPresenceRate(metrics.hasPresenceData, metrics.presenceRate, "Sem registro");
+            const presenceLabel = formatPresenceRate(metrics.hasPresenceData, metrics.presenceRate, "Sem presença");
             return (
               <CardLink
                 key={event.id}

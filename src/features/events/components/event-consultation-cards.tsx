@@ -58,7 +58,7 @@ export function EventConsultationCards({ summary }: { summary: EventsConsultatio
     <nav className={styles.consultationActions} aria-label="Consultas de encontros">
       <ConsultationCard
         href={eventsConsultationSectionHref("sem-presenca", "30d")}
-        title="Pendências"
+        title="Aguardando registro"
         description={summary.pendingDescription}
         icon={ClipboardCheck}
         count={summary.pendingCount}

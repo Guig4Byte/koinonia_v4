@@ -8,8 +8,8 @@ export const WEEKLY_PRESENCE_TONE_THRESHOLDS = {
 
 export const WEEKLY_PRESENCE_LABEL = "Presença da semana";
 export const WEEKLY_PRESENCE_DETAIL = "Média dos encontros registrados nesta semana.";
-export const NO_WEEKLY_PRESENCE_DETAIL = "Nenhum encontro registrado nesta semana.";
-export const WEEKLY_PRESENCE_WITHOUT_MEMBER_DETAIL = "Encontro registrado sem presença de membros.";
+export const NO_WEEKLY_PRESENCE_DETAIL = "Ainda sem encontro registrado nesta semana.";
+export const WEEKLY_PRESENCE_WITHOUT_MEMBER_DETAIL = "Encontro salvo sem presença de membros.";
 export const WEEKLY_PRESENCE_WITHOUT_TREND_DETAIL = "Ainda não há base suficiente para comparar com o último mês.";
 
 export type WeeklyPresenceTrendDirection = "up" | "down" | "stable";

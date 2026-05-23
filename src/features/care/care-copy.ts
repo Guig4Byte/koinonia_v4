@@ -28,7 +28,7 @@ export const CARE_COPY = {
   },
 
   history: {
-    empty: "Nenhum cuidado registrado ainda. Use “Registrar contato pastoral” quando houver um contato real para guardar.",
+    empty: "Nenhum cuidado registrado ainda. Use “Guardar contato pastoral” quando houver um contato real para guardar.",
   },
 
   statusActions: {
@@ -44,19 +44,19 @@ export const CARE_COPY = {
   contactActions: {
     callLabel: "Ligar",
     whatsappLabel: "WhatsApp",
-    existingContactLabel: "Registrar contato pastoral",
+    existingContactLabel: "Guardar contato pastoral",
     noPhoneTitle: "Sem telefone cadastrado",
-    noPhoneDescription: "Cadastre um telefone depois para liberar ligação e WhatsApp. Por enquanto, registre apenas um cuidado que já aconteceu.",
-    registerWithoutPhoneLabel: "Registrar cuidado já realizado",
+    noPhoneDescription: "Cadastre um telefone depois para liberar ligação e WhatsApp. Por enquanto, guarde apenas um cuidado que já aconteceu.",
+    registerWithoutPhoneLabel: "Guardar cuidado já realizado",
   },
 
   confirmContact: {
     title: "O contato aconteceu?",
     callTitle: "Conseguiu falar por ligação?",
     whatsappTitle: "Conseguiu conversar pelo WhatsApp?",
-    description: "Nada será registrado se você ainda não conseguiu falar com a pessoa.",
-    callDescription: "Registre a ligação somente se ela aconteceu de fato. Se ainda não conseguiu falar, volte sem registrar.",
-    whatsappDescription: "Registre o WhatsApp somente se houve conversa real. Se a mensagem ficou sem resposta, volte sem registrar.",
+    description: "Nada será salvo se você ainda não conseguiu falar com a pessoa.",
+    callDescription: "Salve a ligação somente se ela aconteceu de fato. Se ainda não conseguiu falar, volte sem salvar.",
+    whatsappDescription: "Salve o WhatsApp somente se houve conversa real. Se a mensagem ficou sem resposta, volte sem salvar.",
     confirmLabel: "Sim, houve contato",
     callConfirmLabel: "Sim, falei por ligação",
     whatsappConfirmLabel: "Sim, conversei",
@@ -72,10 +72,10 @@ export const CARE_COPY = {
 
   notePrompt: {
     title: "Quer deixar uma anotação?",
-    description: "Salvar sem anotação também registra o cuidado e mantém o histórico pastoral coerente.",
+    description: "Salvar sem anotação também guarda o cuidado e mantém o histórico pastoral coerente.",
     addNoteLabel: "Anotar",
     saveWithoutNoteLabel: "Salvar sem anotação",
-    cancelLabel: "Cancelar e não registrar agora",
+    cancelLabel: "Cancelar por enquanto",
   },
 
   noteForm: {

@@ -62,7 +62,7 @@ describe("check-in view helpers", () => {
 
     expect(markedMembersCount(summary)).toBe(1);
     expect(checkInMarkedLabel(summary)).toBe("1 de 3 marcados");
-    expect(checkInPendingLabel(summary)).toBe("Faltam 2 marcações");
+    expect(checkInPendingLabel(summary)).toBe("Ainda faltam 2 marcações");
   });
 
   it("formats completed check-in progress labels", () => {
@@ -103,7 +103,7 @@ describe("check-in view helpers", () => {
   });
 
   it("explains the pastoral impact of each member status", () => {
-    expect(checkInMemberStatusHint(null)).toContain("falta registrar");
+    expect(checkInMemberStatusHint(null)).toContain("sem marcação");
     expect(checkInMemberStatusHint(ATTENDANCE.PRESENT)).toContain("confirmada");
     expect(checkInMemberStatusHint(ATTENDANCE.ABSENT)).toContain("radar");
     expect(checkInMemberStatusHint(ATTENDANCE.JUSTIFIED)).toContain("contexto");

@@ -20,13 +20,7 @@ type CheckInSaveBarProps = {
   onSave: () => void;
 };
 
-export function shouldShowCheckInSaveBar(_options: {
-  summary: CheckInSummary;
-  mode: CheckInMode;
-  hasUnsavedChanges: boolean;
-  isPending: boolean;
-  errorMessage: string | null;
-}) {
+export function shouldShowCheckInSaveBar() {
   return true;
 }
 
@@ -45,7 +39,7 @@ function saveBarTitle({
 }) {
   if (isPending) return "Salvando presença";
   if (errorMessage) return "Não foi salvo";
-  if (summary.pending > 0) return summary.pending === 1 ? "Falta 1 marcação" : `Faltam ${summary.pending} marcações`;
+  if (summary.pending > 0) return summary.pending === 1 ? "Ainda falta 1 marcação" : `Ainda faltam ${summary.pending} marcações`;
   if (mode === "adjust" && !hasUnsavedChanges) return "Sem alterações";
   if (mode === "adjust") return "Pronto para atualizar";
 
@@ -67,7 +61,7 @@ function saveBarDescription({
 }) {
   if (isPending) return "Mantenha esta tela aberta até concluir.";
   if (errorMessage) return "Revise o aviso e tente salvar novamente.";
-  if (summary.pending > 0) return `${checkInMarkedLabel(summary)}. Complete as pendências para salvar.`;
+  if (summary.pending > 0) return `${checkInMarkedLabel(summary)}. Marque quem ainda falta para salvar.`;
   if (mode === "adjust" && !hasUnsavedChanges) return "Altere uma presença ou adicione visitante para salvar.";
   if (mode === "adjust") return "Tudo marcado. Salve as mudanças.";
 
@@ -87,7 +81,7 @@ export function CheckInSaveBar({
   onCancelAttempt,
   onSave,
 }: CheckInSaveBarProps) {
-  const showSaveBar = shouldShowCheckInSaveBar({ summary, mode, hasUnsavedChanges, isPending, errorMessage });
+  const showSaveBar = shouldShowCheckInSaveBar();
 
   if (!showSaveBar) {
     return null;

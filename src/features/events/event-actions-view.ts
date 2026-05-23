@@ -57,7 +57,7 @@ export function closeEventActionCopy(isFutureEvent: boolean) {
 
   return {
     title: "Aconteceu nesta semana?",
-    description: "Use esta opção quando a célula não se reuniu. Isso evita tratar o encontro como presença atrasada.",
+    description: "Use esta opção quando a célula não se reuniu. Isso evita tratar o encontro como algo em aberto.",
     actionLabel: "Não houve encontro",
     confirmationMessage: "Marcar este encontro como não realizado? Use quando a célula não se reuniu nesta data.",
     status: "NO_MEETING" as const,
@@ -67,6 +67,6 @@ export function closeEventActionCopy(isFutureEvent: boolean) {
 
 export function closedWithoutPresenceCopy(isFutureEvent: boolean) {
   return isFutureEvent
-    ? "Este encontro foi cancelado. Ele não aparece como presença pendente."
-    : "Este encontro foi marcado como não realizado. Ele não entra como presença atrasada.";
+    ? "Este encontro foi cancelado. Ele não aparece como presença aguardando registro."
+    : "Este encontro foi marcado como não realizado. Ele não fica como presença aguardando registro.";
 }

@@ -68,8 +68,8 @@ export function buildEventPastoralCue({
 }): EventPastoralCue {
   if (pending > 0) {
     return {
-      title: "Presença incompleta",
-      description: `${countLabel(pending, "pessoa pendente", "pessoas pendentes")} ainda sem marcação. Complete o registro antes de tirar conclusões pastorais sobre o encontro.`,
+      title: "Presença ainda incompleta",
+      description: `${countLabel(pending, "pessoa sem marcação", "pessoas sem marcação")} ainda precisa ser marcada. Complete o registro para ter uma leitura fiel do encontro.`,
       tone: "warn",
     };
   }
@@ -111,7 +111,7 @@ export function buildEventReadOnlyAttendanceView(members: EventReadOnlyMember[])
     countLabel(presentMembers.length, "presente"),
     countLabel(absentMembers.length, "ausente"),
     justifiedMembers.length > 0 ? justifiedCountLabel(justifiedMembers.length) : null,
-    pendingMembers.length > 0 ? countLabel(pendingMembers.length, "pendente") : null,
+    pendingMembers.length > 0 ? countLabel(pendingMembers.length, "sem marcação", "sem marcação") : null,
   ]
     .filter(Boolean)
     .join(" · ");
@@ -141,7 +141,7 @@ export function buildEventReadOnlyAttendanceView(members: EventReadOnlyMember[])
         members: justifiedMembers,
       },
       {
-        title: `Pendentes (${pendingMembers.length})`,
+        title: `Sem marcação (${pendingMembers.length})`,
         description: "Ainda sem marcação explícita; complete o registro para ter uma leitura fiel.",
         members: pendingMembers,
       },
@@ -162,8 +162,8 @@ export function eventReadOnlyEmptyMessage({
 }) {
   if (isCancelled) {
     return closedLabel === "Cancelado"
-      ? "Este encontro foi cancelado. Ele não aparece como presença pendente."
-      : "Este encontro foi marcado como não realizado. Ele não entra como presença atrasada.";
+      ? "Este encontro foi cancelado. Ele não aparece como presença aguardando registro."
+      : "Este encontro foi marcado como não realizado. Ele não fica como presença aguardando registro.";
   }
 
   if (!completed) {
@@ -217,7 +217,7 @@ export function buildEventDetailState({
       : isFutureEvent
         ? "Agendado"
         : canEditCheckIn
-          ? "Presença pendente"
+          ? "Aguardando presença"
           : "Aguardando registro";
 
   const eventStatusTone: EventDetailBadgeTone = isCancelledEvent ? "neutral" : completed ? "ok" : isFutureEvent ? "info" : "warn";

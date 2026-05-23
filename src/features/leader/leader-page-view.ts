@@ -155,11 +155,11 @@ export function leaderCurrentEventState(event: LeaderCurrentEvent): LeaderCurren
   return {
     groupName: event.group?.name ?? "Célula",
     locationName: event.locationName ?? event.group?.locationName ?? null,
-    badgeLabel: completed ? "Presença registrada" : "Presença pendente",
+    badgeLabel: completed ? "Presença registrada" : "Aguardando presença",
     badgeTone: completed ? "ok" : "warn",
     description: completed
       ? "A presença deste encontro já foi registrada. Ajuste somente se alguma marcação estiver errada."
-      : "Registre a presença quando o encontro acontecer para manter o cuidado em dia.",
+      : "Quando o encontro acontecer, marque a presença com calma. Isso ajuda a lembrar quem pode precisar de cuidado.",
     ctaLabel: completed ? "Ver detalhes" : "Registrar presença",
   };
 }

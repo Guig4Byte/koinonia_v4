@@ -46,8 +46,8 @@ export function GroupForm({
   const scheduleDescribedBy = `${scheduleHintId}${hasScheduleError ? ` ${scheduleErrorId}` : ""}`;
   const isEditingExistingCell = initialValues.name.trim().length > 0;
   const idleMessage = isEditingExistingCell
-    ? "Nenhuma alteração pendente."
-    : "Preencha os dados da célula para salvar.";
+    ? "Nada para salvar agora."
+    : "Preencha apenas o essencial para salvar.";
 
   return (
     <GroupFormGuard>
@@ -151,7 +151,7 @@ export function GroupForm({
               <span className={styles.statusCopy}>
                 <span className={styles.statusTitle}>Célula ativa</span>
                 <span className={styles.statusDetail}>
-                  Células inativas não aparecem nas superfícies padrão, encontros ou check-in.
+                  Células inativas ficam fora das listas principais, encontros e check-in.
                 </span>
               </span>
             </label>

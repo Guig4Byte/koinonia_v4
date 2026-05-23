@@ -139,7 +139,7 @@ export function buildEventListCardState(event: EventListEvent, user: PermissionU
       : isFutureEvent
         ? "Agendado"
         : canRegisterPresence
-          ? "Presença pendente"
+          ? "Aguardando presença"
           : "Aguardando registro";
   const badgeTone: EventListBadgeTone = isCancelledEvent ? "neutral" : recordedPresence ? "ok" : isFutureEvent ? "info" : "warn";
   const actionLabel = canRegisterPresence
@@ -191,13 +191,13 @@ export function buildEventsConsultationView({
 
   return {
     filteredEvents,
-    title: mode === "historico" ? "Histórico de presença" : "Presenças pendentes",
+    title: mode === "historico" ? "Histórico de presença" : "Encontros aguardando presença",
     description: mode === "historico"
       ? `${eventCountLabel} com presença registrada`
       : `${eventCountLabel} aguardando registro`,
     emptyMessage: mode === "historico"
       ? "Nenhuma presença registrada neste período. Troque o filtro para conferir outros recortes."
-      : "Nenhum encontro pendente neste período. Os encontros deste recorte estão em dia.",
+      : "Nenhum encontro aguardando registro neste período. Os encontros deste recorte estão em dia.",
     periodLabel: eventPeriodLabel(period),
   };
 }

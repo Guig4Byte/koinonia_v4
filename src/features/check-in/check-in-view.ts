@@ -39,7 +39,7 @@ export const ATTENDANCE_LABELS: Record<MemberAttendanceStatus, string> = {
 
 const checkInFilterLabels: Record<CheckInMemberFilter, string> = {
   all: "Todos",
-  pending: "Pendentes",
+  pending: "Sem marcação",
   present: "Presentes",
   absent: "Ausentes",
   justified: "Justificaram",
@@ -93,9 +93,9 @@ export function checkInMarkedLabel(summary: CheckInSummary) {
 export function checkInPendingLabel(summary: CheckInSummary) {
   if (summary.totalMembers === 0) return "Sem membros";
   if (summary.pending === 0) return "Todos marcados";
-  if (summary.pending === 1) return "Falta 1 marcação";
+  if (summary.pending === 1) return "Ainda falta 1 marcação";
 
-  return `Faltam ${summary.pending} marcações`;
+  return `Ainda faltam ${summary.pending} marcações`;
 }
 
 export function checkInFilterLabel(filter: CheckInMemberFilter) {
@@ -119,7 +119,7 @@ export function filterCheckInItems(items: CheckInItem[], filter: CheckInMemberFi
 }
 
 export function checkInFilteredEmptyMessage(filter: CheckInMemberFilter) {
-  if (filter === "pending") return "Nenhuma pessoa pendente neste encontro.";
+  if (filter === "pending") return "Nenhuma pessoa sem marcação neste encontro.";
   if (filter === "present") return "Nenhuma pessoa marcada como presente ainda.";
   if (filter === "absent") return "Nenhuma ausência marcada neste encontro.";
   if (filter === "justified") return "Nenhuma justificativa marcada neste encontro.";
@@ -136,7 +136,7 @@ export function checkInMemberStatusHint(status: AttendanceSelection) {
   if (status === ATTENDANCE.PRESENT) return "Presença confirmada neste encontro.";
   if (status === ATTENDANCE.ABSENT) return "Ausência entra no radar para acompanhamento.";
   if (status === ATTENDANCE.JUSTIFIED) return "Justificou; mantenha o contexto sem tratar como falta seca.";
-  return "Ainda falta registrar esta pessoa.";
+  return "Ainda sem marcação neste encontro.";
 }
 
 export function checkInStatusOptionDescription(status: MemberAttendanceStatus) {

@@ -110,9 +110,9 @@ export function buildPastorNextPastoralAction(summary: PastorPageTeamSummary): N
     return {
       eyebrow: "Prioridade de hoje",
       title: `${countLabel(summary.urgentCount, "sinal urgente", "sinais urgentes")} na equipe`,
-      detail: "Comece pelas células com risco maior antes de revisar estabilidade e presença.",
+      detail: "Comece pelas células com cuidado mais sensível antes de revisar estabilidade e presença.",
       href: teamFilterHref(FILTER_URGENT),
-      label: "Ver urgentes",
+      label: "Ver cuidados",
       tone: "risk",
     };
   }
@@ -131,10 +131,10 @@ export function buildPastorNextPastoralAction(summary: PastorPageTeamSummary): N
   if (summary.supportRequestsCount > 0) {
     return {
       eyebrow: "Pedido de apoio",
-      title: `${countLabel(summary.supportRequestsCount, "pedido aberto", "pedidos abertos")} na equipe`,
+      title: `${countLabel(summary.supportRequestsCount, "pedido de apoio", "pedidos de apoio")} na equipe`,
       detail: "Acompanhe onde líderes e supervisores pediram suporte antes de olhar os demais indicadores.",
       href: teamFilterHref(FILTER_SUPPORT),
-      label: "Ver pedidos",
+      label: "Ver apoios",
       tone: "support",
     };
   }

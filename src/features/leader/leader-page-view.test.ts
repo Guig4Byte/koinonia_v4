@@ -68,7 +68,7 @@ describe("leader-page-view", () => {
     expect(view.navIndicator).toBe("risk");
   });
 
-  it("monta estado do encontro atual com presença pendente ou registrada", () => {
+  it("monta estado do encontro atual aguardando presença ou já registrado", () => {
     const pending = leaderCurrentEventState({
       id: "event-1",
       startsAt: new Date("2026-05-08T12:00:00.000Z"),
@@ -80,7 +80,7 @@ describe("leader-page-view", () => {
     expect(pending).toMatchObject({
       groupName: "Célula Central",
       locationName: "Casa da Ana",
-      badgeLabel: "Presença pendente",
+      badgeLabel: "Aguardando presença",
       badgeTone: "warn",
       ctaLabel: "Registrar presença",
     });
