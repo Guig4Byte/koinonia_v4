@@ -6,56 +6,33 @@ import { PriorityCard } from "@/components/ui/priority-card";
 import { DEFAULT_PRESENCE_TONE_THRESHOLDS, formatPresenceRate, presenceTone } from "@/features/events/presence-display";
 import type { CardPriorityTone } from "@/lib/card-priority";
 import { PresenceMetricDisplay, PresenceTrendDelta, type PresenceTrend } from "@/components/shared/presence-metric";
-import { countLabel } from "@/lib/format";
 import styles from "./group-card.module.css";
-
-function groupAttentionLabel(count: number, kind: "default" | "local" | "pastoral") {
-  if (kind === "pastoral") return countLabel(count, "caso pastoral", "casos pastorais");
-  if (kind === "local") return countLabel(count, "atenção local", "atenções locais");
-  return countLabel(count, "pessoa em atenção", "pessoas em atenção");
-}
 
 export function GroupCard({
   name,
   subtitle,
   presenceRate,
-  attentionCount,
   href,
   hasPresenceData = true,
-  noPresenceLabel = "Sem registro",
-  attentionLabelKind = "default",
   badgeLabel,
   badgeTone,
-  showBadge = true,
+  statusSummary,
   cardTone,
   presenceTrend,
 }: {
   name: string;
   subtitle: string;
   presenceRate: number;
-  attentionCount: number;
   href?: string;
   hasPresenceData?: boolean;
-  noPresenceLabel?: string;
-  attentionLabelKind?: "default" | "local" | "pastoral";
   badgeLabel?: string;
   badgeTone?: BadgeTone;
-  showBadge?: boolean;
+  statusSummary?: string;
   cardTone?: CardPriorityTone;
   presenceTrend?: PresenceTrend | null;
 }) {
   const tone = presenceTone(hasPresenceData, presenceRate);
-  const hasLowPresence = tone === "risk" || tone === "warn";
-  const attentionLabel = groupAttentionLabel(attentionCount, attentionLabelKind);
-  const fallbackBadgeTone: BadgeTone = attentionCount > 0
-    ? attentionLabelKind === "pastoral" ? "risk" : "warn"
-    : !hasPresenceData ? "neutral" : tone === "risk" ? "risk" : hasLowPresence ? "warn" : "ok";
-  const fallbackBadgeLabel = attentionCount > 0
-    ? attentionLabel
-    : !hasPresenceData ? noPresenceLabel : hasLowPresence ? "Presença baixa" : "Estável";
-  const resolvedBadgeTone: BadgeTone = badgeTone ?? fallbackBadgeTone;
-  const resolvedBadgeLabel = badgeLabel ?? fallbackBadgeLabel;
-  const priorityTone = cardTone ?? (resolvedBadgeTone === "neutral" || resolvedBadgeTone === "ok" || resolvedBadgeTone === "info" ? undefined : resolvedBadgeTone);
+  const priorityTone = cardTone ?? (!badgeTone || badgeTone === "neutral" || badgeTone === "ok" || badgeTone === "info" ? undefined : badgeTone);
   const presenceText = formatPresenceRate(hasPresenceData, presenceRate);
   const presenceLabel = !hasPresenceData
     ? "Sem presença recente"
@@ -66,13 +43,15 @@ export function GroupCard({
         <CardHeader
           title={name}
           subtitle={subtitle}
-          badgeLabel={showBadge ? resolvedBadgeLabel : undefined}
-          badgeTone={resolvedBadgeTone}
+          detail={statusSummary}
+          badgeLabel={badgeLabel}
+          badgeTone={badgeTone}
           badgeSize="sm"
           badgeShape="rounded"
           badgeMaxWidth="row"
           titleClassName={styles.title}
           subtitleClassName={styles.subtitle}
+          detailClassName={styles.statusSummary}
         />
       </div>
 

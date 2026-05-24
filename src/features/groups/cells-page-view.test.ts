@@ -8,6 +8,7 @@ import {
   groupDetailNavigationFocus,
   groupLeadershipName,
   groupSectionKey,
+  groupStatusSummary,
   groupSubtitle,
   type SupervisorDashboard,
   type SupervisorGroup,
@@ -111,13 +112,14 @@ describe("cells-page-view", () => {
   it("filtra por busca e por atenção pastoral", () => {
     const regular = group({ id: "regular", name: "Célula Norte" });
     const attention = group({ id: "attention", name: "Célula Sul", attentionCount: 1 });
-    const support = group({ id: "support", name: "Célula Leste", supportRequestsCount: 1 });
+    const support = group({ id: "support", name: "Célula Leste", supportRequestsCount: 1, attentionCount: 1 });
+    const urgent = group({ id: "urgent", name: "Célula Urgente", signals: [signal({ severity: SignalSeverity.URGENT })], attentionCount: 1 });
     const inCare = group({ id: "in-care", name: "Célula Vale", inCareCount: 1 });
     const lowPresence = group({ id: "low-presence", name: "Célula Oeste", presenceRate: 62 });
     const noPresence = group({ id: "no-presence", name: "Célula Sem Registro", hasPresenceData: false });
 
     expect(filterCellsPageGroups([regular, attention], "sul", "todos").map((item) => item.id)).toEqual(["attention"]);
-    expect(filterCellsPageGroups([regular, attention], "", "atencao").map((item) => item.id)).toEqual(["attention"]);
+    expect(filterCellsPageGroups([regular, attention, support, urgent], "", "atencao").map((item) => item.id)).toEqual(["attention"]);
     expect(filterCellsPageGroups([regular, support], "", "apoio").map((item) => item.id)).toEqual(["support"]);
     expect(filterCellsPageGroups([regular, inCare], "", "em-cuidado").map((item) => item.id)).toEqual(["in-care"]);
     expect(filterCellsPageGroups([regular, lowPresence, noPresence], "", "presenca").map((item) => item.id)).toEqual(["no-presence", "low-presence"]);
@@ -141,6 +143,7 @@ describe("cells-page-view", () => {
     expect(groupDetailNavigationFocus(group({ presenceRate: 60 }))).toBe("presenca-baixa");
     expect(groupDetailNavigationFocus(group())).toBeNull();
     expect(groupDetailNavigationFocus(group({ supportRequestsCount: 1, inCareCount: 1 }), "em-cuidado")).toBe("em-cuidado");
+    expect(groupDetailNavigationFocus(group({ signals: [signal({ severity: SignalSeverity.URGENT, assignedTo: null })], attentionCount: 2 }), "atencao")).toBe("atencao");
     expect(groupDetailNavigationFocus(group({ presenceRate: 60 }), "presenca")).toBe("presenca-baixa");
 
     expect(groupDetailHref(group({ id: "group-care", supportRequestsCount: 1 }))).toBe("/celulas/group-care?foco=apoio");
@@ -151,12 +154,32 @@ describe("cells-page-view", () => {
 
   it("resolve selo pastoral por prioridade", () => {
     expect(groupBadge(group({ signals: [signal({ severity: SignalSeverity.URGENT, assignedTo: null })] }))).toEqual({ label: "1 urgente", tone: "risk" });
+    expect(groupBadge(group({ signals: [signal({ severity: SignalSeverity.URGENT, assignedTo: null })], attentionCount: 2 }), "atencao")).toEqual({ label: "1 pessoa em atenção", tone: "warn" });
     expect(groupBadge(group({ supportRequestsCount: 2 }))).toEqual({ label: "2 pedidos de apoio", tone: "support" });
     expect(groupBadge(group({ supportRequestsCount: 1, inCareCount: 2 }), "em-cuidado")).toEqual({ label: "2 em cuidado", tone: "care" });
     expect(groupBadge(group({ inCareCount: 2 }))).toEqual({ label: "2 em cuidado", tone: "care" });
     expect(groupBadge(group({ hasPresenceData: false }))).toEqual({ label: "Sem presença recente", tone: "neutral" });
     expect(groupBadge(group({ presenceRate: 60 }))).toEqual({ label: "Presença baixa", tone: "warn" });
     expect(groupBadge(group({ signals: [signal({ severity: SignalSeverity.ATTENTION, assignedTo: { role: UserRole.PASTOR } as SupervisorGroup["signals"][number]["assignedTo"] })] }))).toEqual({ label: "1 encaminhado", tone: "risk" });
+  });
+
+  it("resume frentes adicionais sem substituir o status principal", () => {
+    const mixedGroup = group({
+      signals: [signal({ severity: SignalSeverity.URGENT })],
+      attentionCount: 3,
+      supportRequestsCount: 1,
+    });
+    const broadGroup = group({
+      signals: [signal({ severity: SignalSeverity.URGENT })],
+      attentionCount: 3,
+      supportRequestsCount: 1,
+      inCareCount: 1,
+    });
+
+    expect(groupStatusSummary(group({ signals: [signal({ severity: SignalSeverity.URGENT })] }))).toBeUndefined();
+    expect(groupStatusSummary(mixedGroup)).toBe("Também há apoio e atenção");
+    expect(groupStatusSummary(mixedGroup, "atencao")).toBe("Também há urgência e apoio");
+    expect(groupStatusSummary(broadGroup)).toBe("Também há 3 frentes no radar");
   });
 
   it("monta visão da página com contadores e indicador de navegação", () => {

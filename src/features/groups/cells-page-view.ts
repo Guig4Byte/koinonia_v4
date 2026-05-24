@@ -15,6 +15,7 @@ import { GroupResponsibilityRole } from "@/generated/prisma/client";
 import { groupAttentionLabel, type SignalBadge } from "@/features/signals/display";
 import { compareByName, matchesNormalizedQuery, normalizeSearchText } from "@/lib/text";
 import { countLabel } from "@/lib/format";
+import { joinLabelsPtBr } from "@/lib/list-label";
 import type { CellsFilter } from "@/features/groups/cells-page-filters";
 import {
   FILTER_ALL,
@@ -86,6 +87,21 @@ export function groupSubtitle(group: SupervisorGroup) {
   return `${groupLeadershipName(group)} · ${membersLabel}`;
 }
 
+type GroupCareStatusKey =
+  | "urgent"
+  | "pastoral"
+  | "support"
+  | "attention"
+  | "care"
+  | "noPresence"
+  | "lowPresence";
+
+type GroupCareStatusSummary = {
+  key: GroupCareStatusKey;
+  count: number;
+  label: string;
+};
+
 export function groupSectionKey(group: SupervisorGroup): GroupSectionKey {
   if (groupRiskCount(group) > 0 || group.supportRequestsCount > 0 || group.attentionCount > 0 || group.inCareCount > 0) {
     return "care";
@@ -109,7 +125,7 @@ export function groupMatchesFilter(group: SupervisorGroup, filter: CellsFilter) 
   if (filter === FILTER_URGENT) return groupUrgentCount(group) > 0;
   if (filter === FILTER_PASTORAL) return groupPastoralEscalatedCount(group) > 0;
   if (filter === FILTER_SUPPORT) return groupSupportRequestsCount(group) > 0;
-  if (filter === FILTER_ATTENTION) return groupNeedsPastoralAttention(group);
+  if (filter === FILTER_ATTENTION) return groupLocalAttentionCount(group) > 0;
   if (filter === FILTER_IN_CARE) return group.inCareCount > 0;
   if (filter === FILTER_PRESENCE) return !group.hasPresenceData || hasLowPresence(group);
   if (filter === FILTER_NO_RECENT_PRESENCE) return !group.hasPresenceData;
@@ -137,6 +153,7 @@ function contextualGroupFocus(group: SupervisorGroup, filter: CellsFilter): Grou
   if (filter === FILTER_URGENT && groupUrgentCount(group) > 0) return FILTER_URGENT;
   if (filter === FILTER_PASTORAL && groupPastoralEscalatedCount(group) > 0) return FILTER_PASTORAL;
   if (filter === FILTER_SUPPORT && groupSupportRequestsCount(group) > 0) return FILTER_SUPPORT;
+  if (filter === FILTER_ATTENTION && groupLocalAttentionCount(group) > 0) return FILTER_ATTENTION;
   if (filter === FILTER_IN_CARE && group.inCareCount > 0) return FILTER_IN_CARE;
   if (filter === FILTER_NO_RECENT_PRESENCE && !group.hasPresenceData) return FILTER_NO_RECENT_PRESENCE;
   if (filter === FILTER_LOW_PRESENCE && hasLowPresence(group)) return FILTER_LOW_PRESENCE;
@@ -147,6 +164,55 @@ function contextualGroupFocus(group: SupervisorGroup, filter: CellsFilter): Grou
   }
 
   return null;
+}
+
+function groupCareStatusSummaries(group: SupervisorGroup): GroupCareStatusSummary[] {
+  const summaries: GroupCareStatusSummary[] = [
+    { key: "urgent", count: groupUrgentCount(group), label: "urgência" },
+    { key: "pastoral", count: groupPastoralEscalatedCount(group), label: "encaminhamento" },
+    { key: "support", count: groupSupportRequestsCount(group), label: "apoio" },
+    { key: "attention", count: groupLocalAttentionCount(group), label: "atenção" },
+    { key: "care", count: group.inCareCount, label: "cuidado" },
+    { key: "noPresence", count: group.hasPresenceData ? 0 : 1, label: "sem presença recente" },
+    { key: "lowPresence", count: hasLowPresence(group) ? 1 : 0, label: "presença baixa" },
+  ];
+
+  return summaries.filter((item) => item.count > 0);
+}
+
+function groupPrimaryStatusKey(group: SupervisorGroup, filter: CellsFilter): GroupCareStatusKey | null {
+  if (filter === FILTER_URGENT && groupUrgentCount(group) > 0) return "urgent";
+  if (filter === FILTER_PASTORAL && groupPastoralEscalatedCount(group) > 0) return "pastoral";
+  if (filter === FILTER_SUPPORT && groupSupportRequestsCount(group) > 0) return "support";
+  if (filter === FILTER_ATTENTION && groupLocalAttentionCount(group) > 0) return "attention";
+  if (filter === FILTER_IN_CARE && group.inCareCount > 0) return "care";
+  if (filter === FILTER_NO_RECENT_PRESENCE && !group.hasPresenceData) return "noPresence";
+  if (filter === FILTER_LOW_PRESENCE && hasLowPresence(group)) return "lowPresence";
+
+  if (filter === FILTER_PRESENCE) {
+    if (!group.hasPresenceData) return "noPresence";
+    if (hasLowPresence(group)) return "lowPresence";
+  }
+
+  if (groupUrgentCount(group) > 0) return "urgent";
+  if (groupPastoralEscalatedCount(group) > 0) return "pastoral";
+  if (groupSupportRequestsCount(group) > 0) return "support";
+  if (groupLocalAttentionCount(group) > 0) return "attention";
+  if (!group.hasPresenceData) return "noPresence";
+  if (hasLowPresence(group)) return "lowPresence";
+  if (group.inCareCount > 0) return "care";
+
+  return null;
+}
+
+export function groupStatusSummary(group: SupervisorGroup, filter: CellsFilter = FILTER_ALL): string | undefined {
+  const primaryStatusKey = groupPrimaryStatusKey(group, filter);
+  const secondaryStatuses = groupCareStatusSummaries(group).filter((item) => item.key !== primaryStatusKey);
+
+  if (secondaryStatuses.length === 0) return undefined;
+  if (secondaryStatuses.length <= 2) return `Também há ${joinLabelsPtBr(secondaryStatuses.map((item) => item.label))}`;
+
+  return `Também há ${secondaryStatuses.length} frentes no radar`;
 }
 
 export function groupDetailNavigationFocus(group: SupervisorGroup, filter: CellsFilter = FILTER_ALL): GroupDetailNavigationFocus | null {
@@ -179,6 +245,10 @@ function contextualGroupBadge(group: SupervisorGroup, filter: CellsFilter): Sign
 
   if (filter === FILTER_SUPPORT && groupSupportRequestsCount(group) > 0) {
     return { label: groupAttentionLabel(groupSupportRequestsCount(group), "pedido de apoio", "pedidos de apoio"), tone: "support" };
+  }
+
+  if (filter === FILTER_ATTENTION && groupLocalAttentionCount(group) > 0) {
+    return { label: groupAttentionLabel(groupLocalAttentionCount(group), "pessoa em atenção", "pessoas em atenção"), tone: "warn" };
   }
 
   if (filter === FILTER_IN_CARE && group.inCareCount > 0) {
@@ -220,8 +290,10 @@ export function groupBadge(group: SupervisorGroup, filter: CellsFilter = FILTER_
     return { label: groupAttentionLabel(group.supportRequestsCount, "pedido de apoio", "pedidos de apoio"), tone: "support" };
   }
 
-  if (group.attentionCount > 0) {
-    return { label: groupAttentionLabel(group.attentionCount, "pessoa em atenção", "pessoas em atenção"), tone: "warn" };
+  const localAttention = groupLocalAttentionCount(group);
+
+  if (localAttention > 0) {
+    return { label: groupAttentionLabel(localAttention, "pessoa em atenção", "pessoas em atenção"), tone: "warn" };
   }
 
   if (!group.hasPresenceData) {

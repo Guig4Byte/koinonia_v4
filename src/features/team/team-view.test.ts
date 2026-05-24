@@ -8,6 +8,7 @@ import {
   readTeamFilter,
   teamFilterBackHref,
   teamFilterContent,
+  teamGroupAdditionalStatusSummary,
   teamGroupHref,
   supervisorSummary,
   teamNavIndicator,
@@ -137,6 +138,23 @@ describe("team-view", () => {
     expect(groupBadgeTone(teamGroup({ hasPresenceData: false }))).toBe("neutral");
     expect(groupBadgeTone(teamGroup({ presenceRate: 60 }))).toBe("warn");
     expect(groupBadgeTone(teamGroup({ presenceRate: 80 }))).toBe("ok");
+  });
+
+  it("resume frentes adicionais do grupo sem substituir o status principal", () => {
+    expect(teamGroupAdditionalStatusSummary(teamGroup({ urgentCount: 1 }))).toBeUndefined();
+    expect(teamGroupAdditionalStatusSummary(teamGroup({ urgentCount: 1, supportRequestsCount: 1, localAttentionCount: 2 }))).toEqual({
+      count: 2,
+      detail: "Também há apoio e atenção",
+    });
+    expect(teamGroupAdditionalStatusSummary(teamGroup({
+      urgentCount: 1,
+      supportRequestsCount: 1,
+      localAttentionCount: 2,
+      inCareCount: 1,
+    }))).toEqual({
+      count: 3,
+      detail: "Também há apoio, atenção e cuidado",
+    });
   });
 
   it("monta links de equipe preservando filtro para o detalhe da célula", () => {

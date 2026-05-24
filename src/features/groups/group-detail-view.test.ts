@@ -140,7 +140,7 @@ describe("buildGroupMembersView", () => {
   });
 
 
-  it("usa membros do foco como seção principal quando a célula veio filtrada", () => {
+  it("mantém todos os membros de prioridade quando a célula veio por um foco", () => {
     const members = [
       { membershipId: "1", personId: "1", name: "Ana", badgeLabel: "Pedido de apoio", badgeTone: "support" as const, priorityRank: 2, status: PersonStatus.ACTIVE, focusKeys: ["apoio" as const] },
       { membershipId: "2", personId: "2", name: "Bruno", badgeLabel: "Em atenção", badgeTone: "warn" as const, priorityRank: 3, status: PersonStatus.ACTIVE, focusKeys: ["atencao" as const] },
@@ -150,12 +150,12 @@ describe("buildGroupMembersView", () => {
 
     const view = buildGroupMembersView(members, "todos", "apoio");
 
-    expect(view.prioritySectionTitle).toBe("Pedidos de apoio nesta célula");
-    expect(view.priorityMembers.map((member) => member.name)).toEqual(["Ana"]);
+    expect(view.priorityMembers.map((member) => member.name)).toEqual(["Ana", "Bruno", "Camila"]);
     expect(view.regularMembers.map((member) => member.name)).toEqual(["Daniel"]);
+    expect(view.focusedMembersCount).toBe(1);
   });
 
-  it("usa pessoas em cuidado como foco mesmo sem sinal aberto", () => {
+  it("conta pessoas em cuidado no foco sem esconder os demais membros", () => {
     const members = [
       { membershipId: "1", personId: "1", name: "Ana", badgeLabel: "Em cuidado", badgeTone: "care" as const, priorityRank: 4, status: PersonStatus.COOLING_AWAY, focusKeys: ["em-cuidado" as const] },
       { membershipId: "2", personId: "2", name: "Bruno", badgeLabel: "Ativo", badgeTone: "ok" as const, priorityRank: 5, status: PersonStatus.ACTIVE, focusKeys: [] },
@@ -163,8 +163,8 @@ describe("buildGroupMembersView", () => {
 
     const view = buildGroupMembersView(members, "todos", "em-cuidado");
 
-    expect(view.prioritySectionTitle).toBe("Em cuidado nesta célula");
     expect(view.priorityMembers.map((member) => member.name)).toEqual(["Ana"]);
     expect(view.regularMembers.map((member) => member.name)).toEqual(["Bruno"]);
+    expect(view.focusedMembersCount).toBe(1);
   });
 });

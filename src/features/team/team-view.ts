@@ -6,12 +6,12 @@ import { teamFilterToGroupFocus, type TeamFilter } from "@/features/team/team-fi
 import { FILTER_ALL, FILTER_ATTENTION, FILTER_NO_RECENT_PRESENCE, FILTER_PASTORAL, FILTER_STABLE, FILTER_SUPPORT, FILTER_URGENT } from "@/lib/filter-param";
 import { matchesNormalizedQuery } from "@/lib/text";
 import { countLabel } from "@/lib/format";
+import { joinLabelsPtBr } from "@/lib/list-label";
 import { routeWithQuery, ROUTES } from "@/lib/routes";
 
 export const TEAM_SECTION_LIMIT = 4;
 export const SUPERVISOR_SECTION_LIMIT = 4;
 export const GROUPS_PER_SUPERVISOR_LIMIT = 4;
-
 
 export { readTeamFilter, TEAM_FILTERS, type TeamFilter } from "@/features/team/team-filters";
 
@@ -107,6 +107,21 @@ export type InactiveTeamGroup = {
   meetingDayOfWeek: number | null;
   meetingTime: string | null;
   locationName: string | null;
+};
+
+type TeamGroupStatusKey =
+  | "urgent"
+  | "pastoral"
+  | "support"
+  | "attention"
+  | "care"
+  | "noPresence"
+  | "lowPresence";
+
+type TeamGroupStatusSummary = {
+  key: TeamGroupStatusKey;
+  count: number;
+  label: string;
 };
 
 export type TeamPageLists = {
@@ -205,6 +220,43 @@ export function buildTeamPageLists({
 export function compactGroupSubtitle(group: TeamGroup) {
   const membersLabel = countLabel(group.membersCount, "membro", "membros");
   return `${membersLabel} · ${group.leadershipName}`;
+}
+
+function teamGroupStatusSummaries(group: TeamGroup): TeamGroupStatusSummary[] {
+  const summaries: TeamGroupStatusSummary[] = [
+    { key: "urgent", count: group.urgentCount, label: "urgência" },
+    { key: "pastoral", count: group.pastoralCasesCount, label: "encaminhamento" },
+    { key: "support", count: group.supportRequestsCount, label: "apoio" },
+    { key: "attention", count: group.localAttentionCount, label: "atenção" },
+    { key: "care", count: group.inCareCount, label: "cuidado" },
+    { key: "noPresence", count: group.hasPresenceData ? 0 : 1, label: "sem presença recente" },
+    { key: "lowPresence", count: hasLowPresence(group) ? 1 : 0, label: "presença baixa" },
+  ];
+
+  return summaries.filter((summary) => summary.count > 0);
+}
+
+function teamGroupPrimaryStatusKey(group: TeamGroup): TeamGroupStatusKey | null {
+  if (group.urgentCount > 0) return "urgent";
+  if (group.pastoralCasesCount > 0) return "pastoral";
+  if (group.supportRequestsCount > 0) return "support";
+  if (group.localAttentionCount > 0) return "attention";
+  if (group.inCareCount > 0) return "care";
+  if (hasLowPresence(group)) return "lowPresence";
+  if (!group.hasPresenceData) return "noPresence";
+  return null;
+}
+
+export function teamGroupAdditionalStatusSummary(group: TeamGroup): { count: number; detail: string } | undefined {
+  const primaryStatusKey = teamGroupPrimaryStatusKey(group);
+  const additionalStatuses = teamGroupStatusSummaries(group).filter((summary) => summary.key !== primaryStatusKey);
+
+  if (additionalStatuses.length === 0) return undefined;
+
+  return {
+    count: additionalStatuses.length,
+    detail: `Também há ${joinLabelsPtBr(additionalStatuses.map((summary) => summary.label))}`,
+  };
 }
 
 export function groupBadgeTone(group: TeamGroup): SignalBadgeTone {

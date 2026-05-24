@@ -131,8 +131,6 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
             priorityBadgeToneForMember={activeFocus === FILTER_IN_CARE ? memberBadgeToneForCareContext : undefined}
             filteredBadgeLabelForMember={activeMembersFilter === FILTER_IN_CARE ? memberBadgeLabelForCareContext : undefined}
             filteredBadgeToneForMember={activeMembersFilter === FILTER_IN_CARE ? memberBadgeToneForCareContext : undefined}
-            prioritySectionTitle={membersView.prioritySectionTitle}
-            prioritySectionDetail={membersView.prioritySectionDetail}
             priorityMoreLabel="Ver mais pessoas em atenção"
             priorityLessLabel="Mostrar menos pessoas em atenção"
             regularInitialCount={GROUP_REGULAR_MEMBER_INITIAL_COUNT}

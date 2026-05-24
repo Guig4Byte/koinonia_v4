@@ -4,6 +4,7 @@ import {
   CELLS_PAGE_SECTION_LIMIT,
   groupBadge,
   groupDetailHref,
+  groupStatusSummary,
   groupSubtitle,
   sectionCardTone,
   type CellsPageView,
@@ -11,7 +12,6 @@ import {
   type SupervisorGroup,
 } from "@/features/groups/cells-page-view";
 import type { CellsFilter } from "@/features/groups/cells-page-filters";
-import { NO_RECENT_PRESENCE_LABEL } from "@/lib/filter-param";
 import { countLabel } from "@/lib/format";
 import styles from "./cells-page-sections.module.css";
 
@@ -23,15 +23,13 @@ function CellsGroupCard({ group, sectionKey, activeFilter }: { group: Supervisor
       name={group.name}
       subtitle={groupSubtitle(group)}
       presenceRate={group.presenceRate}
-      attentionCount={group.attentionCount}
       badgeLabel={badge?.label}
       badgeTone={badge?.tone}
-      showBadge={Boolean(badge)}
+      statusSummary={groupStatusSummary(group, activeFilter)}
       cardTone={sectionCardTone(sectionKey)}
       href={groupDetailHref(group, activeFilter)}
       hasPresenceData={group.hasPresenceData}
       presenceTrend={group.presenceTrend}
-      noPresenceLabel={NO_RECENT_PRESENCE_LABEL}
     />
   );
 }

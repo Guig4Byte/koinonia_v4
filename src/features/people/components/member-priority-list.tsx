@@ -107,8 +107,6 @@ type MemberPriorityListProps<TMember extends MemberPriorityListItem> = {
   priorityBadgeToneForMember?: (member: TMember) => BadgeTone | undefined;
   filteredBadgeLabelForMember?: (member: TMember) => string | undefined;
   filteredBadgeToneForMember?: (member: TMember) => BadgeTone | undefined;
-  prioritySectionTitle?: string;
-  prioritySectionDetail?: string;
   priorityMoreLabel?: string;
   priorityLessLabel?: string;
   regularInitialCount?: number;
@@ -132,8 +130,6 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
   priorityBadgeToneForMember,
   filteredBadgeLabelForMember,
   filteredBadgeToneForMember,
-  prioritySectionTitle = "Quem merece proximidade",
-  prioritySectionDetail,
   priorityMoreLabel = "Ver mais pessoas no radar",
   priorityLessLabel = "Mostrar menos pessoas no radar",
   regularInitialCount = 6,
@@ -170,8 +166,8 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
           {priorityMembers.length > 0 ? (
             <div className={styles.sectionStack}>
               <MemberSectionHeader
-                title={prioritySectionTitle}
-                detail={prioritySectionDetail ?? countLabel(priorityMembers.length, "pessoa no radar", "pessoas no radar")}
+                title="Quem merece proximidade"
+                detail={countLabel(priorityMembers.length, "pessoa no radar", "pessoas no radar")}
               />
               <ProgressiveList
                 initialCount={4}

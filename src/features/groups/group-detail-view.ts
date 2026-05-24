@@ -96,8 +96,6 @@ export type GroupMembersView = {
   priorityMembers: MemberDisplay[];
   regularMembers: MemberDisplay[];
   sectionDetail: string;
-  prioritySectionTitle?: string;
-  prioritySectionDetail?: string;
   focusedMembersCount: number;
 };
 
@@ -236,16 +234,6 @@ export function groupDetailFocusCard(
   };
 }
 
-export function groupFocusSectionTitle(focus: GroupDetailFocus | null) {
-  if (focus === FILTER_URGENT) return "Urgentes nesta célula";
-  if (focus === FILTER_PASTORAL) return "Encaminhados ao pastor";
-  if (focus === FILTER_SUPPORT) return "Pedidos de apoio nesta célula";
-  if (focus === FILTER_ATTENTION) return "Atenção nesta célula";
-  if (focus === FILTER_IN_CARE) return "Em cuidado nesta célula";
-  if (focus === FILTER_LOW_PRESENCE) return "Presença em atenção";
-  return undefined;
-}
-
 export function groupMemberPriorityRank(signal: GroupDetailSignal | undefined, personStatus: PersonStatus, viewer: GroupDetailViewer) {
   if (signal && isUrgentOrPastoralCase(signal)) return 1;
   if (signal && isSupportRequest(signal, viewer)) return 2;
@@ -338,8 +326,7 @@ export function buildGroupMembersView(
   const focusedMembers = activeFocus
     ? members.filter((member) => groupMemberMatchesFocus(member, activeFocus))
     : [];
-  const shouldUseFocusedPriority = activeFilter === FILTER_ALL && focusedMembers.length > 0;
-  const priorityMembers = shouldUseFocusedPriority ? focusedMembers : defaultPriorityMembers;
+  const priorityMembers = defaultPriorityMembers;
   const regularMembers = activeFilter === FILTER_ALL ? activeMembers : visibleMembers;
 
   return {
@@ -353,10 +340,6 @@ export function buildGroupMembersView(
       visibleCount: visibleMembers.length,
       activeFilter,
     }),
-    prioritySectionTitle: shouldUseFocusedPriority ? groupFocusSectionTitle(activeFocus) : undefined,
-    prioritySectionDetail: shouldUseFocusedPriority
-      ? countLabel(focusedMembers.length, "pessoa neste recorte", "pessoas neste recorte")
-      : undefined,
     focusedMembersCount: focusedMembers.length,
   };
 }

@@ -15,6 +15,7 @@ import {
   inactiveGroupScheduleText,
   shouldShowGroupBadge,
   supervisorSummary,
+  teamGroupAdditionalStatusSummary,
   teamGroupHref,
   type InactiveTeamGroup,
   type SupervisorTeam,
@@ -73,12 +74,24 @@ function CellStatusBadge({
   );
 }
 
+function AdditionalStatusBadge({ count, detail }: { count?: number; detail?: string }) {
+  if (!count || !detail) return null;
+
+  return (
+    <span className={styles.cellAdditionalBadge} title={detail} aria-label={detail}>
+      +{count}
+    </span>
+  );
+}
+
 function TeamCellLink({
   href,
   name,
   subtitle,
   badgeLabel,
   badgeTone,
+  additionalStatusCount,
+  additionalStatusDetail,
   className,
 }: {
   href: string;
@@ -86,6 +99,8 @@ function TeamCellLink({
   subtitle: string;
   badgeLabel?: string;
   badgeTone?: BadgeTone;
+  additionalStatusCount?: number;
+  additionalStatusDetail?: string;
   className?: string;
 }) {
   return (
@@ -96,6 +111,7 @@ function TeamCellLink({
       </span>
       <span className={styles.cellAction}>
         <CellStatusBadge label={badgeLabel} tone={badgeTone} maxWidth="none" />
+        <AdditionalStatusBadge count={additionalStatusCount} detail={additionalStatusDetail} />
         <ChevronRight className={styles.cellChevron} aria-hidden="true" />
       </span>
     </Link>
@@ -127,6 +143,7 @@ export function TeamFilterContextCard({
 export function TeamGroupLink({ group, activeFilter }: { group: TeamGroup; activeFilter?: TeamFilter }) {
   const tone = groupBadgeTone(group);
   const showBadge = shouldShowGroupBadge(group);
+  const additionalStatus = teamGroupAdditionalStatusSummary(group);
 
   return (
     <TeamCellLink
@@ -135,6 +152,8 @@ export function TeamGroupLink({ group, activeFilter }: { group: TeamGroup; activ
       subtitle={compactGroupSubtitle(group)}
       badgeLabel={showBadge ? group.statusLabel : undefined}
       badgeTone={tone}
+      additionalStatusCount={additionalStatus?.count}
+      additionalStatusDetail={additionalStatus?.detail}
       className={cellToneClass(tone)}
     />
   );
@@ -264,12 +283,16 @@ function StructureChildRow({
   subtitle,
   badgeLabel,
   badgeTone,
+  additionalStatusCount,
+  additionalStatusDetail,
 }: {
   href: string;
   name: string;
   subtitle: string;
   badgeLabel?: string;
   badgeTone?: BadgeTone;
+  additionalStatusCount?: number;
+  additionalStatusDetail?: string;
 }) {
   return (
     <Link href={href} className={cn(styles.structureChildRow, cellToneClass(badgeTone))}>
@@ -280,6 +303,7 @@ function StructureChildRow({
       </span>
       <span className={styles.structureChildAction}>
         <CellStatusBadge label={badgeLabel} tone={badgeTone} maxWidth="row" />
+        <AdditionalStatusBadge count={additionalStatusCount} detail={additionalStatusDetail} />
         <ChevronRight className={styles.cellChevron} aria-hidden="true" />
       </span>
     </Link>
@@ -289,6 +313,7 @@ function StructureChildRow({
 function StructureGroupLink({ group, activeFilter }: { group: TeamGroup; activeFilter?: TeamFilter }) {
   const tone = groupBadgeTone(group);
   const showBadge = shouldShowGroupBadge(group);
+  const additionalStatus = teamGroupAdditionalStatusSummary(group);
 
   return (
     <StructureChildRow
@@ -297,6 +322,8 @@ function StructureGroupLink({ group, activeFilter }: { group: TeamGroup; activeF
       subtitle={compactGroupSubtitle(group)}
       badgeLabel={showBadge ? group.statusLabel : undefined}
       badgeTone={tone}
+      additionalStatusCount={additionalStatus?.count}
+      additionalStatusDetail={additionalStatus?.detail}
     />
   );
 }
