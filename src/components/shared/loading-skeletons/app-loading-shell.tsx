@@ -10,7 +10,7 @@ export function AppLoadingShell({
   headerVariant?: "full" | "compact";
 }) {
   return (
-    <main className="safe-page">
+    <main className="safe-page safe-page-with-nav">
       <header className={cn("app-header", headerVariant === "compact" && "app-header-compact")} aria-hidden="true">
         {headerVariant === "compact" ? (
           <div className="flex items-center justify-between gap-3">

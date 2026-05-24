@@ -32,7 +32,7 @@ export function AppShell({
   const firstName = userName.split(" ")[0];
 
   return (
-    <main className={cn("safe-page", hideBottomNav && "safe-page-focus")}>
+    <main className={cn("safe-page", !hideBottomNav && "safe-page-with-nav", hideBottomNav && "safe-page-focus")}>
       <header className={cn("app-header", headerVariant === "compact" && "app-header-compact")}>
         {headerVariant === "compact" ? (
           <div className="flex items-center justify-between gap-3">

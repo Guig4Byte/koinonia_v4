@@ -86,7 +86,7 @@ const PROFILE_SCREENS: Record<Exclude<ProfileId, "publico">, ScreenDefinition[]>
 };
 
 const OUTPUT_ROOT = path.join(process.cwd(), "artifacts", "mobile-captures");
-const BOTTOM_NAV_SELECTOR = "main.safe-page > nav";
+const BOTTOM_NAV_SELECTOR = "main.safe-page-with-nav > nav";
 
 let cachedTargets: CaptureTargets | null = null;
 
@@ -284,8 +284,8 @@ async function removeTemporaryOverlays(page: import("@playwright/test").Page) {
 }
 
 async function isBottomNavVisible(page: import("@playwright/test").Page) {
-  return page.evaluate(() => {
-    const nav = document.querySelector("main.safe-page > nav") as HTMLElement | null;
+  return page.evaluate((selector) => {
+    const nav = document.querySelector(selector) as HTMLElement | null;
     if (!nav) return false;
 
     const style = window.getComputedStyle(nav);
@@ -296,7 +296,7 @@ async function isBottomNavVisible(page: import("@playwright/test").Page) {
       && style.opacity !== "0"
       && rect.width > 0
       && rect.height > 0;
-  });
+  }, BOTTOM_NAV_SELECTOR);
 }
 
 async function hideBottomNavForFullPage(page: import("@playwright/test").Page) {
