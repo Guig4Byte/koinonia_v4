@@ -5,20 +5,13 @@ import type { PastoralHealthOverview, PastoralHealthSegment, PastoralHealthTone 
 import { cn } from "@/lib/cn";
 import styles from "./pastoral-health-card.module.css";
 
-const toneClass: Record<PastoralHealthTone, string> = {
-  ok: "bg-[var(--color-metric-presenca)]",
-  warn: "bg-[var(--color-badge-atencao-text)]",
-  neutral: "bg-[var(--color-text-muted)]",
-  support: "bg-[var(--color-badge-apoio-text)]",
-  risk: "bg-[var(--color-metric-atencoes)]",
-};
-
 const toneColor: Record<PastoralHealthTone, string> = {
-  ok: "var(--color-metric-presenca)",
-  warn: "var(--color-badge-atencao-text)",
-  neutral: "var(--color-text-muted)",
-  support: "var(--color-badge-apoio-text)",
-  risk: "var(--color-metric-atencoes)",
+  ok: "var(--color-signal-stable)",
+  warn: "var(--color-signal-attention)",
+  neutral: "var(--color-signal-retomar)",
+  support: "var(--color-signal-support)",
+  pastoral: "var(--color-signal-pastoral)",
+  risk: "var(--color-signal-risk)",
 };
 
 function segmentFlexStyle(segment: PastoralHealthSegment, totalGroups: number): CSSProperties {
@@ -75,8 +68,11 @@ export function PastoralHealthCard({
           activeSegments.map((segment) => (
             <span
               key={segment.key}
-              className={cn(styles.segment, toneClass[segment.tone])}
-              style={segmentFlexStyle(segment, overview.totalGroups)}
+              className={styles.segment}
+              style={{
+                ...segmentFlexStyle(segment, overview.totalGroups),
+                ...segmentColorStyle(segment),
+              }}
               title={`${segment.label}: ${segment.count}`}
             />
           ))

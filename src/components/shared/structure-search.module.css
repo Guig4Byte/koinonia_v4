@@ -61,3 +61,105 @@
   line-height: 1.45;
 }
 
+.searchStatusHidden {
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.filtersArea {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 7px;
+  padding-top: 2px;
+}
+
+.filtersLabel {
+  padding-inline: 4px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  font-weight: 780;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+
+.filtersScroller {
+  --structure-filter-fade: 34px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  margin-inline: -2px;
+  padding: 2px 2px 8px;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black calc(100% - var(--structure-filter-fade)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    black calc(100% - var(--structure-filter-fade)),
+    transparent 100%
+  );
+}
+
+.filtersScroller::-webkit-scrollbar {
+  display: none;
+}
+
+.filterRow {
+  display: flex;
+  width: max-content;
+  min-width: 100%;
+  align-items: center;
+  gap: 8px;
+}
+
+.filterChip {
+  gap: 0.42rem;
+  max-width: none;
+  padding-inline: 14px;
+}
+
+.filterDot {
+  --structure-filter-dot: color-mix(
+    in srgb,
+    var(--color-text-muted) 58%,
+    transparent
+  );
+  width: 0.48rem;
+  height: 0.48rem;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: var(--structure-filter-dot);
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--structure-filter-dot) 13%, transparent);
+}
+
+.filterDotRisk {
+  --structure-filter-dot: var(--color-signal-risk);
+}
+
+.filterDotSupport {
+  --structure-filter-dot: var(--color-signal-support);
+}
+
+.filterDotWarn {
+  --structure-filter-dot: var(--color-signal-attention);
+}
+
+.filterDotCare {
+  --structure-filter-dot: var(--color-signal-care);
+}
+
+.filterDotNeutral {
+  --structure-filter-dot: var(--color-signal-retomar);
+}
+
+.filterDotOk {
+  --structure-filter-dot: var(--color-signal-stable);
+}

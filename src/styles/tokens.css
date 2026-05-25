@@ -81,6 +81,13 @@
   --care-soft: var(--color-badge-cuidado-bg);
   --support: var(--color-badge-apoio-text);
   --support-soft: var(--color-badge-apoio-bg);
+  --color-signal-risk: var(--color-metric-atencoes);
+  --color-signal-pastoral: color-mix(in srgb, var(--color-badge-risco-text) 76%, var(--color-badge-apoio-text));
+  --color-signal-support: var(--color-badge-apoio-text);
+  --color-signal-attention: var(--color-badge-atencao-text);
+  --color-signal-care: var(--color-badge-cuidado-text);
+  --color-signal-retomar: var(--color-text-muted);
+  --color-signal-stable: var(--color-metric-presenca);
   --nav-bg: var(--color-bg-tab);
   --page-glow: color-mix(in srgb, var(--color-brand-accent) 14%, transparent);
   --color-focus-ring: var(--color-brand);
@@ -174,6 +181,7 @@ html[data-theme="light"] {
   --color-badge-info-bg: var(--status-info-bg);
   --color-badge-info-border: var(--status-info-border);
   --color-badge-info-text: var(--status-info-text);
+  --color-signal-pastoral: #a83250;
 
   /* Bordas e sombras */
   --color-border-card: rgba(139, 90, 43, 0.18);
@@ -300,6 +308,7 @@ html[data-theme="parchment"] {
   --color-badge-info-bg: var(--color-badge-cuidado-bg);
   --color-badge-info-border: var(--color-badge-cuidado-border);
   --color-badge-info-text: var(--color-badge-cuidado-text);
+  --color-signal-pastoral: #7b2945;
 
   --status-danger-bg: var(--color-badge-risco-bg);
   --status-danger-text: var(--color-badge-risco-text);
@@ -415,18 +424,18 @@ html[data-theme="dark"] {
   --color-tab-label-inactive: color-mix(in srgb, var(--color-text-muted) 92%, var(--cream-50));
   --color-tab-active: var(--brown-100);
 
-  --status-danger-bg: #3a1d19;
-  --status-danger-border: #b35a4d;
-  --status-danger-text: #ffb4a8;
-  --status-warning-bg: #352714;
-  --status-warning-border: #a57a2d;
-  --status-warning-text: #ffd27d;
-  --status-success-bg: #182f1d;
-  --status-success-border: #5b875f;
-  --status-success-text: #a9e6ad;
-  --status-info-bg: #13283d;
-  --status-info-border: #4d7eab;
-  --status-info-text: #a8d4ff;
+  --status-danger-bg: #47201c;
+  --status-danger-border: #ff8176;
+  --status-danger-text: #ff9b91;
+  --status-warning-bg: #3d2b11;
+  --status-warning-border: #f6bb47;
+  --status-warning-text: #ffd166;
+  --status-success-bg: #14331b;
+  --status-success-border: #6fd17a;
+  --status-success-text: #94ec9e;
+  --status-info-bg: #132e47;
+  --status-info-border: #68b5ff;
+  --status-info-text: #9fd3ff;
 
   --color-metric-presenca: var(--status-success-text);
   --color-metric-atencoes: var(--status-danger-text);
@@ -441,15 +450,16 @@ html[data-theme="dark"] {
   --color-badge-cuidado-bg: var(--status-info-bg);
   --color-badge-cuidado-border: var(--status-info-border);
   --color-badge-cuidado-text: var(--status-info-text);
-  --color-badge-apoio-bg: #2c2138;
-  --color-badge-apoio-border: #8467ad;
-  --color-badge-apoio-text: #d5c1ff;
+  --color-badge-apoio-bg: #2f2142;
+  --color-badge-apoio-border: #ad80ff;
+  --color-badge-apoio-text: #d0b3ff;
   --color-badge-estavel-bg: var(--status-success-bg);
   --color-badge-estavel-border: var(--status-success-border);
   --color-badge-estavel-text: var(--status-success-text);
   --color-badge-info-bg: var(--status-info-bg);
   --color-badge-info-border: var(--status-info-border);
   --color-badge-info-text: var(--status-info-text);
+  --color-signal-pastoral: #ff9fbd;
 
   --color-border-card: rgba(232, 213, 188, 0.36);
   --color-border-divider: rgba(232, 213, 188, 0.34);

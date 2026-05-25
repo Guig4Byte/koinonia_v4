@@ -1,17 +1,28 @@
 import { redirect } from "next/navigation";
 import { Plus } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
-import { EmptyState, InfoCard, SectionTitle } from "@/components/shared/base-cards";
+import {
+  EmptyState,
+  InfoCard,
+  SectionTitle,
+} from "@/components/shared/base-cards";
 import { ButtonLink } from "@/components/ui/button-link";
 import { PageHero } from "@/components/shared/page-hero";
 import { ProgressiveList } from "@/components/shared/progressive-list";
 import { TeamStructureSearch } from "@/features/team/components/team-structure-search";
 import { TeamSectionAnchorScroll } from "@/features/team/components/team-section-anchor-scroll";
-import { TeamFilterContextCard, TeamStructureAdjustments, TeamSupervisorCard } from "@/features/team/components/team-structure-cards";
+import {
+  TeamFilterContextCard,
+  TeamStructureAdjustments,
+  TeamSupervisorCard,
+} from "@/features/team/components/team-structure-cards";
 import { GroupKind } from "@/generated/prisma/client";
 import { getPastorTeamOverview } from "@/features/dashboard/queries";
 import { appNavForRole } from "@/features/navigation/app-nav";
-import { canManageGroups, canUsePastorDashboard } from "@/features/permissions/permissions";
+import {
+  canManageGroups,
+  canUsePastorDashboard,
+} from "@/features/permissions/permissions";
 import {
   buildTeamPageLists,
   readTeamFilter,
@@ -20,7 +31,10 @@ import {
   teamNavIndicator,
   teamSavedMessage,
 } from "@/features/team/team-view";
-import { SUPERVISORS_SECTION_ID, TEAM_FILTERS_SECTION_ID } from "@/features/team/team-routes";
+import {
+  SUPERVISORS_SECTION_ID,
+  TEAM_FILTERS_SECTION_ID,
+} from "@/features/team/team-routes";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/search-params";
@@ -49,17 +63,32 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
   const team = await getPastorTeamOverview(user);
   const inactiveGroups = canManageGroups(user)
     ? await prisma.smallGroup.findMany({
-      where: { churchId: user.churchId, kind: GroupKind.CELL, isActive: false },
-      select: { id: true, name: true, meetingDayOfWeek: true, meetingTime: true, locationName: true },
-      orderBy: { name: "asc" },
-    })
+        where: {
+          churchId: user.churchId,
+          kind: GroupKind.CELL,
+          isActive: false,
+        },
+        select: {
+          id: true,
+          name: true,
+          meetingDayOfWeek: true,
+          meetingTime: true,
+          locationName: true,
+        },
+        orderBy: { name: "asc" },
+      })
     : [];
   const {
     filteredSupervisors,
     filteredUnassignedGroups,
     filteredInactiveGroups,
     isFiltered,
-  } = buildTeamPageLists({ team, inactiveGroups, normalizedQuery, activeFilter });
+  } = buildTeamPageLists({
+    team,
+    inactiveGroups,
+    normalizedQuery,
+    activeFilter,
+  });
   const canCreateGroup = canManageGroups(user);
   const savedMessage = teamSavedMessage(savedParam);
   const filterContent = teamFilterContent(activeFilter);
@@ -68,7 +97,10 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
     <AppShell
       userName={user.name}
       role={user.role}
-      nav={appNavForRole(user, { active: "secondary", indicator: teamNavIndicator(team.summary) })}
+      nav={appNavForRole(user, {
+        active: "secondary",
+        indicator: teamNavIndicator(team.summary),
+      })}
       headerVariant="compact"
     >
       <div className={pageStyles.page}>
@@ -78,19 +110,34 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
           compact
           eyebrow="Equipe pastoral"
           title="Equipe"
-          description="Supervisores e células por atenção pastoral."
-          action={canCreateGroup ? (
-            <ButtonLink href={ROUTES.newCell} variant="secondary" size="sm" density="compact" shape="rounded" className="k-action-pill k-action-pill-primary shrink-0">
-              <Plus className="h-4 w-4" aria-hidden="true" />
-              Nova célula
-            </ButtonLink>
-          ) : null}
+          description="Supervisores, células e pendências que pedem atenção."
+          action={
+            canCreateGroup ? (
+              <ButtonLink
+                href={ROUTES.newCell}
+                variant="secondary"
+                size="sm"
+                density="compact"
+                shape="rounded"
+                className="k-action-pill k-action-pill-primary shrink-0"
+              >
+                <Plus className="h-4 w-4" aria-hidden="true" />
+                Nova célula
+              </ButtonLink>
+            ) : null
+          }
         />
 
-        {savedMessage ? <InfoCard tone="success">{savedMessage}</InfoCard> : null}
+        {savedMessage ? (
+          <InfoCard tone="success">{savedMessage}</InfoCard>
+        ) : null}
 
         <section id={TEAM_FILTERS_SECTION_ID} className="scroll-mt-4">
-          <TeamStructureSearch query={query} filter={activeFilter} sectionId={TEAM_FILTERS_SECTION_ID} />
+          <TeamStructureSearch
+            query={query}
+            filter={activeFilter}
+            sectionId={TEAM_FILTERS_SECTION_ID}
+          />
         </section>
 
         {activeFilter !== FILTER_ALL ? (
@@ -102,7 +149,10 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
         ) : null}
 
         <section id={SUPERVISORS_SECTION_ID} className="scroll-mt-6">
-          <SectionTitle detail={filterContent.listDetail} className={teamCardStyles.teamSectionHeading}>
+          <SectionTitle
+            detail={filterContent.listDetail}
+            className={teamCardStyles.teamSectionHeading}
+          >
             {filterContent.listTitle}
           </SectionTitle>
           {filteredSupervisors.length > 0 ? (
@@ -113,15 +163,24 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
               lessLabel="Mostrar menos supervisores"
             >
               {filteredSupervisors.map((supervisor) => (
-                <TeamSupervisorCard key={supervisor.id} supervisor={supervisor} activeFilter={activeFilter} />
+                <TeamSupervisorCard
+                  key={supervisor.id}
+                  supervisor={supervisor}
+                  activeFilter={activeFilter}
+                />
               ))}
             </ProgressiveList>
           ) : (
-            <EmptyState title={isFiltered ? "Nenhum resultado nesse recorte" : "Nenhum supervisor cadastrado"}>
+            <EmptyState
+              title={
+                isFiltered
+                  ? "Nenhum resultado nesse recorte"
+                  : "Nenhum supervisor cadastrado"
+              }
+            >
               {isFiltered
                 ? filterContent.empty
-                : "Quando supervisores forem cadastrados, a estrutura da equipe aparecerá aqui."
-              }
+                : "Quando supervisores forem cadastrados, a estrutura da equipe aparecerá aqui."}
             </EmptyState>
           )}
         </section>
@@ -129,8 +188,8 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
         <TeamStructureAdjustments
           unassignedGroups={filteredUnassignedGroups}
           inactiveGroups={filteredInactiveGroups}
+          activeFilter={activeFilter}
         />
-
       </div>
     </AppShell>
   );

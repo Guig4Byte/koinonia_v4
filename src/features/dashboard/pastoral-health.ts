@@ -9,7 +9,7 @@ import {
 
 export type PastoralHealthKey = "stable" | "attention" | "noPresence" | "support" | "pastoral" | "urgent";
 
-export type PastoralHealthTone = "ok" | "warn" | "neutral" | "support" | "risk";
+export type PastoralHealthTone = "ok" | "warn" | "neutral" | "support" | "pastoral" | "risk";
 
 export type PastoralHealthGroup = GroupPastoralPriorityInput & {
   hasLowPresence?: boolean;
@@ -68,7 +68,7 @@ const healthSegmentConfig: Record<PastoralHealthKey, Omit<PastoralHealthSegment,
   pastoral: {
     key: "pastoral",
     label: "Encaminhadas ao pastor",
-    tone: "risk",
+    tone: "pastoral",
     href: ROUTES.teamFilter(FILTER_PASTORAL),
     singular: "encaminhada ao pastor",
     plural: "encaminhadas ao pastor",

@@ -31,7 +31,7 @@ describe("pastoral-health", () => {
 
     expect(overview.segments.map((segment) => [segment.key, segment.count, segment.tone])).toEqual([
       ["urgent", 1, "risk"],
-      ["pastoral", 1, "risk"],
+      ["pastoral", 1, "pastoral"],
       ["support", 1, "support"],
       ["attention", 0, "warn"],
       ["noPresence", 1, "neutral"],

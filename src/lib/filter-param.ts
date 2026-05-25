@@ -13,9 +13,18 @@ export const FILTER_ACTIVE = "ativos";
 export const NO_RECENT_PRESENCE_LABEL = "Sem presença recente";
 export const NO_RECENT_PRESENCE_FILTER_LABEL = NO_RECENT_PRESENCE_LABEL;
 
+export type FilterTone =
+  | "risk"
+  | "support"
+  | "warn"
+  | "care"
+  | "neutral"
+  | "ok";
+
 export type FilterOption<T extends string> = Readonly<{
   value: T;
   label: string;
+  tone?: FilterTone;
 }>;
 
 export function readFilterParam<T extends string>(
