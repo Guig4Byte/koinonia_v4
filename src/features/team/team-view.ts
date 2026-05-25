@@ -51,8 +51,9 @@ const teamFilterCopy: Record<
   }
 > = {
   [FILTER_ALL]: {
-    contextTitle: "Estrutura da equipe",
-    contextDetail: "Busque ou filtre por atenção.",
+    contextTitle: "Leitura pastoral da equipe",
+    contextDetail:
+      "Mostramos primeiro o cuidado que pede mais atenção. No detalhe da célula, todos os sinais e acompanhamentos aparecem com calma.",
     listTitle: "Supervisores",
     listDetail: "Acompanhe por responsável.",
     empty:

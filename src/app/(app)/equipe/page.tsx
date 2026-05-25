@@ -39,7 +39,6 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/search-params";
 import { normalizeSearchText } from "@/lib/text";
-import { FILTER_ALL } from "@/lib/filter-param";
 import { ROUTES } from "@/lib/routes";
 import pageStyles from "@/components/shared/consultation-page.module.css";
 import teamCardStyles from "@/features/team/components/team-structure-cards.module.css";
@@ -140,13 +139,11 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
           />
         </section>
 
-        {activeFilter !== FILTER_ALL ? (
-          <TeamFilterContextCard
-            filter={activeFilter}
-            title={filterContent.contextTitle}
-            detail={filterContent.contextDetail}
-          />
-        ) : null}
+        <TeamFilterContextCard
+          filter={activeFilter}
+          title={filterContent.contextTitle}
+          detail={filterContent.contextDetail}
+        />
 
         <section id={SUPERVISORS_SECTION_ID} className="scroll-mt-6">
           <SectionTitle
