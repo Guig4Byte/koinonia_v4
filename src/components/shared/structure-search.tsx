@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
 import { FilterChip } from "@/components/ui/filter-chip";
 import { cn } from "@/lib/cn";
@@ -82,6 +82,8 @@ function StructureSearchContent<TFilter extends string>({
 }: StructureSearchProps<TFilter>) {
   const router = useRouter();
   const statusId = useId();
+  const filtersScrollerRef = useRef<HTMLDivElement | null>(null);
+  const activeFilterRef = useRef<HTMLAnchorElement | null>(null);
   const [draftQuery, setDraftQuery] = useState(query);
   const normalizedDraftQuery = draftQuery.trim();
   const queryForPath = searchQueryForPath(draftQuery);
@@ -142,6 +144,25 @@ function StructureSearchContent<TFilter extends string>({
     return () => window.clearTimeout(timeoutId);
   }, [currentQueryForPath, nextSearchPath, queryForPath, router]);
 
+  useEffect(() => {
+    const scroller = filtersScrollerRef.current;
+    const activeFilter = activeFilterRef.current;
+    if (!scroller || !activeFilter) return;
+
+    const scrollerRect = scroller.getBoundingClientRect();
+    const activeRect = activeFilter.getBoundingClientRect();
+    const targetLeft =
+      scroller.scrollLeft +
+      activeRect.left -
+      scrollerRect.left -
+      (scroller.clientWidth - activeRect.width) / 2;
+
+    scroller.scrollTo({
+      left: Math.max(0, targetLeft),
+      behavior: "auto",
+    });
+  }, [filter, query]);
+
   return (
     <section className={styles.tools}>
       <div className={styles.searchForm}>
@@ -182,7 +203,7 @@ function StructureSearchContent<TFilter extends string>({
 
       <div className={styles.filtersArea}>
         <p className={styles.filtersLabel}>Mostrar</p>
-        <div className={styles.filtersScroller}>
+        <div className={styles.filtersScroller} ref={filtersScrollerRef}>
           <nav className={styles.filterRow} aria-label="Filtros da lista">
             {filters.map((option) => {
               const active =
@@ -192,6 +213,7 @@ function StructureSearchContent<TFilter extends string>({
               return (
                 <FilterChip
                   key={option.value}
+                  ref={active ? activeFilterRef : undefined}
                   href={filterPath(option.value)}
                   active={active}
                   aria-current={active ? "page" : undefined}

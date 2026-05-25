@@ -119,6 +119,11 @@
   gap: 8px;
 }
 
+.filterRow::after {
+  content: "";
+  flex: 0 0 var(--structure-filter-fade);
+}
+
 .filterChip {
   gap: 0.42rem;
   max-width: none;

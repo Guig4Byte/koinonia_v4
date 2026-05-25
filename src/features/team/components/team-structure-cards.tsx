@@ -21,6 +21,7 @@ import {
   type TeamSignalTone,
 } from "@/features/team/team-view";
 import {
+  FILTER_ALL,
   FILTER_ATTENTION,
   FILTER_NO_RECENT_PRESENCE,
   FILTER_PASTORAL,
@@ -68,12 +69,14 @@ function TeamCellLink({
   name,
   subtitle,
   signalLabel,
+  visibleSignalLabel,
   className,
 }: {
   href: string;
   name: string;
   subtitle: string;
   signalLabel?: string;
+  visibleSignalLabel?: string;
   className?: string;
 }) {
   return (
@@ -85,6 +88,9 @@ function TeamCellLink({
       <span className={styles.cellText}>
         <span className={styles.cellTitle}>{name}</span>
         <span className={styles.cellSubtitle}>{subtitle}</span>
+        {visibleSignalLabel ? (
+          <span className={styles.cellSignalLabel}>{visibleSignalLabel}</span>
+        ) : null}
       </span>
       <span className={styles.cellAction}>
         <ChevronRight className={styles.cellChevron} aria-hidden="true" />
@@ -101,13 +107,16 @@ function TeamGroupLink({
   activeFilter?: TeamFilter;
 }) {
   const tone = groupSignalTone(group);
+  const signalLabel = groupSignalLabel(group);
+  const shouldShowSignalLabel = !activeFilter || activeFilter === FILTER_ALL;
 
   return (
     <TeamCellLink
       href={teamGroupHref(group.id, activeFilter)}
       name={group.name}
       subtitle={compactGroupSubtitle(group)}
-      signalLabel={groupSignalLabel(group)}
+      signalLabel={signalLabel}
+      visibleSignalLabel={shouldShowSignalLabel ? signalLabel : undefined}
       className={cellToneClass(tone)}
     />
   );

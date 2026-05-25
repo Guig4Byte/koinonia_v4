@@ -1,5 +1,5 @@
 import Link, { type LinkProps } from "next/link";
-import type { AnchorHTMLAttributes, ReactNode } from "react";
+import { forwardRef, type AnchorHTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import styles from "./filter-chip.module.css";
 
@@ -33,10 +33,13 @@ export function filterChipClassName({
   return cn(styles.team, active && styles.teamActive, className);
 }
 
-export function FilterChip({ active = false, variant = "team", className, children, ...props }: FilterChipProps) {
+export const FilterChip = forwardRef<HTMLAnchorElement, FilterChipProps>(function FilterChip(
+  { active = false, variant = "team", className, children, ...props },
+  ref,
+) {
   return (
-    <Link className={filterChipClassName({ active, variant, className })} {...props}>
+    <Link ref={ref} className={filterChipClassName({ active, variant, className })} {...props}>
       {children}
     </Link>
   );
-}
+});
