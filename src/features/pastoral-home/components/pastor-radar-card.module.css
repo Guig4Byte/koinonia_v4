@@ -1,4 +1,6 @@
 .root {
+  --radar-symbol-color: var(--color-brand-accent);
+
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -66,14 +68,14 @@
   margin: auto;
   width: 128px;
   height: 128px;
-  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 28%, transparent);
+  border: 1px solid color-mix(in srgb, var(--radar-symbol-color) 30%, transparent);
   background:
-    radial-gradient(circle, color-mix(in srgb, var(--color-brand-accent) 18%, transparent) 0 2px, transparent 3px),
-    repeating-radial-gradient(circle, transparent 0 24px, color-mix(in srgb, var(--color-brand-accent) 18%, transparent) 25px 26px),
-    radial-gradient(circle, color-mix(in srgb, var(--color-brand-accent) 18%, transparent), transparent 70%);
+    radial-gradient(circle, color-mix(in srgb, var(--radar-symbol-color) 24%, transparent) 0 2px, transparent 3px),
+    repeating-radial-gradient(circle, transparent 0 24px, color-mix(in srgb, var(--radar-symbol-color) 23%, transparent) 25px 26px),
+    radial-gradient(circle, color-mix(in srgb, var(--radar-symbol-color) 15%, transparent), transparent 70%);
   box-shadow:
-    0 0 36px color-mix(in srgb, var(--color-brand-accent) 28%, transparent),
-    inset 0 0 32px color-mix(in srgb, var(--color-brand-accent) 12%, transparent);
+    0 0 36px color-mix(in srgb, var(--radar-symbol-color) 18%, transparent),
+    inset 0 0 32px color-mix(in srgb, var(--radar-symbol-color) 9%, transparent);
 }
 
 .iconCore {
@@ -83,10 +85,10 @@
   width: 66px;
   height: 66px;
   place-items: center;
-  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 44%, transparent);
+  border: 1px solid color-mix(in srgb, var(--radar-symbol-color) 46%, transparent);
   background: color-mix(in srgb, var(--color-bg-card) 72%, transparent);
-  color: var(--color-brand-accent);
-  box-shadow: 0 0 24px color-mix(in srgb, var(--color-brand-accent) 22%, transparent);
+  color: var(--radar-symbol-color);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--radar-symbol-color) 18%, transparent);
 }
 
 .iconSweep {
@@ -96,8 +98,13 @@
   height: 12px;
   transform: rotate(-38deg);
   transform-origin: left center;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--color-brand-accent) 86%, transparent), transparent);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--radar-symbol-color) 68%, transparent), transparent);
   filter: blur(0.6px);
+}
+
+html[data-theme="light"] .root,
+html[data-theme="parchment"] .root {
+  --radar-symbol-color: var(--color-brand);
 }
 
 .copy {

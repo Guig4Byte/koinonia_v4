@@ -1,13 +1,15 @@
 .root {
+  --health-card-accent: var(--color-brand-accent);
+
   position: relative;
   isolation: isolate;
   overflow: hidden;
   margin-bottom: 1.25rem;
-  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 18%, var(--color-border-card));
+  border: 1px solid color-mix(in srgb, var(--health-card-accent) 18%, var(--color-border-card));
   border-radius: 1.35rem;
   background:
-    radial-gradient(circle at 13% 13%, color-mix(in srgb, var(--color-brand-accent) 13%, transparent), transparent 34%),
-    linear-gradient(150deg, color-mix(in srgb, var(--color-brand-accent) 5%, var(--color-bg-card)), var(--color-bg-card));
+    radial-gradient(circle at 13% 13%, color-mix(in srgb, var(--health-card-accent) 13%, transparent), transparent 34%),
+    linear-gradient(150deg, color-mix(in srgb, var(--health-card-accent) 5%, var(--color-bg-card)), var(--color-bg-card));
   box-shadow: var(--color-shadow-card);
 }
 
@@ -20,7 +22,7 @@
   width: 146px;
   height: 146px;
   border-radius: 999px;
-  background: radial-gradient(circle, color-mix(in srgb, var(--color-brand-accent) 12%, transparent), transparent 68%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--health-card-accent) 12%, transparent), transparent 68%);
   pointer-events: none;
 }
 
@@ -37,23 +39,28 @@
   width: 64px;
   height: 64px;
   place-items: center;
-  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 32%, var(--color-border-card));
+  border: 1px solid color-mix(in srgb, var(--health-card-accent) 32%, var(--color-border-card));
   border-radius: 999px;
   background:
-    radial-gradient(circle, color-mix(in srgb, var(--color-brand-accent) 18%, transparent), transparent 66%),
+    radial-gradient(circle, color-mix(in srgb, var(--health-card-accent) 18%, transparent), transparent 66%),
     var(--surface-alt);
-  color: var(--color-brand-accent);
+  color: var(--health-card-accent);
   box-shadow:
-    0 0 28px color-mix(in srgb, var(--color-brand-accent) 18%, transparent),
-    inset 0 0 20px color-mix(in srgb, var(--color-brand-accent) 10%, transparent);
+    0 0 28px color-mix(in srgb, var(--health-card-accent) 18%, transparent),
+    inset 0 0 20px color-mix(in srgb, var(--health-card-accent) 10%, transparent);
 }
 
 .iconWrap::after {
   content: "";
   position: absolute;
   inset: -8px;
-  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--health-card-accent) 10%, transparent);
   border-radius: inherit;
+}
+
+html[data-theme="light"] .root,
+html[data-theme="parchment"] .root {
+  --health-card-accent: var(--color-brand);
 }
 
 .bar {

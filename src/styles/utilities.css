@@ -193,6 +193,11 @@
   text-transform: uppercase;
 }
 
+html:not([data-theme]) .k-eyebrow,
+html[data-theme="light"] .k-eyebrow {
+  color: color-mix(in srgb, var(--color-brand-accent) 62%, var(--color-brand));
+}
+
 .k-pastoral-title {
   color: var(--color-text-primary);
   font-family: var(--font-display);
