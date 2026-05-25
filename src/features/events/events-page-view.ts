@@ -146,7 +146,7 @@ export function buildEventListCardState(event: EventListEvent, user: PermissionU
     ? "Registrar presença"
     : recordedPresence
       ? "Ver detalhes"
-      : "Ver encontro";
+      : "Abrir";
 
   return {
     metrics,

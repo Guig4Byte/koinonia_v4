@@ -111,7 +111,7 @@ export function EventCard({
   const eventAction = (
     <ActionPill
       tone={state.canRegisterPresence ? "primary" : "secondary"}
-      size={state.recordedPresence ? "sm" : "md"}
+      size={state.canRegisterPresence ? "md" : "sm"}
       iconAfter={<ArrowRight />}
       shiftIcon
       className={styles.eventActionPill}
