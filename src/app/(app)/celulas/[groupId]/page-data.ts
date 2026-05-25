@@ -38,6 +38,7 @@ import {
 } from "@/features/signals/sections";
 import type { GroupDetailSummaryCardData } from "@/features/groups/components/group-detail-summary-card";
 import { countLabel } from "@/lib/format";
+import { FILTER_ATTENTION, FILTER_IN_CARE } from "@/lib/filter-param";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/search-params";
 
@@ -53,8 +54,13 @@ export async function getGroupDetailPageData({
   groupId: string;
   queryParams: GroupDetailSearchParams;
 }) {
-  const activeMembersFilter = readMembersFilter(firstParam(queryParams.membros));
   const activeFocus = readGroupDetailFocus(firstParam(queryParams.foco));
+  const requestedMembersFilter = firstParam(queryParams.membros);
+  const activeMembersFilter = requestedMembersFilter
+    ? readMembersFilter(requestedMembersFilter)
+    : activeFocus === FILTER_IN_CARE
+      ? FILTER_IN_CARE
+      : FILTER_ATTENTION;
   const sourceParam = firstParam(queryParams.from);
   const teamFilter = readTeamFilter(firstParam(queryParams.filtro));
   const savedParam = firstParam(queryParams.salvo);

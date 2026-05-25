@@ -1,10 +1,12 @@
 .overview.overview {
-  border-color: color-mix(in srgb, var(--brown-400) 28%, var(--color-border-card));
-  border-left: 4px solid color-mix(in srgb, var(--brown-400) 78%, var(--color-border-card));
+  --care-overview-decor-color: var(--color-card-decoration);
+
+  border-color: color-mix(in srgb, var(--care-overview-decor-color) 28%, var(--color-border-card));
+  border-left: 4px solid color-mix(in srgb, var(--care-overview-decor-color) 78%, var(--color-border-card));
   background:
-    radial-gradient(ellipse 86% 64% at 92% 106%, color-mix(in srgb, var(--brown-400) 10%, transparent), transparent 72%),
-    linear-gradient(90deg, color-mix(in srgb, var(--brown-400) 7%, transparent), transparent 58%),
-    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--brown-400) 6%), var(--color-bg-card) 68%);
+    radial-gradient(ellipse 86% 64% at 92% 106%, color-mix(in srgb, var(--care-overview-decor-color) 14%, transparent), transparent 72%),
+    linear-gradient(90deg, color-mix(in srgb, var(--care-overview-decor-color) 7%, transparent), transparent 58%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--care-overview-decor-color) 6%), var(--color-bg-card) 68%);
 }
 
 .overview.overview::before {
@@ -48,7 +50,7 @@
   grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
   gap: 0.55rem;
   align-items: flex-start;
-  border: 1px solid color-mix(in srgb, var(--brown-400) 18%, var(--color-border-card));
+  border: 1px solid color-mix(in srgb, var(--care-overview-decor-color) 18%, var(--color-border-card));
   border-radius: 0.95rem;
   background: color-mix(in srgb, var(--surface-alt) 78%, var(--color-bg-card));
   padding: 0.65rem 0.7rem;

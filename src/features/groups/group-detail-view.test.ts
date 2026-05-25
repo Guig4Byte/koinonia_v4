@@ -122,17 +122,20 @@ describe("group detail focus", () => {
 });
 
 describe("buildGroupMembersView", () => {
-  it("separates priority members from regular members", () => {
+  it("separa sinais, pessoas em cuidado e membros ativos", () => {
     const members = [
       { membershipId: "1", personId: "1", name: "Ana", badgeLabel: "Em atenção", badgeTone: "warn" as const, priorityRank: 3, status: PersonStatus.ACTIVE, focusKeys: ["atencao" as const] },
-      { membershipId: "2", personId: "2", name: "Bruno", badgeLabel: "Ativo", badgeTone: "ok" as const, priorityRank: 5, status: PersonStatus.ACTIVE, focusKeys: [] },
+      { membershipId: "2", personId: "2", name: "Bruno", badgeLabel: "Em cuidado", badgeTone: "care" as const, priorityRank: 4, status: PersonStatus.COOLING_AWAY, focusKeys: ["em-cuidado" as const] },
+      { membershipId: "3", personId: "3", name: "Caio", badgeLabel: "Ativo", badgeTone: "ok" as const, priorityRank: 5, status: PersonStatus.ACTIVE, focusKeys: [] },
     ];
 
     const view = buildGroupMembersView(members, "todos");
 
-    expect(view.priorityMembers).toHaveLength(1);
-    expect(view.regularMembers).toHaveLength(1);
-    expect(view.sectionDetail).toBe("2 membros · 1 em atenção");
+    expect(view.priorityMembers.map((member) => member.name)).toEqual(["Ana"]);
+    expect(view.inCareMembers.map((member) => member.name)).toEqual(["Bruno"]);
+    expect(view.regularMembers.map((member) => member.name)).toEqual(["Caio"]);
+    expect(view.filterCounts).toMatchObject({ atencao: 1, "em-cuidado": 1, ativos: 1 });
+    expect(view.sectionDetail).toBe("3 membros · 1 sinal aberto · 1 em cuidado");
   });
 
   it("uses the filtered count when the selected filter is not todos", () => {
@@ -140,7 +143,7 @@ describe("buildGroupMembersView", () => {
   });
 
 
-  it("mantém todos os membros de prioridade quando a célula veio por um foco", () => {
+  it("mantém os sinais separados das pessoas em cuidado quando a célula veio por um foco", () => {
     const members = [
       { membershipId: "1", personId: "1", name: "Ana", badgeLabel: "Pedido de apoio", badgeTone: "support" as const, priorityRank: 2, status: PersonStatus.ACTIVE, focusKeys: ["apoio" as const] },
       { membershipId: "2", personId: "2", name: "Bruno", badgeLabel: "Em atenção", badgeTone: "warn" as const, priorityRank: 3, status: PersonStatus.ACTIVE, focusKeys: ["atencao" as const] },
@@ -150,7 +153,8 @@ describe("buildGroupMembersView", () => {
 
     const view = buildGroupMembersView(members, "todos", "apoio");
 
-    expect(view.priorityMembers.map((member) => member.name)).toEqual(["Ana", "Bruno", "Camila"]);
+    expect(view.priorityMembers.map((member) => member.name)).toEqual(["Ana", "Bruno"]);
+    expect(view.inCareMembers.map((member) => member.name)).toEqual(["Camila"]);
     expect(view.regularMembers.map((member) => member.name)).toEqual(["Daniel"]);
     expect(view.focusedMembersCount).toBe(1);
   });
@@ -163,8 +167,23 @@ describe("buildGroupMembersView", () => {
 
     const view = buildGroupMembersView(members, "todos", "em-cuidado");
 
-    expect(view.priorityMembers.map((member) => member.name)).toEqual(["Ana"]);
+    expect(view.priorityMembers).toHaveLength(0);
+    expect(view.inCareMembers.map((member) => member.name)).toEqual(["Ana"]);
     expect(view.regularMembers.map((member) => member.name)).toEqual(["Bruno"]);
     expect(view.focusedMembersCount).toBe(1);
+  });
+
+  it("mostra em cuidado como recorte proprio quando o filtro esta selecionado", () => {
+    const members = [
+      { membershipId: "1", personId: "1", name: "Ana", badgeLabel: "Em cuidado", badgeTone: "care" as const, priorityRank: 4, status: PersonStatus.COOLING_AWAY, focusKeys: ["em-cuidado" as const] },
+      { membershipId: "2", personId: "2", name: "Bruno", badgeLabel: "Em atenção", badgeTone: "warn" as const, priorityRank: 3, status: PersonStatus.COOLING_AWAY, focusKeys: ["atencao" as const, "em-cuidado" as const] },
+      { membershipId: "3", personId: "3", name: "Caio", badgeLabel: "Ativo", badgeTone: "ok" as const, priorityRank: 5, status: PersonStatus.ACTIVE, focusKeys: [] },
+    ];
+
+    const view = buildGroupMembersView(members, "em-cuidado");
+
+    expect(view.regularMembers.map((member) => member.name)).toEqual(["Ana"]);
+    expect(view.priorityMembers.map((member) => member.name)).toEqual(["Bruno"]);
+    expect(view.inCareMembers.map((member) => member.name)).toEqual(["Ana"]);
   });
 });

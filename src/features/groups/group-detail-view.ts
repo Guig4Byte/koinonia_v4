@@ -11,6 +11,7 @@ import { isPastoralCaseSignal, isUrgentSignal } from "@/features/groups/group-pa
 import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features/pastoral-pulse";
 import { countLabel } from "@/lib/format";
 import {
+  FILTER_ACTIVE,
   FILTER_ALL,
   FILTER_ATTENTION,
   FILTER_IN_CARE,
@@ -23,7 +24,8 @@ import {
 } from "@/lib/filter-param";
 import { compareByName } from "@/lib/text";
 
-export const GROUP_MEMBER_ATTENTION_MAX_PRIORITY = 4;
+export const GROUP_MEMBER_SIGNAL_MAX_PRIORITY = 3;
+export const GROUP_MEMBER_IN_CARE_PRIORITY = 4;
 export const GROUP_REGULAR_MEMBER_INITIAL_COUNT = 5;
 export const GROUP_REGULAR_MEMBER_STEP = 5;
 export const GROUP_DETAIL_EVENT_HISTORY_LIMIT = 12;
@@ -94,7 +96,9 @@ export type GroupMembersView = {
   members: MemberDisplay[];
   visibleMembers: MemberDisplay[];
   priorityMembers: MemberDisplay[];
+  inCareMembers: MemberDisplay[];
   regularMembers: MemberDisplay[];
+  filterCounts: Partial<Record<MembersFilter, number>>;
   sectionDetail: string;
   focusedMembersCount: number;
 };
@@ -298,16 +302,23 @@ export function compareGroupMembers(left: MemberDisplay, right: MemberDisplay) {
 export function groupMembersSectionDetail({
   totalCount,
   priorityCount,
+  inCareCount = 0,
   visibleCount,
   activeFilter,
 }: {
   totalCount: number;
   priorityCount: number;
+  inCareCount?: number;
   visibleCount: number;
   activeFilter: MembersFilter;
 }) {
   if (activeFilter === FILTER_ALL) {
-    return `${countLabel(totalCount, "membro", "membros")}${priorityCount > 0 ? ` · ${priorityCount} em atenção` : ""}`;
+    const statusParts = [
+      priorityCount > 0 ? countLabel(priorityCount, "sinal aberto", "sinais abertos") : null,
+      inCareCount > 0 ? countLabel(inCareCount, "em cuidado", "em cuidado") : null,
+    ].filter(Boolean);
+
+    return `${countLabel(totalCount, "membro", "membros")}${statusParts.length > 0 ? ` · ${statusParts.join(" · ")}` : ""}`;
   }
 
   return countLabel(visibleCount, "pessoa neste recorte", "pessoas neste recorte");
@@ -319,24 +330,34 @@ export function buildGroupMembersView(
   activeFocus: GroupDetailFocus | null = null,
 ): GroupMembersView {
   const visibleMembers = members.filter((member) => memberMatchesFilter(member, activeFilter, {
-    attentionMaxPriorityRank: GROUP_MEMBER_ATTENTION_MAX_PRIORITY,
+    attentionMaxPriorityRank: GROUP_MEMBER_SIGNAL_MAX_PRIORITY,
+    inCarePriorityRank: GROUP_MEMBER_IN_CARE_PRIORITY,
+    activeMinPriorityRank: GROUP_MEMBER_IN_CARE_PRIORITY + 1,
   }));
-  const defaultPriorityMembers = members.filter((member) => member.priorityRank <= GROUP_MEMBER_ATTENTION_MAX_PRIORITY);
-  const activeMembers = members.filter((member) => member.priorityRank > GROUP_MEMBER_ATTENTION_MAX_PRIORITY);
+  const signalMembers = members.filter((member) => member.priorityRank <= GROUP_MEMBER_SIGNAL_MAX_PRIORITY);
+  const inCareMembers = members.filter((member) => member.priorityRank === GROUP_MEMBER_IN_CARE_PRIORITY);
+  const activeMembers = members.filter((member) => member.priorityRank > GROUP_MEMBER_IN_CARE_PRIORITY);
   const focusedMembers = activeFocus
     ? members.filter((member) => groupMemberMatchesFocus(member, activeFocus))
     : [];
-  const priorityMembers = defaultPriorityMembers;
+  const priorityMembers = signalMembers;
   const regularMembers = activeFilter === FILTER_ALL ? activeMembers : visibleMembers;
 
   return {
     members,
     visibleMembers,
     priorityMembers,
+    inCareMembers,
     regularMembers,
+    filterCounts: {
+      [FILTER_ATTENTION]: signalMembers.length,
+      [FILTER_IN_CARE]: inCareMembers.length,
+      [FILTER_ACTIVE]: activeMembers.length,
+    },
     sectionDetail: groupMembersSectionDetail({
       totalCount: members.length,
-      priorityCount: defaultPriorityMembers.length,
+      priorityCount: signalMembers.length,
+      inCareCount: inCareMembers.length,
       visibleCount: visibleMembers.length,
       activeFilter,
     }),

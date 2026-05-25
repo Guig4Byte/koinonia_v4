@@ -79,12 +79,12 @@
 }
 
 .memberCard.memberCard {
-  --member-card-accent: var(--brown-400);
+  --member-card-accent: var(--color-card-decoration);
   border-color: color-mix(in srgb, var(--member-card-accent) 24%, var(--color-border-card));
   border-left: 4px solid color-mix(in srgb, var(--member-card-accent) 82%, var(--color-border-card));
   background:
     linear-gradient(90deg, color-mix(in srgb, var(--member-card-accent) 8%, transparent), transparent 58%),
-    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--brown-400) 6%), var(--color-bg-card) 64%);
+    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--member-card-accent) 6%), var(--color-bg-card) 64%);
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--member-card-accent) 7%, transparent),
     var(--color-shadow-card);
@@ -99,7 +99,7 @@
 }
 
 .memberCard.memberCardMuted {
-  --member-card-accent: color-mix(in srgb, var(--brown-400) 72%, var(--color-text-muted));
+  --member-card-accent: color-mix(in srgb, var(--color-card-decoration) 72%, var(--color-text-muted));
 }
 
 .memberCard.memberCardRisk {

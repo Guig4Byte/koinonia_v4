@@ -1,10 +1,12 @@
 .root {
+  --pastor-team-summary-accent: var(--color-card-decoration);
+
   display: block;
   margin-block: 0.95rem 1.25rem;
   border: 1px solid color-mix(in srgb, var(--color-border-card) 82%, transparent);
   border-radius: 1.15rem;
   background:
-    radial-gradient(circle at 12% 8%, color-mix(in srgb, var(--color-brand-accent) 6%, transparent), transparent 42%),
+    radial-gradient(circle at 12% 8%, color-mix(in srgb, var(--pastor-team-summary-accent) 8%, transparent), transparent 42%),
     color-mix(in srgb, var(--color-bg-card) 94%, var(--surface-alt) 6%);
   padding: 0.9rem;
   color: inherit;
@@ -24,9 +26,9 @@
 
 @media (hover: hover) {
   .root:hover {
-    border-color: color-mix(in srgb, var(--color-brand-accent) 24%, var(--color-border-card));
+    border-color: color-mix(in srgb, var(--pastor-team-summary-accent) 24%, var(--color-border-card));
     background:
-      radial-gradient(circle at 12% 8%, color-mix(in srgb, var(--color-brand-accent) 9%, transparent), transparent 42%),
+      radial-gradient(circle at 12% 8%, color-mix(in srgb, var(--pastor-team-summary-accent) 11%, transparent), transparent 42%),
       color-mix(in srgb, var(--color-bg-card) 91%, var(--surface-alt) 9%);
   }
 }
@@ -43,9 +45,9 @@
   width: 2.35rem;
   height: 2.35rem;
   place-items: center;
-  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 18%, var(--color-border-card));
+  border: 1px solid color-mix(in srgb, var(--pastor-team-summary-accent) 18%, var(--color-border-card));
   border-radius: 999px;
-  background: color-mix(in srgb, var(--color-brand-accent) 8%, var(--surface-alt));
+  background: color-mix(in srgb, var(--pastor-team-summary-accent) 8%, var(--surface-alt));
   color: var(--color-brand);
 }
 

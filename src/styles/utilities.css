@@ -271,13 +271,15 @@ html[data-theme="parchment"] .k-status-info {
 
 
 .k-feature-card {
+  --hero-decor-color: var(--color-card-decoration);
+
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  border-color: color-mix(in srgb, var(--color-brand-accent) 22%, var(--color-border-card));
+  border-color: color-mix(in srgb, var(--hero-decor-color) 22%, var(--color-border-card));
   background:
-    radial-gradient(ellipse 82% 62% at 50% -18%, color-mix(in srgb, var(--color-brand-accent) 13%, transparent), transparent 72%),
-    linear-gradient(135deg, color-mix(in srgb, var(--color-bg-card) 97%, var(--color-brand-accent) 3%), var(--color-bg-card));
+    radial-gradient(ellipse 82% 62% at 50% -18%, color-mix(in srgb, var(--hero-decor-color) 14%, transparent), transparent 72%),
+    linear-gradient(135deg, color-mix(in srgb, var(--color-bg-card) 97%, var(--hero-decor-color) 3%), var(--color-bg-card));
 }
 
 .k-feature-card::after {
@@ -288,20 +290,22 @@ html[data-theme="parchment"] .k-status-info {
   width: 140px;
   height: 140px;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--color-brand-accent) 10%, transparent);
+  background: color-mix(in srgb, var(--hero-decor-color) 14%, transparent);
   pointer-events: none;
 }
 
 .k-page-hero {
+  --hero-decor-color: var(--color-card-decoration);
+
   position: relative;
   isolation: isolate;
   overflow: hidden;
   margin-bottom: 16px;
-  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 20%, var(--color-border-card));
+  border: 1px solid color-mix(in srgb, var(--hero-decor-color) 22%, var(--color-border-card));
   border-radius: 1.35rem;
   background:
-    radial-gradient(ellipse 85% 65% at 50% -18%, color-mix(in srgb, var(--color-brand-accent) 16%, transparent), transparent 72%),
-    linear-gradient(135deg, color-mix(in srgb, var(--color-bg-card) 98%, var(--color-brand-accent) 2%), var(--color-bg-card));
+    radial-gradient(ellipse 85% 65% at 50% -18%, color-mix(in srgb, var(--hero-decor-color) 16%, transparent), transparent 72%),
+    linear-gradient(135deg, color-mix(in srgb, var(--color-bg-card) 98%, var(--hero-decor-color) 2%), var(--color-bg-card));
   padding: 15px 16px;
   box-shadow: var(--color-shadow-card);
 }
@@ -325,7 +329,7 @@ html[data-theme="parchment"] .k-status-info {
   width: 148px;
   height: 148px;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--color-brand-accent) 12%, transparent);
+  background: color-mix(in srgb, var(--hero-decor-color) 16%, transparent);
   pointer-events: none;
 }
 
@@ -439,12 +443,14 @@ html[data-theme="parchment"] .k-status-info {
 }
 
 .k-detail-hero {
+  --hero-decor-color: var(--color-card-decoration);
+
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  border-color: color-mix(in srgb, var(--color-brand-accent) 20%, var(--color-border-card));
+  border-color: color-mix(in srgb, var(--hero-decor-color) 22%, var(--color-border-card));
   background:
-    radial-gradient(ellipse 80% 64% at 48% -20%, color-mix(in srgb, var(--color-brand-accent) 14%, transparent), transparent 72%),
+    radial-gradient(ellipse 80% 64% at 48% -20%, color-mix(in srgb, var(--hero-decor-color) 15%, transparent), transparent 72%),
     var(--color-bg-card);
 }
 
@@ -456,7 +462,7 @@ html[data-theme="parchment"] .k-status-info {
   width: 132px;
   height: 132px;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--color-brand-accent) 10%, transparent);
+  background: color-mix(in srgb, var(--hero-decor-color) 15%, transparent);
   pointer-events: none;
 }
 
@@ -498,6 +504,6 @@ html[data-theme="parchment"] .k-feature-card,
 html[data-theme="parchment"] .k-page-hero,
 html[data-theme="parchment"] .k-detail-hero {
   background:
-    radial-gradient(ellipse 80% 60% at 50% -18%, color-mix(in srgb, var(--color-brand-accent) 12%, transparent), transparent 72%),
+    radial-gradient(ellipse 80% 60% at 50% -18%, color-mix(in srgb, var(--hero-decor-color) 16%, transparent), transparent 72%),
     linear-gradient(135deg, color-mix(in srgb, var(--color-bg-card) 96%, var(--color-bg-page) 4%), var(--color-bg-card));
 }

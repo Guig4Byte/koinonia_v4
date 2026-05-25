@@ -11,8 +11,7 @@ import {
 export type MembersFilter = typeof FILTER_ALL | typeof FILTER_ATTENTION | typeof FILTER_IN_CARE | typeof FILTER_ACTIVE;
 
 export const MEMBERS_FILTERS: ReadonlyArray<FilterOption<MembersFilter>> = [
-  { value: FILTER_ALL, label: "Todos" },
-  { value: FILTER_ATTENTION, label: "Atenção" },
+  { value: FILTER_ATTENTION, label: "Sinais" },
   { value: FILTER_IN_CARE, label: "Em cuidado" },
   { value: FILTER_ACTIVE, label: "Ativos" },
 ];
@@ -31,11 +30,13 @@ type MemberFilterOptions = {
 const careCardTones = new Set(["risk", "support", "warn", "care"]);
 
 export function readMembersFilter(value: string | null | undefined): MembersFilter {
-  return readFilterParam(MEMBERS_FILTERS, value, FILTER_ALL);
+  if (value === FILTER_ALL) return FILTER_ALL;
+  return readFilterParam(MEMBERS_FILTERS, value, FILTER_ATTENTION);
 }
 
 export function membersFilterHref(basePath: string, filter: MembersFilter) {
-  if (filter === FILTER_ALL) return `${basePath}#membros`;
+  if (filter === FILTER_ATTENTION) return `${basePath}#membros`;
+  if (filter === FILTER_ALL) return `${basePath}?membros=${filter}#membros`;
   return `${basePath}?membros=${filter}#membros`;
 }
 

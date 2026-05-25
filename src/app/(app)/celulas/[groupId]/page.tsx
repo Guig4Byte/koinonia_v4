@@ -122,7 +122,9 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
             basePath={ROUTES.group(group.id)}
             activeFilter={activeMembersFilter}
             priorityMembers={membersView.priorityMembers}
+            inCareMembers={membersView.inCareMembers}
             regularMembers={membersView.regularMembers}
+            filterCounts={membersView.filterCounts}
             keyForMember={(member) => member.membershipId}
             hrefForMember={(member) => ROUTES.person(member.personId)}
             priorityContextForMember={(member) => member.subtitle}

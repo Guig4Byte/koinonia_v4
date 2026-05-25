@@ -5,7 +5,7 @@
 }
 
 .permissionHint.permissionHint {
-  border-color: color-mix(in srgb, var(--brown-400) 18%, var(--color-border-card));
+  border-color: color-mix(in srgb, var(--color-card-decoration) 18%, var(--color-border-card));
   background: color-mix(in srgb, var(--surface-alt) 78%, var(--color-bg-card));
   color: var(--color-text-secondary);
   font-size: var(--text-sm);
@@ -14,15 +14,15 @@
 }
 
 .attendanceCard.attendanceCard {
-  --summary-accent: var(--brown-400);
+  --summary-accent: var(--color-card-decoration);
   position: relative;
   isolation: isolate;
   overflow: hidden;
   border-color: color-mix(in srgb, var(--summary-accent) 28%, var(--color-border-card));
   border-left: 4px solid color-mix(in srgb, var(--summary-accent) 86%, var(--color-brand));
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--summary-accent) 6%, transparent), transparent 42%),
-    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--brown-400) 6%), var(--color-bg-card) 64%);
+    linear-gradient(90deg, color-mix(in srgb, var(--summary-accent) 7%, transparent), transparent 42%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--summary-accent) 6%), var(--color-bg-card) 64%);
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--summary-accent) 8%, transparent),
     inset 0 1px 0 color-mix(in srgb, var(--surface-alt) 42%, transparent),
@@ -38,7 +38,7 @@
   width: 5rem;
   height: 5rem;
   border-radius: 999px;
-  background: radial-gradient(circle, color-mix(in srgb, var(--summary-accent) 10%, transparent), transparent 72%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--summary-accent) 14%, transparent), transparent 72%);
   filter: blur(12px);
   opacity: 0.68;
   pointer-events: none;
@@ -98,7 +98,7 @@
 }
 
 .pastoralCue {
-  --pastoral-cue-accent: var(--brown-400);
+  --pastoral-cue-accent: var(--color-card-decoration);
   margin-top: 1rem;
   border: 1px solid color-mix(in srgb, var(--pastoral-cue-accent) 22%, var(--color-border-card));
   border-left: 4px solid color-mix(in srgb, var(--pastoral-cue-accent) 78%, var(--color-border-card));
@@ -123,7 +123,7 @@
 
 .pastoralCue-info,
 .pastoralCue-neutral {
-  --pastoral-cue-accent: var(--brown-400);
+  --pastoral-cue-accent: var(--color-card-decoration);
 }
 
 .pastoralCueTitle {
@@ -246,7 +246,7 @@
 }
 
 .presentDisclosure {
-  --attendance-row-accent: var(--brown-400);
+  --attendance-row-accent: var(--color-card-decoration);
   margin-top: 1rem;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--attendance-row-accent) 22%, var(--color-border-card));

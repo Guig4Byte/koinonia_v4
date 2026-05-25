@@ -11,7 +11,7 @@
   border-left: 4px solid color-mix(in srgb, var(--event-card-accent) 88%, var(--color-brand));
   background:
     linear-gradient(90deg, color-mix(in srgb, var(--event-card-accent) 7%, transparent), transparent 48%),
-    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--brown-400) 6%), var(--color-bg-card) 62%);
+    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--event-card-accent) 6%), var(--color-bg-card) 62%);
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--event-card-accent) 10%, transparent),
     inset 0 1px 0 color-mix(in srgb, var(--event-card-accent) 8%, transparent),
@@ -121,7 +121,7 @@
 }
 
 .eventCard.eventCardScheduled {
-  --event-card-accent: var(--brown-400);
+  --event-card-accent: var(--color-card-decoration);
 }
 
 .eventCard.eventCardNeutral {

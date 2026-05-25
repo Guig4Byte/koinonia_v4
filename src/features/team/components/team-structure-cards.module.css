@@ -8,7 +8,7 @@
 }
 
 .filterContext {
-  --team-context-accent: var(--color-brand-accent);
+  --team-context-accent: var(--color-card-decoration);
   position: relative;
   isolation: isolate;
   display: grid;
@@ -112,7 +112,7 @@
 }
 
 .supervisorCard {
-  --team-supervisor-warm: var(--brown-400);
+  --team-supervisor-warm: var(--color-card-decoration);
   position: relative;
   isolation: isolate;
   border-color: color-mix(
@@ -207,7 +207,7 @@
 
 .supervisorGroups :global(button:hover),
 .structureRows :global(button:hover) {
-  background: color-mix(in srgb, var(--color-brand-accent) 10%, transparent);
+  background: color-mix(in srgb, var(--color-card-decoration) 10%, transparent);
 }
 
 .cellLink {
@@ -366,7 +366,7 @@
 }
 
 .structureGroupCard {
-  --structure-row-accent: var(--brown-400);
+  --structure-row-accent: var(--color-card-decoration);
   position: relative;
   isolation: isolate;
   border-color: color-mix(

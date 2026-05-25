@@ -22,7 +22,7 @@ export function PulseCard({
 }) {
   const toneStyles = {
     calm: {
-      accentClass: "bg-[var(--color-brand-accent)]",
+      accentClass: "bg-[var(--color-card-decoration)]",
       surfaceStyle: undefined,
     },
     attention: {
@@ -46,7 +46,7 @@ export function PulseCard({
       <div className={cn("absolute inset-x-0 top-0 h-0.5", toneStyles.accentClass)} />
       <div
         className="pointer-events-none absolute -right-10 -top-16 -z-10 h-32 w-32 rounded-full"
-        style={{ background: "color-mix(in srgb, var(--color-brand-accent) 12%, transparent)" }}
+        style={{ background: "color-mix(in srgb, var(--color-card-decoration) 18%, transparent)" }}
       />
       <p className="k-eyebrow mb-2">Radar pastoral</p>
       <p className="font-serif-display text-[length:var(--text-xl)] font-semibold leading-[1.12] tracking-normal text-[color:var(--color-text-primary)] text-balance">{title}</p>

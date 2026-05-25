@@ -1,4 +1,6 @@
 .page {
+  --person-decor-color: var(--color-card-decoration);
+
   display: flex;
   flex-direction: column;
   padding-bottom: 18px;
@@ -11,14 +13,14 @@
 .personHero.personHero {
   isolation: isolate;
   overflow: hidden;
-  border-color: color-mix(in srgb, var(--brown-400) 34%, var(--color-border-card));
-  border-left: 4px solid color-mix(in srgb, var(--brown-400) 82%, var(--color-border-card));
+  border-color: color-mix(in srgb, var(--person-decor-color) 34%, var(--color-border-card));
+  border-left: 4px solid color-mix(in srgb, var(--person-decor-color) 82%, var(--color-border-card));
   background:
-    radial-gradient(ellipse 92% 64% at 92% 108%, color-mix(in srgb, var(--brown-400) 12%, transparent), transparent 70%),
-    linear-gradient(90deg, color-mix(in srgb, var(--brown-400) 8%, transparent), transparent 58%),
-    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 91%, var(--brown-400) 9%), var(--color-bg-card) 68%);
+    radial-gradient(ellipse 92% 64% at 92% 108%, color-mix(in srgb, var(--person-decor-color) 15%, transparent), transparent 70%),
+    linear-gradient(90deg, color-mix(in srgb, var(--person-decor-color) 8%, transparent), transparent 58%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 91%, var(--person-decor-color) 9%), var(--color-bg-card) 68%);
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--brown-400) 8%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--person-decor-color) 8%, transparent),
     var(--color-shadow-card);
 }
 
@@ -104,13 +106,13 @@
 }
 
 .signalCard.signalCard {
-  border-color: color-mix(in srgb, var(--brown-400) 28%, var(--color-border-card));
-  border-left: 4px solid color-mix(in srgb, var(--brown-400) 78%, var(--color-border-card));
+  border-color: color-mix(in srgb, var(--person-decor-color) 28%, var(--color-border-card));
+  border-left: 4px solid color-mix(in srgb, var(--person-decor-color) 78%, var(--color-border-card));
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--brown-400) 7%, transparent), transparent 58%),
-    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 93%, var(--brown-400) 7%), var(--color-bg-card) 68%);
+    linear-gradient(90deg, color-mix(in srgb, var(--person-decor-color) 7%, transparent), transparent 58%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 93%, var(--person-decor-color) 7%), var(--color-bg-card) 68%);
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--brown-400) 8%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--person-decor-color) 8%, transparent),
     var(--color-shadow-card);
 }
 
@@ -149,19 +151,19 @@
 }
 
 .emptyState.emptyState {
-  border-color: color-mix(in srgb, var(--brown-400) 26%, var(--color-border-card));
+  border-color: color-mix(in srgb, var(--person-decor-color) 26%, var(--color-border-card));
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--brown-400) 6%, transparent), transparent 60%),
+    linear-gradient(90deg, color-mix(in srgb, var(--person-decor-color) 6%, transparent), transparent 60%),
     color-mix(in srgb, var(--surface-alt) 82%, var(--color-bg-card));
 }
 
 
 .nextGestureCard.nextGestureCard {
-  border-color: color-mix(in srgb, var(--brown-400) 24%, var(--color-border-card));
-  border-left: 4px solid color-mix(in srgb, var(--brown-400) 72%, var(--color-border-card));
+  border-color: color-mix(in srgb, var(--person-decor-color) 24%, var(--color-border-card));
+  border-left: 4px solid color-mix(in srgb, var(--person-decor-color) 72%, var(--color-border-card));
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--brown-400) 6%, transparent), transparent 58%),
-    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--brown-400) 6%), var(--color-bg-card) 68%);
+    linear-gradient(90deg, color-mix(in srgb, var(--person-decor-color) 6%, transparent), transparent 58%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--person-decor-color) 6%), var(--color-bg-card) 68%);
 }
 
 .nextGestureCard.nextGestureCard::before {
@@ -214,13 +216,13 @@
 }
 
 .contextCard.contextCard {
-  border-color: color-mix(in srgb, var(--brown-400) 24%, var(--color-border-card));
-  border-left: 4px solid color-mix(in srgb, var(--brown-400) 76%, var(--color-border-card));
+  border-color: color-mix(in srgb, var(--person-decor-color) 24%, var(--color-border-card));
+  border-left: 4px solid color-mix(in srgb, var(--person-decor-color) 76%, var(--color-border-card));
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--brown-400) 7%, transparent), transparent 58%),
-    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--brown-400) 6%), var(--color-bg-card) 66%);
+    linear-gradient(90deg, color-mix(in srgb, var(--person-decor-color) 7%, transparent), transparent 58%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--person-decor-color) 6%), var(--color-bg-card) 66%);
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--brown-400) 6%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--person-decor-color) 6%, transparent),
     var(--color-shadow-card);
 }
 
@@ -259,11 +261,11 @@
   min-height: 2rem;
   flex: 0 0 auto;
   align-items: center;
-  border: 1px solid color-mix(in srgb, var(--brown-400) 26%, var(--color-border-card));
+  border: 1px solid color-mix(in srgb, var(--person-decor-color) 26%, var(--color-border-card));
   border-radius: var(--radius-pill);
-  background: color-mix(in srgb, var(--brown-400) 8%, transparent);
+  background: color-mix(in srgb, var(--person-decor-color) 8%, transparent);
   padding: 0 0.65rem;
-  color: color-mix(in srgb, var(--brown-400) 76%, var(--color-text-primary));
+  color: color-mix(in srgb, var(--person-decor-color) 76%, var(--color-text-primary));
   font-size: var(--text-xs);
   font-weight: 700;
   white-space: nowrap;

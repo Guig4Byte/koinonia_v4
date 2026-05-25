@@ -6,7 +6,7 @@ import { ProgressiveList } from "@/components/shared/progressive-list";
 import { MEMBERS_FILTERS, membersFilterHref, type MembersFilter } from "@/features/people/member-filters";
 import { cn } from "@/lib/cn";
 import { countLabel } from "@/lib/format";
-import { FILTER_ALL } from "@/lib/filter-param";
+import { FILTER_ACTIVE, FILTER_ALL, FILTER_IN_CARE } from "@/lib/filter-param";
 import styles from "./member-priority-list.module.css";
 
 export type MemberPriorityCardTone = BadgeTone | "stable" | "muted";
@@ -97,6 +97,7 @@ type MemberPriorityListProps<TMember extends MemberPriorityListItem> = {
   basePath: string;
   activeFilter: MembersFilter;
   priorityMembers: TMember[];
+  inCareMembers?: TMember[];
   regularMembers: TMember[];
   filterCounts?: Partial<Record<MembersFilter, number>>;
   keyForMember: (member: TMember) => string;
@@ -116,10 +117,32 @@ type MemberPriorityListProps<TMember extends MemberPriorityListItem> = {
   emptyText?: string;
 };
 
+function filteredSectionMeta(activeFilter: MembersFilter, count: number) {
+  if (activeFilter === FILTER_IN_CARE) {
+    return {
+      title: "Em cuidado",
+      detail: countLabel(count, "acompanhamento em andamento", "acompanhamentos em andamento"),
+    };
+  }
+
+  if (activeFilter === FILTER_ACTIVE) {
+    return {
+      title: "Ativos",
+      detail: countLabel(count, "membro sem sinal aberto", "membros sem sinal aberto"),
+    };
+  }
+
+  return {
+    title: "Sinais",
+    detail: countLabel(count, "pessoa com sinal aberto", "pessoas com sinais abertos"),
+  };
+}
+
 export function MemberPriorityList<TMember extends MemberPriorityListItem>({
   basePath,
   activeFilter,
   priorityMembers,
+  inCareMembers = [],
   regularMembers,
   filterCounts,
   keyForMember,
@@ -138,11 +161,15 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
   regularLessLabel = "Mostrar menos membros",
   emptyText = "Nenhuma pessoa nesse recorte.",
 }: MemberPriorityListProps<TMember>) {
+  const filteredMeta = filteredSectionMeta(activeFilter, regularMembers.length);
+
   return (
     <>
       <div className={styles.filterRow}>
         {MEMBERS_FILTERS.map((option) => {
           const active = option.value === activeFilter;
+          const count = filterCounts?.[option.value];
+          if (option.value === FILTER_IN_CARE && count === 0 && !active) return null;
 
           return (
             <FilterChip
@@ -153,8 +180,8 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
               className={cn(styles.filterChip, active && styles.filterChipActive)}
             >
               <span>{option.label}</span>
-              {filterCounts?.[option.value] !== undefined ? (
-                <span className={styles.filterCount}>{filterCounts[option.value]}</span>
+              {count !== undefined ? (
+                <span className={styles.filterCount}>{count}</span>
               ) : null}
             </FilterChip>
           );
@@ -162,12 +189,12 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
       </div>
 
       {activeFilter === FILTER_ALL ? (
-        <div>
+        <div className={styles.sectionStack}>
           {priorityMembers.length > 0 ? (
             <div className={styles.sectionStack}>
               <MemberSectionHeader
-                title="Quem merece proximidade"
-                detail={countLabel(priorityMembers.length, "pessoa no radar", "pessoas no radar")}
+                title="Sinais"
+                detail={countLabel(priorityMembers.length, "pessoa com sinal aberto", "pessoas com sinais abertos")}
               />
               <ProgressiveList
                 initialCount={4}
@@ -187,9 +214,33 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
             </div>
           ) : null}
 
-          {regularMembers.length > 0 ? (
+          {inCareMembers.length > 0 ? (
             <div className={cn(styles.sectionStack, priorityMembers.length > 0 && styles.regularSection)}>
-              {priorityMembers.length > 0 ? (
+              <MemberSectionHeader
+                title="Em cuidado"
+                detail={countLabel(inCareMembers.length, "acompanhamento em andamento", "acompanhamentos em andamento")}
+              />
+              <ProgressiveList
+                initialCount={4}
+                step={4}
+                moreLabel="Ver mais em cuidado"
+                lessLabel="Mostrar menos em cuidado"
+              >
+                <MemberCards
+                  members={inCareMembers}
+                  keyForMember={keyForMember}
+                  hrefForMember={hrefForMember}
+                  contextForMember={priorityContextForMember}
+                  badgeLabelForMember={priorityBadgeLabelForMember}
+                  badgeToneForMember={priorityBadgeToneForMember}
+                />
+              </ProgressiveList>
+            </div>
+          ) : null}
+
+          {regularMembers.length > 0 ? (
+            <div className={cn(styles.sectionStack, (priorityMembers.length > 0 || inCareMembers.length > 0) && styles.regularSection)}>
+              {priorityMembers.length > 0 || inCareMembers.length > 0 ? (
                 <MemberSectionHeader
                   title="Ativos"
                   detail={countLabel(regularMembers.length, "membro sem sinal aberto", "membros sem sinal aberto")}
@@ -214,12 +265,16 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
             </div>
           ) : null}
 
-          {priorityMembers.length === 0 && regularMembers.length === 0 ? (
+          {priorityMembers.length === 0 && inCareMembers.length === 0 && regularMembers.length === 0 ? (
             <EmptyState compact>{emptyText}</EmptyState>
           ) : null}
         </div>
       ) : (
-        <div>
+        <div className={styles.sectionStack}>
+          <MemberSectionHeader
+            title={filteredMeta.title}
+            detail={filteredMeta.detail}
+          />
           <ProgressiveList
             initialCount={6}
             step={6}

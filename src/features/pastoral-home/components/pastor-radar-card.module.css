@@ -5,13 +5,13 @@
   isolation: isolate;
   overflow: hidden;
   margin-bottom: 1rem;
-  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 26%, var(--color-border-card));
+  border: 1px solid color-mix(in srgb, var(--radar-symbol-color) 26%, var(--color-border-card));
   border-radius: 1.45rem;
   background:
-    radial-gradient(circle at 18% 28%, color-mix(in srgb, var(--color-brand-accent) 18%, transparent), transparent 34%),
-    linear-gradient(135deg, color-mix(in srgb, var(--color-brand-accent) 8%, var(--color-bg-card)), var(--color-bg-card) 58%, color-mix(in srgb, var(--color-brand-accent) 7%, var(--color-bg-card)));
+    radial-gradient(circle at 18% 28%, color-mix(in srgb, var(--radar-symbol-color) 18%, transparent), transparent 34%),
+    linear-gradient(135deg, color-mix(in srgb, var(--radar-symbol-color) 8%, var(--color-bg-card)), var(--color-bg-card) 58%, color-mix(in srgb, var(--radar-symbol-color) 7%, var(--color-bg-card)));
   box-shadow:
-    0 18px 42px color-mix(in srgb, var(--color-brand-accent) 10%, transparent),
+    0 18px 42px color-mix(in srgb, var(--radar-symbol-color) 10%, transparent),
     var(--color-shadow-card);
 }
 
@@ -29,8 +29,8 @@
   width: 180px;
   height: 180px;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 20%, transparent);
-  background: radial-gradient(circle, color-mix(in srgb, var(--color-brand-accent) 15%, transparent), transparent 66%);
+  border: 1px solid color-mix(in srgb, var(--radar-symbol-color) 20%, transparent);
+  background: radial-gradient(circle, color-mix(in srgb, var(--radar-symbol-color) 15%, transparent), transparent 66%);
 }
 
 .root::after {
@@ -39,7 +39,7 @@
   width: 72px;
   height: 72px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--color-brand-accent) 12%, transparent);
+  background: color-mix(in srgb, var(--radar-symbol-color) 12%, transparent);
   filter: blur(26px);
 }
 

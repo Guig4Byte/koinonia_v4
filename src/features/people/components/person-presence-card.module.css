@@ -1,10 +1,12 @@
 .presenceCard.presenceCard {
-  border-color: color-mix(in srgb, var(--brown-400) 30%, var(--color-border-card));
+  --person-presence-accent: var(--color-card-decoration);
+
+  border-color: color-mix(in srgb, var(--person-presence-accent) 30%, var(--color-border-card));
   background:
-    radial-gradient(ellipse 86% 62% at 92% 0%, color-mix(in srgb, var(--brown-400) 10%, transparent), transparent 70%),
-    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 91%, var(--brown-400) 9%), var(--color-bg-card) 70%);
+    radial-gradient(ellipse 86% 62% at 92% 0%, color-mix(in srgb, var(--person-presence-accent) 14%, transparent), transparent 70%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 91%, var(--person-presence-accent) 9%), var(--color-bg-card) 70%);
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--brown-400) 8%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--person-presence-accent) 8%, transparent),
     var(--color-shadow-card);
 }
 
@@ -36,7 +38,7 @@
 
 .trendText {
   margin-top: 0.5rem;
-  color: color-mix(in srgb, var(--brown-400) 82%, var(--color-text-primary));
+  color: color-mix(in srgb, var(--person-presence-accent) 82%, var(--color-text-primary));
   font-size: var(--text-xs);
   font-weight: 650;
   line-height: 1.5;
@@ -49,7 +51,7 @@
 
 .metricTrend {
   margin-top: 0.3rem;
-  color: color-mix(in srgb, var(--brown-400) 88%, var(--color-text-primary));
+  color: color-mix(in srgb, var(--person-presence-accent) 88%, var(--color-text-primary));
   font-size: var(--text-sm);
   font-weight: 700;
   line-height: 1;
@@ -57,7 +59,7 @@
 
 .historyBlock {
   margin-top: 0.85rem;
-  border-top: 1px solid color-mix(in srgb, var(--brown-400) 18%, var(--color-border-divider));
+  border-top: 1px solid color-mix(in srgb, var(--person-presence-accent) 18%, var(--color-border-divider));
   padding-top: 0.8rem;
 }
 
@@ -98,11 +100,11 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  border: 1px solid color-mix(in srgb, var(--brown-400) 22%, var(--color-border-card));
-  border-left: 3px solid color-mix(in srgb, var(--brown-400) 78%, var(--color-border-card));
+  border: 1px solid color-mix(in srgb, var(--person-presence-accent) 22%, var(--color-border-card));
+  border-left: 3px solid color-mix(in srgb, var(--person-presence-accent) 78%, var(--color-border-card));
   border-radius: 0.95rem;
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--brown-400) 6%, transparent), transparent 60%),
+    linear-gradient(90deg, color-mix(in srgb, var(--person-presence-accent) 6%, transparent), transparent 60%),
     color-mix(in srgb, var(--surface-alt) 84%, var(--color-bg-card));
   padding: 0.58rem 0.7rem;
   transition:
@@ -112,7 +114,7 @@
 }
 
 .attendanceCard:hover {
-  border-color: color-mix(in srgb, var(--brown-400) 36%, var(--color-border-card));
+  border-color: color-mix(in srgb, var(--person-presence-accent) 36%, var(--color-border-card));
 }
 
 .attendanceCard:active {

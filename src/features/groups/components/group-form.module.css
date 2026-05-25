@@ -13,6 +13,8 @@
 
 .heroCard.heroCard,
 .formCard {
+  --form-decor-color: var(--color-card-decoration);
+
   border-color: color-mix(in srgb, var(--brown-400) 24%, var(--color-border-card));
   background:
     linear-gradient(90deg, color-mix(in srgb, var(--brown-400) 7%, transparent), transparent 60%),
@@ -37,7 +39,7 @@
   width: 140px;
   height: 140px;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--brown-400) 9%, transparent);
+  background: color-mix(in srgb, var(--form-decor-color) 15%, transparent);
   pointer-events: none;
 }
 

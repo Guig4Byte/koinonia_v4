@@ -5,14 +5,16 @@
 }
 
 .hero {
+  --detail-decor-color: var(--color-card-decoration);
+
   position: relative;
   isolation: isolate;
   overflow: hidden;
   margin-bottom: 10px;
-  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 20%, var(--color-border-card));
+  border: 1px solid color-mix(in srgb, var(--detail-decor-color) 22%, var(--color-border-card));
   border-radius: 1.35rem;
   background:
-    radial-gradient(ellipse 84% 64% at 50% -18%, color-mix(in srgb, var(--color-brand-accent) 15%, transparent), transparent 72%),
+    radial-gradient(ellipse 84% 64% at 50% -18%, color-mix(in srgb, var(--detail-decor-color) 16%, transparent), transparent 72%),
     var(--color-bg-card);
   padding: 14px;
   box-shadow: var(--color-shadow-card);
@@ -26,7 +28,7 @@
   width: 144px;
   height: 144px;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--color-brand-accent) 11%, transparent);
+  background: color-mix(in srgb, var(--detail-decor-color) 16%, transparent);
   pointer-events: none;
 }
 
@@ -48,9 +50,9 @@
   min-height: 34px;
   align-items: center;
   margin-top: 0.6rem;
-  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 18%, var(--color-border-card));
+  border: 1px solid color-mix(in srgb, var(--detail-decor-color) 20%, var(--color-border-card));
   border-radius: var(--radius-pill);
-  background: color-mix(in srgb, var(--color-brand-accent) 10%, var(--metric-card-bg));
+  background: color-mix(in srgb, var(--detail-decor-color) 10%, var(--metric-card-bg));
   padding: 6px 10px;
   color: var(--color-text-secondary);
   font-size: calc(var(--text-xs) * 1.02);
@@ -63,4 +65,3 @@
     gap: 0.65rem;
   }
 }
-

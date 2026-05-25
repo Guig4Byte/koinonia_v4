@@ -1,5 +1,5 @@
 .encounterCard.encounterCard {
-  --encounter-accent: var(--brown-400);
+  --encounter-accent: var(--color-card-decoration);
   display: grid;
   min-height: 4.4rem;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -9,7 +9,7 @@
   border-left: 4px solid color-mix(in srgb, var(--encounter-accent) 82%, var(--color-border-card));
   background:
     linear-gradient(90deg, color-mix(in srgb, var(--encounter-accent) 7%, transparent), transparent 56%),
-    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--brown-400) 6%), var(--color-bg-card) 64%);
+    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--encounter-accent) 6%), var(--color-bg-card) 64%);
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--encounter-accent) 7%, transparent),
     var(--color-shadow-card);
