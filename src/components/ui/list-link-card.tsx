@@ -29,6 +29,7 @@ type ListLinkCardProps = LinkProps &
     textClassName?: string;
     trailingClassName?: string;
     arrowClassName?: string;
+    stackTrailingOnMobile?: boolean;
   };
 
 export function ListLinkCard({
@@ -53,6 +54,7 @@ export function ListLinkCard({
   textClassName,
   trailingClassName,
   arrowClassName,
+  stackTrailingOnMobile = false,
   className,
   ...props
 }: ListLinkCardProps) {
@@ -61,6 +63,7 @@ export function ListLinkCard({
       className={cn(
         surface === "card" && [
           "card-hover-lift group relative isolate flex w-full max-w-full min-w-0 items-center justify-between gap-3 overflow-hidden rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] shadow-card transition active:scale-[0.99]",
+          stackTrailingOnMobile && "flex-wrap items-start sm:flex-nowrap sm:items-center",
           compact ? "min-h-[3.75rem] px-3 py-2.5" : "min-h-[4.25rem] px-3 py-3",
           priorityCardClass(priorityTone ?? badgeTone),
         ],
@@ -68,14 +71,20 @@ export function ListLinkCard({
       )}
       {...props}
     >
-      <span className={cn("flex min-w-0 flex-1 items-center gap-3", leadingClassName)}>
+      <span className={cn("flex min-w-0 flex-1 items-center gap-3", stackTrailingOnMobile && "basis-full sm:basis-auto", leadingClassName)}>
         {leading}
         <span className={cn("min-w-0 flex-1", textClassName)}>
           <span className={cn("k-item-title-sm block truncate", titleClassName)}>{title}</span>
           {subtitle ? <span className={cn("k-item-caption-truncate", subtitleClassName)}>{subtitle}</span> : null}
         </span>
       </span>
-      <span className={cn("flex min-w-0 max-w-[48%] shrink-0 items-center justify-end gap-2", trailingClassName)}>
+      <span
+        className={cn(
+          "flex min-w-0 max-w-[48%] shrink-0 items-center justify-end gap-2",
+          stackTrailingOnMobile && "mt-2 basis-full max-w-full justify-between border-t border-[color:var(--color-border-divider)] pt-2 sm:mt-0 sm:basis-auto sm:max-w-[48%] sm:justify-end sm:border-t-0 sm:pt-0",
+          trailingClassName,
+        )}
+      >
         {badgeLabel ? (
           <Badge
             tone={badgeTone}

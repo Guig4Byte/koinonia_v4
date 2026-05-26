@@ -230,3 +230,18 @@
     font-size: calc(var(--text-2xl) * 0.92);
   }
 }
+
+@media (max-width: 390px) {
+  .personHeader {
+    flex-wrap: wrap;
+  }
+
+  .personTitleBlock {
+    flex: 1 1 100%;
+  }
+
+  .personBadge.personBadge {
+    margin-left: auto;
+    max-width: 100%;
+  }
+}

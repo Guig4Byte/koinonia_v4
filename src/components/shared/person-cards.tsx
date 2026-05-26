@@ -37,6 +37,7 @@ export function PersonMiniCard(props: {
       badgeSize={compact ? "sm" : undefined}
       priorityTone={cardTone ?? badgeTone}
       compact={compact}
+      stackTrailingOnMobile
       className={className}
     />
   );

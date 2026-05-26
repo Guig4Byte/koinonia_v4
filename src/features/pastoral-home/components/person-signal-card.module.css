@@ -183,6 +183,19 @@
   transform: translateX(1px);
 }
 
+@media (max-width: 390px) {
+  .headerRow {
+    flex-wrap: wrap;
+  }
+
+  .headerActions {
+    width: 100%;
+    max-width: 100%;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+}
+
 @media (max-width: 360px) {
   .body {
     gap: 0.58rem;
@@ -198,7 +211,6 @@
   }
 
   .headerActions {
-    max-width: 52%;
     gap: 0.32rem;
   }
 
