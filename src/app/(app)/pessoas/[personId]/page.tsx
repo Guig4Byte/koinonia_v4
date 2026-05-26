@@ -247,7 +247,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
         <PersonPresenceCard view={presenceView} />
 
         <div id="historico-cuidado" className={styles.anchorSection}>
-          <SectionTitle detail="Linha do tempo dos contatos, anotações e encaminhamentos.">Histórico de cuidado</SectionTitle>
+          <SectionTitle detail="Registros recentes antes de agir novamente.">Histórico de cuidado</SectionTitle>
           {careTouchHistoryItems.length > 0 ? (
             <CareTouchHistory items={careTouchHistoryItems} />
           ) : (

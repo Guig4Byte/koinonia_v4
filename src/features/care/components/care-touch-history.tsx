@@ -1,8 +1,7 @@
 "use client";
 
+import { ChevronDown, ChevronUp, FileText, Heart, History, MapPin, MessageCircle, Phone, Users, type LucideIcon } from "lucide-react";
 import { useState } from "react";
-import { Badge, type BadgeTone } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/cn";
 import styles from "./care-touch-history.module.css";
@@ -16,77 +15,134 @@ export type CareTouchHistoryItem = {
   note?: string | null;
 };
 
-const INITIAL_VISIBLE_COUNT = 3;
+type HistoryVisual = {
+  icon: LucideIcon;
+  tone: "care" | "support" | "risk" | "attention" | "neutral";
+};
 
-function historyTone(title: string): BadgeTone {
+function historyVisual(title: string): HistoryVisual {
   const normalizedTitle = title.toLowerCase();
 
-  if (normalizedTitle.includes("apoio")) return "support";
-  if (normalizedTitle.includes("pastoral") || normalizedTitle.includes("encaminhado")) return "risk";
-  if (normalizedTitle.includes("ligação") || normalizedTitle.includes("whatsapp")) return "care";
-  if (normalizedTitle.includes("oração") || normalizedTitle.includes("visita")) return "info";
-  return "neutral";
+  if (normalizedTitle.includes("whatsapp") || normalizedTitle.includes("conversa")) {
+    return { icon: MessageCircle, tone: "care" };
+  }
+
+  if (normalizedTitle.includes("liga") || normalizedTitle.includes("telefon")) {
+    return { icon: Phone, tone: "care" };
+  }
+
+  if (normalizedTitle.includes("apoio")) {
+    return { icon: Heart, tone: "support" };
+  }
+
+  if (normalizedTitle.includes("pastoral") || normalizedTitle.includes("encaminhado")) {
+    return { icon: Heart, tone: "risk" };
+  }
+
+  return { icon: Heart, tone: "attention" };
 }
 
-function historyBadgeLabel(title: string) {
-  const normalizedTitle = title.toLowerCase();
+function HistoryTimelineItem({ item }: { item: CareTouchHistoryItem }) {
+  const note = item.note?.trim();
+  const { icon: EventIcon, tone } = historyVisual(item.title);
 
-  if (normalizedTitle.includes("apoio")) return "Apoio";
-  if (normalizedTitle.includes("pastoral") || normalizedTitle.includes("encaminhado")) return "Pastoral";
-  if (normalizedTitle.includes("ligação") || normalizedTitle.includes("whatsapp")) return "Contato";
-  if (normalizedTitle.includes("oração") || normalizedTitle.includes("visita")) return "Cuidado";
-  return "Registro";
+  return (
+    <article className={styles.item}>
+      <div className={styles.markerColumn} aria-hidden="true">
+        <span className={styles.marker} />
+      </div>
+
+      <div className={styles.copy}>
+        <div className={styles.header}>
+          <span className={cn(styles.eventIcon, styles[`eventIcon${tone}`])} aria-hidden="true">
+            <EventIcon className={styles.eventIconSvg} />
+          </span>
+
+          <div className={styles.titleBlock}>
+            <p className={styles.title}>{item.title}</p>
+            <p className={styles.meta}>
+              {item.actorName} · {item.happenedAtLabel}
+              {item.contextLabel ? ` · ${item.contextLabel}` : ""}
+            </p>
+          </div>
+        </div>
+
+        {note ? <p className={styles.note}>{note}</p> : null}
+      </div>
+    </article>
+  );
 }
 
 export function CareTouchHistory({ items, className }: { items: CareTouchHistoryItem[]; className?: string }) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const visibleItems = isExpanded ? items : items.slice(0, INITIAL_VISIBLE_COUNT);
-  const hasHiddenItems = items.length > INITIAL_VISIBLE_COUNT;
+  const latestItem = items[0];
+  const olderItems = items.slice(1);
+  const hasOlderItems = olderItems.length > 0;
+  const latestNote = latestItem.note?.trim();
+  const { icon: LatestIcon, tone: latestTone } = historyVisual(latestItem.title);
 
   return (
     <div className={cn(styles.history, className)}>
       <Card>
-        <div className={styles.list}>
-          {visibleItems.map((item) => {
-            const note = item.note?.trim();
-
-            return (
-              <article key={item.id} className={styles.item}>
-                <div className={styles.markerColumn} aria-hidden="true">
-                  <span className={styles.marker} />
-                </div>
-
-                <div className={styles.copy}>
-                  <div className={styles.header}>
-                    <div className={styles.titleBlock}>
-                      <p className={styles.title}>{item.title}</p>
-                      <p className={styles.meta}>
-                        {item.actorName} · {item.happenedAtLabel}{item.contextLabel ? ` · ${item.contextLabel}` : ""}
-                      </p>
-                    </div>
-                    <Badge tone={historyTone(item.title)} size="xs" maxWidth="none" truncate={false}>
-                      {historyBadgeLabel(item.title)}
-                    </Badge>
-                  </div>
-
-                  {note ? <p className={styles.note}>{note}</p> : null}
-                </div>
-              </article>
-            );
-          })}
+        <div className={styles.snapshotLabel}>
+          <History className={styles.snapshotLabelIcon} aria-hidden="true" />
+          <span>Último cuidado</span>
         </div>
 
-        {hasHiddenItems ? (
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            fullWidth
-            className="mt-3"
-            onClick={() => setIsExpanded((current) => !current)}
-          >
-            {isExpanded ? "Mostrar menos" : "Mostrar histórico completo"}
-          </Button>
+        <article className={styles.latestCard}>
+          <span className={cn(styles.latestIcon, styles[`eventIcon${latestTone}`])} aria-hidden="true">
+            <LatestIcon className={styles.latestIconSvg} />
+          </span>
+
+          <div className={styles.latestCopy}>
+            <p className={styles.latestTitle}>{latestItem.title}</p>
+
+            <div className={styles.latestMetaStack}>
+              <p className={styles.latestMetaRow}>
+                <Users className={styles.metaIcon} aria-hidden="true" />
+                <span>
+                  {latestItem.actorName} · {latestItem.happenedAtLabel}
+                </span>
+              </p>
+              {latestItem.contextLabel ? (
+                <p className={styles.latestMetaRow}>
+                  <MapPin className={styles.metaIcon} aria-hidden="true" />
+                  <span>{latestItem.contextLabel}</span>
+                </p>
+              ) : null}
+            </div>
+
+            {latestNote ? <p className={styles.latestNote}>{latestNote}</p> : null}
+          </div>
+        </article>
+
+        {hasOlderItems ? (
+          <>
+            <button
+              type="button"
+              className={styles.expandButton}
+              aria-expanded={isExpanded}
+              onClick={() => setIsExpanded((current) => !current)}
+            >
+              <span className={styles.expandLabel}>
+                <FileText className={styles.expandLabelIcon} aria-hidden="true" />
+                {isExpanded ? "Mostrar menos" : "Ver histórico completo"}
+              </span>
+              {isExpanded ? (
+                <ChevronUp className={styles.expandChevron} aria-hidden="true" />
+              ) : (
+                <ChevronDown className={styles.expandChevron} aria-hidden="true" />
+              )}
+            </button>
+
+            {isExpanded ? (
+              <div className={styles.timeline}>
+                {olderItems.map((item) => (
+                  <HistoryTimelineItem key={item.id} item={item} />
+                ))}
+              </div>
+            ) : null}
+          </>
         ) : null}
       </Card>
     </div>
