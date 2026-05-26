@@ -12,7 +12,7 @@ const baseInput = {
 };
 
 describe("buildPersonCareOverviewView", () => {
-  it("prioritizes urgent open signals", () => {
+  it("prioritizes urgent open signals without exposing a status badge", () => {
     const view = buildPersonCareOverviewView({
       ...baseInput,
       openSignalsCount: 1,
@@ -21,8 +21,8 @@ describe("buildPersonCareOverviewView", () => {
     });
 
     expect(view.priorityTone).toBe("risk");
-    expect(view.badgeLabel).toBe("Ação prioritária");
-    expect(view.ownerLabel).toBe("Ana");
+    expect(view.signalLabel).toBe("Cuidado próximo");
+    expect(view.contextLabel).toBe("Ana · Célula Norte");
     expect(view.nextStepLabel).toBe("Guardar contato pastoral");
   });
 
@@ -30,25 +30,19 @@ describe("buildPersonCareOverviewView", () => {
     const view = buildPersonCareOverviewView({
       ...baseInput,
       isInCare: true,
-      latestTouch: {
-        title: "Ligação registrada",
-        actorName: "Bruno",
-        happenedAtLabel: "20/05, 19:30",
-        contextLabel: "Célula Norte",
-      },
     });
 
     expect(view.priorityTone).toBe("care");
-    expect(view.badgeLabel).toBe("Em cuidado");
-    expect(view.latestTouchLabel).toBe("Ligação registrada");
-    expect(view.latestTouchDetail).toContain("Bruno · 20/05, 19:30 · Célula Norte");
+    expect(view.signalLabel).toBe("Em cuidado");
+    expect(view.contextLabel).toBe("Bruno · Célula Norte");
+    expect(view.nextStepLabel).toBe("Atualizar acompanhamento");
   });
 
   it("keeps stable people neutral and avoids creating fake tasks", () => {
     const view = buildPersonCareOverviewView(baseInput);
 
     expect(view.priorityTone).toBe("muted");
-    expect(view.badgeLabel).toBe("Estável");
+    expect(view.signalLabel).toBe("Estável");
     expect(view.nextStepLabel).toBe("Guardar quando houver cuidado");
   });
 });

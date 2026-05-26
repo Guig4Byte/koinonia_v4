@@ -148,7 +148,6 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
     primaryGroupName,
     primaryLeadershipName,
     assignedActorName: primarySignal?.assignedTo?.name,
-    latestTouch: careTouchHistoryItems[0],
   });
   const pastoralEscalationActorByGroupId = new Map<string, string>();
   let pastoralEscalationActorWithoutGroup: string | undefined;
