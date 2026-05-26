@@ -108,7 +108,7 @@ function teamFilterHref(filter: string) {
 export function buildPastorNextPastoralAction(summary: PastorPageTeamSummary): NextPastoralAction | null {
   if (summary.urgentCount > 0) {
     return {
-      eyebrow: "Prioridade de hoje",
+      eyebrow: "Primeiro Cuidado",
       title: `${countLabel(summary.urgentCount, "sinal urgente", "sinais urgentes")} na equipe`,
       detail: "Comece pelas células com cuidado mais sensível antes de revisar estabilidade e presença.",
       href: teamFilterHref(FILTER_URGENT),

@@ -1,0 +1,100 @@
+.card {
+  --filter-context-accent: var(--color-card-decoration);
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.85rem;
+  align-items: center;
+  overflow: hidden;
+  margin-top: 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--filter-context-accent) 24%, var(--color-border-card));
+  border-radius: 1.1rem;
+  background:
+    radial-gradient(
+      circle at 96% 92%,
+      color-mix(in srgb, var(--filter-context-accent) 12%, transparent),
+      transparent 44%
+    ),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--filter-context-accent) 4%, var(--color-bg-card)),
+      var(--color-bg-card)
+    );
+  padding: 0.9rem;
+  box-shadow: var(--color-shadow-card);
+}
+
+.card::after {
+  content: "";
+  position: absolute;
+  inset-block-end: -72px;
+  inset-inline-end: -44px;
+  z-index: -1;
+  width: 144px;
+  height: 144px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--filter-context-accent) 9%, transparent);
+  pointer-events: none;
+}
+
+.risk {
+  --filter-context-accent: var(--color-signal-risk);
+}
+
+.support {
+  --filter-context-accent: var(--color-signal-support);
+}
+
+.warn {
+  --filter-context-accent: var(--color-signal-attention);
+}
+
+.care {
+  --filter-context-accent: var(--color-signal-care);
+}
+
+.neutral {
+  --filter-context-accent: var(--color-signal-retomar);
+}
+
+.ok {
+  --filter-context-accent: var(--color-signal-stable);
+}
+
+.icon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--filter-context-accent) 26%, var(--color-border-card));
+  border-radius: 999px;
+  background:
+    radial-gradient(
+      circle,
+      color-mix(in srgb, var(--filter-context-accent) 12%, transparent),
+      transparent 66%
+    ),
+    var(--surface-alt);
+  color: var(--filter-context-accent);
+}
+
+.copy {
+  min-width: 0;
+}
+
+.title {
+  display: block;
+  color: var(--color-text-primary);
+  font-size: var(--text-lg);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.detail {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.45;
+}

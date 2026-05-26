@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { GroupResponsibilityRole, SignalSeverity, UserRole } from "@/generated/prisma/client";
 import {
   buildCellsPageView,
+  cellsFilterContextContent,
   filterCellsPageGroups,
   groupBadge,
   groupDetailHref,
@@ -102,6 +103,20 @@ describe("cells-page-view", () => {
     expect(visibleCellsFilter("em-cuidado")).toBe("em-cuidado");
   });
 
+  it("explica o recorte pastoral da supervisão por filtro", () => {
+    expect(cellsFilterContextContent("todos")).toMatchObject({
+      title: "Leitura pastoral da supervisão",
+    });
+    expect(cellsFilterContextContent("atencao")).toMatchObject({
+      title: "Cuidado próximo",
+      tone: "risk",
+    });
+    expect(cellsFilterContextContent("presenca")).toMatchObject({
+      title: "Presença pede leitura",
+      tone: "neutral",
+    });
+  });
+
   it("usa responsabilidade ativa para liderança e subtítulo", () => {
     const current = group({ memberships: [{ id: "m1" }, { id: "m2" }] as SupervisorGroup["memberships"] });
 
@@ -154,11 +169,11 @@ describe("cells-page-view", () => {
 
   it("resolve selo pastoral por prioridade", () => {
     expect(groupBadge(group({ signals: [signal({ severity: SignalSeverity.URGENT, assignedTo: null })] }))).toEqual({ label: "1 urgente", tone: "risk" });
-    expect(groupBadge(group({ signals: [signal({ severity: SignalSeverity.URGENT, assignedTo: null })], attentionCount: 2 }), "atencao")).toEqual({ label: "1 pessoa em atenção", tone: "warn" });
-    expect(groupBadge(group({ supportRequestsCount: 2 }))).toEqual({ label: "2 pedidos de apoio", tone: "support" });
+    expect(groupBadge(group({ signals: [signal({ severity: SignalSeverity.URGENT, assignedTo: null })], attentionCount: 2 }), "atencao")).toEqual({ label: "1 em atenção", tone: "warn" });
+    expect(groupBadge(group({ supportRequestsCount: 2 }))).toEqual({ label: "2 apoios", tone: "support" });
     expect(groupBadge(group({ supportRequestsCount: 1, inCareCount: 2 }), "em-cuidado")).toEqual({ label: "2 em cuidado", tone: "care" });
     expect(groupBadge(group({ inCareCount: 2 }))).toEqual({ label: "2 em cuidado", tone: "care" });
-    expect(groupBadge(group({ hasPresenceData: false }))).toEqual({ label: "Sem presença recente", tone: "neutral" });
+    expect(groupBadge(group({ hasPresenceData: false }))).toEqual({ label: "Sem presença", tone: "neutral" });
     expect(groupBadge(group({ presenceRate: 60 }))).toEqual({ label: "Presença baixa", tone: "warn" });
     expect(groupBadge(group({ signals: [signal({ severity: SignalSeverity.ATTENTION, assignedTo: { role: UserRole.PASTOR } as SupervisorGroup["signals"][number]["assignedTo"] })] }))).toEqual({ label: "1 encaminhado", tone: "risk" });
   });

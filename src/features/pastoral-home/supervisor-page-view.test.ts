@@ -94,6 +94,7 @@ describe("supervisor-page-view", () => {
     expect(view.inCarePeople).toEqual([{ id: "p1", fullName: "Ana", status: PersonStatus.COOLING_AWAY, groupName: "Célula Central" }]);
     expect(view.focusItems.map((item) => item.key)).toEqual(["care"]);
     expect(view.focusItems[0].title).toBe("Memória de cuidado");
+    expect(view.focusItems[0].valueLabel).toBe("1 célula com cuidado em andamento");
     expect(view.focusItems[0].href).toBe("/celulas/group-1?foco=em-cuidado");
   });
 
@@ -116,6 +117,7 @@ describe("supervisor-page-view", () => {
 
     expect(view.focusItems.map((item) => item.key)).toEqual(["support"]);
     expect(view.focusItems[0].title).toBe("Apoio com líderes");
+    expect(view.focusItems[0].valueLabel).toBe("1 célula com apoio pedido");
     expect(view.nextAction?.label).toBe("Acompanhar com liderança");
     expect(view.nextAction?.href).toBe("/celulas/group-support?foco=apoio");
   });
@@ -144,6 +146,7 @@ describe("supervisor-page-view", () => {
     });
 
     expect(view.focusItems.map((item) => item.key)).toEqual(["urgent", "support"]);
+    expect(view.focusItems[0].valueLabel).toBe("1 célula com cuidado próximo");
   });
 
   it("linka sinais nas células para o recorte de atenção local", () => {
@@ -167,6 +170,7 @@ describe("supervisor-page-view", () => {
     const attentionFocus = view.focusItems.find((item) => item.key === "attention");
 
     expect(view.focusItems.map((item) => item.key)).toEqual(["urgent", "attention"]);
+    expect(attentionFocus?.valueLabel).toBe("1 célula com sinal pastoral");
     expect(attentionFocus?.href).toBe("/celulas/group-mixed?foco=atencao");
   });
 
@@ -182,7 +186,9 @@ describe("supervisor-page-view", () => {
 
     expect(view.navIndicator).toBe("attention");
     expect(view.focusItems.map((item) => item.key)).toEqual(["presence"]);
+    expect(view.focusItems[0].tone).toBe("presence");
     expect(view.nextAction?.label).toBe("Revisar presença");
+    expect(view.nextAction?.tone).toBe("presence");
     expect(view.nextAction?.href).toBe("/celulas/group-no-presence?foco=sem-presenca");
   });
 
@@ -198,6 +204,7 @@ describe("supervisor-page-view", () => {
     });
 
     expect(view.focusItems.map((item) => item.key)).toEqual(["presence"]);
+    expect(view.focusItems[0].tone).toBe("presence");
     expect(view.nextAction?.href).toBe("/celulas?filtro=presenca#celulas-supervisionadas");
   });
 

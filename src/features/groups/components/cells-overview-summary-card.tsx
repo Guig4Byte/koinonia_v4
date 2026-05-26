@@ -191,7 +191,7 @@ export function CellsOverviewSummaryCard({
           label="Pedem cuidado mais próximo"
           detail={groupsNeedingAttentionCount > 0 ? "Prioridade no acompanhamento." : "Sem alerta aberto agora."}
           value={groupsNeedingAttentionCount}
-          tone={groupsNeedingAttentionCount > 0 ? "warn" : "ok"}
+          tone={groupsNeedingAttentionCount > 0 ? "risk" : "ok"}
         />
         <FooterMetric
           icon={<CalendarClock className="h-4 w-4" strokeWidth={2.35} absoluteStrokeWidth />}

@@ -28,10 +28,10 @@ export type CellsFilter =
 
 export const CELLS_FILTERS: ReadonlyArray<FilterOption<CellsFilter>> = [
   { value: FILTER_ALL, label: "Todas" },
-  { value: FILTER_ATTENTION, label: "Atenção" },
-  { value: FILTER_IN_CARE, label: "Em cuidado" },
-  { value: FILTER_SUPPORT, label: "Apoio" },
-  { value: FILTER_PRESENCE, label: "Presença" },
+  { value: FILTER_ATTENTION, label: "Atenção", tone: "risk" },
+  { value: FILTER_IN_CARE, label: "Em cuidado", tone: "care" },
+  { value: FILTER_SUPPORT, label: "Apoio", tone: "support" },
+  { value: FILTER_PRESENCE, label: "Presença", tone: "neutral" },
 ];
 
 const ACCEPTED_CELLS_FILTERS: ReadonlyArray<FilterOption<CellsFilter>> = [

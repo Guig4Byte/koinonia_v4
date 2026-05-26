@@ -1,4 +1,4 @@
-import { AlertCircle, CalendarDays, ChevronRight, HeartHandshake, Info, UsersRound, type LucideIcon } from "lucide-react";
+import { CalendarDays, ChevronRight, HeartHandshake, Info, UsersRound, type LucideIcon } from "lucide-react";
 import { CardLink } from "@/components/ui/card-link";
 import { NextActionCard } from "@/components/shared/next-action-card";
 import type { SupervisorFocusItem, SupervisorFocusKey } from "@/features/pastoral-home/supervisor-page-view";
@@ -6,7 +6,7 @@ import type { CardPriorityTone } from "@/lib/card-priority";
 import styles from "./supervisor-focus-panel.module.css";
 
 const iconMap: Record<SupervisorFocusKey, LucideIcon> = {
-  urgent: AlertCircle,
+  urgent: HeartHandshake,
   support: UsersRound,
   presence: CalendarDays,
   attention: Info,
@@ -18,6 +18,7 @@ const priorityToneMap = {
   support: "support",
   warn: "warn",
   care: "care",
+  presence: "presence",
 } satisfies Record<SupervisorFocusItem["tone"], CardPriorityTone>;
 
 function SecondaryFocusCard({ item }: { item: SupervisorFocusItem }) {
@@ -62,13 +63,7 @@ export function SupervisorFocusPanel({ items }: { items: SupervisorFocusItem[] }
   const PrimaryIcon = iconMap[primaryItem.key];
 
   return (
-    <section className={["stagger-children", styles.panel].join(" ")} aria-labelledby="supervisor-focus-title">
-      <div className={styles.header}>
-        <p className={styles.kicker}>Prioridade pastoral</p>
-        <h2 id="supervisor-focus-title" className={styles.title}>O que pede sua atenção agora</h2>
-        <p className={styles.detail}>Comece pelo primeiro cuidado e mantenha os outros sinais visíveis para a semana.</p>
-      </div>
-
+    <section className={["stagger-children", styles.panel].join(" ")} aria-label="Prioridades pastorais da supervisão">
       <NextActionCard
         icon={<PrimaryIcon className="h-5 w-5" strokeWidth={2.1} />}
         className={styles.primaryCard}

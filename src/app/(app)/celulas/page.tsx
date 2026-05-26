@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { Plus } from "lucide-react";
 import { GroupKind, UserRole } from "@/generated/prisma/client";
 import { AppShell } from "@/components/layout/app-shell";
+import { CellsFilterContextCard } from "@/features/groups/components/cells-filter-context-card";
 import { CellsPageSections } from "@/features/groups/components/cells-page-sections";
 import { CellsStructureSearch } from "@/features/groups/components/cells-structure-search";
 import { ButtonLink } from "@/components/ui/button-link";
@@ -99,6 +100,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
         <section id={CELLS_SECTION_ID} className="scroll-mt-4">
           <SectionTitle detail="Busque ou filtre por atenção.">Células supervisionadas</SectionTitle>
           <CellsStructureSearch query={query} filter={activeFilter} sectionId={CELLS_SECTION_ID} />
+          <CellsFilterContextCard filter={activeFilter} />
 
           <div className="mt-6">
             {view.groups.length > 0 ? (

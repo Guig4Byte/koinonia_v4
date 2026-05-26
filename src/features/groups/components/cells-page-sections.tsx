@@ -34,17 +34,23 @@ function CellsGroupCard({ group, sectionKey, activeFilter }: { group: Supervisor
   );
 }
 
+function sectionDetailLabel(section: CellsPageView["groupedSections"][number]) {
+  const count = countLabel(section.groups.length, "célula", "células");
+  const isSingular = section.groups.length === 1;
+
+  if (section.key === "care") return `${count} ${isSingular ? "pede" : "pedem"} prioridade no acompanhamento.`;
+  if (section.key === "presence") return `${count} ${isSingular ? "precisa" : "precisam"} de leitura sobre presença.`;
+  return `${count} sem sinal aberto agora.`;
+}
+
 export function CellsPageSections({ sections, activeFilter }: { sections: CellsPageView["groupedSections"]; activeFilter: CellsFilter }) {
   return (
     <div className={styles.sections}>
       {sections.map((section) => (
         <div key={section.key} className={styles.section}>
           <div className={styles.heading}>
-            <div className={styles.headingTopline}>
-              <h3>{section.title}</h3>
-              <span>{countLabel(section.groups.length, "célula", "células")}</span>
-            </div>
-            <p>{section.detail}</p>
+            <h3 className={`${styles.headingTitle} k-section-kicker`}>{section.title}</h3>
+            <p className={`${styles.headingDetail} k-section-detail`}>{sectionDetailLabel(section)}</p>
           </div>
           <ProgressiveList
             initialCount={CELLS_PAGE_SECTION_LIMIT}

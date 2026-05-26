@@ -5,13 +5,14 @@ import { CardLink } from "@/components/ui/card-link";
 import type { CardPriorityTone } from "@/lib/card-priority";
 import styles from "./next-action-card.module.css";
 
-export type NextActionTone = "risk" | "support" | "warn" | "care" | "ok";
+export type NextActionTone = "risk" | "support" | "warn" | "care" | "presence" | "ok";
 
 const priorityTone: Record<NextActionTone, CardPriorityTone> = {
   risk: "risk",
   support: "support",
   warn: "warn",
   care: "care",
+  presence: "presence",
   ok: "stable",
 };
 

@@ -209,6 +209,9 @@ describe("team-view", () => {
 
   it("resolve o sinal visual do grupo por prioridade pastoral", () => {
     expect(groupSignalTone(teamGroup({ urgentCount: 1 }))).toBe("risk");
+    expect(groupSignalLabel(teamGroup({ urgentCount: 1, pastoralCasesCount: 1 }))).toBe("Cuidado próximo");
+    expect(groupSignalLabel(teamGroup({ pastoralCasesCount: 1 }))).toBe("Encaminhada");
+    expect(groupSignalLabel(teamGroup({ pastoralCasesCount: 2 }))).toBe("Encaminhadas");
     expect(
       groupSignalTone(
         teamGroup({

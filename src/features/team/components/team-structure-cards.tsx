@@ -1,8 +1,9 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Archive, ChevronRight, HeartHandshake, UserRound } from "lucide-react";
+import { Archive, ChevronRight, UserRound } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { ProgressiveList } from "@/components/shared/progressive-list";
+import { FilterContextCard } from "@/components/shared/filter-context-card";
 import { EmptyState } from "@/components/shared/base-cards";
 import { SectionHeader } from "@/components/ui/section-header";
 import { PriorityCard } from "@/components/ui/priority-card";
@@ -28,6 +29,7 @@ import {
   FILTER_STABLE,
   FILTER_SUPPORT,
   FILTER_URGENT,
+  type FilterTone,
 } from "@/lib/filter-param";
 import { cn } from "@/lib/cn";
 import { countLabel } from "@/lib/format";
@@ -43,13 +45,13 @@ const cellLinkToneClass: Record<TeamSignalTone, string> = {
   ok: styles.cellLinkOk,
 };
 
-const filterIconToneClass: Partial<Record<TeamFilter, string>> = {
-  [FILTER_URGENT]: styles.filterContextRisk,
-  [FILTER_PASTORAL]: styles.filterContextRisk,
-  [FILTER_SUPPORT]: styles.filterContextSupport,
-  [FILTER_ATTENTION]: styles.filterContextWarn,
-  [FILTER_NO_RECENT_PRESENCE]: styles.filterContextNeutral,
-  [FILTER_STABLE]: styles.filterContextOk,
+const filterContextTone: Partial<Record<TeamFilter, FilterTone>> = {
+  [FILTER_URGENT]: "risk",
+  [FILTER_PASTORAL]: "risk",
+  [FILTER_SUPPORT]: "support",
+  [FILTER_ATTENTION]: "warn",
+  [FILTER_NO_RECENT_PRESENCE]: "neutral",
+  [FILTER_STABLE]: "ok",
 };
 
 function pastoralSignalLabel(
@@ -132,18 +134,7 @@ export function TeamFilterContextCard({
   detail: string;
 }) {
   return (
-    <section
-      className={cn(styles.filterContext, filterIconToneClass[filter])}
-      aria-label={title}
-    >
-      <span className={styles.filterContextIcon} aria-hidden="true">
-        <HeartHandshake className="h-6 w-6" strokeWidth={1.9} />
-      </span>
-      <span className={styles.filterContextCopy}>
-        <span className={styles.filterContextTitle}>{title}</span>
-        <span className={styles.filterContextDetail}>{detail}</span>
-      </span>
-    </section>
+    <FilterContextCard title={title} detail={detail} tone={filterContextTone[filter]} />
   );
 }
 

@@ -27,11 +27,12 @@ import {
   FILTER_PRESENCE,
   FILTER_SUPPORT,
   FILTER_URGENT,
-  NO_RECENT_PRESENCE_LABEL,
+  type FilterTone,
 } from "@/lib/filter-param";
 import { routeWithQuery } from "@/lib/routes";
 
 export const CELLS_PAGE_SECTION_LIMIT = 4;
+const NO_RECENT_PRESENCE_BADGE_LABEL = "Sem presença";
 
 export type SupervisorDashboard = Awaited<ReturnType<typeof getSupervisorDashboard>>;
 export type SupervisorGroup = SupervisorDashboard["groups"][number];
@@ -63,6 +64,66 @@ export type CellsPageView = {
   navIndicator?: "risk" | "attention" | "care";
   isFiltered: boolean;
 };
+
+const cellsFilterContextCopy: Record<CellsFilter, { title: string; detail: string; tone?: FilterTone }> = {
+  [FILTER_ALL]: {
+    title: "Leitura pastoral da supervisão",
+    detail:
+      "Mostramos primeiro as células que pedem cuidado mais próximo. No detalhe da célula, todos os sinais, presenças e acompanhamentos aparecem com calma.",
+  },
+  [FILTER_ATTENTION]: {
+    title: "Cuidado próximo",
+    detail:
+      "Células com sinais abertos ou atenção local para você acompanhar junto dos líderes.",
+    tone: "risk",
+  },
+  [FILTER_URGENT]: {
+    title: "Cuidado próximo",
+    detail:
+      "Sinais mais sensíveis aparecem primeiro para orientar conversa, leitura pastoral e alinhamento com a liderança.",
+    tone: "risk",
+  },
+  [FILTER_PASTORAL]: {
+    title: "Encaminhadas ao pastor",
+    detail:
+      "Casos trazidos ao cuidado pastoral seguem visíveis para supervisão e acompanhamento.",
+    tone: "risk",
+  },
+  [FILTER_SUPPORT]: {
+    title: "Apoio pedido",
+    detail:
+      "Células em que a liderança pediu acompanhamento da supervisão.",
+    tone: "support",
+  },
+  [FILTER_IN_CARE]: {
+    title: "Em cuidado",
+    detail:
+      "Acompanhamentos já assumidos seguem visíveis para manter continuidade pastoral.",
+    tone: "care",
+  },
+  [FILTER_PRESENCE]: {
+    title: "Presença pede leitura",
+    detail:
+      "Sem registro recente ou presença baixa pode indicar rotina, ou pedir conversa com a liderança.",
+    tone: "neutral",
+  },
+  [FILTER_NO_RECENT_PRESENCE]: {
+    title: "Sem presença recente",
+    detail:
+      "Células sem registro recente aparecem aqui para você conferir se falta dado ou se há cuidado a retomar.",
+    tone: "neutral",
+  },
+  [FILTER_LOW_PRESENCE]: {
+    title: "Presença baixa",
+    detail:
+      "Células com presença abaixo do esperado pedem leitura cuidadosa antes de qualquer ação.",
+    tone: "warn",
+  },
+};
+
+export function cellsFilterContextContent(filter: CellsFilter) {
+  return cellsFilterContextCopy[filter];
+}
 
 export function groupSearchText(group: SupervisorGroup) {
   const leadership = responsibilityNames(
@@ -244,11 +305,11 @@ function contextualGroupBadge(group: SupervisorGroup, filter: CellsFilter): Sign
   }
 
   if (filter === FILTER_SUPPORT && groupSupportRequestsCount(group) > 0) {
-    return { label: groupAttentionLabel(groupSupportRequestsCount(group), "pedido de apoio", "pedidos de apoio"), tone: "support" };
+    return { label: groupAttentionLabel(groupSupportRequestsCount(group), "apoio", "apoios"), tone: "support" };
   }
 
   if (filter === FILTER_ATTENTION && groupLocalAttentionCount(group) > 0) {
-    return { label: groupAttentionLabel(groupLocalAttentionCount(group), "pessoa em atenção", "pessoas em atenção"), tone: "warn" };
+    return { label: groupAttentionLabel(groupLocalAttentionCount(group), "em atenção", "em atenção"), tone: "warn" };
   }
 
   if (filter === FILTER_IN_CARE && group.inCareCount > 0) {
@@ -256,7 +317,7 @@ function contextualGroupBadge(group: SupervisorGroup, filter: CellsFilter): Sign
   }
 
   if (filter === FILTER_NO_RECENT_PRESENCE && !group.hasPresenceData) {
-    return { label: NO_RECENT_PRESENCE_LABEL, tone: "neutral" };
+    return { label: NO_RECENT_PRESENCE_BADGE_LABEL, tone: "neutral" };
   }
 
   if (filter === FILTER_LOW_PRESENCE && hasLowPresence(group)) {
@@ -264,7 +325,7 @@ function contextualGroupBadge(group: SupervisorGroup, filter: CellsFilter): Sign
   }
 
   if (filter === FILTER_PRESENCE) {
-    if (!group.hasPresenceData) return { label: NO_RECENT_PRESENCE_LABEL, tone: "neutral" };
+    if (!group.hasPresenceData) return { label: NO_RECENT_PRESENCE_BADGE_LABEL, tone: "neutral" };
     if (hasLowPresence(group)) return { label: "Presença baixa", tone: "warn" };
   }
 
@@ -287,17 +348,17 @@ export function groupBadge(group: SupervisorGroup, filter: CellsFilter = FILTER_
   }
 
   if (group.supportRequestsCount > 0) {
-    return { label: groupAttentionLabel(group.supportRequestsCount, "pedido de apoio", "pedidos de apoio"), tone: "support" };
+    return { label: groupAttentionLabel(group.supportRequestsCount, "apoio", "apoios"), tone: "support" };
   }
 
   const localAttention = groupLocalAttentionCount(group);
 
   if (localAttention > 0) {
-    return { label: groupAttentionLabel(localAttention, "pessoa em atenção", "pessoas em atenção"), tone: "warn" };
+    return { label: groupAttentionLabel(localAttention, "em atenção", "em atenção"), tone: "warn" };
   }
 
   if (!group.hasPresenceData) {
-    return { label: NO_RECENT_PRESENCE_LABEL, tone: "neutral" };
+    return { label: NO_RECENT_PRESENCE_BADGE_LABEL, tone: "neutral" };
   }
 
   if (hasLowPresence(group)) {
