@@ -1,9 +1,8 @@
 import { ArrowRight } from "lucide-react";
-import { CardHeader } from "@/components/ui/card-header";
 import { Card } from "@/components/ui/card";
 import { ButtonLink } from "@/components/ui/button-link";
 import { ContextSummary } from "@/components/shared/base-cards";
-import type { BadgeTone } from "@/components/ui/badge";
+import { Badge, type BadgeTone } from "@/components/ui/badge";
 import type { MetricTone } from "@/components/shared/presence-metric";
 import { formatPresenceRate } from "@/features/events/presence-display";
 import { formatShortDate, formatTime } from "@/lib/format";
@@ -41,30 +40,34 @@ export function EventDetailHeaderCard({
   showGroupLink: boolean;
   showContextSummary?: boolean;
 }) {
+  const dateTimeLabel = `${formatShortDate(startsAt)}, ${formatTime(startsAt)}`;
+  const hasDetail = Boolean(locationName || (groupId && showGroupLink));
+
   return (
     <Card tone="featured">
-      <CardHeader
-        as="h2"
-        eyebrow={checkInLabel}
-        title={title}
-        subtitle={`${formatShortDate(startsAt)}, ${formatTime(startsAt)}`}
-        detail={locationName || (groupId && showGroupLink) ? (
-          <>
-            {locationName ? <p className="k-item-meta">{locationName}</p> : null}
+      <div className={styles.header}>
+        <div className={styles.headerTop}>
+          <p className={styles.eyebrow}>{checkInLabel}</p>
+          <Badge tone={eventStatusTone} className={styles.statusBadge} maxWidth="none">
+            {eventStatusLabel}
+          </Badge>
+        </div>
+
+        <h2 className={styles.title}>{title}</h2>
+        <p className={styles.subtitle}>{dateTimeLabel}</p>
+
+        {hasDetail ? (
+          <div className={styles.detail}>
+            {locationName ? <p className={styles.location}>{locationName}</p> : null}
             {groupId && showGroupLink ? (
               <ButtonLink href={ROUTES.group(groupId)} variant="quiet" size="sm" shape="pill" density="compact" className={styles.groupLink}>
                 Abrir célula
                 <ArrowRight className={styles.groupLinkIcon} aria-hidden="true" />
               </ButtonLink>
             ) : null}
-          </>
-        ) : undefined}
-        badgeLabel={eventStatusLabel}
-        badgeTone={eventStatusTone}
-        titleClassName="mt-1 text-[length:var(--text-2xl)]"
-        subtitleClassName="k-item-meta"
-        detailClassName=""
-      />
+          </div>
+        ) : null}
+      </div>
 
       {showContextSummary ? (
         <div className="mt-4">
