@@ -44,7 +44,7 @@ export const CARE_COPY = {
   contactActions: {
     callLabel: "Ligar",
     whatsappLabel: "WhatsApp",
-    existingContactLabel: "Guardar contato pastoral",
+    existingContactLabel: "Guardar cuidado",
     noPhoneTitle: "Sem telefone cadastrado",
     noPhoneDescription: "Cadastre um telefone depois para liberar ligação e WhatsApp. Por enquanto, guarde apenas um cuidado que já aconteceu.",
     registerWithoutPhoneLabel: "Guardar cuidado já realizado",

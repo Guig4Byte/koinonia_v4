@@ -117,21 +117,21 @@ export const SIGNAL_COPY = {
 
   messages: {
     attendanceRecurring: {
-      title: "Ausência recorrente percebida.",
-      evidenceFallback: "Presença recente pede cuidado mais próximo.",
+      title: "Urgência percebida.",
+      evidenceFallback: "Presença recente entrou em urgência.",
       compact: "Parece que houve ausências recorrentes sem justificativa registrada.",
       pastoralDetail: "Parece que houve ausências recorrentes sem justificativa registrada. A presença recente pede um olhar pastoral mais próximo, com calma e contexto.",
       localDetail: "Parece que houve ausências recorrentes sem justificativa registrada. Talvez valha uma aproximação simples, com calma e proximidade.",
     },
     attendanceRecent: {
-      title: "Ausência recente percebida.",
-      evidenceFallback: "Presença recente pede atenção.",
+      title: "Atenção percebida",
+      evidenceFallback: "Presença recente entrou em atenção.",
       compact: "Parece que houve ausências sem justificativa registrada.",
       leaderDetail: "Parece que houve ausências sem justificativa registrada. Talvez valha uma aproximação simples, sem tom de cobrança.",
-      teamDetail: "Parece que houve ausências sem justificativa registrada. Pode ser um bom ponto de atenção para acompanhar o cuidado da célula.",
+      teamDetail: "Parece que houve ausências sem justificativa registrada. Pode ser um bom ponto de atenção para acompanhar com calma.",
     },
     urgent: {
-      title: "Cuidado mais próximo.",
+      title: "Urgência percebida.",
       pastoralDescription: "Há um sinal sensível que vale olhar com calma antes de orientar a equipe.",
       localDescription: "Há um sinal sensível que vale acompanhar com calma e proximidade.",
     },

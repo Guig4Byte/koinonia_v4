@@ -49,6 +49,6 @@ describe("buildPersonCareOverviewView", () => {
 
     expect(view.priorityTone).toBe("muted");
     expect(view.badgeLabel).toBe("Estável");
-    expect(view.description).toContain("Nada exige ação agora");
+    expect(view.nextStepLabel).toBe("Guardar quando houver cuidado");
   });
 });

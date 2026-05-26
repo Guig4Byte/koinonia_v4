@@ -24,8 +24,6 @@ export type PersonCareOverviewView = {
   priorityTone: CardPriorityTone;
   badgeTone: BadgeTone;
   badgeLabel: string;
-  title: string;
-  description: string;
   ownerLabel: string;
   ownerDetail: string;
   latestTouchLabel: string;
@@ -54,10 +52,6 @@ export function buildPersonCareOverviewView(input: PersonCareOverviewInput): Per
       priorityTone: input.hasRiskSignal ? "risk" : "warn",
       badgeTone: input.hasRiskSignal ? "risk" : "warn",
       badgeLabel: input.hasRiskSignal ? "Ação prioritária" : "Atenção aberta",
-      title: input.hasRiskSignal ? "Acompanhamento urgente" : "Acompanhamento em aberto",
-      description: input.hasRiskSignal
-        ? "Há um sinal sensível ou urgente. Veja o motivo, alinhe com quem acompanha e guarde apenas cuidado real."
-        : "Há motivo de atenção aberto. A tela mostra quem acompanha, o histórico e o próximo gesto recomendado.",
       ownerLabel: ownerName,
       ownerDetail,
       latestTouchLabel,
@@ -76,8 +70,6 @@ export function buildPersonCareOverviewView(input: PersonCareOverviewInput): Per
       priorityTone: "care",
       badgeTone: "care",
       badgeLabel: "Em cuidado",
-      title: "Cuidado em andamento",
-      description: "A pessoa já está em acompanhamento. Atualize o histórico quando houver novo contato ou marque como ativa quando estiver tudo bem.",
       ownerLabel: ownerName,
       ownerDetail,
       latestTouchLabel,
@@ -93,8 +85,6 @@ export function buildPersonCareOverviewView(input: PersonCareOverviewInput): Per
     priorityTone: "muted",
     badgeTone: "ok",
     badgeLabel: "Estável",
-    title: "Acompanhamento disponível",
-    description: "Nada exige ação agora. O histórico continua disponível para consulta e novos cuidados reais.",
     ownerLabel: ownerName,
     ownerDetail,
     latestTouchLabel,

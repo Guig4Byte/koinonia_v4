@@ -56,24 +56,6 @@ function personProfileEyebrow({
   return "Perfil pastoral";
 }
 
-function nextGestureTitle(openSignalsCount: number, isInCare: boolean) {
-  if (openSignalsCount > 0) return "Próximo gesto de cuidado";
-  if (isInCare) return "Atualizar acompanhamento";
-  return "Guardar contato pastoral";
-}
-
-function nextGestureDescription(hasPhone: boolean, openSignalsCount: number) {
-  if (!hasPhone) {
-    return "Sem telefone cadastrado nesta ficha. Ainda é possível guardar um cuidado que já aconteceu fora do app.";
-  }
-
-  if (openSignalsCount > 0) {
-    return "Depois de entender a situação, guarde apenas contatos reais para manter o radar pastoral em dia.";
-  }
-
-  return "Use quando houver um contato real, uma conversa ou uma anotação pastoral importante.";
-}
-
 export default async function PersonDetailPage({ params }: { params: Promise<{ personId: string }> }) {
   const user = await getCurrentUser();
   const { personId } = await params;
@@ -135,7 +117,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
   const backLabel = isLeader ? secondaryNavLabel : "Visão";
   const personIsInCare = isInCarePerson(person);
   const canRegisterPersonCare = canRegisterCare(user, person);
-  const canMarkActive = personIsInCare && canRegisterPersonCare;
+  const canMarkActive = personIsInCare && canRegisterPersonCare && openSignalsCount === 0;
   const hasRiskSignal = signals.some(isUrgentOrPastoralCase);
   const navIndicator = hasRiskSignal ? "risk" : openSignalsCount > 0 ? "attention" : personIsInCare ? "care" : undefined;
   const pastoralOrderedSignals = sortSignalsForPastoralViewer(signals, user);
@@ -209,17 +191,15 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
                 <Badge tone={personBadge.tone} className={styles.personBadge}>{personBadge.label}</Badge>
               </div>
 
-              {person.shortNote ? (
-                <p className={styles.shortNote}>
-                  {person.shortNote}
-                </p>
-              ) : null}
             </div>
           </div>
         </PriorityCard>
 
-        <SectionTitle detail="Responsável, último cuidado e próximo gesto de cuidado.">Acompanhamento atual</SectionTitle>
-        <CareOverviewCard view={careOverviewView} />
+        <SectionTitle detail="O que precisa ser feito agora, sem repetir o histórico.">Próximo cuidado</SectionTitle>
+        <CareOverviewCard id="registrar-cuidado" view={careOverviewView} className={styles.primaryCareCard}>
+          <CareActions personId={person.id} phone={person.phone} className={styles.careActions} />
+          {canMarkActive ? <PersonStatusActions personId={person.id} /> : null}
+        </CareOverviewCard>
 
         <SectionTitle detail={openSignalsCount > 0 ? "Entenda o motivo antes de agir." : undefined}>
           {openSignalsCount > 0 ? "Por que merece atenção" : "Situação atual"}
@@ -275,30 +255,6 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
             <EmptyState className={styles.emptyState}>{CARE_COPY.history.empty}</EmptyState>
           )}
         </div>
-
-        <SectionTitle detail="Guarde somente o que aconteceu de fato.">Guardar contato pastoral</SectionTitle>
-        <PriorityCard id="registrar-cuidado" as="section" priorityTone={hasRiskSignal ? "risk" : openSignalsCount > 0 ? "warn" : personIsInCare ? "care" : "muted"} radius="lg" className={styles.nextGestureCard}>
-          <div className={styles.nextGestureHeader}>
-            <div className={styles.nextGestureCopy}>
-              <div className={styles.nextGestureTopline}>
-                <p className={styles.nextGestureTitle}>{nextGestureTitle(openSignalsCount, personIsInCare)}</p>
-                <Badge
-                  tone={contactInfo.hasPhone ? "care" : "info"}
-                  size="sm"
-                  maxWidth="none"
-                  truncate={false}
-                  className={styles.nextGestureBadge}
-                >
-                  {contactInfo.hasPhone ? "Contato disponível" : "Sem telefone"}
-                </Badge>
-              </div>
-              <p className={styles.nextGestureDescription}>{nextGestureDescription(contactInfo.hasPhone, openSignalsCount)}</p>
-            </div>
-          </div>
-
-          <CareActions personId={person.id} phone={person.phone} className={styles.careActions} />
-          {canMarkActive ? <PersonStatusActions personId={person.id} /> : null}
-        </PriorityCard>
 
         {visibleMemberships.length > 0 ? (
           <>

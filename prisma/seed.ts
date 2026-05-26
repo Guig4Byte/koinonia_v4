@@ -226,12 +226,12 @@ const currentWeekEventIndex = completedEventDays.length;
 
 const seedSignalText = {
   attendanceAttention: {
-    reason: "Presença recente pede atenção.",
+    reason: "Atenção percebida",
     evidence:
       "A ausência em encontros recentes pode ser um bom motivo para uma aproximação simples.",
   },
   attendanceUrgent: {
-    reason: "Presença recente pede cuidado mais próximo.",
+    reason: "Urgência percebida.",
     evidence:
       "A ausência recorrente merece uma aproximação com calma e proximidade.",
   },
@@ -239,11 +239,6 @@ const seedSignalText = {
     reason: "Apoio solicitado à supervisão.",
     evidence:
       "A liderança pediu ajuda para acompanhar este cuidado com mais proximidade.",
-  },
-  urgentCare: {
-    reason: "Cuidado urgente no radar.",
-    evidence:
-      "A liderança percebeu que este irmão precisa de atenção imediata e acompanhamento próximo.",
   },
   pastoralForwarded: {
     reason: "Encaminhado ao cuidado pastoral.",
@@ -1039,32 +1034,18 @@ async function main() {
   });
 
   // Cenários principais da visão do líder Bruno:
-  // - vários tipos ao mesmo tempo: urgente, apoio, atenção local, em cuidado e rotina da célula;
-  // - vários sinais do mesmo tipo: dois urgentes, dois pedidos de apoio e duas pessoas em cuidado;
-  // - mesma pessoa com mais de um sinal: Cláudio fica urgente, com pedido de apoio e também em cuidado;
+  // - sinais de presença em atenção/urgência, apoio, pessoas em cuidado e rotina da célula;
+  // - vários itens do mesmo tipo para validar pluralização e ordenação;
   // - cards de pessoa devem abrir o perfil/pedido; rotina deve continuar apontando para a célula/encontro.
   await createSignal({
     churchId,
     group: esperanca,
     personIndex: 0,
     assignedToId: null,
-    severity: SignalSeverity.URGENT,
-    source: SignalSource.MANUAL,
-    reason: seedSignalText.urgentCare.reason,
-    evidence:
-      "A família pediu uma aproximação ainda hoje; o líder já iniciou contato e pediu oração.",
-  });
-
-  await createSignal({
-    churchId,
-    group: esperanca,
-    personIndex: 0,
-    assignedToId: ana.id,
     severity: SignalSeverity.ATTENTION,
-    source: SignalSource.MANUAL,
-    reason: seedSignalText.supportRequested.reason,
-    evidence:
-      "Mesmo com o cuidado urgente aberto, também há apoio solicitado à supervisão para acompanhar o caso.",
+    source: SignalSource.ATTENDANCE,
+    reason: seedSignalText.attendanceAttention.reason,
+    evidence: seedSignalText.attendanceAttention.evidence,
   });
 
   await markMemberInCare({
@@ -1072,7 +1053,7 @@ async function main() {
     group: esperanca,
     personIndex: 0,
     actorId: bruno.id,
-    note: "Contato iniciado. Este cenário valida Urgente + Pedido de apoio + Em cuidado na mesma pessoa.",
+    note: "Contato iniciado. Este cenário valida atenção por presença e cuidado em andamento na mesma pessoa.",
     days: -1,
     hour: 18,
   });
@@ -1127,10 +1108,9 @@ async function main() {
     personIndex: 6,
     assignedToId: null,
     severity: SignalSeverity.URGENT,
-    source: SignalSource.MANUAL,
-    reason: seedSignalText.urgentCare.reason,
-    evidence:
-      "Segundo cuidado urgente na mesma célula para validar pluralização e ordenação da visão do líder.",
+    source: SignalSource.ATTENDANCE,
+    reason: seedSignalText.attendanceUrgent.reason,
+    evidence: seedSignalText.attendanceUrgent.evidence,
   });
 
   await createSignal({
@@ -1412,7 +1392,7 @@ async function main() {
     `Outros usuários da seed: ${marcos.email} / ${helena.email} / ${paulo.email} / ${carla.email} / ${diego.email} / ${fernanda.email} / ${gabriel.email} / ${juliana.email} / ${lucas.email}`,
   );
   console.log(
-    "Cenários de regressão: saúde pastoral com urgentes, encaminhadas ao pastor, pedido de apoio, atenção local, sem presença recente e estáveis; presença da semana com tendência positiva para o pastor; histórico de presença nas células com registro; 4 encontros no mês atual para a Célula Semente; faltas consecutivas, faltas intercaladas, justificativas, urgente sem atribuição, apoio à supervisão, múltiplos sinais, encaminhamento pastoral, cuidado pastoral realizado, histórico compacto de cuidado com e sem anotação, sinal resolvido, célula sem registro, célula sem supervisor, evento sem presença e célula inativa. Na visão do líder Bruno, a Célula Esperança concentra múltiplos cenários visuais: urgentes, pedidos de apoio, atenção local, pessoas em cuidado, múltiplos itens do mesmo tipo, uma pessoa com Urgente + Apoio + Em cuidado e a rotina da célula. Os textos visíveis dos sinais foram padronizados por família pastoral para não sugerir regras automáticas que não existem.",
+    "Cenários de regressão: saúde pastoral com urgentes, encaminhadas ao pastor, pedido de apoio, atenção local, sem presença recente e estáveis; presença da semana com tendência positiva para o pastor; histórico de presença nas células com registro; 4 encontros no mês atual para a Célula Semente; faltas consecutivas, faltas intercaladas, justificativas, urgente sem atribuição, apoio à supervisão, múltiplos sinais, encaminhamento pastoral, cuidado pastoral realizado, histórico compacto de cuidado com e sem anotação, sinal resolvido, célula sem registro, célula sem supervisor, evento sem presença e célula inativa. Na visão do líder Bruno, a Célula Esperança concentra múltiplos cenários visuais: urgentes por presença, pedidos de apoio, atenção local, pessoas em cuidado, múltiplos itens do mesmo tipo e rotina da célula. Os textos visíveis dos sinais foram padronizados por família pastoral para não sugerir regras automáticas que não existem.",
   );
   console.log("Senha local da seed: koinonia123");
 }

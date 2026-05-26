@@ -75,7 +75,7 @@ describe("signal display helpers", () => {
     };
 
     expect(signalPastoralMessageForViewer(signal, { role: UserRole.LEADER })).toEqual({
-      title: "Ausência recorrente percebida.",
+      title: "Urgência percebida.",
       description: "Parece que houve ausências recorrentes sem justificativa registrada.",
     });
   });
@@ -86,7 +86,7 @@ describe("signal display helpers", () => {
       severity: SignalSeverity.ATTENTION,
     };
 
-    expect(signalTitleForViewer(signal, { role: UserRole.LEADER })).toBe("Ausência recente percebida.");
+    expect(signalTitleForViewer(signal, { role: UserRole.LEADER })).toBe("Atenção percebida");
     expect(signalDescriptionForViewer(signal, { role: UserRole.LEADER })).toBe("Parece que houve ausências sem justificativa registrada.");
   });
 

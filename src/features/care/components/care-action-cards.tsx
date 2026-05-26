@@ -93,8 +93,8 @@ export function CareContactStart({
       )}
 
       {canRegisterCare ? (
-        <div className="pt-2">
-          <Button type="button" variant="quiet" size="sm" fullWidth disabled={isPending} onClick={onExistingContact}>
+        <div className="pt-2.5">
+          <Button type="button" size="md" fullWidth disabled={isPending} onClick={onExistingContact}>
             {hasPhone ? CARE_COPY.contactActions.existingContactLabel : CARE_COPY.contactActions.registerWithoutPhoneLabel}
           </Button>
         </div>
