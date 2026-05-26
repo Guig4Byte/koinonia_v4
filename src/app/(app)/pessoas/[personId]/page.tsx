@@ -12,7 +12,7 @@ import { SignalSupportActions } from "@/features/signals/components/signal-suppo
 import { CareTouchHistory, type CareTouchHistoryItem } from "@/features/care/components/care-touch-history";
 import { PersonPresenceCard } from "@/features/people/components/person-presence-card";
 import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { SignalHeartIndicator } from "@/components/ui/signal-heart-indicator";
 import { CardLink } from "@/components/ui/card-link";
 import { PriorityCard } from "@/components/ui/priority-card";
 import { canRegisterCare, canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
@@ -187,7 +187,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
                   <h2 className={styles.personTitle}>{person.fullName}</h2>
                   <p className={styles.personMeta}>{personMeta}</p>
                 </div>
-                <Badge tone={personBadge.tone} className={styles.personBadge}>{personBadge.label}</Badge>
+                <SignalHeartIndicator tone={personBadge.tone} size="md" label={personBadge.label} className={styles.personBadge} />
               </div>
 
             </div>

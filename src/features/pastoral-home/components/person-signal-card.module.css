@@ -67,11 +67,14 @@
 .headerActions {
   display: inline-flex;
   min-width: 0;
-  max-width: 52%;
   flex-shrink: 0;
   align-items: center;
   justify-content: flex-end;
-  gap: 0.4rem;
+  gap: 0.45rem;
+}
+
+.signalIndicator {
+  margin-right: 0.05rem;
 }
 
 .iconAction {
@@ -183,18 +186,6 @@
   transform: translateX(1px);
 }
 
-@media (max-width: 390px) {
-  .headerRow {
-    flex-wrap: wrap;
-  }
-
-  .headerActions {
-    width: 100%;
-    max-width: 100%;
-    justify-content: space-between;
-    gap: 0.5rem;
-  }
-}
 
 @media (max-width: 360px) {
   .body {

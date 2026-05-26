@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
-import { Badge, type BadgeTone } from "@/components/ui/badge";
+import type { BadgeTone } from "@/components/ui/badge";
+import { SignalHeartIndicator } from "@/components/ui/signal-heart-indicator";
 import { PriorityCard } from "@/components/ui/priority-card";
 import type { CardPriorityTone } from "@/lib/card-priority";
 import { cn } from "@/lib/cn";
@@ -47,7 +48,7 @@ export function PersonSignalCard(props: {
     emphasis = "default",
   } = props;
   const resolvedBadgeTone = badgeTone ?? (severity === "risk" ? "risk" : severity === "ok" ? "ok" : severity === "info" ? "info" : "warn");
-  const resolvedBadgeLabel = badgeLabel ?? (severity === "risk" ? "Urgente" : "Em atenção");
+  const resolvedSignalLabel = badgeLabel ?? (severity === "risk" ? "Urgente" : "Em atenção");
   const cardHref = detailHref ?? href;
   const priorityTone = signalCardPriorityTone(resolvedBadgeTone, severity);
   const showIconAction = Boolean(cardHref) && actionDisplay === "icon";
@@ -80,7 +81,7 @@ export function PersonSignalCard(props: {
               {normalizedContext ? <p className={styles.context}>{normalizedContext}</p> : null}
             </div>
             <span className={styles.headerActions}>
-              <Badge tone={resolvedBadgeTone} size="sm" maxWidth={showIconAction ? "row" : "header"}>{resolvedBadgeLabel}</Badge>
+              <SignalHeartIndicator tone={resolvedBadgeTone} size="sm" label={resolvedSignalLabel} className={styles.signalIndicator} />
               {showIconAction ? (
                 <span className={styles.iconAction} aria-hidden="true">
                   <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.35} />

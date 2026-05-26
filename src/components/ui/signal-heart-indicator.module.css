@@ -1,0 +1,125 @@
+.signalHeart {
+  --signal-bg: color-mix(in srgb, var(--surface-alt) 74%, var(--color-bg-card));
+  --signal-fg: color-mix(in srgb, var(--brown-400) 88%, var(--color-text-primary));
+  --signal-border: color-mix(in srgb, var(--brown-400) 24%, var(--color-border-card));
+  --signal-glow: color-mix(in srgb, var(--brown-400) 14%, transparent);
+  --signal-size: 1.9rem;
+  --signal-icon-size: 0.9rem;
+  --signal-pulse-width: 0.38rem;
+  --signal-pulse-height: 0.9rem;
+
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  min-width: calc(var(--signal-size) + 1rem);
+  min-height: var(--signal-size);
+}
+
+.core {
+  position: relative;
+  z-index: 1;
+  display: inline-grid;
+  width: var(--signal-size);
+  height: var(--signal-size);
+  place-items: center;
+  border: 1px solid var(--signal-border);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 40% 28%, color-mix(in srgb, var(--signal-fg) 18%, transparent), transparent 64%),
+    var(--signal-bg);
+  color: var(--signal-fg);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--signal-fg) 8%, transparent),
+    0 0 20px var(--signal-glow);
+}
+
+.icon {
+  width: var(--signal-icon-size);
+  height: var(--signal-icon-size);
+  stroke-width: 2.2;
+}
+
+.pulseLeft,
+.pulseRight {
+  position: absolute;
+  top: 50%;
+  width: var(--signal-pulse-width);
+  height: var(--signal-pulse-height);
+  border: 2px solid color-mix(in srgb, var(--signal-fg) 88%, transparent);
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  opacity: 0.92;
+}
+
+.pulseLeft {
+  left: 0.08rem;
+  border-right: 0;
+  border-radius: 999px 0 0 999px;
+  transform: translateY(-50%);
+}
+
+.pulseRight {
+  right: 0.08rem;
+  border-left: 0;
+  border-radius: 0 999px 999px 0;
+  transform: translateY(-50%);
+}
+
+.sm {
+  --signal-size: 1.9rem;
+  --signal-icon-size: 0.9rem;
+  --signal-pulse-width: 0.38rem;
+  --signal-pulse-height: 0.9rem;
+}
+
+.md {
+  --signal-size: 2.15rem;
+  --signal-icon-size: 1rem;
+  --signal-pulse-width: 0.42rem;
+  --signal-pulse-height: 1rem;
+}
+
+.risk {
+  --signal-bg: color-mix(in srgb, var(--color-badge-risco-bg) 72%, var(--surface-alt));
+  --signal-fg: var(--color-badge-risco-text);
+  --signal-border: color-mix(in srgb, var(--color-badge-risco-border) 84%, var(--color-border-card));
+  --signal-glow: color-mix(in srgb, var(--color-badge-risco-text) 18%, transparent);
+}
+
+.warn {
+  --signal-bg: color-mix(in srgb, var(--color-badge-atencao-bg) 74%, var(--surface-alt));
+  --signal-fg: var(--color-badge-atencao-text);
+  --signal-border: color-mix(in srgb, var(--color-badge-atencao-border) 84%, var(--color-border-card));
+  --signal-glow: color-mix(in srgb, var(--color-badge-atencao-text) 16%, transparent);
+}
+
+.support {
+  --signal-bg: color-mix(in srgb, var(--color-badge-apoio-bg) 72%, var(--surface-alt));
+  --signal-fg: var(--color-badge-apoio-text);
+  --signal-border: color-mix(in srgb, var(--color-badge-apoio-border) 84%, var(--color-border-card));
+  --signal-glow: color-mix(in srgb, var(--color-badge-apoio-text) 18%, transparent);
+}
+
+.care,
+.info {
+  --signal-bg: color-mix(in srgb, var(--color-badge-cuidado-bg) 72%, var(--surface-alt));
+  --signal-fg: var(--color-badge-cuidado-text);
+  --signal-border: color-mix(in srgb, var(--color-badge-cuidado-border) 84%, var(--color-border-card));
+  --signal-glow: color-mix(in srgb, var(--color-badge-cuidado-text) 16%, transparent);
+}
+
+.ok {
+  --signal-bg: color-mix(in srgb, var(--color-badge-estavel-bg) 74%, var(--surface-alt));
+  --signal-fg: var(--color-badge-estavel-text);
+  --signal-border: color-mix(in srgb, var(--color-badge-estavel-border) 84%, var(--color-border-card));
+  --signal-glow: color-mix(in srgb, var(--color-badge-estavel-text) 14%, transparent);
+}
+
+.neutral {
+  --signal-bg: color-mix(in srgb, var(--surface-alt) 72%, var(--color-bg-card));
+  --signal-fg: color-mix(in srgb, var(--brown-400) 84%, var(--color-text-primary));
+  --signal-border: color-mix(in srgb, var(--brown-400) 28%, var(--color-border-card));
+  --signal-glow: color-mix(in srgb, var(--brown-400) 12%, transparent);
+}

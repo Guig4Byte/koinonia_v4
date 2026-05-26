@@ -81,7 +81,7 @@
 
 .personBadge.personBadge {
   flex: 0 0 auto;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-bg-card) 58%, transparent);
+  margin-top: 0.12rem;
 }
 
 .sectionStack {
@@ -233,15 +233,14 @@
 
 @media (max-width: 390px) {
   .personHeader {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
 
   .personTitleBlock {
-    flex: 1 1 100%;
+    flex: 1 1 auto;
   }
 
   .personBadge.personBadge {
-    margin-left: auto;
-    max-width: 100%;
+    margin-left: 0.2rem;
   }
 }

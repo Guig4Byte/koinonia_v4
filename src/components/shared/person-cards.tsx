@@ -1,5 +1,6 @@
 import { Avatar } from "@/components/ui/avatar";
 import type { BadgeTone } from "@/components/ui/badge";
+import { SignalHeartIndicator } from "@/components/ui/signal-heart-indicator";
 import { ListLinkCard } from "@/components/ui/list-link-card";
 import type { CardPriorityTone } from "@/lib/card-priority";
 
@@ -32,12 +33,9 @@ export function PersonMiniCard(props: {
       title={name}
       subtitle={context}
       leading={<Avatar name={name} size={compact ? "sm" : "md"} />}
-      badgeLabel={badgeLabel}
-      badgeTone={badgeTone}
-      badgeSize={compact ? "sm" : undefined}
+      trailing={badgeLabel ? <SignalHeartIndicator tone={badgeTone} size={compact ? "sm" : "md"} label={badgeLabel} /> : undefined}
       priorityTone={cardTone ?? badgeTone}
       compact={compact}
-      stackTrailingOnMobile
       className={className}
     />
   );
