@@ -99,8 +99,11 @@ export function CheckInList({
 
         <div className={styles.memberSection}>
           <div className={styles.memberSectionHeader}>
-            <div className="min-w-0">
-              <p className="k-item-title">Membros da célula</p>
+            <div className={styles.memberSectionCopy}>
+              <p className={styles.memberSectionTitle}>Membros da célula</p>
+              <p className={styles.memberSectionDescription}>
+                Marque presença, ausência ou justificativa de cada pessoa.
+              </p>
             </div>
             <span className={styles.memberCount} aria-live="polite">
               {activeFilterCount} / {checkIn.summary.totalMembers}
