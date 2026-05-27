@@ -41,11 +41,11 @@ export function PersonPresenceCard({ view }: { view: PersonPresenceView }) {
             </p>
           ) : null}
         </div>
-        <div className={styles.metricBlock}>
+        <div className={styles.metricBlock} data-tone={tone}>
           <PresenceMetricDisplay
             hasPresenceData={recentPresence.hasPresenceData}
             presenceRate={recentPresence.presenceRate}
-            tone="warm"
+            tone={tone}
             value={formatPresenceRate(recentPresence.hasPresenceData, recentPresence.presenceRate)}
             context="person"
             size="lg"
@@ -57,6 +57,8 @@ export function PersonPresenceCard({ view }: { view: PersonPresenceView }) {
           {trend ? (
             <p
               className={styles.metricTrend}
+              data-direction={trend.direction}
+              data-tone={tone}
               aria-label={`${trend.direction === "up" ? "subiu" : "caiu"} ${trend.delta} pontos em relação aos encontros anteriores`}
               title={`${trend.direction === "up" ? "Subiu" : "Caiu"} ${trend.delta} pontos em relação aos encontros anteriores`}
             >

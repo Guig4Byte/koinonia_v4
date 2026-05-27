@@ -22,6 +22,7 @@
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--person-decor-color) 8%, transparent),
     var(--color-shadow-card);
+  animation: personHeroPulse 3.2s ease-in-out infinite;
 }
 
 .personHero.personHero::before {
@@ -83,6 +84,47 @@
   flex: 0 0 auto;
   margin-top: 0.12rem;
   max-width: 8.6rem;
+  animation: personBadgePulse 2.4s ease-in-out infinite;
+  transform-origin: center;
+  will-change: transform, filter;
+}
+
+@keyframes personHeroPulse {
+  0%,
+  100% {
+    border-color: color-mix(in srgb, var(--person-decor-color) 34%, var(--color-border-card));
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--person-decor-color) 8%, transparent),
+      var(--color-shadow-card);
+  }
+
+  50% {
+    border-color: color-mix(in srgb, var(--person-decor-color) 52%, var(--color-border-card));
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--person-decor-color) 16%, transparent),
+      0 0 22px color-mix(in srgb, var(--person-decor-color) 14%, transparent),
+      var(--color-shadow-card);
+  }
+}
+
+@keyframes personBadgePulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 transparent);
+    transform: scale(1);
+  }
+
+  50% {
+    filter: drop-shadow(0 0 10px color-mix(in srgb, var(--person-decor-color) 34%, transparent));
+    transform: scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .personHero.personHero,
+  .personBadge.personBadge {
+    animation: none;
+  }
 }
 
 .sectionStack {

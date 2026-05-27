@@ -45,16 +45,48 @@
 }
 
 .metricBlock {
+  --person-presence-metric-accent: var(--brown-400);
+
   flex: 0 0 auto;
+  padding: 0.1rem 0;
   text-align: center;
+}
+
+.metricBlock[data-tone="ok"] {
+  --person-presence-metric-accent: var(--color-metric-presenca);
+}
+
+.metricBlock[data-tone="warn"] {
+  --person-presence-metric-accent: var(--color-badge-atencao-text);
+}
+
+.metricBlock[data-tone="risk"] {
+  --person-presence-metric-accent: var(--color-metric-atencoes);
+}
+
+.metricBlock[data-tone="neutral"] {
+  --person-presence-metric-accent: var(--color-text-muted);
 }
 
 .metricTrend {
   margin-top: 0.3rem;
-  color: color-mix(in srgb, var(--person-presence-accent) 88%, var(--color-text-primary));
+  color: color-mix(in srgb, var(--person-presence-metric-accent) 88%, var(--color-text-primary));
   font-size: var(--text-sm);
   font-weight: 700;
   line-height: 1;
+}
+
+.metricTrend[data-direction="up"] {
+  color: var(--color-metric-presenca);
+}
+
+.metricTrend[data-direction="down"][data-tone="ok"] {
+  color: var(--color-badge-atencao-text);
+}
+
+.metricTrend[data-direction="down"][data-tone="warn"],
+.metricTrend[data-direction="down"][data-tone="risk"] {
+  color: var(--color-metric-atencoes);
 }
 
 .historyBlock {
