@@ -3,7 +3,7 @@ import { eventPeriodLabel, type EventConsultationMode, type EventPeriod } from "
 import { eventsConsultationSectionHref } from "./event-consultation-routes";
 
 export function PeriodChips({ mode, activePeriod }: { mode: EventConsultationMode; activePeriod: EventPeriod }) {
-  const periods: EventPeriod[] = mode === "historico" ? ["semana", "semana-passada", "30d"] : ["semana", "30d"];
+  const periods: EventPeriod[] = ["semana", "semana-passada", "30d"];
 
   return (
     <div className="k-filter-row">
