@@ -5,12 +5,12 @@ export type CareContactMethod = "call" | "whatsapp" | "existing";
 export const CARE_COPY = {
   errors: {
     invalidPayload: "Dados de cuidado inválidos",
-    personNotFound: "Pessoa não encontrada",
+    personNotFound: "Irmão não encontrado",
     noPermission: "Sem permissão para registrar cuidado",
-    noUpdatePermission: "Sem permissão para atualizar esta pessoa",
+    noUpdatePermission: "Este irmão não está disponível para atualização no seu acesso",
     noVisibleGroup: "Sem célula visível para registrar este cuidado",
     registerFallback: "Não foi possível registrar o cuidado agora.",
-    markActiveFallback: "Não foi possível marcar como ativo agora.",
+    markActiveFallback: "Não foi possível encerrar o cuidado agora.",
   },
 
   feedback: {
@@ -20,25 +20,25 @@ export const CARE_COPY = {
     callDoneWithNote: "Ligação registrada com anotação.",
     whatsappDone: "WhatsApp registrado.",
     whatsappDoneWithNote: "WhatsApp registrado com anotação.",
-    recentCareRegistered: "Registrado no cuidado recente.",
-    noFormalFollowUp: "A atenção ficou em dia sem criar acompanhamento formal.",
-    noAttentionChanged: "Nenhum motivo de atenção foi alterado.",
-    careRegisteredAndPersonInCare: "Cuidado registrado. Pessoa ficou em cuidado.",
-    personInCareSuffix: "Pessoa ficou em cuidado.",
+    recentCareRegistered: "Cuidado recente guardado.",
+    noFormalFollowUp: "O cuidado ficou em dia sem abrir um acompanhamento formal.",
+    noAttentionChanged: "Nenhum sinal de atenção mudou agora.",
+    careRegisteredAndPersonInCare: "Cuidado registrado. O irmão segue em cuidado.",
+    personInCareSuffix: "O irmão segue em cuidado.",
   },
 
   history: {
-    empty: "Nenhum cuidado registrado ainda. Use “Guardar contato pastoral” quando houver um contato real para guardar.",
+    empty: "Nenhum cuidado registrado ainda. Quando houver um contato real, ele pode ser guardado em “Guardar contato pastoral”.",
   },
 
   statusActions: {
-    title: "Esta pessoa está em cuidado.",
-    description: "Use quando a pessoa respondeu bem ao contato ou quando não precisa mais ficar em destaque.",
-    confirmLabel: "Sim, marcar como ativo",
+    title: "Este irmão está em cuidado.",
+    description: "Para quando o irmão respondeu bem ao contato ou não precisa mais ficar em destaque.",
+    confirmLabel: "Sim, encerrar cuidado",
     keepInCareLabel: "Manter em cuidado",
-    startLabel: "Marcar como ativo",
-    openSignalInVisibleScope: "Ainda há motivo de atenção aberto para esta pessoa. Registre o cuidado antes de marcar como ativo.",
-    openSignalOutsideScope: "Ainda há motivo de atenção aberto fora do seu recorte atual. Peça apoio antes de marcar como ativo.",
+    startLabel: "Encerrar cuidado",
+    openSignalInVisibleScope: "Ainda há motivo de atenção aberto para este irmão. O cuidado precisa ser registrado antes de encerrar o acompanhamento.",
+    openSignalOutsideScope: "Ainda há motivo de atenção aberto fora do seu recorte atual. O apoio da supervisão ajuda antes de encerrar o acompanhamento.",
   },
 
   contactActions: {
@@ -46,7 +46,7 @@ export const CARE_COPY = {
     whatsappLabel: "WhatsApp",
     existingContactLabel: "Guardar cuidado",
     noPhoneTitle: "Sem telefone cadastrado",
-    noPhoneDescription: "Cadastre um telefone depois para liberar ligação e WhatsApp. Por enquanto, guarde apenas um cuidado que já aconteceu.",
+    noPhoneDescription: "Um telefone cadastrado depois libera ligação e WhatsApp. Por enquanto, apenas um cuidado que já aconteceu pode ser guardado.",
     registerWithoutPhoneLabel: "Guardar cuidado já realizado",
   },
 
@@ -54,9 +54,9 @@ export const CARE_COPY = {
     title: "O contato aconteceu?",
     callTitle: "Conseguiu falar por ligação?",
     whatsappTitle: "Conseguiu conversar pelo WhatsApp?",
-    description: "Nada será salvo se você ainda não conseguiu falar com a pessoa.",
-    callDescription: "Salve a ligação somente se ela aconteceu de fato. Se ainda não conseguiu falar, volte sem salvar.",
-    whatsappDescription: "Salve o WhatsApp somente se houve conversa real. Se a mensagem ficou sem resposta, volte sem salvar.",
+    description: "Nada será salvo se ainda não houve contato com o irmão.",
+    callDescription: "A ligação só será salva se aconteceu de fato. Se ainda não houve contato, pode voltar sem salvar.",
+    whatsappDescription: "O WhatsApp só será salvo se houve conversa real. Se a mensagem ficou sem resposta, pode voltar sem salvar.",
     confirmLabel: "Sim, houve contato",
     callConfirmLabel: "Sim, falei por ligação",
     whatsappConfirmLabel: "Sim, conversei",
@@ -65,7 +65,7 @@ export const CARE_COPY = {
 
   confirmExistingContact: {
     title: "O cuidado já aconteceu?",
-    description: "Use quando você já ligou, mandou mensagem ou conversou fora do Koinonia. Na próxima etapa, escolha se quer anotar algo antes de salvar.",
+    description: "Para quando a ligação, mensagem ou conversa já aconteceu fora do Koinonia. Na próxima etapa, uma anotação pode ser adicionada antes de salvar.",
     confirmLabel: "Sim, já houve",
     cancelLabel: "Cancelar",
   },

@@ -31,8 +31,8 @@ export function buildPersonCareOverviewView(input: PersonCareOverviewInput): Per
       contextLabel,
       nextStepLabel: input.canRegisterCare ? "Guardar contato pastoral" : "Alinhar com a liderança",
       nextStepDetail: input.hasPhone
-        ? "Converse por ligação, WhatsApp ou pessoalmente; depois guarde o cuidado."
-        : "Sem telefone cadastrado. Guarde apenas um cuidado que já aconteceu fora do app.",
+        ? "Depois de ligação, WhatsApp ou conversa pessoal, o cuidado pode ser guardado aqui."
+        : "Sem telefone cadastrado. Um cuidado que já aconteceu fora do app ainda pode ser guardado aqui.",
       actionLabel: input.canRegisterCare ? "Guardar cuidado" : "Ver contexto",
       actionHref: input.canRegisterCare ? "#registrar-cuidado" : "#historico-cuidado",
     };
@@ -44,7 +44,7 @@ export function buildPersonCareOverviewView(input: PersonCareOverviewInput): Per
       signalLabel: "Em cuidado",
       contextLabel,
       nextStepLabel: input.canRegisterCare ? "Atualizar acompanhamento" : "Consultar histórico",
-      nextStepDetail: "Revise o histórico antes de guardar outro contato ou encerrar o destaque pastoral.",
+      nextStepDetail: "O histórico ajuda antes de guardar outro contato ou encerrar o destaque pastoral.",
       actionLabel: input.canRegisterCare ? "Atualizar cuidado" : "Mostrar histórico completo",
       actionHref: input.canRegisterCare ? "#registrar-cuidado" : "#historico-cuidado",
     };
@@ -56,7 +56,7 @@ export function buildPersonCareOverviewView(input: PersonCareOverviewInput): Per
     contextLabel,
     nextStepLabel: input.canRegisterCare ? "Guardar quando houver cuidado" : "Consultar contexto",
     nextStepDetail: input.hasPhone
-      ? "Guarde aqui somente depois de ligação, WhatsApp, conversa ou anotação pastoral relevante."
+      ? "Este espaço fica para ligação, WhatsApp, conversa ou anotação pastoral relevante que já aconteceu."
       : "Sem telefone cadastrado. Ainda dá para guardar cuidado real manualmente.",
     actionLabel: input.canRegisterCare ? "Guardar cuidado" : "Ver contexto",
     actionHref: input.canRegisterCare ? "#registrar-cuidado" : "#historico-cuidado",

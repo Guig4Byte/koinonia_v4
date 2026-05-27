@@ -15,7 +15,7 @@ function compactStatusLabel(label: string) {
 
   if (normalized.includes("presenca")) return normalized.includes("baixa") ? "Presença baixa" : "Sem presença";
   if (normalized.includes("apoio")) return "Apoio";
-  if (normalized.includes("urgente")) return "Urgente";
+  if (normalized.includes("urgente") || normalized.includes("cuidado proximo")) return "Cuidado próximo";
   if (normalized.includes("atencao")) return "Atenção";
   if (normalized.includes("cuidado")) return "Em cuidado";
   if (normalized.includes("estavel")) return "Estável";

@@ -55,7 +55,7 @@ const teamFilterCopy: Record<
     contextDetail:
       "Mostramos primeiro o cuidado que pede mais atenção. No detalhe da célula, todos os sinais e acompanhamentos aparecem com calma.",
     listTitle: "Supervisores",
-    listDetail: "Acompanhe por responsável.",
+    listDetail: "Organizado por responsável.",
     empty:
       "Ajuste a busca ou limpe os filtros para conferir toda a estrutura pastoral.",
   },
@@ -63,7 +63,7 @@ const teamFilterCopy: Record<
     contextTitle: "Cuidado próximo",
     contextDetail: "Sinais que pedem atenção imediata no contexto da célula.",
     listTitle: "Cuidado próximo por supervisor",
-    listDetail: "Abra uma célula para ver o contexto pastoral.",
+    listDetail: "O contexto pastoral aparece no detalhe da célula.",
     empty: "Nenhuma célula com sinal de cuidado próximo nesse recorte.",
   },
   [FILTER_PASTORAL]: {

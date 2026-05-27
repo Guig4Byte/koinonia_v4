@@ -118,11 +118,11 @@ export function groupFormFieldErrors(error: string | undefined): Partial<Record<
 
   const messages: Partial<Record<GroupFormError, { field: GroupFormFieldName; message: string }>> = {
     "nome-obrigatorio": { field: "name", message: "O nome da célula é obrigatório." },
-    "nome-longo": { field: "name", message: `Use até ${GROUP_NAME_MAX_LENGTH} caracteres.` },
+    "nome-longo": { field: "name", message: `Até ${GROUP_NAME_MAX_LENGTH} caracteres.` },
     "agenda-incompleta": { field: "schedule", message: "Dia e horário precisam ser preenchidos juntos." },
-    "dia-invalido": { field: "schedule", message: "Escolha um dia padrão válido." },
-    "horario-invalido": { field: "schedule", message: "Informe o horário no formato hh:mm." },
-    "local-longo": { field: "locationName", message: `Use até ${GROUP_LOCATION_MAX_LENGTH} caracteres.` },
+    "dia-invalido": { field: "schedule", message: "O dia padrão precisa ser válido." },
+    "horario-invalido": { field: "schedule", message: "O horário precisa estar no formato hh:mm." },
+    "local-longo": { field: "locationName", message: `Até ${GROUP_LOCATION_MAX_LENGTH} caracteres.` },
   };
 
   const fieldError = messages[error as GroupFormError];
@@ -131,13 +131,13 @@ export function groupFormFieldErrors(error: string | undefined): Partial<Record<
 
 export function groupFormErrorMessage(error: string | undefined) {
   const messages: Partial<Record<GroupFormError | "permissao" | "nao-encontrada", string>> = {
-    "nome-obrigatorio": "Informe o nome da célula.",
-    "nome-longo": `Use um nome com até ${GROUP_NAME_MAX_LENGTH} caracteres.`,
-    "agenda-incompleta": "Informe dia e horário juntos, ou deixe os dois em branco.",
-    "dia-invalido": "Escolha um dia padrão válido.",
-    "horario-invalido": "Informe o horário no formato hh:mm.",
-    "local-longo": `Use um local com até ${GROUP_LOCATION_MAX_LENGTH} caracteres.`,
-    permissao: "Você não pode alterar células.",
+    "nome-obrigatorio": "O nome da célula precisa estar preenchido.",
+    "nome-longo": `O nome pode ter até ${GROUP_NAME_MAX_LENGTH} caracteres.`,
+    "agenda-incompleta": "Dia e horário precisam estar juntos, ou os dois podem ficar em branco.",
+    "dia-invalido": "O dia padrão precisa ser válido.",
+    "horario-invalido": "O horário precisa estar no formato hh:mm.",
+    "local-longo": `O local pode ter até ${GROUP_LOCATION_MAX_LENGTH} caracteres.`,
+    permissao: "Esta célula não está disponível para alteração no seu acesso.",
     "nao-encontrada": "Célula não encontrada.",
   };
 

@@ -152,7 +152,7 @@ export function teamGroupStatusLabel({
   if (urgentCount > 0) return countLabel(urgentCount, "urgente", "urgentes");
   if (pastoralCasesCount > 0) return countLabel(pastoralCasesCount, "encaminhado", "encaminhados");
   if (supportRequestsCount > 0) return countLabel(supportRequestsCount, "pedido de apoio", "pedidos de apoio");
-  if (localAttentionCount > 0) return countLabel(localAttentionCount, "pessoa em atenção", "pessoas em atenção");
+  if (localAttentionCount > 0) return countLabel(localAttentionCount, "irmão em atenção", "irmãos em atenção");
   if (inCareCount > 0) return countLabel(inCareCount, "em cuidado", "em cuidado");
   if (lowPresence) return "Presença baixa";
   if (hasNoPresenceData) return NO_RECENT_PRESENCE_LABEL;

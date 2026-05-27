@@ -102,7 +102,7 @@ export function CheckInList({
             <div className={styles.memberSectionCopy}>
               <p className={styles.memberSectionTitle}>Membros da célula</p>
               <p className={styles.memberSectionDescription}>
-                Marque presença, ausência ou justificativa de cada pessoa.
+                Presença, ausência ou justificativa de cada irmão.
               </p>
             </div>
             <span className={styles.memberCount} aria-live="polite">

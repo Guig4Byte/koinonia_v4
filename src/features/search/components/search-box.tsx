@@ -46,7 +46,7 @@ function isSearchResponse(value: unknown): value is SearchResponse {
 }
 
 function pluralizeResults(count: number) {
-  return count === 1 ? "1 pessoa encontrada." : `${count} pessoas encontradas.`;
+  return count === 1 ? "1 irmão encontrado." : `${count} irmãos encontrados.`;
 }
 
 function getSearchMessage({
@@ -60,15 +60,15 @@ function getSearchMessage({
 }) {
   const normalizedQuery = normalizeSearchQuery(query);
 
-  if (normalizedQuery.length === 0) return "Busque por nome ou sobrenome.";
-  if (!shouldSearchPeople(normalizedQuery)) return `Digite pelo menos ${SEARCH_MIN_QUERY_LENGTH} letras.`;
-  if (status === "loading") return "Buscando pessoas...";
-  if (status === "error") return "Não foi possível buscar agora. Tente novamente.";
-  if (resultsCount === 0) return "Nenhuma pessoa encontrada.";
+  if (normalizedQuery.length === 0) return "Nome ou sobrenome ajudam na busca.";
+  if (!shouldSearchPeople(normalizedQuery)) return `Pelo menos ${SEARCH_MIN_QUERY_LENGTH} letras ajudam na busca.`;
+  if (status === "loading") return "Buscando irmãos...";
+  if (status === "error") return "Não foi possível buscar agora. Vale tentar novamente em instantes.";
+  if (resultsCount === 0) return "Nenhum irmão encontrado.";
   return pluralizeResults(resultsCount);
 }
 
-export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: string }) {
+export function SearchBox({ placeholder = "Buscar irmão..." }: { placeholder?: string }) {
   const router = useRouter();
   const listboxId = useId();
   const statusId = useId();
@@ -218,22 +218,22 @@ export function SearchBox({ placeholder = "Buscar pessoa..." }: { placeholder?: 
         <div
           id={listboxId}
           role="listbox"
-          aria-label="Resultados da busca de pessoas"
+          aria-label="Resultados da busca de irmãos"
           className="absolute left-0 right-0 top-14 z-30 overflow-y-auto rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] shadow-card"
           style={{ maxHeight: "min(48svh, 22rem)" }}
         >
           {status === "loading" ? (
-            <div className="px-4 py-3 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">Buscando pessoas...</div>
+            <div className="px-4 py-3 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">Buscando irmãos...</div>
           ) : null}
 
           {status === "error" ? (
             <div role="alert" className="px-4 py-3 text-[length:var(--text-sm)] font-medium text-[color:var(--color-badge-risco-text)]">
-              Não foi possível buscar agora. Tente novamente.
+              Não foi possível buscar agora. Vale tentar novamente em instantes.
             </div>
           ) : null}
 
           {status === "success" && !hasResults ? (
-            <div className="px-4 py-3 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">Nenhuma pessoa encontrada. Tente buscar pelo nome completo ou pela célula.</div>
+            <div className="px-4 py-3 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">Nenhum irmão encontrado. Tente buscar pelo nome completo ou pela célula.</div>
           ) : null}
 
           {status === "success" && hasResults

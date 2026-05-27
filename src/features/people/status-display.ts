@@ -10,7 +10,7 @@ export type PersonStatusBadge = {
 };
 
 export const personStatusLabels: Record<PersonStatus, string> = {
-  ACTIVE: "Ativo",
+  ACTIVE: "Sem sinal aberto",
   VISITOR: "Visitante",
   NEW: "Novo",
   NEEDS_ATTENTION: "Em atenção",

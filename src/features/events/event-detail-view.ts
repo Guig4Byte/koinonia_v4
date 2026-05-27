@@ -69,7 +69,7 @@ export function buildEventPastoralCue({
   if (pending > 0) {
     return {
       title: "Presença ainda incompleta",
-      description: `${countLabel(pending, "pessoa sem marcação", "pessoas sem marcação")} ainda precisa ser marcada. Complete o registro para ter uma leitura fiel do encontro.`,
+      description: `${countLabel(pending, "irmão sem marcação", "irmãos sem marcação")} ainda sem marcação. O registro completo deixa a leitura do encontro mais fiel.`,
       tone: "warn",
     };
   }

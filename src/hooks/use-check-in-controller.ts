@@ -138,9 +138,9 @@ export function useCheckInController({
 
     if (!canSave) {
       if (summary.pending > 0) {
-        setErrorMessage("Ainda falta marcar algumas pessoas antes de salvar a presença.");
+        setErrorMessage("Ainda há irmãos sem marcação antes de salvar a presença.");
       } else if (mode === "adjust" && !hasUnsavedChanges) {
-        setErrorMessage("Faça uma alteração antes de salvar o ajuste.");
+        setErrorMessage("Ainda não há alteração para salvar.");
       }
       return;
     }

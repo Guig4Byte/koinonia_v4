@@ -111,8 +111,8 @@ export function filterCheckInItems(items: CheckInItem[], filter: CheckInMemberFi
 }
 
 export function checkInFilteredEmptyMessage(filter: CheckInMemberFilter) {
-  if (filter === "pending") return "Nenhuma pessoa sem marcação neste encontro.";
-  if (filter === "present") return "Nenhuma pessoa marcada como presente ainda.";
+  if (filter === "pending") return "Nenhum irmão sem marcação neste encontro.";
+  if (filter === "present") return "Nenhum irmão marcado como presente ainda.";
   if (filter === "absent") return "Nenhuma ausência marcada neste encontro.";
   if (filter === "justified") return "Nenhuma justificativa marcada neste encontro.";
   return "Nenhum membro encontrado neste encontro.";

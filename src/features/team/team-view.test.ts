@@ -224,7 +224,7 @@ describe("team-view", () => {
       groupSignalTone(
         teamGroup({
           localAttentionCount: 1,
-          statusLabel: "1 pessoa em atenção",
+          statusLabel: "1 irmão em atenção",
         }),
       ),
     ).toBe("warn");

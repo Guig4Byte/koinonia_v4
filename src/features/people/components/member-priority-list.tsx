@@ -127,14 +127,14 @@ function filteredSectionMeta(activeFilter: MembersFilter, count: number) {
 
   if (activeFilter === FILTER_ACTIVE) {
     return {
-      title: "Ativos",
+      title: "Sem sinal aberto",
       detail: countLabel(count, "membro sem sinal aberto", "membros sem sinal aberto"),
     };
   }
 
   return {
     title: "Sinais",
-    detail: countLabel(count, "pessoa com sinal aberto", "pessoas com sinais abertos"),
+    detail: countLabel(count, "irmão com sinal aberto", "irmãos com sinais abertos"),
   };
 }
 
@@ -153,13 +153,13 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
   priorityBadgeToneForMember,
   filteredBadgeLabelForMember,
   filteredBadgeToneForMember,
-  priorityMoreLabel = "Ver mais pessoas no radar",
-  priorityLessLabel = "Mostrar menos pessoas no radar",
+  priorityMoreLabel = "Ver mais irmãos no radar",
+  priorityLessLabel = "Mostrar menos irmãos no radar",
   regularInitialCount = 6,
   regularStep = 6,
   regularMoreLabel = "Ver mais membros",
   regularLessLabel = "Mostrar menos membros",
-  emptyText = "Nenhuma pessoa nesse recorte.",
+  emptyText = "Nenhum irmão nesse recorte.",
 }: MemberPriorityListProps<TMember>) {
   const filteredMeta = filteredSectionMeta(activeFilter, regularMembers.length);
 
@@ -194,7 +194,7 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
             <div className={styles.sectionStack}>
               <MemberSectionHeader
                 title="Sinais"
-                detail={countLabel(priorityMembers.length, "pessoa com sinal aberto", "pessoas com sinais abertos")}
+                detail={countLabel(priorityMembers.length, "irmão com sinal aberto", "irmãos com sinais abertos")}
               />
               <ProgressiveList
                 initialCount={4}
@@ -242,7 +242,7 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
             <div className={cn(styles.sectionStack, (priorityMembers.length > 0 || inCareMembers.length > 0) && styles.regularSection)}>
               {priorityMembers.length > 0 || inCareMembers.length > 0 ? (
                 <MemberSectionHeader
-                  title="Ativos"
+                  title="Sem sinal aberto"
                   detail={countLabel(regularMembers.length, "membro sem sinal aberto", "membros sem sinal aberto")}
                 />
               ) : null}

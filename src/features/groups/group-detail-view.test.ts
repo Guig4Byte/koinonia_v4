@@ -126,7 +126,7 @@ describe("buildGroupMembersView", () => {
     const members = [
       { membershipId: "1", personId: "1", name: "Ana", badgeLabel: "Em atenção", badgeTone: "warn" as const, priorityRank: 3, status: PersonStatus.ACTIVE, focusKeys: ["atencao" as const] },
       { membershipId: "2", personId: "2", name: "Bruno", badgeLabel: "Em cuidado", badgeTone: "care" as const, priorityRank: 4, status: PersonStatus.COOLING_AWAY, focusKeys: ["em-cuidado" as const] },
-      { membershipId: "3", personId: "3", name: "Caio", badgeLabel: "Ativo", badgeTone: "ok" as const, priorityRank: 5, status: PersonStatus.ACTIVE, focusKeys: [] },
+      { membershipId: "3", personId: "3", name: "Caio", badgeLabel: "Sem sinal aberto", badgeTone: "ok" as const, priorityRank: 5, status: PersonStatus.ACTIVE, focusKeys: [] },
     ];
 
     const view = buildGroupMembersView(members, "todos");
@@ -139,7 +139,7 @@ describe("buildGroupMembersView", () => {
   });
 
   it("uses the filtered count when the selected filter is not todos", () => {
-    expect(groupMembersSectionDetail({ totalCount: 10, priorityCount: 2, visibleCount: 1, activeFilter: "em-cuidado" })).toBe("1 pessoa neste recorte");
+    expect(groupMembersSectionDetail({ totalCount: 10, priorityCount: 2, visibleCount: 1, activeFilter: "em-cuidado" })).toBe("1 irmão neste recorte");
   });
 
 
@@ -148,7 +148,7 @@ describe("buildGroupMembersView", () => {
       { membershipId: "1", personId: "1", name: "Ana", badgeLabel: "Pedido de apoio", badgeTone: "support" as const, priorityRank: 2, status: PersonStatus.ACTIVE, focusKeys: ["apoio" as const] },
       { membershipId: "2", personId: "2", name: "Bruno", badgeLabel: "Em atenção", badgeTone: "warn" as const, priorityRank: 3, status: PersonStatus.ACTIVE, focusKeys: ["atencao" as const] },
       { membershipId: "3", personId: "3", name: "Camila", badgeLabel: "Em cuidado", badgeTone: "care" as const, priorityRank: 4, status: PersonStatus.COOLING_AWAY, focusKeys: ["em-cuidado" as const] },
-      { membershipId: "4", personId: "4", name: "Daniel", badgeLabel: "Ativo", badgeTone: "ok" as const, priorityRank: 5, status: PersonStatus.ACTIVE, focusKeys: [] },
+      { membershipId: "4", personId: "4", name: "Daniel", badgeLabel: "Sem sinal aberto", badgeTone: "ok" as const, priorityRank: 5, status: PersonStatus.ACTIVE, focusKeys: [] },
     ];
 
     const view = buildGroupMembersView(members, "todos", "apoio");
@@ -162,7 +162,7 @@ describe("buildGroupMembersView", () => {
   it("conta pessoas em cuidado no foco sem esconder os demais membros", () => {
     const members = [
       { membershipId: "1", personId: "1", name: "Ana", badgeLabel: "Em cuidado", badgeTone: "care" as const, priorityRank: 4, status: PersonStatus.COOLING_AWAY, focusKeys: ["em-cuidado" as const] },
-      { membershipId: "2", personId: "2", name: "Bruno", badgeLabel: "Ativo", badgeTone: "ok" as const, priorityRank: 5, status: PersonStatus.ACTIVE, focusKeys: [] },
+      { membershipId: "2", personId: "2", name: "Bruno", badgeLabel: "Sem sinal aberto", badgeTone: "ok" as const, priorityRank: 5, status: PersonStatus.ACTIVE, focusKeys: [] },
     ];
 
     const view = buildGroupMembersView(members, "todos", "em-cuidado");
@@ -177,7 +177,7 @@ describe("buildGroupMembersView", () => {
     const members = [
       { membershipId: "1", personId: "1", name: "Ana", badgeLabel: "Em cuidado", badgeTone: "care" as const, priorityRank: 4, status: PersonStatus.COOLING_AWAY, focusKeys: ["em-cuidado" as const] },
       { membershipId: "2", personId: "2", name: "Bruno", badgeLabel: "Em atenção", badgeTone: "warn" as const, priorityRank: 3, status: PersonStatus.COOLING_AWAY, focusKeys: ["atencao" as const, "em-cuidado" as const] },
-      { membershipId: "3", personId: "3", name: "Caio", badgeLabel: "Ativo", badgeTone: "ok" as const, priorityRank: 5, status: PersonStatus.ACTIVE, focusKeys: [] },
+      { membershipId: "3", personId: "3", name: "Caio", badgeLabel: "Sem sinal aberto", badgeTone: "ok" as const, priorityRank: 5, status: PersonStatus.ACTIVE, focusKeys: [] },
     ];
 
     const view = buildGroupMembersView(members, "em-cuidado");

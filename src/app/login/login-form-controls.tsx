@@ -49,7 +49,7 @@ function EmailField({
           aria-invalid={hasError}
           aria-describedby={hasError ? LOGIN_ERROR_ID : undefined}
           className={styles.input}
-          placeholder="Digite seu e-mail"
+          placeholder="Seu e-mail"
           onChange={onValueChange}
         />
       </div>
@@ -84,7 +84,7 @@ function PasswordField({
           aria-invalid={hasError}
           aria-describedby={hasError ? LOGIN_ERROR_ID : undefined}
           className={styles.input}
-          placeholder="Digite sua senha"
+          placeholder="Sua senha"
           onChange={onValueChange}
         />
         <button

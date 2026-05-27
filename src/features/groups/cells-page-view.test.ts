@@ -112,7 +112,7 @@ describe("cells-page-view", () => {
       tone: "warn",
     });
     expect(cellsFilterContextContent("urgentes")).toMatchObject({
-      title: "Urgentes",
+      title: "Cuidado próximo",
       tone: "risk",
     });
     expect(cellsFilterContextContent("presenca")).toMatchObject({
@@ -208,7 +208,7 @@ describe("cells-page-view", () => {
 
     expect(view.groups).toHaveLength(2);
     expect(view.groupedSections.map((section) => section.key)).toEqual(["care", "presence"]);
-    expect(view.groupedSections[0].detail).toBe("Sinais abertos, pedidos de apoio ou pessoas já em cuidado.");
+    expect(view.groupedSections[0].detail).toBe("Sinais abertos, pedidos de apoio ou irmãos já em cuidado.");
     expect(view.groupsNeedingAttentionCount).toBe(1);
     expect(view.groupsWithoutPresenceCount).toBe(1);
     expect(view.navIndicator).toBe("risk");

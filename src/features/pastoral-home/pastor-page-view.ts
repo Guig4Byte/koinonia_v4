@@ -48,7 +48,7 @@ function buildPastorMacroPulse(summary: PastorPageTeamSummary): PastoralPulseMes
   if (summary.urgentCount > 0) {
     return {
       title: "Há sinais que pedem um olhar mais próximo.",
-      subtitle: "Veja com calma onde a equipe precisa de mais proximidade.",
+      subtitle: "Uma leitura com calma mostra onde a equipe precisa de mais proximidade.",
       tone: "attention",
     };
   }
@@ -71,7 +71,7 @@ function buildPastorMacroPulse(summary: PastorPageTeamSummary): PastoralPulseMes
 
   return {
     title: "A equipe pastoral está estável agora.",
-    subtitle: "Atenções locais seguem com líderes e supervisores; use a busca quando precisar consultar alguém.",
+    subtitle: "Atenções locais seguem com líderes e supervisores; a busca ajuda quando for preciso consultar alguém.",
     tone: "ok",
   };
 }
@@ -121,7 +121,7 @@ export function buildPastorNextPastoralAction(summary: PastorPageTeamSummary): N
     return {
       eyebrow: "Encaminhadas ao pastor",
       title: `${countLabel(summary.pastoralCasesCount, "caso encaminhado", "casos encaminhados")} para discernir`,
-      detail: "Veja os casos trazidos pela liderança e defina o próximo passo pastoral.",
+      detail: "Os casos trazidos pela liderança ajudam a definir o próximo passo pastoral.",
       href: teamFilterHref(FILTER_PASTORAL),
       label: "Ver encaminhadas",
       tone: "risk",
@@ -132,7 +132,7 @@ export function buildPastorNextPastoralAction(summary: PastorPageTeamSummary): N
     return {
       eyebrow: "Pedido de apoio",
       title: `${countLabel(summary.supportRequestsCount, "pedido de apoio", "pedidos de apoio")} na equipe`,
-      detail: "Acompanhe onde líderes e supervisores pediram suporte antes de olhar os demais indicadores.",
+      detail: "Os pedidos de suporte de líderes e supervisores aparecem antes dos demais indicadores.",
       href: teamFilterHref(FILTER_SUPPORT),
       label: "Ver apoios",
       tone: "support",
@@ -143,7 +143,7 @@ export function buildPastorNextPastoralAction(summary: PastorPageTeamSummary): N
     return {
       eyebrow: "Células em atenção",
       title: `${countLabel(summary.groupsNeedingAttentionCount, "célula pede", "células pedem")} acompanhamento`,
-      detail: "Revise presença, cuidado e estabilidade para orientar supervisores com mais clareza.",
+      detail: "Presença, cuidado e estabilidade ajudam a orientar supervisores com mais clareza.",
       href: teamFilterHref(FILTER_ATTENTION),
       label: "Ver células em atenção",
       tone: "warn",
@@ -153,7 +153,7 @@ export function buildPastorNextPastoralAction(summary: PastorPageTeamSummary): N
   return {
     eyebrow: "Leitura rápida",
     title: "Equipe pastoral estável",
-    detail: "Use a visão de equipe para manter vínculos e agenda das células organizados.",
+    detail: "A visão de equipe ajuda a manter vínculos e agenda das células organizados.",
     href: `${ROUTES.team}#supervisores`,
     label: "Ver equipe",
     tone: "ok",

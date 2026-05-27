@@ -81,7 +81,7 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
               {todayEvents.length > 0 ? (
                 <EventList events={todayEvents} user={user} now={now} />
               ) : (
-                <EmptyState title="Agenda livre hoje">Nenhum encontro previsto para hoje. Use Próximos encontros para acompanhar a semana.</EmptyState>
+                <EmptyState title="Agenda livre hoje">Nenhum encontro previsto para hoje. Próximos encontros ajuda a acompanhar a semana.</EmptyState>
               )}
             </section>
 

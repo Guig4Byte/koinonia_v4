@@ -16,26 +16,26 @@ describe("check-in validation", () => {
     expect(validateMemberCheckInPayload(activeMembers, [
       { personId: "person-1", status: AttendanceStatus.PRESENT },
       { personId: "person-1", status: AttendanceStatus.ABSENT },
-    ])).toEqual({ ok: false, error: "A presença contém pessoa duplicada" });
+    ])).toEqual({ ok: false, error: "A presença contém irmão duplicado" });
   });
 
   it("rejects visitor status as member attendance", () => {
     expect(validateMemberCheckInPayload(activeMembers, [
       { personId: "person-1", status: AttendanceStatus.PRESENT },
       { personId: "person-2", status: AttendanceStatus.VISITOR },
-    ])).toEqual({ ok: false, error: "Marque cada membro como presente, ausente ou justificou" });
+    ])).toEqual({ ok: false, error: "Cada membro precisa estar como presente, ausente ou justificou" });
   });
 
   it("rejects people outside the event group", () => {
     expect(validateMemberCheckInPayload(activeMembers, [
       { personId: "person-1", status: AttendanceStatus.PRESENT },
       { personId: "person-3", status: AttendanceStatus.ABSENT },
-    ])).toEqual({ ok: false, error: "A presença contém pessoa fora desta célula" });
+    ])).toEqual({ ok: false, error: "A presença contém irmão fora desta célula" });
   });
 
   it("rejects missing active members", () => {
     expect(validateMemberCheckInPayload(activeMembers, [
       { personId: "person-1", status: AttendanceStatus.PRESENT },
-    ])).toEqual({ ok: false, error: "Marque todos os membros ativos da célula antes de finalizar" });
+    ])).toEqual({ ok: false, error: "Todos os membros da célula precisam estar marcados antes de finalizar" });
   });
 });

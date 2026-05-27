@@ -13,7 +13,7 @@ export type MembersFilter = typeof FILTER_ALL | typeof FILTER_ATTENTION | typeof
 export const MEMBERS_FILTERS: ReadonlyArray<FilterOption<MembersFilter>> = [
   { value: FILTER_ATTENTION, label: "Sinais" },
   { value: FILTER_IN_CARE, label: "Em cuidado" },
-  { value: FILTER_ACTIVE, label: "Ativos" },
+  { value: FILTER_ACTIVE, label: "Sem sinal aberto" },
 ];
 
 type MemberFilterable = {

@@ -28,17 +28,17 @@ export type CellsFilter =
 
 export const CELLS_FILTERS: ReadonlyArray<FilterOption<CellsFilter>> = [
   { value: FILTER_ALL, label: "Todas" },
-  { value: FILTER_URGENT, label: "Urgentes", tone: "risk" },
-  { value: FILTER_ATTENTION, label: "Atenção", tone: "warn" },
+  { value: FILTER_URGENT, label: "Cuidado próximo", tone: "risk" },
+  { value: FILTER_ATTENTION, label: "Em atenção", tone: "warn" },
   { value: FILTER_IN_CARE, label: "Em cuidado", tone: "care" },
-  { value: FILTER_SUPPORT, label: "Apoio", tone: "support" },
+  { value: FILTER_SUPPORT, label: "Apoio pedido", tone: "support" },
   { value: FILTER_PRESENCE, label: "Presença", tone: "neutral" },
 ];
 
 const ACCEPTED_CELLS_FILTERS: ReadonlyArray<FilterOption<CellsFilter>> = [
   ...CELLS_FILTERS,
-  { value: FILTER_PASTORAL, label: "Encaminhadas" },
-  { value: FILTER_NO_RECENT_PRESENCE, label: "Sem presença recente" },
+  { value: FILTER_PASTORAL, label: "Cuidado pastoral" },
+  { value: FILTER_NO_RECENT_PRESENCE, label: "Retomar contato" },
   { value: FILTER_LOW_PRESENCE, label: "Presença baixa" },
 ];
 

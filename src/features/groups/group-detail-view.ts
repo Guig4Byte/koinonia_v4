@@ -172,12 +172,12 @@ export function groupDetailFocusCard(
   if (!focus) return null;
 
   const peopleDetail = focusedMembersCount > 0
-    ? `${countLabel(focusedMembersCount, "pessoa neste recorte", "pessoas neste recorte")}.`
-    : "Abra os detalhes abaixo para entender o contexto da célula.";
+    ? `${countLabel(focusedMembersCount, "irmão neste recorte", "irmãos neste recorte")}.`
+    : "Os detalhes abaixo ajudam a entender o contexto da célula.";
 
   if (focus === FILTER_URGENT) {
     return {
-      title: "Urgentes nesta célula",
+      title: "Cuidado próximo nesta célula",
       detail: focusedMembersCount > 0 ? `${peopleDetail} Sinais que pedem atenção imediata.` : "Sinais que pedem atenção imediata.",
       tone: "error",
     };
@@ -185,7 +185,7 @@ export function groupDetailFocusCard(
 
   if (focus === FILTER_PASTORAL) {
     return {
-      title: "Encaminhados ao pastor",
+      title: "Cuidado pastoral nesta célula",
       detail: focusedMembersCount > 0 ? `${peopleDetail} Casos trazidos para cuidado pastoral.` : "Casos trazidos para cuidado pastoral.",
       tone: "warning",
     };
@@ -201,8 +201,8 @@ export function groupDetailFocusCard(
 
   if (focus === FILTER_ATTENTION) {
     return {
-      title: "Atenção nesta célula",
-      detail: focusedMembersCount > 0 ? `${peopleDetail} Acompanhe com calma o contexto local.` : "Acompanhe com calma o contexto local.",
+      title: "Em atenção nesta célula",
+      detail: focusedMembersCount > 0 ? `${peopleDetail} O contexto local merece uma leitura com calma.` : "O contexto local merece uma leitura com calma.",
       tone: "warning",
     };
   }
@@ -210,14 +210,14 @@ export function groupDetailFocusCard(
   if (focus === FILTER_IN_CARE) {
     return {
       title: "Em cuidado nesta célula",
-      detail: focusedMembersCount > 0 ? `${peopleDetail} Acompanhamentos ativos para manter no radar.` : "Acompanhamentos ativos para manter no radar.",
+      detail: focusedMembersCount > 0 ? `${peopleDetail} Acompanhamentos em andamento para manter no radar.` : "Acompanhamentos em andamento para manter no radar.",
       tone: "default",
     };
   }
 
   if (focus === FILTER_NO_RECENT_PRESENCE) {
     return {
-      title: "Sem presença recente",
+      title: "Retomar contato",
       detail: "Ainda não há presença recente registrada para esta célula.",
       tone: "default",
     };
@@ -321,7 +321,7 @@ export function groupMembersSectionDetail({
     return `${countLabel(totalCount, "membro", "membros")}${statusParts.length > 0 ? ` · ${statusParts.join(" · ")}` : ""}`;
   }
 
-  return countLabel(visibleCount, "pessoa neste recorte", "pessoas neste recorte");
+  return countLabel(visibleCount, "irmão neste recorte", "irmãos neste recorte");
 }
 
 export function buildGroupMembersView(

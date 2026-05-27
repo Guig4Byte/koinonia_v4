@@ -41,7 +41,7 @@ const membershipRoleLabels: Record<MembershipRole, string> = {
 };
 
 function membershipRoleLabel(role?: MembershipRole | null) {
-  return role ? membershipRoleLabels[role] : "Pessoa";
+  return role ? membershipRoleLabels[role] : "Irmão";
 }
 
 function personProfileEyebrow({
@@ -51,8 +51,8 @@ function personProfileEyebrow({
   openSignalsCount: number;
   isInCare: boolean;
 }) {
-  if (openSignalsCount > 0) return "Pessoa no radar";
-  if (isInCare) return "Pessoa em cuidado";
+  if (openSignalsCount > 0) return "Irmão no radar";
+  if (isInCare) return "Irmão em cuidado";
   return "Perfil pastoral";
 }
 
@@ -237,8 +237,8 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           {openSignalsCount === 0 ? (
             <EmptyState className={styles.emptyState} title="Nada exige ação agora.">
               {hasCareTouch
-                ? "O cuidado mais recente aparece abaixo, e a pessoa continua disponível para acompanhamento pastoral."
-                : "Esta pessoa segue disponível para consulta quando houver um contato real de cuidado."}
+                ? "O cuidado mais recente aparece abaixo, e o irmão continua disponível para acompanhamento pastoral."
+                : "Este irmão segue disponível para consulta quando houver um contato real de cuidado."}
             </EmptyState>
           ) : null}
         </div>

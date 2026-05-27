@@ -42,7 +42,7 @@ export const GROUP_SECTIONS: Array<{ key: GroupSectionKey; title: string; detail
   {
     key: "care",
     title: "Cuidado próximo",
-    detail: "Sinais abertos, pedidos de apoio ou pessoas já em cuidado.",
+    detail: "Sinais abertos, pedidos de apoio ou irmãos já em cuidado.",
   },
   {
     key: "presence",
@@ -72,19 +72,19 @@ const cellsFilterContextCopy: Record<CellsFilter, { title: string; detail: strin
       "Mostramos primeiro as células que pedem cuidado mais próximo. No detalhe da célula, todos os sinais, presenças e acompanhamentos aparecem com calma.",
   },
   [FILTER_ATTENTION]: {
-    title: "Atenção",
+    title: "Em atenção",
     detail:
       "Células com sinais abertos ou atenção local para você acompanhar junto dos líderes.",
     tone: "warn",
   },
   [FILTER_URGENT]: {
-    title: "Urgentes",
+    title: "Cuidado próximo",
     detail:
       "Sinais mais sensíveis aparecem primeiro para orientar conversa, leitura pastoral e alinhamento com a liderança.",
     tone: "risk",
   },
   [FILTER_PASTORAL]: {
-    title: "Encaminhadas ao pastor",
+    title: "Cuidado pastoral",
     detail:
       "Casos trazidos ao cuidado pastoral seguem visíveis para supervisão e acompanhamento.",
     tone: "risk",
@@ -108,7 +108,7 @@ const cellsFilterContextCopy: Record<CellsFilter, { title: string; detail: strin
     tone: "neutral",
   },
   [FILTER_NO_RECENT_PRESENCE]: {
-    title: "Sem presença recente",
+    title: "Retomar contato",
     detail:
       "Células sem registro recente aparecem aqui para você conferir se falta dado ou se há cuidado a retomar.",
     tone: "neutral",

@@ -53,7 +53,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ e
 
   if (body.startsAt !== undefined) {
     if (event._count.attendances > 0) {
-      return apiError("Este encontro já tem presença registrada e não pode ser remarcado", 400);
+      return apiError("Este encontro já tem presença registrada e não está disponível para remarcação", 400);
     }
 
     nextStartsAt = new Date(body.startsAt);
@@ -65,7 +65,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ e
   const closesMeeting = body.status === EventStatus.CANCELLED || body.status === EventStatus.NO_MEETING;
 
   if (closesMeeting && event._count.attendances > 0) {
-    return apiError("Este encontro já tem presença registrada e não pode ser cancelado", 400);
+    return apiError("Este encontro já tem presença registrada e não está disponível para cancelamento", 400);
   }
 
   const now = new Date();

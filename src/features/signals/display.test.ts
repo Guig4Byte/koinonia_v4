@@ -12,9 +12,9 @@ describe("signal display helpers", () => {
   it("keeps urgent as urgent for every viewer even when support was requested", () => {
     const signal = { severity: SignalSeverity.URGENT, assignedTo: { role: UserRole.SUPERVISOR } };
 
-    expect(signalBadgeForViewer(signal, { role: UserRole.LEADER })).toEqual({ label: "Urgente", tone: "risk" });
-    expect(signalBadgeForViewer(signal, { role: UserRole.SUPERVISOR })).toEqual({ label: "Urgente", tone: "risk" });
-    expect(signalBadgeForViewer(signal, { role: UserRole.PASTOR })).toEqual({ label: "Urgente", tone: "risk" });
+    expect(signalBadgeForViewer(signal, { role: UserRole.LEADER })).toEqual({ label: "Cuidado próximo", tone: "risk" });
+    expect(signalBadgeForViewer(signal, { role: UserRole.SUPERVISOR })).toEqual({ label: "Cuidado próximo", tone: "risk" });
+    expect(signalBadgeForViewer(signal, { role: UserRole.PASTOR })).toEqual({ label: "Cuidado próximo", tone: "risk" });
   });
 
   it("shows supervisor support as support for every viewer without hiding it as local attention", () => {
@@ -27,14 +27,14 @@ describe("signal display helpers", () => {
   });
 
   it("keeps urgent unassigned signals consistent", () => {
-    expect(signalBadgeForViewer({ severity: SignalSeverity.URGENT }, { role: UserRole.LEADER })).toEqual({ label: "Urgente", tone: "risk" });
-    expect(signalBadgeForViewer({ severity: SignalSeverity.URGENT }, { role: UserRole.SUPERVISOR })).toEqual({ label: "Urgente", tone: "risk" });
-    expect(signalBadgeForViewer({ severity: SignalSeverity.URGENT }, { role: UserRole.PASTOR })).toEqual({ label: "Urgente", tone: "risk" });
+    expect(signalBadgeForViewer({ severity: SignalSeverity.URGENT }, { role: UserRole.LEADER })).toEqual({ label: "Cuidado próximo", tone: "risk" });
+    expect(signalBadgeForViewer({ severity: SignalSeverity.URGENT }, { role: UserRole.SUPERVISOR })).toEqual({ label: "Cuidado próximo", tone: "risk" });
+    expect(signalBadgeForViewer({ severity: SignalSeverity.URGENT }, { role: UserRole.PASTOR })).toEqual({ label: "Cuidado próximo", tone: "risk" });
   });
 
   it("shows informational signals as informative for pastoral viewers", () => {
-    expect(signalBadgeForViewer({ severity: SignalSeverity.INFO }, { role: UserRole.PASTOR })).toEqual({ label: "Informativo", tone: "info" });
-    expect(signalBadgeForViewer({ severity: SignalSeverity.INFO }, { role: UserRole.ADMIN })).toEqual({ label: "Informativo", tone: "info" });
+    expect(signalBadgeForViewer({ severity: SignalSeverity.INFO }, { role: UserRole.PASTOR })).toEqual({ label: "Contexto", tone: "info" });
+    expect(signalBadgeForViewer({ severity: SignalSeverity.INFO }, { role: UserRole.ADMIN })).toEqual({ label: "Contexto", tone: "info" });
   });
 
   it("keeps legacy reason normalization available for leader viewers", () => {
@@ -54,16 +54,16 @@ describe("signal display helpers", () => {
       assignedTo: { role: UserRole.PASTOR },
     };
 
-    expect(signalTitleForViewer(supportSignal, { role: UserRole.SUPERVISOR })).toBe("Pedido de apoio recebido.");
-    expect(signalTitleForViewer(supportSignal, { role: UserRole.LEADER })).toBe("Apoio solicitado à supervisão.");
-    expect(signalTitleForViewer(pastoralSignal, { role: UserRole.PASTOR })).toBe("Cuidado pastoral solicitado.");
+    expect(signalTitleForViewer(supportSignal, { role: UserRole.SUPERVISOR })).toBe("Pedido de apoio recebido");
+    expect(signalTitleForViewer(supportSignal, { role: UserRole.LEADER })).toBe("Apoio solicitado à supervisão");
+    expect(signalTitleForViewer(pastoralSignal, { role: UserRole.PASTOR })).toBe("Cuidado pastoral solicitado");
     expect(signalDescriptionForViewer({ ...pastoralSignal, pastoralEscalationActorName: "Ana Martins" }, { role: UserRole.PASTOR })).toBe(
       "Ana Martins compartilhou este cuidado para um olhar mais próximo. Um contato pode ajudar a entender melhor o momento.",
     );
     expect(signalDescriptionForViewer(pastoralSignal, { role: UserRole.PASTOR })).toBe(
       "Há um contexto que pede um olhar mais próximo.",
     );
-    expect(signalTitleForViewer(pastoralSignal, { role: UserRole.LEADER })).toBe("Encaminhado ao pastor.");
+    expect(signalTitleForViewer(pastoralSignal, { role: UserRole.LEADER })).toBe("Encaminhado ao pastor");
   });
 
   it("describes attendance signals without ordering the user to act", () => {
@@ -75,7 +75,7 @@ describe("signal display helpers", () => {
     };
 
     expect(signalPastoralMessageForViewer(signal, { role: UserRole.LEADER })).toEqual({
-      title: "Urgência percebida.",
+      title: "Urgência percebida",
       description: "Parece que houve ausências recorrentes sem justificativa registrada.",
     });
   });

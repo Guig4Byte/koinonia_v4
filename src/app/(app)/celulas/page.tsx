@@ -98,7 +98,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
         </div>
 
         <section id={CELLS_SECTION_ID} className="scroll-mt-4">
-          <SectionTitle detail="Busque ou filtre por atenção.">Células supervisionadas</SectionTitle>
+          <SectionTitle detail="Busca e filtros ajudam a encontrar a célula certa.">Células supervisionadas</SectionTitle>
           <CellsStructureSearch query={query} filter={activeFilter} sectionId={CELLS_SECTION_ID} />
           <CellsFilterContextCard filter={activeFilter} />
 

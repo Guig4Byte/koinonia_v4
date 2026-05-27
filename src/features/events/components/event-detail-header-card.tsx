@@ -88,7 +88,7 @@ export function EventDetailHeaderCard({
               },
               {
                 label: "Visitantes",
-                detail: visitorsCount > 0 ? "Pessoas novas ou visitantes marcados." : "Nenhum visitante marcado neste encontro.",
+                detail: visitorsCount > 0 ? "Irmãos novos ou visitantes marcados." : "Nenhum visitante marcado neste encontro.",
                 value: String(visitorsCount),
                 tone: "neutral",
               },

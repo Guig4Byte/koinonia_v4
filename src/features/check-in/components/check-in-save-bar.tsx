@@ -60,12 +60,12 @@ function saveBarDescription({
   hasUnsavedChanges: boolean;
 }) {
   if (isPending) return "Mantenha esta tela aberta até concluir.";
-  if (errorMessage) return "Revise o aviso e tente salvar novamente.";
-  if (summary.pending > 0) return `${checkInMarkedLabel(summary)}. Marque quem ainda falta para salvar.`;
-  if (mode === "adjust" && !hasUnsavedChanges) return "Altere uma presença ou adicione visitante para salvar.";
-  if (mode === "adjust") return "Tudo marcado. Salve as mudanças.";
+  if (errorMessage) return "O aviso acima pode ajudar antes de salvar novamente.";
+  if (summary.pending > 0) return `${checkInMarkedLabel(summary)}. Ainda há irmãos sem marcação antes de salvar.`;
+  if (mode === "adjust" && !hasUnsavedChanges) return "Ainda falta uma alteração de presença ou visitante para salvar.";
+  if (mode === "adjust") return "Tudo marcado. As mudanças já podem ser salvas.";
 
-  return "Tudo marcado. Salve para concluir.";
+  return "Tudo marcado. A presença já pode ser salva.";
 }
 
 export function CheckInSaveBar({

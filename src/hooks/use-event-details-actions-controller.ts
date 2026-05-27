@@ -78,7 +78,7 @@ export function useEventDetailsActionsController({
 
     if (!nextLocationName) {
       setMessage(null);
-      setErrorMessage("Informe o local deste encontro antes de salvar.");
+      setErrorMessage("O local do encontro precisa estar preenchido para salvar.");
       return null;
     }
 
@@ -103,7 +103,7 @@ export function useEventDetailsActionsController({
     const nextStartsAt = parseBrasiliaDateTime(localDate, localTime);
     if (!nextStartsAt) {
       setMessage(null);
-      setErrorMessage("Informe uma data e horário válidos no horário de Brasília.");
+      setErrorMessage("A data e o horário precisam estar válidos no horário de Brasília.");
       return;
     }
 

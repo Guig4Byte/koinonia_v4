@@ -233,7 +233,7 @@ export function buildSupervisorFocusItems({
       singular: "célula com cuidado em andamento",
       plural: "células com cuidado em andamento",
       title: "Memória de cuidado",
-      detail: "Acompanhamentos ativos precisam permanecer visíveis, mesmo quando o cuidado acontece nas conversas da semana.",
+      detail: "Acompanhamentos em andamento permanecem visíveis, mesmo quando o cuidado acontece nas conversas da semana.",
       href: focusHrefForGroups(careGroups, FILTER_IN_CARE, FILTER_IN_CARE),
       actionLabel: "Revisar cuidado",
       tone: "care",

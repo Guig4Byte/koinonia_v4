@@ -25,7 +25,7 @@ export function mixedCareMessage(role: UserRole, scope: PastoralPulseScope, urge
     if (role === UserRole.SUPERVISOR) {
       return {
         title: "Há cuidados em momentos diferentes nesta célula.",
-        subtitle: "Veja os sinais com calma e caminhe junto com a liderança.",
+        subtitle: "Os sinais podem ser lidos com calma, caminhando junto com a liderança.",
         tone: "attention",
       };
     }
@@ -66,14 +66,14 @@ export function urgentMessage(
     if (urgentOrPastoral === 1 && subject?.personName) {
       return {
         title: `${subject.personName} pede um olhar pastoral mais próximo.`,
-        subtitle: "Veja o contexto com calma antes de orientar a equipe.",
+        subtitle: "O contexto ajuda antes de orientar a equipe.",
         tone: "attention",
       };
     }
 
     return {
       title: `${urgentOrPastoral} irmãos pedem um olhar pastoral mais próximo.`,
-      subtitle: "Há sinais sensíveis aqui. Veja com calma antes de orientar a equipe.",
+      subtitle: "Há sinais sensíveis aqui. O contexto ajuda antes de orientar a equipe.",
       tone: "attention",
     };
   }
@@ -94,7 +94,7 @@ export function urgentMessage(
         ? "Há um cuidado sensível nesta célula."
         : "Há cuidados sensíveis nesta célula.",
       subtitle: isPastoralRole(role)
-        ? "Algumas pessoas podem precisar de um olhar pastoral mais próximo."
+        ? "Alguns irmãos podem precisar de um olhar pastoral mais próximo."
         : "A liderança segue perto; o cuidado pode pedir apoio em alguns pontos.",
       tone: "attention",
     };
@@ -111,7 +111,7 @@ export function urgentMessage(
 
     return {
       title: `${urgentOrPastoral} irmãos pedem cuidado mais próximo.`,
-      subtitle: "Há sinais sensíveis aqui. Veja os casos com calma e caminhe junto com a liderança.",
+      subtitle: "Há sinais sensíveis aqui. Os casos podem ser lidos com calma, junto da liderança.",
       tone: "attention",
     };
   }
@@ -126,7 +126,7 @@ export function urgentMessage(
 
   return {
     title: `${urgentOrPastoral} irmãos pedem cuidado mais próximo.`,
-    subtitle: "Há sinais sensíveis aqui. Cada pessoa pode ser acolhida com calma e proximidade.",
+    subtitle: "Há sinais sensíveis aqui. Cada irmão pode ser acolhido com calma e proximidade.",
     tone: "attention",
   };
 }
@@ -211,7 +211,7 @@ export function attentionMessage(
 
     if (attention === 1) {
       return {
-        title: "Uma pessoa pede acompanhamento mais próximo.",
+        title: "Um irmão pede acompanhamento mais próximo.",
         subtitle: role === UserRole.LEADER
           ? "Vale uma aproximação simples, sem tom de cobrança."
           : "A liderança segue cuidando, mas vale manter esta célula no radar.",
@@ -220,7 +220,7 @@ export function attentionMessage(
     }
 
     return {
-      title: "Há pessoas para acompanhar de perto.",
+      title: "Há irmãos para acompanhar de perto.",
       subtitle: role === UserRole.LEADER
         ? "Vale uma aproximação simples, sem tom de cobrança."
         : "A liderança segue cuidando, mas vale manter esta célula no radar.",
@@ -239,7 +239,7 @@ export function attentionMessage(
 
     return {
       title: `${attention} irmãos pedem atenção nas células.`,
-      subtitle: "Acompanhe com calma e perceba onde a liderança pode pedir apoio.",
+      subtitle: "Uma leitura calma ajuda a perceber onde a liderança pode pedir apoio.",
       tone: "attention",
     };
   }

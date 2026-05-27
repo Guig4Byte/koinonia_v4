@@ -47,9 +47,9 @@ export function closeEventActionCopy(isFutureEvent: boolean) {
   if (isFutureEvent) {
     return {
       title: "Este encontro vai acontecer?",
-      description: "Use esta opção quando a célula já sabe que não vai se reunir nesta data.",
+      description: "Essa opção ajuda quando a célula já sabe que não vai se reunir nesta data.",
       actionLabel: "Cancelar encontro",
-      confirmationMessage: "Cancelar este encontro? Use quando a célula já sabe que não vai se reunir nesta data.",
+      confirmationMessage: "Cancelar este encontro? Essa opção ajuda quando a célula já sabe que não vai se reunir nesta data.",
       status: "CANCELLED" as const,
       successMessage: "Encontro cancelado.",
     };
@@ -57,9 +57,9 @@ export function closeEventActionCopy(isFutureEvent: boolean) {
 
   return {
     title: "Aconteceu nesta semana?",
-    description: "Use esta opção quando a célula não se reuniu. Isso evita tratar o encontro como algo em aberto.",
+    description: "Essa opção registra que a célula não se reuniu e evita tratar o encontro como algo em aberto.",
     actionLabel: "Não houve encontro",
-    confirmationMessage: "Marcar este encontro como não realizado? Use quando a célula não se reuniu nesta data.",
+    confirmationMessage: "Marcar este encontro como não realizado? Essa opção registra que a célula não se reuniu nesta data.",
     status: "NO_MEETING" as const,
     successMessage: "Encontro marcado como não realizado.",
   };

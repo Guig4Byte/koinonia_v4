@@ -33,7 +33,7 @@ export default async function PastorPage() {
 
       {view.nextAction ? <NextPastoralActionCard action={view.nextAction} /> : null}
 
-      <SearchBox placeholder="Buscar qualquer pessoa..." />
+      <SearchBox placeholder="Buscar qualquer irmão..." />
 
       <PastoralHealthCard
         overview={view.healthOverview}

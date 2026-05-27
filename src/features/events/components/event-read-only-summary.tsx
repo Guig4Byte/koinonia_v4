@@ -191,7 +191,7 @@ export function EventReadOnlySummary({
           <div className={styles.cardHeader}>
             <div className={styles.heading}>
               <p className={styles.title}>Visitantes</p>
-              <p className={styles.breakdown}>Pessoas novas ou visitantes marcados neste encontro.</p>
+              <p className={styles.breakdown}>Irmãos novos ou visitantes marcados neste encontro.</p>
             </div>
           </div>
           <div className={cn(styles.rows, styles.groupList)}>

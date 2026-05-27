@@ -198,7 +198,7 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
               {item.fullName}
             </h2>
             <p id={descriptionId} className="text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">
-              Marque com calma. Essa informação vira contexto de cuidado depois do encontro.
+              Essa marcação vira contexto de cuidado depois do encontro.
             </p>
           </div>
 

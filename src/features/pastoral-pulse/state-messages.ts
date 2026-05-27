@@ -12,10 +12,10 @@ export function inCareMessage(
   if (scope === "groupDetail") {
     return {
       title: inCare === 1
-        ? "Uma pessoa segue em cuidado nesta célula."
-        : "Há pessoas em cuidado nesta célula.",
+        ? "Um irmão segue em cuidado nesta célula."
+        : "Há irmãos em cuidado nesta célula.",
       subtitle: role === UserRole.LEADER
-        ? "Continue acompanhando com leveza, sem transformar cuidado em cobrança."
+        ? "O acompanhamento pode seguir com leveza, sem transformar cuidado em cobrança."
         : "Elas já receberam cuidado e seguem no radar com leveza.",
       tone: "ok",
     };
@@ -34,7 +34,7 @@ export function inCareMessage(
   if (inCare === 1 && subject?.personName) {
     return {
       title: `${subject.personName} segue em cuidado.`,
-      subtitle: "Alguém já recebeu cuidado e continua no radar.",
+      subtitle: "O irmão já recebeu cuidado e continua no radar.",
       tone: "ok",
     };
   }
@@ -58,7 +58,7 @@ export function stableMessage(scope: PastoralPulseScope): PastoralPulseMessage {
   if (scope === "supervisorDashboard") {
     return {
       title: "Suas células estão estáveis agora.",
-      subtitle: "Continue perto dos líderes e das células, sem transformar acompanhamento em cobrança.",
+      subtitle: "A proximidade com líderes e células pode seguir sem transformar acompanhamento em cobrança.",
       tone: "ok",
     };
   }
@@ -73,7 +73,7 @@ export function stableMessage(scope: PastoralPulseScope): PastoralPulseMessage {
 
   return {
     title: "A célula está sem sinais abertos neste momento.",
-    subtitle: "Continue acompanhando o ritmo de presença e cuidado.",
+    subtitle: "O ritmo de presença e cuidado continua como referência.",
     tone: "ok",
   };
 }
@@ -107,7 +107,7 @@ export function groupPresenceMessage(role: UserRole, counts: Required<Pick<Pasto
         ? "O ritmo de presença pede atenção."
         : "O ritmo de presença pede acompanhamento.",
       subtitle: isPastoralRole(role)
-        ? "Acompanhe o contexto da célula antes de orientar próximos passos."
+        ? "O contexto da célula ajuda antes de orientar próximos passos."
         : role === UserRole.LEADER
           ? "Vale olhar quem faltou e se aproximar sem tom de cobrança."
           : "Pode ser um sinal para perceber se a liderança quer apoio para retomar vínculos.",

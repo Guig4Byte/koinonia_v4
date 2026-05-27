@@ -54,7 +54,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ev
   }
 
   if (!canCheckInEvent(user, event)) {
-    return apiError("Somente o líder da célula pode registrar este check-in", 403);
+    return apiError("A presença deste encontro fica disponível para a liderança da célula", 403);
   }
 
   if (!event.groupId) {

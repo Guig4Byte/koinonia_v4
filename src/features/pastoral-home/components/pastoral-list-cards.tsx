@@ -40,7 +40,7 @@ function pastoralSignalCards<TSignal extends PastoralSignalCardItem>({
   viewer,
   contextForSignal = defaultSignalContext,
   reasonForSignal = (signal, currentViewer) => signalDescriptionForViewer(signal, currentViewer),
-  ctaLabelForSignal = (signal, currentViewer) => isSupportRequest(signal, currentViewer) ? "Ver pedido" : "Acompanhar pessoa",
+  ctaLabelForSignal = (signal, currentViewer) => isSupportRequest(signal, currentViewer) ? "Ver pedido" : "Acompanhar irmão",
   actionDisplay = "icon",
   emphasisForSignal = (signal) => signal.severity === SignalSeverity.URGENT ? "strong" : "subtle",
 }: {

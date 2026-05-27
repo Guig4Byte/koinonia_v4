@@ -121,7 +121,7 @@ export function CheckInSummaryCard({ summary, errorMessage, disabled = false, on
               <div>
                 <h2 id="mark-all-present-title" className={styles.markAllSheetTitle}>Marcar todos como presentes?</h2>
                 <p className={styles.markAllSheetDescription}>
-                  Essa ação troca ausências, justificativas e pessoas sem marcação para presente neste encontro.
+                  Essa ação troca ausências, justificativas e irmãos sem marcação para presente neste encontro.
                 </p>
               </div>
             </div>

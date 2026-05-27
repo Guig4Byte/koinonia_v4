@@ -39,7 +39,7 @@ export function EventDetailsActions({
 
   const locationHint = hasPresenceData
     ? "A presença já foi registrada. Mas, se o encontro aconteceu em outro lugar, é possível alterá-lo."
-    : "Altere apenas o local que mudou nesta semana. Isso vale só para este encontro.";
+    : "O local pode ser ajustado apenas para esta semana. Isso vale só para este encontro.";
 
   return (
     <Card className={styles.actionsCard}>

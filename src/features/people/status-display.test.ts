@@ -8,14 +8,14 @@ describe("person status display", () => {
   });
 
   it("keeps active people green", () => {
-    expect(personStatusDisplay(PersonStatus.ACTIVE)).toEqual({ label: "Ativo", tone: "ok" });
+    expect(personStatusDisplay(PersonStatus.ACTIVE)).toEqual({ label: "Sem sinal aberto", tone: "ok" });
   });
 });
 
 describe("person effective badge", () => {
   it("uses the person status when there is no visible open signal", () => {
     expect(personEffectiveBadgeForViewer({ status: PersonStatus.ACTIVE }, null, { role: UserRole.LEADER })).toEqual({
-      label: "Ativo",
+      label: "Sem sinal aberto",
       tone: "ok",
     });
   });
@@ -27,7 +27,7 @@ describe("person effective badge", () => {
         { severity: SignalSeverity.URGENT },
         { role: UserRole.LEADER },
       ),
-    ).toEqual({ label: "Urgente", tone: "risk" });
+    ).toEqual({ label: "Cuidado próximo", tone: "risk" });
   });
 
   it("keeps viewer-specific signal wording for supervisor support", () => {
@@ -59,6 +59,6 @@ describe("person effective badge", () => {
         { severity: SignalSeverity.ATTENTION, assignedTo: { role: UserRole.PASTOR } },
         { role: UserRole.PASTOR },
       ),
-    ).toEqual({ label: "Caso pastoral", tone: "risk" });
+    ).toEqual({ label: "Cuidado pastoral", tone: "risk" });
   });
 });

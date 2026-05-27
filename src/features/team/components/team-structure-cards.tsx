@@ -303,7 +303,7 @@ function InactiveStructureGroupLink({ group }: { group: InactiveTeamGroup }) {
       name={group.name}
       subtitle={`${inactiveGroupScheduleText(group)}${location}`}
       signalTone="neutral"
-      signalLabel="Fora do acompanhamento ativo"
+      signalLabel="Fora do acompanhamento atual"
     />
   );
 }
@@ -323,7 +323,7 @@ export function TeamStructureAdjustments({
     <section className={styles.structureSection}>
       <SectionHeader
         title="Células para organizar"
-        detail="Estruturas fora do acompanhamento ativo."
+        detail="Estruturas fora do acompanhamento atual."
         className={styles.structureHeading}
       />
       <div className={styles.structureGrid}>
@@ -355,7 +355,7 @@ export function TeamStructureAdjustments({
           <StructureAdjustmentCard
             icon="archive"
             title="Células inativas"
-            detail="Fora do acompanhamento ativo."
+            detail="Fora do acompanhamento atual."
             count={inactiveGroups.length}
           >
             <ProgressiveList
