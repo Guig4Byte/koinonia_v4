@@ -2,7 +2,7 @@
   --pastor-team-summary-accent: var(--color-card-decoration);
 
   display: block;
-  margin-block: 0.95rem 1.25rem;
+  margin-block: 0.95rem 0;
   border: 1px solid color-mix(in srgb, var(--color-border-card) 82%, transparent);
   border-radius: 1.15rem;
   background:

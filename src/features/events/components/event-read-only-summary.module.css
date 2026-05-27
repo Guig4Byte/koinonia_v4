@@ -3,10 +3,6 @@
   gap: 0.78rem;
 }
 
-.summarySectionWithBottomSpace {
-  padding-bottom: calc(var(--bottom-nav-height) + var(--bottom-nav-offset) + env(safe-area-inset-bottom) + 2.25rem);
-}
-
 .permissionHint.permissionHint {
   border-color: color-mix(in srgb, var(--color-card-decoration) 14%, var(--color-border-card));
   background:

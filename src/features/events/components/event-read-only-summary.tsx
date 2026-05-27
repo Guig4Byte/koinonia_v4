@@ -101,7 +101,6 @@ export function EventReadOnlySummary({
   members,
   visitors,
   permissionHint,
-  reserveBottomSpace = true,
 }: {
   completed: boolean;
   isFutureEvent: boolean;
@@ -110,7 +109,6 @@ export function EventReadOnlySummary({
   members: EventReadOnlyMember[];
   visitors: EventReadOnlyVisitor[];
   permissionHint?: string;
-  reserveBottomSpace?: boolean;
 }) {
   const emptyMessage = eventReadOnlyEmptyMessage({ completed, isFutureEvent, isCancelled, closedLabel });
 
@@ -128,7 +126,7 @@ export function EventReadOnlySummary({
   const presentCount = attendanceView.presentMembers.length;
 
   return (
-    <section className={cn(styles.summarySection, reserveBottomSpace && styles.summarySectionWithBottomSpace)}>
+    <section className={styles.summarySection}>
       {permissionHint ? (
         <Card className={styles.permissionHint}>
           {permissionHint}

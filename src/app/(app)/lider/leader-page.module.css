@@ -3,7 +3,6 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  padding-bottom: 0.5rem;
 }
 
 .pageFlow > * + * {
