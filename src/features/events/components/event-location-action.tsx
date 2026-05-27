@@ -70,7 +70,7 @@ export function EventLocationAction({
           onClick={openEditor}
           disabled={disabled}
         >
-          Alterar local
+          Alterar
         </Button>
       </div>
 

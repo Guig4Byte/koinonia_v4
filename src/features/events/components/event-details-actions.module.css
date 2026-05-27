@@ -4,70 +4,42 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  border-color: color-mix(in srgb, var(--actions-accent) 14%, var(--color-border-card));
+  border-color: color-mix(in srgb, var(--actions-accent) 30%, var(--color-border-card));
   background:
-    radial-gradient(ellipse 78% 58% at 8% 0%, color-mix(in srgb, var(--actions-accent) 13%, transparent), transparent 70%),
-    linear-gradient(145deg, color-mix(in srgb, var(--surface-alt) 28%, var(--color-bg-card)), var(--color-bg-card) 72%);
+    radial-gradient(ellipse 86% 64% at 94% 4%, color-mix(in srgb, var(--actions-accent) 8%, transparent), transparent 70%),
+    var(--color-bg-card);
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--actions-accent) 5%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--surface-alt) 30%, transparent),
-    0 18px 40px color-mix(in srgb, var(--actions-accent) 8%, transparent);
+    inset 0 1px 0 color-mix(in srgb, var(--surface-alt) 28%, transparent),
+    var(--color-shadow-card);
 }
 
-.actionsCard.actionsCard::before {
-  content: "";
-  position: absolute;
-  inset-block-start: -1.4rem;
-  inset-inline-start: -1.2rem;
-  z-index: 0;
-  width: 6.5rem;
-  height: 6.5rem;
-  border-radius: 999px;
-  background: radial-gradient(circle, color-mix(in srgb, var(--actions-accent) 18%, transparent), transparent 72%);
-  filter: blur(18px);
-  opacity: 0.58;
-  pointer-events: none;
-}
-
-.actionsLayout {
-  position: relative;
-  z-index: 1;
+.actionsHeader {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.86rem;
-  align-items: start;
+  grid-template-columns: 1.35rem minmax(0, 1fr);
+  gap: 0.82rem;
+  align-items: center;
 }
 
 .actionsIcon {
   display: inline-grid;
-  width: 2.65rem;
-  height: 2.65rem;
+  width: 1.35rem;
+  height: 1.35rem;
   place-items: center;
-  border: 1px solid color-mix(in srgb, var(--actions-accent) 26%, var(--color-border-card));
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at 40% 28%, color-mix(in srgb, var(--actions-accent) 18%, transparent), transparent 64%),
-    color-mix(in srgb, var(--actions-accent) 9%, var(--surface-alt));
-  color: color-mix(in srgb, var(--actions-accent) 88%, var(--color-text-primary));
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--actions-accent) 8%, transparent);
+  color: var(--color-brand-accent);
 }
 
 .actionsIconSvg {
-  width: 1.14rem;
-  height: 1.14rem;
+  width: 1.05rem;
+  height: 1.05rem;
   stroke-width: 2.15;
-}
-
-.actionsContent {
-  min-width: 0;
 }
 
 .title {
   color: var(--color-text-primary);
   font-family: var(--font-display);
-  font-size: clamp(var(--text-base), 4.8vw, var(--text-lg));
-  font-weight: 680;
-  letter-spacing: -0.008em;
+  font-size: clamp(1.08rem, 4.8vw, 1.35rem);
+  font-weight: 720;
+  letter-spacing: -0.016em;
   line-height: 1.16;
 }
 
@@ -77,15 +49,16 @@
 
 @media (max-width: 360px) {
   .actionsCard.actionsCard {
-    padding-inline: 0.92rem;
+    padding-inline: 0.98rem;
   }
 
-  .actionsLayout {
+  .actionsHeader {
+    grid-template-columns: 1.18rem minmax(0, 1fr);
     gap: 0.72rem;
   }
 
   .actionsIcon {
-    width: 2.36rem;
-    height: 2.36rem;
+    width: 1.18rem;
+    height: 1.18rem;
   }
 }
