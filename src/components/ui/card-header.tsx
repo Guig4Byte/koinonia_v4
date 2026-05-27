@@ -60,7 +60,7 @@ export function CardHeader({
 
   return (
     <div className={cn("k-card-header-row", className)}>
-      <div className={cn("min-w-0", contentClassName)}>
+      <div className={cn("min-w-0 flex-1", contentClassName)}>
         {eyebrow ? (
           <p className={cn("text-[length:var(--text-sm)] font-semibold uppercase tracking-[0.12em] text-[color:var(--color-text-secondary)]", eyebrowClassName)}>
             {eyebrow}

@@ -43,7 +43,6 @@ export function GroupCard({
         <CardHeader
           title={name}
           subtitle={subtitle}
-          detail={statusSummary}
           badgeLabel={badgeLabel}
           badgeTone={badgeTone}
           badgeSize="sm"
@@ -51,8 +50,8 @@ export function GroupCard({
           badgeMaxWidth="row"
           titleClassName={styles.title}
           subtitleClassName={styles.subtitle}
-          detailClassName={styles.statusSummary}
         />
+        {statusSummary ? <div className={styles.statusSummary}>{statusSummary}</div> : null}
       </div>
 
       <div className={styles.footer}>

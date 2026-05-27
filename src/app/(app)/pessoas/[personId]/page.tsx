@@ -187,7 +187,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
                   <h2 className={styles.personTitle}>{person.fullName}</h2>
                   <p className={styles.personMeta}>{personMeta}</p>
                 </div>
-                <SignalHeartIndicator tone={personBadge.tone} size="md" label={personBadge.label} showLabel className={styles.personBadge} />
+                <SignalHeartIndicator tone={personBadge.tone} size="md" label={personBadge.label} className={styles.personBadge} />
               </div>
 
             </div>
