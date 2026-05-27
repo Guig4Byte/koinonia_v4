@@ -1,5 +1,6 @@
 "use client";
 
+import { MapPin } from "lucide-react";
 import { EventActionFeedback } from "@/features/events/components/event-action-feedback";
 import { Card } from "@/components/ui/card";
 import { EventCloseAction } from "@/features/events/components/event-close-action";
@@ -7,6 +8,7 @@ import { EventLocationAction } from "@/features/events/components/event-location
 import { EventRescheduleAction } from "@/features/events/components/event-reschedule-action";
 import { useEventDetailsActionsController } from "@/hooks/use-event-details-actions-controller";
 import { eventLocationActionLabel, type EventActionStatus } from "@/features/events/event-actions-view";
+import styles from "./event-details-actions.module.css";
 
 export function EventDetailsActions({
   eventId,
@@ -35,50 +37,63 @@ export function EventDetailsActions({
     isFutureEvent,
   });
 
+  const locationHint = hasPresenceData
+    ? "A presença já foi registrada. Mas o local ainda pode ser ajustado, se necessário."
+    : "Altere apenas o local que mudou nesta semana. Isso vale só para este encontro.";
+
   return (
-    <Card>
-      <p className="k-item-title">Ajustes do encontro</p>
-      <p className="k-supporting-copy">
-        Altere apenas o que mudou nesta semana. Isso vale só para este encontro.
-      </p>
+    <Card className={styles.actionsCard}>
+      <div className={styles.actionsLayout}>
+        <span className={styles.actionsIcon} aria-hidden="true">
+          <MapPin className={styles.actionsIconSvg} />
+        </span>
 
-      <EventLocationAction
-        value={actions.localLocationName}
-        defaultLocationName={defaultLocationName}
-        actionLabel={eventLocationActionLabel(hasPresenceData)}
-        disabled={actions.isPending}
-        onChange={actions.setLocalLocationName}
-        onSave={actions.saveLocation}
-      />
+        <div className={styles.actionsContent}>
+          <p className={styles.title}>Ajustes do encontro</p>
 
-      {actions.canReschedule ? (
-        <EventRescheduleAction
-          localDate={actions.localDate}
-          localTime={actions.localTime}
-          openPicker={actions.openPicker}
-          calendarMonth={actions.calendarMonth}
-          selectedDateParts={actions.selectedDateParts}
-          disabled={actions.isPending}
-          onDateChange={actions.updateLocalDate}
-          onTimeChange={actions.setLocalTime}
-          onOpenPickerChange={actions.setOpenPicker}
-          onCalendarMonthChange={actions.setCalendarMonth}
-          onCalendarDaySelect={actions.selectCalendarDay}
-          onTimeSelect={actions.selectTime}
-          onReschedule={actions.rescheduleMeeting}
-        />
-      ) : null}
+          <EventLocationAction
+            value={actions.localLocationName}
+            defaultLocationName={defaultLocationName}
+            actionLabel={eventLocationActionLabel(hasPresenceData)}
+            disabled={actions.isPending}
+            helperText={locationHint}
+            onChange={actions.setLocalLocationName}
+            onSave={actions.saveLocation}
+          />
 
-      <EventCloseAction
-        hasPresenceData={hasPresenceData}
-        isClosedWithoutPresence={actions.isClosedWithoutPresence}
-        isFutureEvent={isFutureEvent}
-        disabled={actions.isPending}
-        onClose={actions.markAsCancelled}
-        onReopen={actions.reopenMeeting}
-      />
+          {actions.canReschedule ? (
+            <div className={styles.secondaryActions}>
+              <EventRescheduleAction
+                localDate={actions.localDate}
+                localTime={actions.localTime}
+                openPicker={actions.openPicker}
+                calendarMonth={actions.calendarMonth}
+                selectedDateParts={actions.selectedDateParts}
+                disabled={actions.isPending}
+                onDateChange={actions.updateLocalDate}
+                onTimeChange={actions.setLocalTime}
+                onOpenPickerChange={actions.setOpenPicker}
+                onCalendarMonthChange={actions.setCalendarMonth}
+                onCalendarDaySelect={actions.selectCalendarDay}
+                onTimeSelect={actions.selectTime}
+                onReschedule={actions.rescheduleMeeting}
+              />
+            </div>
+          ) : null}
 
-      <EventActionFeedback message={actions.message} errorMessage={actions.errorMessage} />
+          {!hasPresenceData ? (
+            <EventCloseAction
+              isClosedWithoutPresence={actions.isClosedWithoutPresence}
+              isFutureEvent={isFutureEvent}
+              disabled={actions.isPending}
+              onClose={actions.markAsCancelled}
+              onReopen={actions.reopenMeeting}
+            />
+          ) : null}
+
+          <EventActionFeedback message={actions.message} errorMessage={actions.errorMessage} />
+        </div>
+      </div>
     </Card>
   );
 }

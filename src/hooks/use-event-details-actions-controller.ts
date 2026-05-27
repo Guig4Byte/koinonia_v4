@@ -73,8 +73,8 @@ export function useEventDetailsActionsController({
     router.refresh();
   }
 
-  function readRequiredLocation() {
-    const nextLocationName = localLocationName.trim();
+  function readRequiredLocation(locationNameValue = localLocationName) {
+    const nextLocationName = locationNameValue.trim();
 
     if (!nextLocationName) {
       setMessage(null);
@@ -85,9 +85,11 @@ export function useEventDetailsActionsController({
     return nextLocationName;
   }
 
-  function saveLocation() {
-    const nextLocationName = readRequiredLocation();
+  function saveLocation(nextLocationNameValue?: string) {
+    const nextLocationName = readRequiredLocation(nextLocationNameValue);
     if (!nextLocationName) return;
+
+    setLocalLocationName(nextLocationName);
 
     startTransition(() => {
       void patchEvent({ locationName: nextLocationName }, "Local do encontro atualizado.");

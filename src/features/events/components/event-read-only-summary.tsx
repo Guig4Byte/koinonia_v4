@@ -1,17 +1,15 @@
 import Link from "next/link";
 import { AttendanceStatus } from "@/generated/prisma/client";
-import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
   buildEventReadOnlyAttendanceView,
-  eventAttendanceLabels,
-  eventAttendanceStatusTone,
   eventReadOnlyEmptyMessage,
   sortPeopleByName,
 } from "@/features/events/event-detail-view";
 import type { EventAttendanceGroup, EventReadOnlyMember, EventReadOnlyVisitor } from "@/features/events/event-detail-view";
 import { cn } from "@/lib/cn";
 import { ROUTES } from "@/lib/routes";
+import { initials } from "@/lib/text";
 import styles from "./event-read-only-summary.module.css";
 
 type AttendanceVisualTone = "present" | "absent" | "justified" | "pending" | "visitor";
@@ -35,27 +33,21 @@ const attendanceToneClass: Record<AttendanceVisualTone, string> = {
 function AttendancePersonRow({
   href,
   name,
-  badgeTone,
-  badgeLabel,
   status,
   visualTone,
 }: {
   href: string;
   name: string;
-  badgeTone: BadgeTone;
-  badgeLabel: string;
   status?: AttendanceStatus | null;
   visualTone?: AttendanceVisualTone;
 }) {
   const tone = visualTone ?? attendanceVisualTone(status);
 
   return (
-    <Link
-      href={href}
-      className={cn(styles.personRow, attendanceToneClass[tone])}
-    >
+    <Link href={href} className={cn(styles.personRow, attendanceToneClass[tone])}>
+      <span className={styles.personInitials} aria-hidden="true">{initials(name)}</span>
       <span className={styles.personName}>{name}</span>
-      <Badge tone={badgeTone} size="sm" maxWidth="row">{badgeLabel}</Badge>
+      <span className={styles.personArrow} aria-hidden="true">→</span>
     </Link>
   );
 }
@@ -65,8 +57,6 @@ function AttendanceMemberRow({ member }: { member: EventReadOnlyMember }) {
     <AttendancePersonRow
       href={ROUTES.person(member.personId)}
       name={member.fullName}
-      badgeTone={eventAttendanceStatusTone(member.currentStatus)}
-      badgeLabel={member.currentStatus ? eventAttendanceLabels[member.currentStatus] : "Sem marcação"}
       status={member.currentStatus}
     />
   );
@@ -82,7 +72,7 @@ function AttendanceGroup({ group }: { group: EventAttendanceGroup }) {
       <div className={styles.groupHeader}>
         <div>
           <p className={styles.groupTitle}>{group.title}</p>
-          <p className={styles.groupDescription}>{group.description}</p>
+          {group.description ? <p className={styles.groupDescription}>{group.description}</p> : null}
         </div>
       </div>
       <div className={styles.rows}>
@@ -94,6 +84,15 @@ function AttendanceGroup({ group }: { group: EventAttendanceGroup }) {
   );
 }
 
+function Metric({ value, label, tone }: { value: number | string; label: string; tone?: "present" | "attention" | "justified" }) {
+  return (
+    <div className={cn(styles.metric, tone === "present" && styles.metricPresent, tone === "attention" && styles.metricAttention, tone === "justified" && styles.metricJustified)}>
+      <span className={styles.metricValue}>{value}</span>
+      <span className={styles.metricLabel}>{label}</span>
+    </div>
+  );
+}
+
 export function EventReadOnlySummary({
   completed,
   isFutureEvent,
@@ -102,6 +101,7 @@ export function EventReadOnlySummary({
   members,
   visitors,
   permissionHint,
+  reserveBottomSpace = true,
 }: {
   completed: boolean;
   isFutureEvent: boolean;
@@ -110,6 +110,7 @@ export function EventReadOnlySummary({
   members: EventReadOnlyMember[];
   visitors: EventReadOnlyVisitor[];
   permissionHint?: string;
+  reserveBottomSpace?: boolean;
 }) {
   const emptyMessage = eventReadOnlyEmptyMessage({ completed, isFutureEvent, isCancelled, closedLabel });
 
@@ -122,28 +123,39 @@ export function EventReadOnlySummary({
   }
 
   const attendanceView = buildEventReadOnlyAttendanceView(members);
+  const absentCount = members.filter((member) => member.currentStatus === AttendanceStatus.ABSENT).length;
+  const justifiedCount = members.filter((member) => member.currentStatus === AttendanceStatus.JUSTIFIED).length;
+  const presentCount = attendanceView.presentMembers.length;
 
   return (
-    <section className={styles.summarySection}>
+    <section className={cn(styles.summarySection, reserveBottomSpace && styles.summarySectionWithBottomSpace)}>
       {permissionHint ? (
         <Card className={styles.permissionHint}>
           {permissionHint}
         </Card>
       ) : null}
 
+      <Card className={cn(styles.pastoralCueCard, styles[`pastoralCue-${attendanceView.pastoralCue.tone}`])}>
+        <span className={styles.pastoralCueIcon} aria-hidden="true">♡</span>
+        <div>
+          <p className={styles.pastoralCueTitle}>{attendanceView.pastoralCue.title}</p>
+          <p className={styles.pastoralCueDescription}>{attendanceView.pastoralCue.description}</p>
+        </div>
+      </Card>
+
       <Card className={styles.attendanceCard}>
         <div className={styles.cardHeader}>
-          <div className={styles.heading}>
-            <p className={styles.title}>Membros da célula</p>
-            <p className={styles.total}>{attendanceView.memberTotalLabel}</p>
-            <p className={styles.breakdown}>{attendanceView.memberBreakdownLabel}</p>
-          </div>
+          <p className={styles.title}>Membros da célula</p>
           <span className={styles.statusPill}>Registrada</span>
         </div>
 
-        <div className={cn(styles.pastoralCue, styles[`pastoralCue-${attendanceView.pastoralCue.tone}`])}>
-          <p className={styles.pastoralCueTitle}>{attendanceView.pastoralCue.title}</p>
-          <p className={styles.pastoralCueDescription}>{attendanceView.pastoralCue.description}</p>
+        <div className={cn(styles.metricsGrid, justifiedCount > 0 && styles.metricsGridWithJustified)} aria-label={attendanceView.memberSummary}>
+          <Metric value={members.length} label={members.length === 1 ? "membro" : "membros"} />
+          <Metric value={presentCount} label={presentCount === 1 ? "presente" : "presentes"} tone="present" />
+          <Metric value={absentCount} label={absentCount === 1 ? "ausente" : "ausentes"} tone="attention" />
+          {justifiedCount > 0 ? (
+            <Metric value={justifiedCount} label={justifiedCount === 1 ? "justificou" : "justificaram"} tone="justified" />
+          ) : null}
         </div>
 
         <div className={styles.groupList}>
@@ -155,13 +167,14 @@ export function EventReadOnlySummary({
         {attendanceView.presentMembers.length > 0 ? (
           <details className={styles.presentDisclosure}>
             <summary className={styles.presentSummary}>
-              <span>
+              <span className={styles.presentSummaryCopy}>
                 <span className={styles.groupTitle}>Presentes ({attendanceView.presentMembers.length})</span>
                 <span className={styles.groupDescription}>Lista completa dos presentes.</span>
               </span>
               <span className={styles.presentAction} aria-hidden="true">
-                <span className={styles.closedLabel}>Mostrar presentes</span>
-                <span className={styles.openLabel}>Ocultar</span>
+                <span className={styles.closedLabel}>Ver lista de presentes</span>
+                <span className={styles.openLabel}>Ocultar presentes</span>
+                <span className={styles.presentArrow}>→</span>
               </span>
             </summary>
             <div className={styles.presentContent}>
@@ -187,8 +200,6 @@ export function EventReadOnlySummary({
                 key={visitor.id}
                 href={ROUTES.person(visitor.personId)}
                 name={visitor.fullName}
-                badgeTone="info"
-                badgeLabel="Visitante"
                 visualTone="visitor"
               />
             ))}

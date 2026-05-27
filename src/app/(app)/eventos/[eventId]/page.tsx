@@ -94,6 +94,7 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
               members={members}
               visitors={visitorRows}
               permissionHint={completed && !canOfferAdjustment ? "Visualização consultiva. O líder responsável ajusta presença." : undefined}
+              reserveBottomSpace={!canEditEventDetails && !canOfferAdjustment}
             />
             {canEditEventDetails ? (
               <EventDetailsActions

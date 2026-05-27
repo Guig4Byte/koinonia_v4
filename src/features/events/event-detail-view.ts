@@ -19,7 +19,7 @@ export type EventReadOnlyVisitor = {
 
 export type EventAttendanceGroup = {
   title: string;
-  description: string;
+  description?: string;
   members: EventReadOnlyMember[];
 };
 
@@ -132,12 +132,10 @@ export function buildEventReadOnlyAttendanceView(members: EventReadOnlyMember[])
     groups: [
       {
         title: `Ausentes (${absentMembers.length})`,
-        description: "Ausência isolada nem sempre indica algo; observar o contexto pode ser importante.",
         members: absentMembers,
       },
       {
         title: `Justificaram (${justifiedMembers.length})`,
-        description: "Houve contexto registrado; mantenha apenas o vínculo próximo quando fizer sentido.",
         members: justifiedMembers,
       },
       {
