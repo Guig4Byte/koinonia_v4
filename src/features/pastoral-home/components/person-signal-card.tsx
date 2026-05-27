@@ -57,7 +57,7 @@ export function PersonSignalCard(props: {
     emphasis = "default",
   } = props;
   const resolvedBadgeTone = badgeTone ?? (severity === "risk" ? "risk" : severity === "ok" ? "ok" : severity === "info" ? "info" : "warn");
-  const resolvedSignalLabel = badgeLabel ?? (severity === "risk" ? "Cuidado próximo" : "Em atenção");
+  const resolvedSignalLabel = badgeLabel ?? (severity === "risk" ? "Urgente" : "Em atenção");
   const cardHref = detailHref ?? href;
   const priorityTone = signalCardPriorityTone(resolvedBadgeTone, severity);
   const showIconAction = Boolean(cardHref) && actionDisplay === "icon";

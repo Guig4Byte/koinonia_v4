@@ -177,7 +177,7 @@ export function groupDetailFocusCard(
 
   if (focus === FILTER_URGENT) {
     return {
-      title: "Cuidado próximo nesta célula",
+      title: "Urgente nesta célula",
       detail: focusedMembersCount > 0 ? `${peopleDetail} Sinais que pedem atenção imediata.` : "Sinais que pedem atenção imediata.",
       tone: "error",
     };

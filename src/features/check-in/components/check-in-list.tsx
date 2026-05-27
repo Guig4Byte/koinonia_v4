@@ -21,7 +21,7 @@ import {
 import { cn } from "@/lib/cn";
 import styles from "./check-in.module.css";
 
-const unsavedCheckInMessage = "Você tem alterações de presença não salvas. Deseja sair sem salvar?";
+const unsavedCheckInMessage = "Há alterações de presença não salvas. Deseja sair sem salvar?";
 
 export function CheckInList({
   eventId,

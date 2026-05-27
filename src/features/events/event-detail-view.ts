@@ -167,7 +167,7 @@ export function eventReadOnlyEmptyMessage({
   if (!completed) {
     return isFutureEvent
       ? "Este encontro ainda não começou. A presença poderá ser registrada depois que começar."
-      : "A presença ainda não foi registrada. O líder da célula registra o encontro; pastor e supervisor acompanham o resumo quando ele estiver pronto.";
+      : "A presença ainda não foi registrada. A liderança da célula registra o encontro; pastor e supervisor acompanham o resumo quando ele estiver pronto.";
   }
 
   return null;

@@ -12,9 +12,9 @@ describe("signal display helpers", () => {
   it("keeps urgent as urgent for every viewer even when support was requested", () => {
     const signal = { severity: SignalSeverity.URGENT, assignedTo: { role: UserRole.SUPERVISOR } };
 
-    expect(signalBadgeForViewer(signal, { role: UserRole.LEADER })).toEqual({ label: "Cuidado próximo", tone: "risk" });
-    expect(signalBadgeForViewer(signal, { role: UserRole.SUPERVISOR })).toEqual({ label: "Cuidado próximo", tone: "risk" });
-    expect(signalBadgeForViewer(signal, { role: UserRole.PASTOR })).toEqual({ label: "Cuidado próximo", tone: "risk" });
+    expect(signalBadgeForViewer(signal, { role: UserRole.LEADER })).toEqual({ label: "Urgente", tone: "risk" });
+    expect(signalBadgeForViewer(signal, { role: UserRole.SUPERVISOR })).toEqual({ label: "Urgente", tone: "risk" });
+    expect(signalBadgeForViewer(signal, { role: UserRole.PASTOR })).toEqual({ label: "Urgente", tone: "risk" });
   });
 
   it("shows supervisor support as support for every viewer without hiding it as local attention", () => {
@@ -27,9 +27,9 @@ describe("signal display helpers", () => {
   });
 
   it("keeps urgent unassigned signals consistent", () => {
-    expect(signalBadgeForViewer({ severity: SignalSeverity.URGENT }, { role: UserRole.LEADER })).toEqual({ label: "Cuidado próximo", tone: "risk" });
-    expect(signalBadgeForViewer({ severity: SignalSeverity.URGENT }, { role: UserRole.SUPERVISOR })).toEqual({ label: "Cuidado próximo", tone: "risk" });
-    expect(signalBadgeForViewer({ severity: SignalSeverity.URGENT }, { role: UserRole.PASTOR })).toEqual({ label: "Cuidado próximo", tone: "risk" });
+    expect(signalBadgeForViewer({ severity: SignalSeverity.URGENT }, { role: UserRole.LEADER })).toEqual({ label: "Urgente", tone: "risk" });
+    expect(signalBadgeForViewer({ severity: SignalSeverity.URGENT }, { role: UserRole.SUPERVISOR })).toEqual({ label: "Urgente", tone: "risk" });
+    expect(signalBadgeForViewer({ severity: SignalSeverity.URGENT }, { role: UserRole.PASTOR })).toEqual({ label: "Urgente", tone: "risk" });
   });
 
   it("shows informational signals as informative for pastoral viewers", () => {

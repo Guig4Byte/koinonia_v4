@@ -28,7 +28,7 @@ export type CellsFilter =
 
 export const CELLS_FILTERS: ReadonlyArray<FilterOption<CellsFilter>> = [
   { value: FILTER_ALL, label: "Todas" },
-  { value: FILTER_URGENT, label: "Cuidado próximo", tone: "risk" },
+  { value: FILTER_URGENT, label: "Urgente", tone: "risk" },
   { value: FILTER_ATTENTION, label: "Em atenção", tone: "warn" },
   { value: FILTER_IN_CARE, label: "Em cuidado", tone: "care" },
   { value: FILTER_SUPPORT, label: "Apoio pedido", tone: "support" },

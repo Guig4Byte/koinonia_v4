@@ -62,7 +62,7 @@ function saveBarDescription({
   if (isPending) return "Mantenha esta tela aberta até concluir.";
   if (errorMessage) return "O aviso acima pode ajudar antes de salvar novamente.";
   if (summary.pending > 0) return `${checkInMarkedLabel(summary)}. Ainda há irmãos sem marcação antes de salvar.`;
-  if (mode === "adjust" && !hasUnsavedChanges) return "Ainda falta uma alteração de presença ou visitante para salvar.";
+  if (mode === "adjust" && !hasUnsavedChanges) return "Ainda não há alteração de presença ou visitante para salvar.";
   if (mode === "adjust") return "Tudo marcado. As mudanças já podem ser salvas.";
 
   return "Tudo marcado. A presença já pode ser salva.";

@@ -27,7 +27,7 @@ export function buildPersonCareOverviewView(input: PersonCareOverviewInput): Per
   if (input.openSignalsCount > 0) {
     return {
       priorityTone: input.hasRiskSignal ? "risk" : "warn",
-      signalLabel: input.hasRiskSignal ? "Cuidado próximo" : "Em atenção",
+      signalLabel: input.hasRiskSignal ? "Urgente" : "Em atenção",
       contextLabel,
       nextStepLabel: input.canRegisterCare ? "Guardar contato pastoral" : "Alinhar com a liderança",
       nextStepDetail: input.hasPhone

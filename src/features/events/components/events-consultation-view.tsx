@@ -62,7 +62,7 @@ export function EventsConsultationView({
         compact
         eyebrow="Consulta"
         title="Consulta de encontros"
-        description="Alterne entre presenças pendentes e histórico sem sair desta tela."
+        description="Pendências e histórico ficam juntos nesta consulta."
       />
       <section id={EVENTS_CONSULTATION_SECTION_ID} className="scroll-mt-6">
         <nav className={styles.consultationModeTabs} aria-label="Tipo de consulta">

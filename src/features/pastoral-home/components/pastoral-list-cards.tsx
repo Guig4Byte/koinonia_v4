@@ -144,7 +144,7 @@ function inCarePersonCards<TPerson extends InCarePersonCardItem>({
       context={contextForPerson?.(person)}
       detailHref={ROUTES.person(person.id)}
       severity="info"
-      badgeLabel="Em cuidado"
+      badgeLabel="Encaminhado"
       badgeTone="care"
       ctaLabel="Continuar cuidado"
       emphasis="subtle"

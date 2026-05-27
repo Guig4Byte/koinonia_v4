@@ -20,6 +20,7 @@
 .withLabel {
   min-width: 0;
   max-width: 100%;
+  overflow: hidden;
   justify-content: flex-start;
   gap: 0.34rem;
   border: 1px solid var(--signal-border);
@@ -37,6 +38,7 @@
   position: relative;
   z-index: 1;
   display: inline-grid;
+  flex: 0 0 auto;
   width: var(--signal-size);
   height: var(--signal-size);
   place-items: center;
@@ -59,6 +61,7 @@
 
 .label {
   min-width: 0;
+  flex: 1 1 auto;
   overflow: hidden;
   color: var(--signal-fg);
   font-size: var(--text-xs);

@@ -27,7 +27,7 @@ describe("person effective badge", () => {
         { severity: SignalSeverity.URGENT },
         { role: UserRole.LEADER },
       ),
-    ).toEqual({ label: "Cuidado próximo", tone: "risk" });
+    ).toEqual({ label: "Urgente", tone: "risk" });
   });
 
   it("keeps viewer-specific signal wording for supervisor support", () => {
@@ -52,13 +52,13 @@ describe("person effective badge", () => {
     });
   });
 
-  it("keeps pastoral wording for pastor/admin when a signal is assigned pastorally", () => {
+  it("shows encaminhado for pastor/admin when a signal is assigned pastorally", () => {
     expect(
       personEffectiveBadgeForViewer(
         { status: PersonStatus.NEEDS_ATTENTION },
         { severity: SignalSeverity.ATTENTION, assignedTo: { role: UserRole.PASTOR } },
         { role: UserRole.PASTOR },
       ),
-    ).toEqual({ label: "Cuidado pastoral", tone: "risk" });
+    ).toEqual({ label: "Encaminhado", tone: "risk" });
   });
 });

@@ -75,7 +75,7 @@ const healthSegmentConfig: Record<PastoralHealthKey, Omit<PastoralHealthSegment,
   },
   urgent: {
     key: "urgent",
-    label: "Cuidado próximo",
+    label: "Urgente",
     tone: "risk",
     href: ROUTES.teamFilter(FILTER_URGENT),
     singular: "urgente",

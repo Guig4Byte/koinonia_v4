@@ -60,9 +60,9 @@ const teamFilterCopy: Record<
       "Ajuste a busca ou limpe os filtros para conferir toda a estrutura pastoral.",
   },
   [FILTER_URGENT]: {
-    contextTitle: "Cuidado próximo",
+    contextTitle: "Urgente",
     contextDetail: "Sinais que pedem atenção imediata no contexto da célula.",
-    listTitle: "Cuidado próximo por supervisor",
+    listTitle: "Urgentes por supervisor",
     listDetail: "O contexto pastoral aparece no detalhe da célula.",
     empty: "Nenhuma célula com sinal de cuidado próximo nesse recorte.",
   },
@@ -319,7 +319,7 @@ export function groupSignalTone(group: TeamGroup): TeamSignalTone {
 export function groupSignalLabel(group: TeamGroup) {
   const tone = groupSignalTone(group);
 
-  if (group.urgentCount > 0) return "Cuidado próximo";
+  if (group.urgentCount > 0) return "Urgente";
   if (group.pastoralCasesCount > 0) return group.pastoralCasesCount === 1 ? "Encaminhada" : "Encaminhadas";
   if (tone === "support") return "Apoio pedido";
   if (tone === "warn") return "Em atenção";

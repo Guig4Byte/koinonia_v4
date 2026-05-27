@@ -162,7 +162,7 @@ export function useCheckInController({
       const responseBody = isCheckInResponse(payload) ? payload : null;
 
       if (!response.ok) {
-        setErrorMessage(responseBody?.error ?? "Não foi possível salvar a presença.");
+        setErrorMessage(responseBody?.error ?? "Não foi possível salvar a presença agora. Vale tentar novamente em instantes.");
         setIsSaving(false);
         return;
       }

@@ -41,7 +41,7 @@ export type GroupSectionKey = "care" | "presence" | "stable";
 export const GROUP_SECTIONS: Array<{ key: GroupSectionKey; title: string; detail: string }> = [
   {
     key: "care",
-    title: "Cuidado próximo",
+    title: "Urgente",
     detail: "Sinais abertos, pedidos de apoio ou irmãos já em cuidado.",
   },
   {
@@ -78,7 +78,7 @@ const cellsFilterContextCopy: Record<CellsFilter, { title: string; detail: strin
     tone: "warn",
   },
   [FILTER_URGENT]: {
-    title: "Cuidado próximo",
+    title: "Urgente",
     detail:
       "Sinais mais sensíveis aparecem primeiro para orientar conversa, leitura pastoral e alinhamento com a liderança.",
     tone: "risk",

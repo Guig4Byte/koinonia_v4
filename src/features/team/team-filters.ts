@@ -23,7 +23,7 @@ export type TeamGroupFocus = Exclude<TeamFilter, typeof FILTER_ALL>;
 
 export const TEAM_FILTERS: ReadonlyArray<FilterOption<TeamFilter>> = [
   { value: FILTER_ALL, label: "Todos" },
-  { value: FILTER_URGENT, label: "Cuidado próximo", tone: "risk" },
+  { value: FILTER_URGENT, label: "Urgente", tone: "risk" },
   { value: FILTER_PASTORAL, label: "Encaminhadas", tone: "risk" },
   { value: FILTER_SUPPORT, label: "Apoio pedido", tone: "support" },
   { value: FILTER_ATTENTION, label: "Em atenção", tone: "warn" },

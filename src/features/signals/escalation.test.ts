@@ -51,7 +51,7 @@ describe("signal escalation helpers", () => {
   it("uses a pastoral state chip for pastor viewers", () => {
     const pastoralRequest = { severity: SignalSeverity.ATTENTION, assignedTo: { role: UserRole.PASTOR } };
 
-    expect(escalationStatusChipForViewer(pastoralRequest, { role: UserRole.PASTOR })).toBe("Cuidado pastoral");
+    expect(escalationStatusChipForViewer(pastoralRequest, { role: UserRole.PASTOR })).toBe("Encaminhado");
     expect(escalationStatusChipForViewer(pastoralRequest, { role: UserRole.LEADER })).toBe("Encaminhado");
   });
 

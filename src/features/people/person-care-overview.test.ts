@@ -21,7 +21,7 @@ describe("buildPersonCareOverviewView", () => {
     });
 
     expect(view.priorityTone).toBe("risk");
-    expect(view.signalLabel).toBe("Cuidado próximo");
+    expect(view.signalLabel).toBe("Urgente");
     expect(view.contextLabel).toBe("Ana · Célula Norte");
     expect(view.nextStepLabel).toBe("Guardar contato pastoral");
   });

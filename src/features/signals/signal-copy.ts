@@ -95,7 +95,7 @@ export const SIGNAL_COPY = {
     detail: "Encaminhado ao pastor",
     pastoralDetail: "Encaminhado ao cuidado pastoral",
     chip: "Encaminhado",
-    pastoralChip: "Cuidado pastoral",
+    pastoralChip: "Encaminhado",
     apiMessage: "Encaminhado ao pastor",
     title: "Encaminhado ao pastor",
     requestedTitle: "Cuidado pastoral solicitado",
@@ -106,10 +106,10 @@ export const SIGNAL_COPY = {
   },
 
   badges: {
-    urgent: "Cuidado próximo",
+    urgent: "Urgente",
     localAttention: "Em atenção",
     supportRequest: "Pedido de apoio",
-    pastoralCase: "Cuidado pastoral",
+    pastoralCase: "Encaminhado",
     escalated: "Encaminhado",
     informational: "Contexto",
     attention: "Em atenção",
