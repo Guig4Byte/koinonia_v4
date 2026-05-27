@@ -1,6 +1,7 @@
 import { ArrowRight, CalendarClock, ClipboardCheck, type LucideIcon } from "lucide-react";
 import { CardLink } from "@/components/ui/card-link";
 import type { EventsConsultationSummary } from "@/features/events/events-page-view";
+import { cn } from "@/lib/cn";
 import { countLabel } from "@/lib/format";
 import { eventsConsultationSectionHref } from "./event-consultation-routes";
 import styles from "./events-page-sections.module.css";
@@ -20,9 +21,8 @@ function ConsultationCard({
   count: number;
   tone?: "neutral" | "attention";
 }) {
-  const metricToneClass = tone === "attention" && count > 0
-    ? styles.consultationMetricAttention
-    : styles.consultationMetric;
+  const consultationCountLabel = countLabel(count, "encontro", "encontros");
+  const consultationDescription = `${consultationCountLabel} ${description}`;
 
   return (
     <CardLink
@@ -31,22 +31,29 @@ function ConsultationCard({
       radius="sm"
       minHeight="sm"
       surface="consultation"
-      className="group"
-      aria-label={`${title}: ${countLabel(count, "encontro", "encontros")}. ${description}`}
+      className={cn(
+        "group",
+        styles.consultationCard,
+        tone === "attention" ? styles.consultationCardAttention : styles.consultationCardHistory,
+      )}
+      aria-label={`${title}: ${consultationDescription}`}
     >
       <span className={styles.consultationLayout}>
         <span className={styles.consultationIcon} aria-hidden="true">
-          <Icon className="h-4 w-4" />
+          <Icon className="h-5 w-5" />
         </span>
-        <span className={styles.consultationTitle}>{title}</span>
+
+        <span className={styles.consultationCopy}>
+          <span className={styles.consultationTitle}>{title}</span>
+          <span className={styles.consultationDescription}>{consultationDescription}</span>
+        </span>
+
+        <span className={styles.consultationCount} aria-label={consultationCountLabel}>
+          {count}
+        </span>
+
         <span className={styles.consultationArrow} aria-hidden="true">
           <ArrowRight className="h-4 w-4" />
-        </span>
-        <span className={styles.consultationStatus}>
-          <span className={metricToneClass} aria-label={`${count} ${count === 1 ? "encontro" : "encontros"}`}>
-            {count}
-          </span>
-          <span className={styles.consultationDescription}>{description}</span>
         </span>
       </span>
     </CardLink>
