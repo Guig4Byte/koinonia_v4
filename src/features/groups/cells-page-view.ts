@@ -72,13 +72,13 @@ const cellsFilterContextCopy: Record<CellsFilter, { title: string; detail: strin
       "Mostramos primeiro as células que pedem cuidado mais próximo. No detalhe da célula, todos os sinais, presenças e acompanhamentos aparecem com calma.",
   },
   [FILTER_ATTENTION]: {
-    title: "Cuidado próximo",
+    title: "Atenção",
     detail:
       "Células com sinais abertos ou atenção local para você acompanhar junto dos líderes.",
-    tone: "risk",
+    tone: "warn",
   },
   [FILTER_URGENT]: {
-    title: "Cuidado próximo",
+    title: "Urgentes",
     detail:
       "Sinais mais sensíveis aparecem primeiro para orientar conversa, leitura pastoral e alinhamento com a liderança.",
     tone: "risk",

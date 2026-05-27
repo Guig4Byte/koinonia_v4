@@ -28,7 +28,8 @@ export type CellsFilter =
 
 export const CELLS_FILTERS: ReadonlyArray<FilterOption<CellsFilter>> = [
   { value: FILTER_ALL, label: "Todas" },
-  { value: FILTER_ATTENTION, label: "Atenção", tone: "risk" },
+  { value: FILTER_URGENT, label: "Urgentes", tone: "risk" },
+  { value: FILTER_ATTENTION, label: "Atenção", tone: "warn" },
   { value: FILTER_IN_CARE, label: "Em cuidado", tone: "care" },
   { value: FILTER_SUPPORT, label: "Apoio", tone: "support" },
   { value: FILTER_PRESENCE, label: "Presença", tone: "neutral" },
@@ -36,7 +37,6 @@ export const CELLS_FILTERS: ReadonlyArray<FilterOption<CellsFilter>> = [
 
 const ACCEPTED_CELLS_FILTERS: ReadonlyArray<FilterOption<CellsFilter>> = [
   ...CELLS_FILTERS,
-  { value: FILTER_URGENT, label: "Urgentes" },
   { value: FILTER_PASTORAL, label: "Encaminhadas" },
   { value: FILTER_NO_RECENT_PRESENCE, label: "Sem presença recente" },
   { value: FILTER_LOW_PRESENCE, label: "Presença baixa" },
@@ -47,7 +47,7 @@ export function readCellsFilter(value: string | null | undefined): CellsFilter {
 }
 
 export function visibleCellsFilter(filter: CellsFilter): CellsFilter {
-  if (filter === FILTER_URGENT || filter === FILTER_PASTORAL) return FILTER_ATTENTION;
+  if (filter === FILTER_PASTORAL) return FILTER_URGENT;
   if (filter === FILTER_NO_RECENT_PRESENCE || filter === FILTER_LOW_PRESENCE) return FILTER_PRESENCE;
 
   return filter;

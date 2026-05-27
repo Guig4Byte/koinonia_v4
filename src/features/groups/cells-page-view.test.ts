@@ -96,8 +96,8 @@ describe("cells-page-view", () => {
   });
 
   it("mapeia filtros internos para chips visíveis", () => {
-    expect(visibleCellsFilter("urgentes")).toBe("atencao");
-    expect(visibleCellsFilter("encaminhadas")).toBe("atencao");
+    expect(visibleCellsFilter("urgentes")).toBe("urgentes");
+    expect(visibleCellsFilter("encaminhadas")).toBe("urgentes");
     expect(visibleCellsFilter("sem-presenca")).toBe("presenca");
     expect(visibleCellsFilter("presenca-baixa")).toBe("presenca");
     expect(visibleCellsFilter("em-cuidado")).toBe("em-cuidado");
@@ -108,7 +108,11 @@ describe("cells-page-view", () => {
       title: "Leitura pastoral da supervisão",
     });
     expect(cellsFilterContextContent("atencao")).toMatchObject({
-      title: "Cuidado próximo",
+      title: "Atenção",
+      tone: "warn",
+    });
+    expect(cellsFilterContextContent("urgentes")).toMatchObject({
+      title: "Urgentes",
       tone: "risk",
     });
     expect(cellsFilterContextContent("presenca")).toMatchObject({
