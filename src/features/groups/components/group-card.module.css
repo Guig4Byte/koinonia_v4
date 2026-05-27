@@ -112,11 +112,31 @@
 
 @media (max-width: 380px) {
   .footer {
-    grid-template-columns: 1fr;
-    gap: 0.56rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.48rem;
+    padding-inline: 0.72rem;
+  }
+
+  .metricLabel {
+    font-size: calc(var(--text-xs) * 0.94);
+  }
+
+  .metricValue {
+    flex-wrap: nowrap;
+    gap: 0.16rem 0.32rem;
+  }
+
+  .trend {
+    overflow: hidden;
+    max-width: 4.6rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .action {
-    justify-self: start;
+    min-height: 2.1rem;
+    align-self: center;
+    padding: 0.38rem 0.52rem;
+    font-size: calc(var(--text-xs) * 0.96);
   }
 }
