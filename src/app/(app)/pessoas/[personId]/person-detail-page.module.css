@@ -82,6 +82,7 @@
 .personBadge.personBadge {
   flex: 0 0 auto;
   margin-top: 0.12rem;
+  max-width: 8.6rem;
 }
 
 .sectionStack {

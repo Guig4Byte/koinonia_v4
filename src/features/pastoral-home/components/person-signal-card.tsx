@@ -11,6 +11,15 @@ import styles from "./person-signal-card.module.css";
 export type PersonSignalCardActionDisplay = "icon" | "footer";
 export type PersonSignalCardEmphasis = "default" | "strong" | "subtle";
 
+function comparableCopy(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
 function signalCardPriorityTone(resolvedBadgeTone: BadgeTone, severity: "ok" | "warn" | "risk" | "info"): CardPriorityTone | undefined {
   if (resolvedBadgeTone !== "neutral" && resolvedBadgeTone !== "ok" && resolvedBadgeTone !== "info") {
     return resolvedBadgeTone;
@@ -53,7 +62,10 @@ export function PersonSignalCard(props: {
   const priorityTone = signalCardPriorityTone(resolvedBadgeTone, severity);
   const showIconAction = Boolean(cardHref) && actionDisplay === "icon";
   const showFooterAction = Boolean(cardHref) && actionDisplay === "footer";
-  const normalizedContext = context?.trim();
+  const rawContext = context?.trim();
+  const normalizedContext = rawContext && comparableCopy(rawContext) !== comparableCopy(resolvedSignalLabel)
+    ? rawContext
+    : undefined;
 
   const content = (
     <PriorityCard
@@ -81,7 +93,7 @@ export function PersonSignalCard(props: {
               {normalizedContext ? <p className={styles.context}>{normalizedContext}</p> : null}
             </div>
             <span className={styles.headerActions}>
-              <SignalHeartIndicator tone={resolvedBadgeTone} size="sm" label={resolvedSignalLabel} className={styles.signalIndicator} />
+              <SignalHeartIndicator tone={resolvedBadgeTone} size="sm" label={resolvedSignalLabel} showLabel className={styles.signalIndicator} />
               {showIconAction ? (
                 <span className={styles.iconAction} aria-hidden="true">
                   <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.35} />

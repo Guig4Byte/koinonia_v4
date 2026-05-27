@@ -1,4 +1,3 @@
-import { PersonMiniCard } from "@/components/shared/person-cards";
 import { PersonSignalCard, type PersonSignalCardActionDisplay, type PersonSignalCardEmphasis } from "@/features/pastoral-home/components/person-signal-card";
 import { PastoralListSection, type PastoralSectionTone } from "@/features/pastoral-home/components/pastoral-section";
 import { groupNameOrFallback } from "@/features/groups/group-display";
@@ -34,10 +33,6 @@ type InCarePersonCardItem = {
 
 function defaultSignalContext(signal: PastoralSignalCardItem): string {
   return groupNameOrFallback(signal.group);
-}
-
-function defaultInCareContext(person: InCarePersonCardItem): string {
-  return person.groupName ?? groupNameOrFallback(person.memberships?.[0]?.group);
 }
 
 function pastoralSignalCards<TSignal extends PastoralSignalCardItem>({
@@ -137,21 +132,22 @@ export function PastoralSignalSection<TSignal extends PastoralSignalCardItem>({
 
 function inCarePersonCards<TPerson extends InCarePersonCardItem>({
   people,
-  contextForPerson = defaultInCareContext,
+  contextForPerson,
 }: {
   people: TPerson[];
-  contextForPerson?: (person: TPerson) => string;
+  contextForPerson?: (person: TPerson) => string | undefined;
 }) {
   return people.map((person) => (
-    <PersonMiniCard
+    <PersonSignalCard
       key={person.id}
-      href={ROUTES.person(person.id)}
       name={person.fullName}
-      context={contextForPerson(person)}
+      context={contextForPerson?.(person)}
+      detailHref={ROUTES.person(person.id)}
+      severity="info"
       badgeLabel="Em cuidado"
       badgeTone="care"
       ctaLabel="Continuar cuidado"
-      compact
+      emphasis="subtle"
     />
   ));
 }
@@ -168,7 +164,7 @@ export function InCareSection<TPerson extends InCarePersonCardItem>({
   detail?: string;
   emptyMessage: string;
   people: TPerson[];
-  contextForPerson?: (person: TPerson) => string;
+  contextForPerson?: (person: TPerson) => string | undefined;
   tone?: PastoralSectionTone;
 }) {
   const visibleCards = inCarePersonCards({ people: people.slice(0, PASTORAL_SECTION_LIMIT), contextForPerson });

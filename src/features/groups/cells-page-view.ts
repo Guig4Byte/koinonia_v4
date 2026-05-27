@@ -269,11 +269,16 @@ function groupPrimaryStatusKey(group: SupervisorGroup, filter: CellsFilter): Gro
 export function groupStatusSummary(group: SupervisorGroup, filter: CellsFilter = FILTER_ALL): string | undefined {
   const primaryStatusKey = groupPrimaryStatusKey(group, filter);
   const secondaryStatuses = groupCareStatusSummaries(group).filter((item) => item.key !== primaryStatusKey);
+  const secondaryStatusLabels = secondaryStatuses.map((item) => item.label);
 
   if (secondaryStatuses.length === 0) return undefined;
-  if (secondaryStatuses.length <= 2) return `Também há ${joinLabelsPtBr(secondaryStatuses.map((item) => item.label))}`;
+  if (secondaryStatuses.length <= 2) return `Também há ${joinLabelsPtBr(secondaryStatusLabels)}`;
+  if (secondaryStatuses.length === 3) return `Também há ${joinLabelsPtBr(secondaryStatusLabels)} no radar`;
 
-  return `Também há ${secondaryStatuses.length} frentes no radar`;
+  const visibleStatusLabels = secondaryStatusLabels.slice(0, 3);
+  const remainingStatusesCount = secondaryStatuses.length - visibleStatusLabels.length;
+
+  return `Também há ${joinLabelsPtBr(visibleStatusLabels)} e mais ${countLabel(remainingStatusesCount, "frente", "frentes")} no radar`;
 }
 
 export function groupDetailNavigationFocus(group: SupervisorGroup, filter: CellsFilter = FILTER_ALL): GroupDetailNavigationFocus | null {

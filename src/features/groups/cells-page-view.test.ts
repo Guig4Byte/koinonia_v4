@@ -198,7 +198,7 @@ describe("cells-page-view", () => {
     expect(groupStatusSummary(group({ signals: [signal({ severity: SignalSeverity.URGENT })] }))).toBeUndefined();
     expect(groupStatusSummary(mixedGroup)).toBe("Também há apoio e atenção");
     expect(groupStatusSummary(mixedGroup, "atencao")).toBe("Também há urgência e apoio");
-    expect(groupStatusSummary(broadGroup)).toBe("Também há 3 frentes no radar");
+    expect(groupStatusSummary(broadGroup)).toBe("Também há apoio, atenção e cuidado no radar");
   });
 
   it("monta visão da página com contadores e indicador de navegação", () => {
