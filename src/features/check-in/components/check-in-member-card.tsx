@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { ChevronRight } from "lucide-react";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Button, buttonClassName, type ButtonVariant } from "@/components/ui/button";
 import { StatusCard, type StatusCardTone } from "@/components/ui/status-card";
@@ -8,12 +9,13 @@ import {
   ATTENDANCE,
   ATTENDANCE_LABELS,
   MEMBER_ATTENDANCE_OPTIONS,
-  checkInMemberStatusHint,
   checkInStatusOptionDescription,
   type AttendanceSelection,
   type CheckInItem,
   type MemberAttendanceStatus,
 } from "@/features/check-in/check-in-view";
+import { cn } from "@/lib/cn";
+import { initials } from "@/lib/text";
 import styles from "./check-in.module.css";
 
 function memberCardTone(status: AttendanceSelection): StatusCardTone {
@@ -37,6 +39,13 @@ function statusTriggerVariant(status: AttendanceSelection): ButtonVariant {
   return "outline";
 }
 
+function memberAvatarToneClass(status: AttendanceSelection) {
+  if (status === ATTENDANCE.PRESENT) return styles.memberAvatarPresent;
+  if (status === ATTENDANCE.ABSENT) return styles.memberAvatarAbsent;
+  if (status === ATTENDANCE.JUSTIFIED) return styles.memberAvatarJustified;
+  return styles.memberAvatarPending;
+}
+
 type CheckInMemberCardProps = {
   item: CheckInItem;
   onSetStatus: (personId: string, status: MemberAttendanceStatus) => void;
@@ -53,7 +62,6 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
   const sheetRef = useRef<HTMLDivElement>(null);
 
   const statusLabel = item.status ? ATTENDANCE_LABELS[item.status] : "Sem marcação";
-  const statusHint = checkInMemberStatusHint(item.status);
 
   const closeSelector = useCallback(() => {
     setSelectorOpen(false);
@@ -80,8 +88,7 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
 
   function handleSelectStatus(status: MemberAttendanceStatus) {
     onSetStatus(item.personId, status);
-    closeSelector();
-    restoreStatusButtonFocus();
+    closeSelectorAndRestoreFocus();
   }
 
   useEffect(() => {
@@ -89,15 +96,20 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
+        event.preventDefault();
         closeSelectorAndRestoreFocus();
         return;
       }
 
       if (event.key !== "Tab") return;
 
-      const focusable = Array.from(
-        sheetRef.current?.querySelectorAll<HTMLButtonElement>("button:not(:disabled)") ?? [],
-      );
+      const root = sheetRef.current;
+      if (!root) return;
+
+      const focusable = Array.from(root.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ));
+
       if (focusable.length === 0) return;
 
       const first = focusable[0];
@@ -107,7 +119,10 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
       if (event.shiftKey && active === first) {
         event.preventDefault();
         last.focus();
-      } else if (!event.shiftKey && active === last) {
+        return;
+      }
+
+      if (!event.shiftKey && active === last) {
         event.preventDefault();
         first.focus();
       }
@@ -131,15 +146,15 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
       padding="sm"
       radius="sm"
       containment="hidden"
+      className={styles.memberCard}
       data-testid="check-in-member-card"
     >
-      <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <p className="k-item-title truncate">{item.fullName}</p>
-          <p className="mt-1 text-[length:var(--text-xs)] leading-snug text-[color:var(--color-text-muted)]">
-            {statusHint}
-          </p>
-        </div>
+      <div className={styles.memberRow}>
+        <span className={cn(styles.memberAvatar, memberAvatarToneClass(item.status))} aria-hidden="true">
+          {initials(item.fullName)}
+        </span>
+
+        <p className={styles.memberName}>{item.fullName}</p>
 
         <button
           ref={statusButtonRef}
@@ -149,7 +164,7 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
             size: "sm",
             shape: "pill",
             density: "badge",
-            className: "shrink-0 gap-1.5 font-semibold",
+            className: cn(styles.memberStatusButton, "shrink-0 gap-1.5 font-semibold"),
           })}
           aria-haspopup="dialog"
           aria-expanded={selectorOpen}
@@ -160,6 +175,8 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
           <span className={styles.statusDot} aria-hidden="true" />
           {statusLabel}
         </button>
+
+        <ChevronRight className={styles.memberChevron} aria-hidden="true" />
       </div>
 
       {selectorOpen ? (

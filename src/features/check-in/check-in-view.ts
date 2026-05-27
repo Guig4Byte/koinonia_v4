@@ -90,14 +90,6 @@ export function checkInMarkedLabel(summary: CheckInSummary) {
   return `${markedMembersCount(summary)} de ${summary.totalMembers} marcados`;
 }
 
-export function checkInPendingLabel(summary: CheckInSummary) {
-  if (summary.totalMembers === 0) return "Sem membros";
-  if (summary.pending === 0) return "Todos marcados";
-  if (summary.pending === 1) return "Ainda falta 1 marcação";
-
-  return `Ainda faltam ${summary.pending} marcações`;
-}
-
 export function checkInFilterLabel(filter: CheckInMemberFilter) {
   return checkInFilterLabels[filter];
 }
@@ -126,37 +118,10 @@ export function checkInFilteredEmptyMessage(filter: CheckInMemberFilter) {
   return "Nenhum membro encontrado neste encontro.";
 }
 
-export function checkInHelperText(mode: CheckInMode) {
-  return mode === "adjust"
-    ? "Corrija apenas o que mudou neste encontro."
-    : "Marque quem veio. Só isso já ajuda a lembrar quem pode precisar de cuidado.";
-}
-
-export function checkInMemberStatusHint(status: AttendanceSelection) {
-  if (status === ATTENDANCE.PRESENT) return "Presença confirmada neste encontro.";
-  if (status === ATTENDANCE.ABSENT) return "Ausência entra no radar para acompanhamento.";
-  if (status === ATTENDANCE.JUSTIFIED) return "Justificou; mantenha o contexto sem tratar como falta seca.";
-  return "Ainda sem marcação neste encontro.";
-}
-
 export function checkInStatusOptionDescription(status: MemberAttendanceStatus) {
   if (status === ATTENDANCE.PRESENT) return "Veio ao encontro.";
   if (status === ATTENDANCE.ABSENT) return "Não veio e não houve justificativa.";
   return "Avisou ou explicou a ausência.";
-}
-
-export function checkInPastoralSignalMessage(summary: CheckInSummary) {
-  if (summary.pending > 0) return null;
-  if (summary.absent > 0 && summary.justified > 0) {
-    return "Depois de salvar, ausências e justificativas ajudam o radar a apontar quem merece um olhar próximo.";
-  }
-  if (summary.absent > 0) {
-    return "Depois de salvar, as ausências ajudam o radar a apontar quem talvez precise de cuidado.";
-  }
-  if (summary.justified > 0) {
-    return "Depois de salvar, as justificativas ficam como contexto pastoral deste encontro.";
-  }
-  return null;
 }
 
 export function checkInConfirmationParam(mode: CheckInMode) {

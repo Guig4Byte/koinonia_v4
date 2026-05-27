@@ -1,72 +1,67 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
+import { useState } from "react";
+import { CheckCircle2, Clock3, UserCheck, UserMinus, UsersRound, type LucideIcon } from "lucide-react";
+import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Feedback } from "@/components/ui/feedback";
 import { formatPresenceRate, presenceTone } from "@/features/events/presence-display";
 import { PresenceMetricDisplay } from "@/components/shared/presence-metric";
-import {
-  checkInMarkedLabel,
-  checkInPastoralSignalMessage,
-  checkInPendingLabel,
-  type CheckInSummary,
-} from "@/features/check-in/check-in-view";
+import { checkInMarkedLabel, type CheckInSummary } from "@/features/check-in/check-in-view";
 import { countLabel } from "@/lib/format";
 import { cn } from "@/lib/cn";
+import styles from "./check-in.module.css";
 
 type CheckInSummaryCardProps = {
   summary: CheckInSummary;
-  helperText: string;
-  allMembersPresent: boolean;
-  isPending: boolean;
-  bulkConfirmationOpen: boolean;
   errorMessage: string | null;
-  onCancelMarkAllAsPresent: () => void;
-  onConfirmMarkAllAsPresent: () => void;
-  onMarkAllAsPresent: () => void;
+  disabled?: boolean;
+  onMarkAllPresent?: () => void;
 };
 
 type SummaryPillProps = {
+  icon: LucideIcon;
   label: string;
   value: number;
-  tone?: "default" | "present" | "justified" | "absent" | "pending";
+  tone: "present" | "justified" | "absent" | "pending";
 };
 
-const summaryPillToneClass: Record<NonNullable<SummaryPillProps["tone"]>, string> = {
-  default: "border-[var(--color-border-card)] bg-[var(--surface-alt)] text-[color:var(--color-text-secondary)]",
-  present: "border-[var(--color-badge-estavel-border)] bg-[var(--color-badge-estavel-bg)] text-[color:var(--color-badge-estavel-text)]",
-  justified: "border-[var(--color-badge-atencao-border)] bg-[var(--color-badge-atencao-bg)] text-[color:var(--color-badge-atencao-text)]",
-  absent: "border-[var(--color-badge-risco-border)] bg-[var(--color-badge-risco-bg)] text-[color:var(--color-badge-risco-text)]",
-  pending: "border-[var(--color-border-card)] bg-[var(--surface-alt)] text-[color:var(--color-text-muted)]",
+const summaryPillToneClass: Record<SummaryPillProps["tone"], string> = {
+  present: styles.summaryPillPresent,
+  justified: styles.summaryPillJustified,
+  absent: styles.summaryPillAbsent,
+  pending: styles.summaryPillPending,
 };
 
-function SummaryPill({ label, value, tone = "default" }: SummaryPillProps) {
+function SummaryPill({ icon: Icon, label, value, tone }: SummaryPillProps) {
   return (
-    <div className={cn("rounded-2xl border px-3 py-2", summaryPillToneClass[tone])}>
-      <p className="text-[length:var(--text-lg)] font-semibold leading-none">{value}</p>
-      <p className="mt-1 text-[length:var(--text-xs)] font-medium leading-tight">{label}</p>
+    <div className={cn(styles.summaryPill, summaryPillToneClass[tone])}>
+      <span className={styles.summaryPillIcon} aria-hidden="true">
+        <Icon className={styles.summaryPillIconSvg} />
+      </span>
+      <span className={styles.summaryPillCopy}>
+        <span className={styles.summaryPillValue}>{value}</span>
+        <span className={styles.summaryPillLabel}>{label}</span>
+      </span>
     </div>
   );
 }
 
-export function CheckInSummaryCard({
-  summary,
-  helperText,
-  allMembersPresent,
-  isPending,
-  bulkConfirmationOpen,
-  errorMessage,
-  onCancelMarkAllAsPresent,
-  onConfirmMarkAllAsPresent,
-  onMarkAllAsPresent,
-}: CheckInSummaryCardProps) {
-  const pastoralSignalMessage = checkInPastoralSignalMessage(summary);
+export function CheckInSummaryCard({ summary, errorMessage, disabled = false, onMarkAllPresent }: CheckInSummaryCardProps) {
+  const [isConfirmingMarkAll, setIsConfirmingMarkAll] = useState(false);
+  const canMarkAllPresent = summary.totalMembers > 0 && summary.present < summary.totalMembers && !disabled;
+
+  function confirmMarkAllPresent() {
+    onMarkAllPresent?.();
+    setIsConfirmingMarkAll(false);
+  }
 
   return (
-    <Card tone="featured">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">Presença do encontro</p>
+    <Card tone="featured" className={styles.summaryCard}>
+      <div className={styles.summaryTopRow}>
+        <div className={styles.summaryRateBlock}>
+          <p className={styles.summaryEyebrow}>Presença do encontro</p>
           <div data-testid="check-in-presence-rate">
             <PresenceMetricDisplay
               hasPresenceData={summary.hasPresenceData}
@@ -76,107 +71,71 @@ export function CheckInSummaryCard({
               context="attendance"
               size="lg"
               weight="light"
+              className={styles.summaryMetric}
             />
           </div>
-          <p className="mt-1 text-[length:var(--text-xs)] text-[color:var(--color-text-secondary)]">
-            {checkInMarkedLabel(summary)}
-            {" · "}
-            {countLabel(summary.visitorTotal, "visitante", "visitantes")}
+          <p className={styles.summaryMeta}>
+            {checkInMarkedLabel(summary)} · {countLabel(summary.visitorTotal, "visitante", "visitantes")}
           </p>
         </div>
-        <div className="rounded-full border border-[var(--color-border-card)] bg-[var(--surface-alt)] px-3 py-1 text-[length:var(--text-xs)] font-semibold text-[color:var(--color-text-secondary)]">
-          {checkInPendingLabel(summary)}
-        </div>
+
+        {onMarkAllPresent ? (
+          <button
+            type="button"
+            className={styles.markAllButton}
+            onClick={() => setIsConfirmingMarkAll(true)}
+            disabled={!canMarkAllPresent}
+          >
+            <UsersRound className={styles.markAllIcon} aria-hidden="true" />
+            <span className={styles.markAllText}>Marcar todos</span>
+          </button>
+        ) : null}
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-2">
-        <SummaryPill label="Presentes" value={summary.present} tone="present" />
-        <SummaryPill label="Justificaram" value={summary.justified} tone="justified" />
-        <SummaryPill label="Ausentes" value={summary.absent} tone="absent" />
-        <SummaryPill label="Sem marcação" value={summary.pending} tone="pending" />
+      <div className={styles.summaryPillGrid}>
+        <SummaryPill icon={CheckCircle2} label="Presentes" value={summary.present} tone="present" />
+        <SummaryPill icon={UserCheck} label="Justificaram" value={summary.justified} tone="justified" />
+        <SummaryPill icon={UserMinus} label="Ausentes" value={summary.absent} tone="absent" />
+        <SummaryPill icon={Clock3} label="Sem marcação" value={summary.pending} tone="pending" />
       </div>
-
-      <p className="mt-3 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{helperText}</p>
-
-      {!allMembersPresent ? (
-        <div className="mt-4 rounded-2xl border border-[var(--color-border-card)] bg-[var(--surface-alt)] p-3">
-          <div className="flex flex-col gap-3">
-            <div>
-              <p className="text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.08em] text-[color:var(--color-text-muted)]">
-                Ação rápida
-              </p>
-              <p className="mt-1 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">
-                Use quando todos os membros estiveram presentes.
-              </p>
-            </div>
-            <Button
-              type="button"
-              variant="secondary"
-              size="md"
-              onClick={onMarkAllAsPresent}
-              disabled={isPending || bulkConfirmationOpen}
-              fullWidth
-              className="whitespace-normal px-4"
-            >
-              Marcar todos como presentes
-            </Button>
-          </div>
-        </div>
-      ) : null}
-
-      {bulkConfirmationOpen ? (
-        <Feedback
-          tone="warning"
-          role="alert"
-          ariaLive="assertive"
-          className="mt-4"
-          title="Substituir marcações?"
-        >
-          <p>
-            Isso vai trocar ausentes e justificativas para presentes. Use apenas se a célula inteira esteve presente.
-          </p>
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              onClick={onCancelMarkAllAsPresent}
-              disabled={isPending}
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="button"
-              variant="attentionSoft"
-              size="sm"
-              onClick={onConfirmMarkAllAsPresent}
-              disabled={isPending}
-            >
-              Sim, marcar todos
-            </Button>
-          </div>
-        </Feedback>
-      ) : null}
-
-      {summary.pending > 0 ? (
-        <Feedback tone="warning" compact className="mt-4" title="Ainda falta marcar">
-          <p>
-            {summary.pending === 1 ? "Ainda falta marcar 1 pessoa." : `Ainda falta marcar ${summary.pending} pessoas.`}
-          </p>
-          <p className="mt-1 leading-relaxed">Se todos vieram, use o atalho acima e ajuste só as exceções.</p>
-        </Feedback>
-      ) : null}
-
-      {pastoralSignalMessage ? (
-        <Feedback tone="info" compact className="mt-4" title="Olhar pastoral depois do encontro">
-          <p>{pastoralSignalMessage}</p>
-        </Feedback>
-      ) : null}
 
       {errorMessage ? (
         <Feedback tone="error" role="alert" ariaLive="assertive" className="mt-4 font-medium">
           {errorMessage}
         </Feedback>
+      ) : null}
+
+      {isConfirmingMarkAll ? (
+        <BottomSheet
+          onDismiss={() => setIsConfirmingMarkAll(false)}
+          dismissLabel="Cancelar marcação de todos como presentes"
+          tone="accent"
+          size="sm"
+          panelProps={{ role: "dialog", "aria-modal": true, "aria-labelledby": "mark-all-present-title" }}
+        >
+          <div className={styles.markAllSheet}>
+            <div className={styles.markAllSheetHeader}>
+              <span className={styles.markAllSheetIcon} aria-hidden="true">
+                <UsersRound className={styles.markAllSheetIconSvg} />
+              </span>
+              <div>
+                <h2 id="mark-all-present-title" className={styles.markAllSheetTitle}>Marcar todos como presentes?</h2>
+                <p className={styles.markAllSheetDescription}>
+                  Essa ação troca ausências, justificativas e pessoas sem marcação para presente neste encontro.
+                </p>
+              </div>
+            </div>
+
+            <div className={styles.markAllSheetActions}>
+              <Button type="button" variant="secondary" shape="rounded" onClick={() => setIsConfirmingMarkAll(false)}>
+                Cancelar
+              </Button>
+              <Button type="button" variant="primary" shape="rounded" onClick={confirmMarkAllPresent} disabled={disabled}>
+                Marcar presentes
+              </Button>
+            </div>
+          </div>
+        </BottomSheet>
       ) : null}
     </Card>
   );

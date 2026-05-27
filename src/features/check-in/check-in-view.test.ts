@@ -6,12 +6,7 @@ import {
   checkInFilterCount,
   checkInFilterLabel,
   checkInFilteredEmptyMessage,
-  checkInHelperText,
   checkInMarkedLabel,
-  checkInMemberStatusHint,
-  checkInPastoralSignalMessage,
-  checkInPendingLabel,
-  checkInStatusOptionDescription,
   filterCheckInItems,
   getInitialMemberStatus,
   markedMembersCount,
@@ -62,7 +57,6 @@ describe("check-in view helpers", () => {
 
     expect(markedMembersCount(summary)).toBe(1);
     expect(checkInMarkedLabel(summary)).toBe("1 de 3 marcados");
-    expect(checkInPendingLabel(summary)).toBe("Ainda faltam 2 marcações");
   });
 
   it("formats completed check-in progress labels", () => {
@@ -72,7 +66,6 @@ describe("check-in view helpers", () => {
     ], 0);
 
     expect(checkInMarkedLabel(summary)).toBe("2 de 2 marcados");
-    expect(checkInPendingLabel(summary)).toBe("Todos marcados");
   });
 
   it("filters members by check-in status", () => {
@@ -95,37 +88,9 @@ describe("check-in view helpers", () => {
     expect(checkInFilteredEmptyMessage("absent")).toContain("ausência");
   });
 
-  it("keeps mode-specific copy in one place", () => {
-    expect(checkInHelperText("register")).toContain("Marque quem veio");
-    expect(checkInHelperText("adjust")).toContain("Corrija");
+
+  it("keeps mode-specific confirmation params", () => {
     expect(checkInConfirmationParam("register")).toBe("registrada");
     expect(checkInConfirmationParam("adjust")).toBe("atualizada");
-  });
-
-  it("explains the pastoral impact of each member status", () => {
-    expect(checkInMemberStatusHint(null)).toContain("sem marcação");
-    expect(checkInMemberStatusHint(ATTENDANCE.PRESENT)).toContain("confirmada");
-    expect(checkInMemberStatusHint(ATTENDANCE.ABSENT)).toContain("radar");
-    expect(checkInMemberStatusHint(ATTENDANCE.JUSTIFIED)).toContain("contexto");
-
-    expect(checkInStatusOptionDescription(ATTENDANCE.PRESENT)).toContain("Veio");
-    expect(checkInStatusOptionDescription(ATTENDANCE.ABSENT)).toContain("não houve justificativa");
-    expect(checkInStatusOptionDescription(ATTENDANCE.JUSTIFIED)).toContain("explicou");
-  });
-
-  it("adds a pastoral signal message only when the check-in is complete", () => {
-    expect(checkInPastoralSignalMessage(summarizeCheckInItems([
-      { personId: "1", fullName: "Ana", status: ATTENDANCE.ABSENT },
-      { personId: "2", fullName: "Bia", status: null },
-    ], 0))).toBeNull();
-
-    expect(checkInPastoralSignalMessage(summarizeCheckInItems([
-      { personId: "1", fullName: "Ana", status: ATTENDANCE.ABSENT },
-      { personId: "2", fullName: "Bia", status: ATTENDANCE.JUSTIFIED },
-    ], 0))).toContain("ausências e justificativas");
-
-    expect(checkInPastoralSignalMessage(summarizeCheckInItems([
-      { personId: "1", fullName: "Ana", status: ATTENDANCE.PRESENT },
-    ], 0))).toBeNull();
   });
 });

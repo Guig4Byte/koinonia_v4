@@ -14,7 +14,6 @@ import {
   checkInFilterCount,
   checkInFilterLabel,
   checkInFilteredEmptyMessage,
-  checkInHelperText,
   filterCheckInItems,
   type CheckInMemberFilter,
   type CheckInMode,
@@ -93,34 +92,15 @@ export function CheckInList({
       <FixedActionBarContent className={styles.content} reserveSpace={showSaveBar} data-testid="check-in-content">
         <CheckInSummaryCard
           summary={checkIn.summary}
-          helperText={checkInHelperText(mode)}
-          allMembersPresent={checkIn.allMembersPresent}
-          isPending={checkIn.isPending}
-          bulkConfirmationOpen={checkIn.bulkConfirmationOpen}
           errorMessage={checkIn.errorMessage}
-          onCancelMarkAllAsPresent={checkIn.cancelMarkAllAsPresent}
-          onConfirmMarkAllAsPresent={checkIn.confirmMarkAllAsPresent}
-          onMarkAllAsPresent={checkIn.markAllAsPresent}
-        />
-
-        <CheckInVisitorsCard
-          savedVisitors={checkIn.savedVisitors}
-          fallbackSavedVisitorCount={checkIn.savedVisitorCount}
-          visitors={checkIn.visitors}
-          visitorName={checkIn.visitorName}
-          onVisitorNameChange={checkIn.setVisitorName}
-          onAddVisitor={checkIn.addVisitor}
-          onRemoveVisitor={checkIn.removeVisitor}
           disabled={checkIn.isPending}
+          onMarkAllPresent={checkIn.markAllPresent}
         />
 
         <div className={styles.memberSection}>
           <div className={styles.memberSectionHeader}>
             <div className="min-w-0">
               <p className="k-item-title">Membros da célula</p>
-              <p className="mt-1 text-[length:var(--text-xs)] leading-snug text-[color:var(--color-text-secondary)]">
-                Revise por status para encontrar quem ainda está sem marcação, ausências e justificativas sem rolar a lista inteira.
-              </p>
             </div>
             <span className={styles.memberCount} aria-live="polite">
               {activeFilterCount} / {checkIn.summary.totalMembers}
@@ -149,7 +129,7 @@ export function CheckInList({
           </div>
 
           {filteredItems.length > 0 ? (
-            <div className="space-y-3">
+            <div className={styles.memberList}>
               {filteredItems.map((item) => (
                 <CheckInMemberCard key={item.personId} item={item} onSetStatus={checkIn.setStatus} disabled={checkIn.isPending} />
               ))}
@@ -160,6 +140,17 @@ export function CheckInList({
             </Feedback>
           )}
         </div>
+
+        <CheckInVisitorsCard
+          savedVisitors={checkIn.savedVisitors}
+          fallbackSavedVisitorCount={checkIn.savedVisitorCount}
+          visitors={checkIn.visitors}
+          visitorName={checkIn.visitorName}
+          onVisitorNameChange={checkIn.setVisitorName}
+          onAddVisitor={checkIn.addVisitor}
+          onRemoveVisitor={checkIn.removeVisitor}
+          disabled={checkIn.isPending}
+        />
       </FixedActionBarContent>
 
       {showSaveBar ? (

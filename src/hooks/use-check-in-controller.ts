@@ -74,7 +74,6 @@ export function useCheckInController({
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [bulkConfirmationOpen, setBulkConfirmationOpen] = useState(false);
   const [visitorName, setVisitorName] = useState("");
   const initialItems = useMemo(() => initialCheckInItems(members), [members]);
   const [savedVisitors] = useState<CheckInVisitorRecord[]>(initialVisitors);
@@ -91,56 +90,23 @@ export function useCheckInController({
   );
   const hasUnsavedChanges = hasMemberChanges || visitors.length > 0;
   const canSave = summary.pending === 0 && !isSaving && (mode === "register" || hasUnsavedChanges);
-  const allMembersPresent = summary.totalMembers > 0 && summary.present === summary.totalMembers;
 
   function clearTransientState() {
     setErrorMessage(null);
   }
 
-  function closeBulkConfirmation() {
-    setBulkConfirmationOpen(false);
-  }
-
-  function applyMarkAllAsPresent() {
-    clearTransientState();
-    closeBulkConfirmation();
-    setItems((current) => current.map((item) => ({ ...item, status: ATTENDANCE.PRESENT })));
-  }
-
   function setStatus(personId: string, status: MemberAttendanceStatus) {
     if (isSaving) return;
 
-    closeBulkConfirmation();
     clearTransientState();
     setItems((current) => current.map((item) => (item.personId === personId ? { ...item, status } : item)));
   }
 
-  function markAllAsPresent() {
+  function markAllPresent() {
     if (isSaving) return;
 
-    const hasNonPresentStatus = items.some((item) => item.status !== ATTENDANCE.PRESENT);
-    if (!hasNonPresentStatus) return;
-
-    const hasAbsenceOrJustification = items.some(
-      (item) => item.status === ATTENDANCE.ABSENT || item.status === ATTENDANCE.JUSTIFIED,
-    );
-
-    if (hasAbsenceOrJustification) {
-      clearTransientState();
-      setBulkConfirmationOpen(true);
-      return;
-    }
-
-    applyMarkAllAsPresent();
-  }
-
-  function cancelMarkAllAsPresent() {
-    closeBulkConfirmation();
-  }
-
-  function confirmMarkAllAsPresent() {
-    if (isSaving) return;
-    applyMarkAllAsPresent();
+    clearTransientState();
+    setItems((current) => current.map((item) => (item.status === ATTENDANCE.PRESENT ? item : { ...item, status: ATTENDANCE.PRESENT })));
   }
 
   function addVisitor() {
@@ -155,7 +121,6 @@ export function useCheckInController({
       return;
     }
 
-    closeBulkConfirmation();
     clearTransientState();
     setVisitors((current) => [...current, { id: makeVisitorId(), fullName: name }]);
     setVisitorName("");
@@ -164,7 +129,6 @@ export function useCheckInController({
   function removeVisitor(id: string) {
     if (isSaving) return;
 
-    closeBulkConfirmation();
     clearTransientState();
     setVisitors((current) => current.filter((visitor) => visitor.id !== id));
   }
@@ -181,7 +145,6 @@ export function useCheckInController({
       return;
     }
 
-    closeBulkConfirmation();
     setErrorMessage(null);
     setIsSaving(true);
 
@@ -212,8 +175,6 @@ export function useCheckInController({
   }
 
   return {
-    allMembersPresent,
-    bulkConfirmationOpen,
     canSave,
     errorMessage,
     hasUnsavedChanges,
@@ -225,10 +186,8 @@ export function useCheckInController({
     visitorName,
     visitors,
     addVisitor,
-    cancelMarkAllAsPresent,
-    confirmMarkAllAsPresent,
-    markAllAsPresent,
     removeVisitor,
+    markAllPresent,
     save,
     setStatus,
     setVisitorName,
