@@ -108,7 +108,7 @@ describe("cells-page-view", () => {
       title: "Leitura pastoral da supervisão",
     });
     expect(cellsFilterContextContent("atencao")).toMatchObject({
-      title: "Urgente",
+      title: "Em atenção",
       tone: "warn",
     });
     expect(cellsFilterContextContent("urgentes")).toMatchObject({

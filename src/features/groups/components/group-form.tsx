@@ -47,7 +47,7 @@ export function GroupForm({
   const isEditingExistingCell = initialValues.name.trim().length > 0;
   const idleMessage = isEditingExistingCell
     ? "Nada para salvar agora."
-    : "Preencha apenas o essencial para salvar.";
+    : "Só o essencial já permite salvar.";
 
   return (
     <GroupFormGuard>
@@ -130,7 +130,7 @@ export function GroupForm({
             </div>
 
             <span id={scheduleHintId} className={styles.hint}>
-              Dia e horário precisam ser preenchidos juntos. Deixe os dois em branco se a célula não tiver agenda fixa.
+              Dia e horário precisam estar juntos. Os dois podem ficar em branco quando a célula não tiver agenda fixa.
             </span>
             <FieldError id={scheduleErrorId}>{fieldErrors.schedule}</FieldError>
           </section>
@@ -151,7 +151,7 @@ export function GroupForm({
               <span className={styles.statusCopy}>
                 <span className={styles.statusTitle}>Célula ativa</span>
                 <span className={styles.statusDetail}>
-                  Células inativas ficam fora das listas principais, encontros e check-in.
+                  Células inativas ficam guardadas fora das listas principais, encontros e check-in.
                 </span>
               </span>
             </label>

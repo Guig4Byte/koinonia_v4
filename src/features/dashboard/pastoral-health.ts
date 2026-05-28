@@ -67,7 +67,7 @@ const healthSegmentConfig: Record<PastoralHealthKey, Omit<PastoralHealthSegment,
   },
   pastoral: {
     key: "pastoral",
-    label: "Cuidado pastoral",
+    label: "Encaminhadas",
     tone: "pastoral",
     href: ROUTES.teamFilter(FILTER_PASTORAL),
     singular: "encaminhada ao pastor",
@@ -104,7 +104,7 @@ function segmentSummary(segment: PastoralHealthSegment) {
 }
 
 function buildHealthSummary(totalGroups: number, segments: PastoralHealthSegment[]) {
-  if (totalGroups === 0) return "Nenhuma célula ativa neste escopo.";
+  if (totalGroups === 0) return "Ainda não há célula ativa neste escopo.";
 
   return segments
     .filter((segment) => segment.count > 0)

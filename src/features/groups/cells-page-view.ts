@@ -69,22 +69,22 @@ const cellsFilterContextCopy: Record<CellsFilter, { title: string; detail: strin
   [FILTER_ALL]: {
     title: "Leitura pastoral da supervisão",
     detail:
-      "Mostramos primeiro as células que pedem cuidado mais próximo. No detalhe da célula, todos os sinais, presenças e acompanhamentos aparecem com calma.",
+      "A leitura começa pelas células que pedem cuidado mais próximo. No detalhe da célula, sinais, presenças e acompanhamentos aparecem com calma.",
   },
   [FILTER_ATTENTION]: {
     title: "Em atenção",
     detail:
-      "Células com sinais abertos ou atenção local para você acompanhar junto dos líderes.",
+      "Células com sinais abertos ou atenção local para acompanhamento junto da liderança.",
     tone: "warn",
   },
   [FILTER_URGENT]: {
     title: "Urgente",
     detail:
-      "Sinais mais sensíveis aparecem primeiro para orientar conversa, leitura pastoral e alinhamento com a liderança.",
+      "Sinais mais sensíveis aparecem primeiro para apoiar conversa, leitura pastoral e alinhamento com a liderança.",
     tone: "risk",
   },
   [FILTER_PASTORAL]: {
-    title: "Cuidado pastoral",
+    title: "Encaminhadas ao pastor",
     detail:
       "Casos trazidos ao cuidado pastoral seguem visíveis para supervisão e acompanhamento.",
     tone: "risk",
@@ -92,7 +92,7 @@ const cellsFilterContextCopy: Record<CellsFilter, { title: string; detail: strin
   [FILTER_SUPPORT]: {
     title: "Apoio pedido",
     detail:
-      "Células em que a liderança pediu acompanhamento da supervisão.",
+      "Células em que a liderança pediu apoio da supervisão.",
     tone: "support",
   },
   [FILTER_IN_CARE]: {
@@ -104,19 +104,19 @@ const cellsFilterContextCopy: Record<CellsFilter, { title: string; detail: strin
   [FILTER_PRESENCE]: {
     title: "Presença pede leitura",
     detail:
-      "Sem registro recente ou presença baixa pode indicar rotina, ou pedir conversa com a liderança.",
+      "Sem registro recente ou presença baixa pode indicar rotina, ou pedir uma conversa com a liderança.",
     tone: "neutral",
   },
   [FILTER_NO_RECENT_PRESENCE]: {
     title: "Retomar contato",
     detail:
-      "Células sem registro recente aparecem aqui para você conferir se falta dado ou se há cuidado a retomar.",
+      "Células sem registro recente aparecem aqui para entender se falta dado ou se há cuidado a retomar.",
     tone: "neutral",
   },
   [FILTER_LOW_PRESENCE]: {
     title: "Presença baixa",
     detail:
-      "Células com presença abaixo do esperado pedem leitura cuidadosa antes de qualquer ação.",
+      "Células com presença abaixo do esperado pedem leitura cuidadosa antes de orientar próximos passos.",
     tone: "warn",
   },
 };

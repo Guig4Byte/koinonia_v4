@@ -188,15 +188,15 @@ export function CellsOverviewSummaryCard({
       <div className="mt-4 grid gap-4 border-t border-[var(--color-border-divider)] pt-4 min-[440px]:grid-cols-2 min-[440px]:gap-5">
         <FooterMetric
           icon={<Heart className="h-4 w-4" strokeWidth={2.35} absoluteStrokeWidth />}
-          label="Pedem cuidado mais próximo"
-          detail={groupsNeedingAttentionCount > 0 ? "Prioridade no acompanhamento." : "Sem alerta aberto agora."}
+          label="Cuidado em destaque"
+          detail={groupsNeedingAttentionCount > 0 ? "Prioridade para acompanhar." : "Sem alerta aberto agora."}
           value={groupsNeedingAttentionCount}
           tone={groupsNeedingAttentionCount > 0 ? "risk" : "ok"}
         />
         <FooterMetric
           icon={<CalendarClock className="h-4 w-4" strokeWidth={2.35} absoluteStrokeWidth />}
           label={NO_RECENT_PRESENCE_LABEL}
-          detail={groupsWithoutPresenceCount > 0 ? "Confira encontros aguardando registro." : "Todas com registro recente."}
+          detail={groupsWithoutPresenceCount > 0 ? "Há encontros aguardando registro." : "Todas com registro recente."}
           value={groupsWithoutPresenceCount}
           tone={groupsWithoutPresenceCount > 0 ? "neutral" : "ok"}
         />

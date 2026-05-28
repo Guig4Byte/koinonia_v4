@@ -169,7 +169,7 @@ export function TeamSupervisorCard({
       {!hasGroups ? (
         <div className={styles.emptySupervisorState}>
           <EmptyState compact>
-            Nenhuma célula ativa vinculada a este supervisor.
+            Ainda não há célula ativa vinculada a este supervisor.
           </EmptyState>
         </div>
       ) : (
@@ -303,7 +303,7 @@ function InactiveStructureGroupLink({ group }: { group: InactiveTeamGroup }) {
       name={group.name}
       subtitle={`${inactiveGroupScheduleText(group)}${location}`}
       signalTone="neutral"
-      signalLabel="Fora do acompanhamento atual"
+      signalLabel="Fora das listas principais"
     />
   );
 }
@@ -322,16 +322,16 @@ export function TeamStructureAdjustments({
   return (
     <section className={styles.structureSection}>
       <SectionHeader
-        title="Células para organizar"
-        detail="Estruturas fora do acompanhamento atual."
+        title="Ajustes de estrutura"
+        detail="Pontos de organização da equipe pastoral."
         className={styles.structureHeading}
       />
       <div className={styles.structureGrid}>
         {unassignedGroups.length > 0 ? (
           <StructureAdjustmentCard
             icon="person"
-            title="Sem supervisor"
-            detail="Precisam de supervisão definida."
+            title="Supervisão a definir"
+            detail="A supervisão ainda pode ser vinculada."
             count={unassignedGroups.length}
           >
             <ProgressiveList
@@ -354,8 +354,8 @@ export function TeamStructureAdjustments({
         {inactiveGroups.length > 0 ? (
           <StructureAdjustmentCard
             icon="archive"
-            title="Células inativas"
-            detail="Fora do acompanhamento atual."
+            title="Inativas"
+            detail="Guardadas fora das listas principais."
             count={inactiveGroups.length}
           >
             <ProgressiveList

@@ -89,7 +89,7 @@ function buildTeamSummaryItems(summary: PastorPageTeamSummary): PastorPageSummar
       tone: "neutral",
     },
     {
-      label: "Sem supervisor",
+      label: "Supervisão a definir",
       value: String(summary.groupsWithoutSupervisorCount),
       tone: summary.groupsWithoutSupervisorCount > 0 ? "warn" : "ok",
     },
@@ -108,9 +108,9 @@ function teamFilterHref(filter: string) {
 export function buildPastorNextPastoralAction(summary: PastorPageTeamSummary): NextPastoralAction | null {
   if (summary.urgentCount > 0) {
     return {
-      eyebrow: "Primeiro Cuidado",
+      eyebrow: "Primeiro cuidado",
       title: `${countLabel(summary.urgentCount, "sinal urgente", "sinais urgentes")} na equipe`,
-      detail: "Comece pelas células com cuidado mais sensível antes de revisar estabilidade e presença.",
+      detail: "As células com cuidado mais sensível podem vir antes da revisão de estabilidade e presença.",
       href: teamFilterHref(FILTER_URGENT),
       label: "Ver cuidados",
       tone: "risk",
@@ -132,7 +132,7 @@ export function buildPastorNextPastoralAction(summary: PastorPageTeamSummary): N
     return {
       eyebrow: "Pedido de apoio",
       title: `${countLabel(summary.supportRequestsCount, "pedido de apoio", "pedidos de apoio")} na equipe`,
-      detail: "Os pedidos de suporte de líderes e supervisores aparecem antes dos demais indicadores.",
+      detail: "Os pedidos de apoio de líderes e supervisores aparecem antes dos demais indicadores.",
       href: teamFilterHref(FILTER_SUPPORT),
       label: "Ver apoios",
       tone: "support",

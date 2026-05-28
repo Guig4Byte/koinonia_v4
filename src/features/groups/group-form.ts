@@ -119,7 +119,7 @@ export function groupFormFieldErrors(error: string | undefined): Partial<Record<
   const messages: Partial<Record<GroupFormError, { field: GroupFormFieldName; message: string }>> = {
     "nome-obrigatorio": { field: "name", message: "O nome da célula é obrigatório." },
     "nome-longo": { field: "name", message: `Até ${GROUP_NAME_MAX_LENGTH} caracteres.` },
-    "agenda-incompleta": { field: "schedule", message: "Dia e horário precisam ser preenchidos juntos." },
+    "agenda-incompleta": { field: "schedule", message: "Dia e horário precisam estar juntos." },
     "dia-invalido": { field: "schedule", message: "O dia padrão precisa ser válido." },
     "horario-invalido": { field: "schedule", message: "O horário precisa estar no formato hh:mm." },
     "local-longo": { field: "locationName", message: `Até ${GROUP_LOCATION_MAX_LENGTH} caracteres.` },

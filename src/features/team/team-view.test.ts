@@ -258,7 +258,7 @@ describe("team-view", () => {
     expect(teamSavedMessage("outro")).toBeNull();
     expect(teamFilterContent("apoio")).toMatchObject({
       contextTitle: "Apoio pedido",
-      listTitle: "Apoio pedido por supervisor",
+      listTitle: "Pedidos de apoio por supervisor",
     });
     expect(
       teamNavIndicator(

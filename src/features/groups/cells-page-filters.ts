@@ -37,7 +37,7 @@ export const CELLS_FILTERS: ReadonlyArray<FilterOption<CellsFilter>> = [
 
 const ACCEPTED_CELLS_FILTERS: ReadonlyArray<FilterOption<CellsFilter>> = [
   ...CELLS_FILTERS,
-  { value: FILTER_PASTORAL, label: "Cuidado pastoral" },
+  { value: FILTER_PASTORAL, label: "Encaminhadas" },
   { value: FILTER_NO_RECENT_PRESENCE, label: "Retomar contato" },
   { value: FILTER_LOW_PRESENCE, label: "Presença baixa" },
 ];

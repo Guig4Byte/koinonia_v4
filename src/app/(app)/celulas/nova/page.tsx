@@ -32,7 +32,7 @@ export default async function NewCellPage({ searchParams }: NewCellPageProps) {
     >
       <GroupForm
         title="Nova célula"
-        description="O essencial já permite que a célula apareça na estrutura pastoral e gere encontros quando tiver agenda padrão."
+        description="Com o essencial salvo, a célula já aparece na estrutura pastoral e pode gerar encontros quando tiver agenda padrão."
         backHref={ROUTES.team}
         backLabel="Voltar para equipe"
         action={createCellAction}

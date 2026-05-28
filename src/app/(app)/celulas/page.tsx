@@ -79,7 +79,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
           compact
           eyebrow="Supervisão"
           title="Células"
-          description="Células sob sua supervisão, por atenção pastoral."
+          description="Células sob sua supervisão, organizadas por leitura pastoral."
           action={canCreateGroup ? (
             <ButtonLink href={ROUTES.newCell} variant="secondary" size="sm" density="compact" shape="rounded" className="k-action-pill k-action-pill-primary shrink-0">
               <Plus className="h-4 w-4" aria-hidden="true" />
@@ -98,7 +98,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
         </div>
 
         <section id={CELLS_SECTION_ID} className="scroll-mt-4">
-          <SectionTitle detail="Busca e filtros ajudam a encontrar a célula certa.">Células supervisionadas</SectionTitle>
+          <SectionTitle detail="Busca e filtros ajudam a encontrar a célula certa sem perder o contexto.">Células supervisionadas</SectionTitle>
           <CellsStructureSearch query={query} filter={activeFilter} sectionId={CELLS_SECTION_ID} />
           <CellsFilterContextCard filter={activeFilter} />
 
@@ -108,8 +108,8 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
             ) : (
               <EmptyState title={view.isFiltered ? "Nenhuma célula nesse recorte" : "Nenhuma célula ativa neste escopo"}>
                 {view.isFiltered
-                  ? "Ajuste a busca ou limpe os filtros para ver as demais células supervisionadas."
-                  : "Quando uma célula ativa for vinculada à sua supervisão, ela aparecerá aqui."
+                  ? "A busca ou os filtros podem ser limpos para ver as demais células supervisionadas."
+                  : "Quando uma célula ativa estiver vinculada à sua supervisão, ela aparecerá aqui."
                 }
               </EmptyState>
             )}

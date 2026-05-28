@@ -53,7 +53,7 @@ export default async function EditCellPage({ params, searchParams }: EditCellPag
     >
       <GroupForm
         title="Editar célula"
-        description="Ajuste os dados básicos da célula. Liderança e supervisão são administradas em outra tela para preservar responsabilidades múltiplas."
+        description="Dados básicos da célula, sem alterar liderança e supervisão nesta tela."
         backHref={group.isActive ? ROUTES.group(group.id) : ROUTES.team}
         backLabel={group.isActive ? "Voltar para célula" : "Voltar para equipe"}
         action={updateCellAction.bind(null, group.id)}

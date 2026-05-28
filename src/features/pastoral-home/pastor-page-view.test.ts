@@ -61,7 +61,7 @@ describe("pastor-page-view", () => {
         tone: "neutral",
       },
       {
-        label: "Sem supervisor",
+        label: "Supervisão a definir",
         value: "1",
         tone: "warn",
       },
