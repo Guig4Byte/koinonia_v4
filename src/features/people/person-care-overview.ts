@@ -44,7 +44,7 @@ export function buildPersonCareOverviewView(input: PersonCareOverviewInput): Per
       signalLabel: "Em cuidado",
       contextLabel,
       nextStepLabel: input.canRegisterCare ? "Atualizar acompanhamento" : "Consultar histórico",
-      nextStepDetail: "O histórico ajuda antes de guardar outro contato ou encerrar o destaque pastoral.",
+      nextStepDetail: "O histórico ajuda antes de registrar outro contato ou encerrar o destaque pastoral.",
       actionLabel: input.canRegisterCare ? "Atualizar cuidado" : "Mostrar histórico completo",
       actionHref: input.canRegisterCare ? "#registrar-cuidado" : "#historico-cuidado",
     };
@@ -54,10 +54,10 @@ export function buildPersonCareOverviewView(input: PersonCareOverviewInput): Per
     priorityTone: "muted",
     signalLabel: "Estável",
     contextLabel,
-    nextStepLabel: input.canRegisterCare ? "Guardar quando houver cuidado" : "Consultar contexto",
+    nextStepLabel: input.canRegisterCare ? "Guardar cuidado quando houver" : "Consultar contexto",
     nextStepDetail: input.hasPhone
-      ? "Este espaço fica para ligação, WhatsApp, conversa ou anotação pastoral relevante que já aconteceu."
-      : "Sem telefone cadastrado. Ainda dá para guardar cuidado real manualmente.",
+      ? "Este espaço fica para ligação, WhatsApp, conversa ou anotação pastoral que já aconteceu."
+      : "Sem telefone cadastrado. Um cuidado que já aconteceu ainda pode ser guardado manualmente.",
     actionLabel: input.canRegisterCare ? "Guardar cuidado" : "Ver contexto",
     actionHref: input.canRegisterCare ? "#registrar-cuidado" : "#historico-cuidado",
   };

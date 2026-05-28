@@ -64,12 +64,12 @@ const teamFilterCopy: Record<
     contextDetail: "Sinais que pedem atenção imediata no contexto da célula.",
     listTitle: "Urgentes por supervisor",
     listDetail: "O contexto pastoral aparece no detalhe da célula.",
-    empty: "Nenhuma célula com sinal de cuidado próximo nesse recorte.",
+    empty: "Nenhuma célula urgente nesse recorte.",
   },
   [FILTER_PASTORAL]: {
     contextTitle: "Encaminhadas ao pastor",
     contextDetail:
-      "Casos que liderança ou supervisão trouxeram ao cuidado pastoral.",
+      "Encaminhamentos que liderança ou supervisão trouxeram ao cuidado pastoral.",
     listTitle: "Encaminhadas ao pastor por supervisor",
     listDetail: "Mostrando células com encaminhamento pastoral aberto.",
     empty: "Nenhuma célula com encaminhamento ao pastor nesse recorte.",
@@ -86,7 +86,7 @@ const teamFilterCopy: Record<
     contextDetail:
       "Células com atenção local, cuidado recente ou presença baixa registrada.",
     listTitle: "Células em atenção por supervisor",
-    listDetail: "Mostrando células que pedem acompanhamento próximo.",
+    listDetail: "Mostrando células com acompanhamento próximo.",
     empty: "Nenhuma célula pedindo atenção nesse recorte.",
   },
   [FILTER_NO_RECENT_PRESENCE]: {

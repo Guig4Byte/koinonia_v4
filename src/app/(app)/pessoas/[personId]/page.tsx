@@ -194,14 +194,14 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           </div>
         </PriorityCard>
 
-        <SectionTitle detail="O que precisa ser feito agora, sem repetir o histórico.">Próximo cuidado</SectionTitle>
+        <SectionTitle detail="O próximo gesto, sem repetir o histórico.">Próximo cuidado</SectionTitle>
         <CareOverviewCard id="registrar-cuidado" view={careOverviewView} className={styles.primaryCareCard}>
           <CareActions personId={person.id} phone={person.phone} className={styles.careActions} />
           {canMarkActive ? <PersonStatusActions personId={person.id} /> : null}
         </CareOverviewCard>
 
-        <SectionTitle detail={openSignalsCount > 0 ? "Entenda o motivo antes de agir." : undefined}>
-          {openSignalsCount > 0 ? "Por que merece atenção" : "Situação atual"}
+        <SectionTitle detail={openSignalsCount > 0 ? "O contexto ajuda antes de decidir o cuidado." : undefined}>
+          {openSignalsCount > 0 ? "Motivo da atenção" : "Situação atual"}
         </SectionTitle>
         <div className={styles.sectionStack}>
           {pastoralOrderedSignals.map((signal) => {
@@ -235,9 +235,9 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           })}
 
           {openSignalsCount === 0 ? (
-            <EmptyState className={styles.emptyState} title="Nada exige ação agora.">
+            <EmptyState className={styles.emptyState} title="Nada pede cuidado agora.">
               {hasCareTouch
-                ? "O cuidado mais recente aparece abaixo, e o irmão continua disponível para acompanhamento pastoral."
+                ? "O cuidado mais recente aparece abaixo, e o irmão segue no radar pastoral."
                 : "Este irmão segue disponível para consulta quando houver um contato real de cuidado."}
             </EmptyState>
           ) : null}
@@ -247,7 +247,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
         <PersonPresenceCard view={presenceView} />
 
         <div id="historico-cuidado" className={styles.anchorSection}>
-          <SectionTitle detail="Registros recentes antes de agir novamente.">Histórico de cuidado</SectionTitle>
+          <SectionTitle detail="Registros recentes antes de um novo cuidado.">Histórico de cuidado</SectionTitle>
           {careTouchHistoryItems.length > 0 ? (
             <CareTouchHistory items={careTouchHistoryItems} />
           ) : (

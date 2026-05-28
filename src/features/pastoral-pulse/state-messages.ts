@@ -16,7 +16,7 @@ export function inCareMessage(
         : "Há irmãos em cuidado nesta célula.",
       subtitle: role === UserRole.LEADER
         ? "O acompanhamento pode seguir com leveza, sem transformar cuidado em cobrança."
-        : "Elas já receberam cuidado e seguem no radar com leveza.",
+        : "Eles já receberam cuidado e seguem no radar com leveza.",
       tone: "ok",
     };
   }
@@ -95,7 +95,7 @@ export function groupPresenceMessage(role: UserRole, counts: Required<Pick<Pasto
     return {
       title: "Ainda sem presença recente registrada.",
       subtitle: role === UserRole.LEADER
-        ? "Quando houver encontro, registre a presença para ajudar no cuidado da célula."
+        ? "Quando a presença for registrada, o cuidado da célula fica mais claro."
         : "Talvez a célula tenha se reunido, mas a presença ainda não foi marcada.",
       tone: "calm",
     };

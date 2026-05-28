@@ -56,7 +56,7 @@ describe("signal display helpers", () => {
 
     expect(signalTitleForViewer(supportSignal, { role: UserRole.SUPERVISOR })).toBe("Pedido de apoio recebido");
     expect(signalTitleForViewer(supportSignal, { role: UserRole.LEADER })).toBe("Apoio solicitado à supervisão");
-    expect(signalTitleForViewer(pastoralSignal, { role: UserRole.PASTOR })).toBe("Cuidado pastoral solicitado");
+    expect(signalTitleForViewer(pastoralSignal, { role: UserRole.PASTOR })).toBe("Encaminhado ao pastor");
     expect(signalDescriptionForViewer({ ...pastoralSignal, pastoralEscalationActorName: "Ana Martins" }, { role: UserRole.PASTOR })).toBe(
       "Ana Martins compartilhou este cuidado para um olhar mais próximo. Um contato pode ajudar a entender melhor o momento.",
     );

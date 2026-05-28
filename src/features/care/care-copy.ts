@@ -4,13 +4,13 @@ export type CareContactMethod = "call" | "whatsapp" | "existing";
 
 export const CARE_COPY = {
   errors: {
-    invalidPayload: "Dados de cuidado inválidos",
+    invalidPayload: "Não foi possível ler os dados deste cuidado.",
     personNotFound: "Irmão não encontrado",
-    noPermission: "Sem permissão para registrar cuidado",
+    noPermission: "Este cuidado não está disponível no seu acesso",
     noUpdatePermission: "Este irmão não está disponível para atualização no seu acesso",
-    noVisibleGroup: "Sem célula visível para registrar este cuidado",
-    registerFallback: "Não foi possível registrar o cuidado agora.",
-    markActiveFallback: "Não foi possível encerrar o cuidado agora.",
+    noVisibleGroup: "Não há célula visível no seu acesso para guardar este cuidado",
+    registerFallback: "Não foi possível registrar o cuidado agora. Vale tentar novamente em instantes.",
+    markActiveFallback: "Não foi possível encerrar o cuidado agora. Vale tentar novamente em instantes.",
   },
 
   feedback: {
@@ -33,12 +33,12 @@ export const CARE_COPY = {
 
   statusActions: {
     title: "Este irmão está em cuidado.",
-    description: "Para quando o irmão respondeu bem ao contato ou não precisa mais ficar em destaque.",
+    description: "Quando o irmão respondeu bem ao contato ou não precisa continuar em destaque.",
     confirmLabel: "Sim, encerrar cuidado",
     keepInCareLabel: "Manter em cuidado",
     startLabel: "Encerrar cuidado",
-    openSignalInVisibleScope: "Ainda há motivo de atenção aberto para este irmão. O cuidado precisa ser registrado antes de encerrar o acompanhamento.",
-    openSignalOutsideScope: "Ainda há motivo de atenção aberto fora do seu recorte atual. O apoio da supervisão ajuda antes de encerrar o acompanhamento.",
+    openSignalInVisibleScope: "Ainda há motivo de atenção aberto para este irmão. Antes de encerrar o acompanhamento, esse cuidado precisa ser registrado.",
+    openSignalOutsideScope: "Ainda há motivo de atenção aberto fora do seu recorte atual. A supervisão pode ajudar antes de encerrar o acompanhamento.",
   },
 
   contactActions: {
@@ -46,7 +46,7 @@ export const CARE_COPY = {
     whatsappLabel: "WhatsApp",
     existingContactLabel: "Guardar cuidado",
     noPhoneTitle: "Sem telefone cadastrado",
-    noPhoneDescription: "Um telefone cadastrado depois libera ligação e WhatsApp. Por enquanto, apenas um cuidado que já aconteceu pode ser guardado.",
+    noPhoneDescription: "Quando um telefone for cadastrado, ligação e WhatsApp ficam disponíveis. Por enquanto, um cuidado já realizado ainda pode ser guardado.",
     registerWithoutPhoneLabel: "Guardar cuidado já realizado",
   },
 
@@ -65,14 +65,14 @@ export const CARE_COPY = {
 
   confirmExistingContact: {
     title: "O cuidado já aconteceu?",
-    description: "Para quando a ligação, mensagem ou conversa já aconteceu fora do Koinonia. Na próxima etapa, uma anotação pode ser adicionada antes de salvar.",
+    description: "Quando a ligação, mensagem ou conversa já aconteceu fora do Koinonia, uma anotação pode ser adicionada antes de salvar.",
     confirmLabel: "Sim, já houve",
     cancelLabel: "Cancelar",
   },
 
   notePrompt: {
     title: "Quer deixar uma anotação?",
-    description: "Salvar sem anotação também guarda o cuidado e mantém o histórico pastoral coerente.",
+    description: "Mesmo sem anotação, o cuidado fica guardado no histórico pastoral.",
     addNoteLabel: "Anotar",
     saveWithoutNoteLabel: "Salvar sem anotação",
     cancelLabel: "Cancelar por enquanto",
@@ -95,7 +95,7 @@ export const careKindLabels: Record<CareKind, string> = {
   MARKED_CARED: CARE_COPY.feedback.contactDone,
   NOTE: "Anotação",
   REQUESTED_SUPPORT: "Pedido de apoio à supervisão",
-  ESCALATED_TO_PASTOR: "Encaminhado ao cuidado pastoral",
+  ESCALATED_TO_PASTOR: "Encaminhado ao pastor",
 };
 
 export function careConfirmContactCopy(method?: CareContactMethod) {
@@ -133,12 +133,12 @@ export function careSavedMessage(hasNote: boolean, method?: CareContactMethod) {
 
 export function resolvedAttentionMessage(resolvedSignalsCount: number, personStatusChangedToCare = false) {
   if (personStatusChangedToCare) {
-    if (resolvedSignalsCount === 1) return `1 motivo de atenção foi cuidado. ${CARE_COPY.feedback.personInCareSuffix}`;
-    if (resolvedSignalsCount > 1) return `${resolvedSignalsCount} motivos de atenção foram cuidados. ${CARE_COPY.feedback.personInCareSuffix}`;
+    if (resolvedSignalsCount === 1) return `1 sinal de atenção foi cuidado. ${CARE_COPY.feedback.personInCareSuffix}`;
+    if (resolvedSignalsCount > 1) return `${resolvedSignalsCount} sinais de atenção foram cuidados. ${CARE_COPY.feedback.personInCareSuffix}`;
     return CARE_COPY.feedback.careRegisteredAndPersonInCare;
   }
 
   if (resolvedSignalsCount <= 0) return CARE_COPY.feedback.noAttentionChanged;
-  if (resolvedSignalsCount === 1) return "1 motivo de atenção foi cuidado.";
-  return `${resolvedSignalsCount} motivos de atenção foram cuidados.`;
+  if (resolvedSignalsCount === 1) return "1 sinal de atenção foi cuidado.";
+  return `${resolvedSignalsCount} sinais de atenção foram cuidados.`;
 }

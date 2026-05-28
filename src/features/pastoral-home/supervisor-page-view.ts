@@ -186,8 +186,8 @@ export function buildSupervisorFocusItems({
     buildFocusItem({
       key: "urgent",
       count: urgentCount,
-      singular: "célula com cuidado próximo",
-      plural: "células com cuidado próximo",
+      singular: "célula urgente",
+      plural: "células urgentes",
       title: "Acompanhamento próximo",
       detail: "Há situações que pedem conversa, leitura pastoral ou alinhamento mais cuidadoso com a liderança.",
       href: focusHrefForGroups(riskGroups, riskListFilter(riskGroups), riskDetailFocus(riskGroups[0])),

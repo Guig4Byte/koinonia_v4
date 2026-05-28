@@ -185,8 +185,8 @@ export function groupDetailFocusCard(
 
   if (focus === FILTER_PASTORAL) {
     return {
-      title: "Cuidado pastoral nesta célula",
-      detail: focusedMembersCount > 0 ? `${peopleDetail} Casos trazidos para cuidado pastoral.` : "Casos trazidos para cuidado pastoral.",
+      title: "Encaminhados ao pastor nesta célula",
+      detail: focusedMembersCount > 0 ? `${peopleDetail} Encaminhamentos trazidos para cuidado pastoral.` : "Encaminhamentos trazidos para cuidado pastoral.",
       tone: "warning",
     };
   }
@@ -226,7 +226,7 @@ export function groupDetailFocusCard(
   if (focus === FILTER_LOW_PRESENCE) {
     return {
       title: "Presença baixa nesta célula",
-      detail: "A média recente está abaixo do esperado. Vale ler o contexto antes de agir.",
+      detail: "A média recente está abaixo do esperado. O contexto da célula ajuda antes de qualquer próximo passo.",
       tone: "warning",
     };
   }

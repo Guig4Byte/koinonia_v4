@@ -104,7 +104,7 @@ export function urgentMessage(
     if (urgentOrPastoral === 1 && subject?.personName) {
       return {
         title: `${subject.personName} pede cuidado mais próximo.`,
-        subtitle: `${groupPrefix(subject)}caminhe com a liderança nesse cuidado, sem assumir a operação da célula.`,
+        subtitle: `${groupPrefix(subject)}o cuidado pode seguir junto da liderança, sem assumir a operação da célula.`,
         tone: "attention",
       };
     }

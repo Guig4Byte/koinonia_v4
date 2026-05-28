@@ -146,7 +146,7 @@ describe("supervisor-page-view", () => {
     });
 
     expect(view.focusItems.map((item) => item.key)).toEqual(["urgent", "support"]);
-    expect(view.focusItems[0].valueLabel).toBe("1 célula com cuidado próximo");
+    expect(view.focusItems[0].valueLabel).toBe("1 célula urgente");
   });
 
   it("linka sinais nas células para o recorte de atenção local", () => {

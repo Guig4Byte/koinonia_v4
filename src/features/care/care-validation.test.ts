@@ -21,10 +21,10 @@ describe("care validation", () => {
   });
 
   it("formats resolved attention feedback", () => {
-    expect(resolvedAttentionMessage(0)).toBe("Nenhum motivo de atenção foi alterado.");
-    expect(resolvedAttentionMessage(1)).toBe("1 motivo de atenção foi cuidado.");
-    expect(resolvedAttentionMessage(2)).toBe("2 motivos de atenção foram cuidados.");
+    expect(resolvedAttentionMessage(0)).toBe("Nenhum sinal de atenção mudou agora.");
+    expect(resolvedAttentionMessage(1)).toBe("1 sinal de atenção foi cuidado.");
+    expect(resolvedAttentionMessage(2)).toBe("2 sinais de atenção foram cuidados.");
     expect(resolvedAttentionMessage(0, true)).toBe("Cuidado registrado. O irmão segue em cuidado.");
-    expect(resolvedAttentionMessage(1, true)).toBe("1 motivo de atenção foi cuidado. O irmão segue em cuidado.");
+    expect(resolvedAttentionMessage(1, true)).toBe("1 sinal de atenção foi cuidado. O irmão segue em cuidado.");
   });
 });

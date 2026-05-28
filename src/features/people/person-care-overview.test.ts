@@ -43,6 +43,6 @@ describe("buildPersonCareOverviewView", () => {
 
     expect(view.priorityTone).toBe("muted");
     expect(view.signalLabel).toBe("Estável");
-    expect(view.nextStepLabel).toBe("Guardar quando houver cuidado");
+    expect(view.nextStepLabel).toBe("Guardar cuidado quando houver");
   });
 });

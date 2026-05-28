@@ -58,7 +58,7 @@ describe("signal escalation helpers", () => {
   it("uses neutral detail messages for pastoral assignments", () => {
     const pastoralRequest = { severity: SignalSeverity.ATTENTION, assignedTo: { name: "Roberto", role: UserRole.PASTOR } };
 
-    expect(escalationStatusDetailForViewer(pastoralRequest, { role: UserRole.PASTOR })).toBe("Encaminhado ao cuidado pastoral");
+    expect(escalationStatusDetailForViewer(pastoralRequest, { role: UserRole.PASTOR })).toBe("Encaminhado ao pastor");
     expect(escalationStatusDetailForViewer(pastoralRequest, { role: UserRole.LEADER })).toBe("Encaminhado ao pastor");
   });
 });
