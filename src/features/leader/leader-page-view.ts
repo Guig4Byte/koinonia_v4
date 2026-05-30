@@ -1,28 +1,23 @@
-import { UserRole } from "@/generated/prisma/client";
-import { hasRecordedPresence, type RelevantEventCandidate } from "@/features/events/relevant-event";
+import { hasRecordedPresence } from "@/features/events/relevant-event";
 import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features/pastoral-pulse";
-import { signalTitleForViewer, type SignalDetailLike } from "@/features/signals/display";
-import { splitPastoralSections, type SectionPersonWithIdentity, type SectionSignalWithIdentity } from "@/features/signals/sections";
-import type { LeaderDashboard } from "@/features/dashboard/queries";
+import { signalTitleForViewer } from "@/features/signals/display";
+import { splitPastoralSections } from "@/features/signals/sections";
+import type {
+  LeaderDashboard,
+  LeaderCurrentEvent,
+  LeaderPageInCarePerson,
+  LeaderPageSignal,
+  LeaderPageViewer,
+} from "./leader-dashboard-types";
 
-export const LEADER_RELEVANT_EVENT_LOOKBACK_DAYS = 60;
-export const LEADER_RELEVANT_EVENT_LIMIT = 20;
-export type LeaderPageViewer = {
-  id: string;
-  role: UserRole;
-};
-
-type LeaderPageSignalBase = SectionSignalWithIdentity & SignalDetailLike;
-
-export type LeaderPageSignal = Omit<LeaderPageSignalBase, "assignedTo" | "person" | "reason"> & {
-  assignedTo?: { id?: string | null; name?: string | null; role: UserRole } | null;
-  person: { id: string; fullName: string };
-  reason: string;
-};
-
-export type LeaderPageInCarePerson = SectionPersonWithIdentity & {
-  fullName: string;
-};
+export { LEADER_RELEVANT_EVENT_LIMIT, LEADER_RELEVANT_EVENT_LOOKBACK_DAYS } from "./leader-dashboard-types";
+export type {
+  LeaderCurrentEvent,
+  LeaderDashboard,
+  LeaderPageInCarePerson,
+  LeaderPageSignal,
+  LeaderPageViewer,
+} from "./leader-dashboard-types";
 
 export type LeaderPastoralSections = ReturnType<typeof buildLeaderPastoralSections>;
 
@@ -30,13 +25,6 @@ export type LeaderPageView = LeaderPastoralSections & {
   navIndicator?: "risk" | "attention" | "care";
   hasPeopleInRadar: boolean;
   pastoralPulse: PastoralPulseMessage;
-};
-
-export type LeaderCurrentEvent = RelevantEventCandidate & {
-  id: string;
-  startsAt: Date;
-  locationName?: string | null;
-  group?: { name?: string | null; locationName?: string | null } | null;
 };
 
 export type LeaderCurrentEventState = {

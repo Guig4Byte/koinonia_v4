@@ -7,10 +7,9 @@ import { selectRelevantCheckInEvent } from "@/features/events/relevant-event";
 import {
   LEADER_RELEVANT_EVENT_LIMIT,
   LEADER_RELEVANT_EVENT_LOOKBACK_DAYS,
-  type LeaderCurrentEvent,
-  type LeaderPageInCarePerson,
+  type LeaderDashboard,
   type LeaderPageSignal,
-} from "@/features/leader/leader-page-view";
+} from "@/features/leader/leader-dashboard-types";
 import { activeGroupResponsibilitiesInclude, activeGroupResponsibilityWhere } from "@/features/groups/group-query";
 import { canUsePastorDashboard, getVisibleEventWhere, getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { getPastoralSectionSignalsByPerson } from "@/features/signals/sections";
@@ -293,12 +292,6 @@ async function getGroupScopedDashboard(user: PermissionUser) {
 export function getSupervisorDashboard(user: PermissionUser) {
   return getGroupScopedDashboard(user);
 }
-
-export type LeaderDashboard = {
-  attentionPeople: LeaderPageSignal[];
-  inCarePeople: LeaderPageInCarePerson[];
-  currentEvent: LeaderCurrentEvent | null;
-};
 
 export async function getLeaderDashboard(user: PermissionUser): Promise<LeaderDashboard> {
   const groupScoped = await getGroupScopedDashboard(user);
