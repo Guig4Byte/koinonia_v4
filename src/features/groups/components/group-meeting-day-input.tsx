@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { WEEKDAY_OPTIONS } from "@/features/groups/weekdays";
 import { useGroupFormDirty } from "@/features/groups/components/group-form-actions";
 import { cn } from "@/lib/cn";
-import styles from "./group-form.module.css";
+import styles from "./group-meeting-day-input.module.css";
 
 const emptyOption = { value: "", label: "Sem dia fixo" };
 

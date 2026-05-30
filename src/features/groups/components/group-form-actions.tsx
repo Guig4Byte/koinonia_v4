@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { FixedActionBar, FixedActionBarContent } from "@/components/ui/fixed-action-bar";
 import { cn } from "@/lib/cn";
-import styles from "./group-form.module.css";
+import styles from "./group-form-actions.module.css";
 
 type GroupFormGuardContextValue = {
   isDirty: boolean;

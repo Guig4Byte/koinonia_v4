@@ -4,7 +4,7 @@ import { TimePickerField } from "@/components/ui/time-picker-field";
 import { useGroupFormDirty } from "@/features/groups/components/group-form-actions";
 import { timeOptionsWithCurrent } from "@/features/events/time-options";
 import { cn } from "@/lib/cn";
-import styles from "./group-form.module.css";
+import styles from "./group-meeting-time-input.module.css";
 
 export function GroupMeetingTimeInput({
   defaultValue,
