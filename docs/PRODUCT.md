@@ -128,11 +128,11 @@ A UI usa `Encontros`. Rotas e entidades técnicas continuam usando `eventos`/`Ev
 
 ### `/lider`
 
-Radar do líder. Mostra pessoas no radar da própria célula e o encontro relevante. A lista completa fica em `Membros`.
+Radar do líder. Mostra pessoas da própria célula separadas por intenção pastoral: urgência, apoio solicitado, atenção percebida e membros em cuidado. O encontro relevante aparece abaixo da leitura pastoral. A lista completa fica em `Membros`.
 
 ### `/pessoas`
 
-Superfície de `Membros` para líder. Mostra busca, filtros e lista por prioridade pastoral: pessoas no radar primeiro, ativos depois. Pastor/admin são direcionados para `/equipe`; supervisores são direcionados para `/celulas`.
+Superfície de `Membros` para líder. Mostra busca, filtros e lista por prioridade pastoral: sinais e membros em cuidado primeiro, ativos depois. Pastor/admin são direcionados para `/equipe`; supervisores são direcionados para `/celulas`.
 
 ### `/supervisor`
 
@@ -140,7 +140,7 @@ Mostra pedidos de apoio, células acompanhadas, presença recente e casos releva
 
 ### `/celulas`
 
-Superfície do supervisor para células por prioridade pastoral, presença e estabilidade.
+Superfície do supervisor para células por prioridade pastoral, presença e estabilidade. No filtro `Todas`, o card da célula mostra o recorte mais prioritário; o detalhe da célula mostra os demais sinais, presença, membros em cuidado e ativos.
 
 ### `/pastor`
 
@@ -148,7 +148,7 @@ Mostra saúde geral, casos graves/encaminhados e busca de pessoa. Não lista tod
 
 ### `/equipe`
 
-Superfície do pastor/admin para supervisores, células, exceções e cadastro mínimo de célula. Não deve virar organograma pesado.
+Superfície do pastor/admin para supervisores, células, exceções e cadastro mínimo de célula. No filtro `Todos`, a célula também mostra a prioridade principal, com contexto suficiente para entender que outros sinais podem aparecer no detalhe. Não deve virar organograma pesado.
 
 ### `/eventos`
 
@@ -215,9 +215,15 @@ A métrica dá contexto pastoral, não ranking.
 - Célula sem check-in recente entra como `Sem presença recente` ou `Sem registro`, não como risco automático.
 - Histórico de pessoa mostra últimos encontros registrados e tendência apenas quando há base suficiente.
 
-## Prioridade do Dia
+## Pulso E Primeiro Cuidado
 
-As homes de líder, supervisor e pastor podem exibir uma única próxima ação pastoral logo após o pulso/radar. Essa superfície não cria uma tarefa nova; ela apenas aponta o caminho mais seguro quando já existe um dado prioritário.
+As homes começam com uma leitura curta do momento. Essa leitura não cria tarefa nova; ela reduz ansiedade e orienta o primeiro olhar.
+
+Uso atual:
+
+- líder: pulso pastoral, seções compactas de pessoas e encontro relevante;
+- supervisor: pulso pastoral e painel com primeiro cuidado da supervisão;
+- pastor/admin: radar pastoral, próxima ação quando houver prioridade clara, busca e saúde das células.
 
 Ordem de prioridade recomendada:
 
@@ -227,7 +233,7 @@ Ordem de prioridade recomendada:
 4. pessoa em cuidado ativo;
 5. estabilidade, quando não houver pendência.
 
-A ação deve levar para a lista ou detalhe apropriado e usar verbo específico, como `Acompanhar pessoa`, `Ver pedido` ou `Ver células em atenção`.
+Quando houver CTA, ele deve levar para a lista ou detalhe apropriado e usar verbo específico, como `Acompanhar pessoa`, `Ver pedido`, `Revisar presença` ou `Ver células em atenção`.
 
 ## Orientação pastoral em detalhes
 
@@ -241,10 +247,10 @@ As telas principais organizam pessoas por intenção pastoral.
 
 | Seção | Conteúdo | Propósito |
 | --- | --- | --- |
-| `Irmãos que precisam de um olhar especial` | sinais urgentes ou encaminhados ao cuidado pastoral | mostrar o que pede cuidado agora |
-| `Pedidos de apoio` | pedido de apoio da supervisão | separar apoio da atenção comum |
-| `Acompanhar de perto` | atenção local comum | lembrar contato cotidiano |
-| `Acolhidos em cuidado` | pessoa em `Em cuidado` sem sinal mais prioritário | manter cuidado recente no radar |
+| Urgência/caso pastoral | sinais urgentes ou encaminhados ao cuidado pastoral | mostrar o que pede cuidado agora |
+| Apoio solicitado | pedido de apoio da supervisão | separar apoio da atenção comum |
+| Atenção percebida | atenção local comum | lembrar contato cotidiano |
+| Em cuidado | pessoa em `Em cuidado` sem sinal mais prioritário | manter cuidado já iniciado no radar |
 
 Regras:
 
@@ -252,6 +258,7 @@ Regras:
 - mostrar poucos registros por seção;
 - usar `Ver mais` quando houver excedente;
 - evitar duplicar a mesma pessoa na mesma superfície;
+- não repetir no subtítulo o mesmo status que já aparece no chip do card;
 - manter busca de pessoa para consulta explícita;
 - usar CTAs específicos por intenção, evitando `Abrir` quando a ação puder ser mais clara.
 - não criar fila, SLA ou tarefa a partir dessas seções.
@@ -261,14 +268,14 @@ Regras:
 Fluxo base:
 
 ```txt
-Pessoa em atenção -> Abrir pessoa -> Registrar contato pastoral -> confirmar -> anotar se precisar -> salvar
+Pessoa em atenção -> Abrir pessoa -> Guardar contato pastoral -> confirmar -> anotar se precisar -> salvar
 ```
 
 Regras:
 
 - `Ligar` e `WhatsApp` são atalhos, não categorias administrativas do histórico;
-- `Registrar contato pastoral` exige confirmação;
-- contato confirmado aparece como `Contato feito`, com anotação opcional;
+- `Guardar contato pastoral` e `Guardar cuidado` exigem confirmação;
+- contato confirmado aparece no histórico como ligação, WhatsApp ou cuidado registrado, com anotação opcional;
 - `Salvar sem anotação` é válido;
 - pedir apoio ou encaminhar pode registrar contexto breve e opcional;
 - para o líder, a supervisão está disponível como apoio quando ajudar no discernimento;
@@ -284,13 +291,13 @@ Regras:
 O detalhe da pessoa deve ajudar o usuário a decidir com segurança antes de registrar algo. A ordem recomendada é:
 
 1. identificação e status efetivo;
-2. acompanhamento atual: responsável, último cuidado e próximo passo;
-3. motivo de atenção, quando houver;
+2. próximo cuidado: status, contexto pastoral e próximo gesto;
+3. motivo da atenção, quando houver;
 4. ritmo de presença;
 5. histórico de cuidado em linha do tempo;
-6. registro de contato pastoral.
+6. contexto das células visíveis.
 
-`Registrar contato pastoral` substitui rótulos ambíguos como pergunta solta. A ação continua exigindo confirmação e só deve salvar quando houve contato real, conversa ou anotação pastoral relevante.
+`Guardar contato pastoral` substitui rótulos ambíguos em formato de pergunta. A ação continua exigindo confirmação e só deve salvar quando houve contato real, conversa ou anotação pastoral relevante.
 
 ## Busca
 

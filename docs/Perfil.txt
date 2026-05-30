@@ -86,7 +86,7 @@ Cada seção deve mostrar poucos itens e oferecer `Ver mais` quando necessário.
 
 ### Líder
 
-A `Visão` do líder é radar, não diretório. Mostra pessoas no radar e o encontro relevante. A lista completa fica em `Membros`.
+A `Visão` do líder é radar, não diretório. Mostra sinais, membros em cuidado e o encontro relevante. A lista completa fica em `Membros`.
 
 ### Supervisor
 
@@ -156,11 +156,13 @@ Alguém menciona uma pessoa no corredor -> usuário busca o nome -> abre pessoa 
 
 Busca deve ser rápida, simples e contextual. No MVP atual, é busca de pessoa.
 
-## Próxima ação antes da exploração
+## Leitura antes da exploração
 
-Quando a home tiver muitos sinais, o usuário deve ver primeiro uma orientação simples: qual é o próximo passo pastoral mais importante. Esse card deve reduzir ansiedade, não aumentar cobrança.
+Quando a home tiver muitos sinais, o usuário deve ver primeiro uma orientação simples: onde vale olhar com mais calma. Essa leitura deve reduzir ansiedade, não aumentar cobrança.
 
 A prioridade deve ser calculada pelo contexto, não por uma nova fila de tarefas: urgente, apoio, atenção, cuidado ativo e estabilidade.
+
+A forma visual pode mudar por papel: líder pode ver seções curtas de pessoas, supervisor pode ver um primeiro cuidado da supervisão e pastor pode ver radar com uma ação destacada quando houver prioridade clara.
 
 ## Feed pastoral, não planilha
 
@@ -184,7 +186,7 @@ Bons exemplos:
 
 - não há pessoas pedindo atenção agora;
 - ainda não há presença registrada;
-- nenhum cuidado recente anotado;
+- nenhum cuidado anotado ainda;
 - nenhuma célula ativa vinculada a este supervisor.
 
 Evite estados vazios técnicos, como “nenhum registro encontrado no banco”.
@@ -261,11 +263,10 @@ Mostre só o que ajuda alguém a cuidar melhor de alguém.
 
 A tela de pessoa deve responder rapidamente:
 
-- quem acompanha agora;
-- qual foi o último cuidado registrado;
-- qual é o próximo passo seguro.
+- qual é o status pastoral efetivo;
+- qual contexto precisa ser considerado;
+- qual é o próximo gesto seguro.
 
-Use `Registrar contato pastoral` para o registro manual de cuidado já realizado. Evite rótulos ambíguos em formato de pergunta quando o usuário precisa entender a ação. O histórico deve parecer uma linha do tempo pastoral curta, com expansão apenas quando necessário.
+Use `Guardar contato pastoral` ou `Guardar cuidado` para o registro manual de cuidado já realizado. Evite rótulos ambíguos em formato de pergunta quando o usuário precisa entender a ação. O histórico deve parecer uma linha do tempo pastoral curta, com expansão apenas quando necessário.
 
-
-Patch 8: dashboards mantêm próxima ação pastoral; detalhe de célula voltou a ser consultivo, sem card de próxima ação redundante; resumo de encontro registrado usa orientação pastoral calma em vez de CTA automático para acompanhar pessoa.
+Detalhes consultivos, como célula ou encontro registrado, devem orientar sem criar CTA redundante quando a própria tela já oferece filtros, listas ou ações naturais.

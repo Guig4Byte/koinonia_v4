@@ -219,9 +219,12 @@ Use estes componentes antes de criar variações locais:
 | `PresenceMetricDisplay` | métrica compacta de presença com indicador visual |
 | `PresenceIndicator` | anel visual de presença |
 | `PresenceProgressDisplay` | percentual com barra de progresso |
-| `NextActionCard` | card compartilhado usado pelo wrapper de próxima ação pastoral dos dashboards |
-| `NextPastoralActionCard` | wrapper de domínio para destacar a próxima ação pastoral nos dashboards de líder, supervisor e pastor |
-| `CareOverviewCard` | card de domínio no detalhe da pessoa para resumir responsável, último cuidado e próximo passo |
+| `SignalHeartIndicator` | indicador pastoral com coração, cor e rótulo opcional para status de pessoa/sinal |
+| `PersonMiniCard` | card compacto de pessoa para listas; remove subtítulo que repete o chip |
+| `FilterContextCard` | mensagem curta que explica o recorte ativo de filtros estruturais |
+| `NextActionCard` | card compartilhado para primeiro cuidado quando a home usa esse padrão |
+| `NextPastoralActionCard` | wrapper de domínio usado pelo pastor/admin depois do radar |
+| `CareOverviewCard` | card de domínio no detalhe da pessoa para resumir status, contexto e próximo gesto |
 
 Regras:
 
@@ -232,7 +235,7 @@ Regras:
 - indicadores de presença devem reutilizar `src/components/shared/presence-metric.tsx`;
 - quando não houver dado de presença, indicador e texto devem comunicar ausência de dado, não risco.
 - formulários com alteração sensível, como desativar célula ativa, devem pedir confirmação antes de enviar.
-- dashboards pastorais devem exibir uma única próxima ação quando houver prioridade clara, antes de busca, listas densas ou cards analíticos;
+- dashboards pastorais podem usar uma única próxima ação quando isso reduzir a decisão; líder, supervisor e pastor não precisam ter a mesma composição visual;
 
 ## Componentes de domínio
 
@@ -246,19 +249,24 @@ Regras:
 - lógica de ordenação, filtros e labels complexos deve ficar em `*-view.ts`, não no meio do JSX;
 - cartões de próxima ação dos dashboards devem receber dados já resolvidos pelo `*-view.ts`, mantendo prioridade, destino e CTA fora do JSX da página.
 - detalhes consultivos devem evitar CTAs redundantes quando a própria tela já oferece filtros, listas ou ações naturais; nesses casos, prefira mensagem contextual ou diagnóstico.
-- o detalhe da pessoa deve começar o acompanhamento por um resumo decisório antes do histórico: responsável atual, último cuidado e próximo passo.
+- o detalhe da pessoa deve começar o acompanhamento por um resumo decisório antes do histórico: status, contexto pastoral e próximo gesto.
 - componente client-side não deve importar Prisma Client nem helper server-only.
 
 ### Dashboards pastorais
 
-As homes de líder, supervisor e pastor devem começar com pulso/contexto e, quando houver prioridade operacional, um `NextPastoralActionCard`. O card resume apenas o próximo melhor passo e direciona para a superfície adequada, sem substituir as seções pastorais completas.
+As homes de líder, supervisor e pastor começam com uma leitura curta do momento, mas cada papel usa uma composição própria:
+
+- líder: `PulseCard`, seções compactas por intenção pastoral (`PastoralSignalSection` e `InCareSection`) e encontro relevante;
+- supervisor: `PulseCard` e `SupervisorFocusPanel`, priorizando o primeiro cuidado da supervisão;
+- pastor/admin: `PastorRadarCard`, `NextPastoralActionCard` quando houver prioridade clara, busca e cards de saúde/equipe.
 
 Regras:
 
 - calcular prioridade em `leader-page-view.ts`, `supervisor-page-view.ts` ou `pastor-page-view.ts`;
 - priorizar urgente, pedido de apoio, atenção, cuidado ativo e, por fim, estabilidade;
 - usar CTA específico (`Ver pedido`, `Acompanhar pessoa`, `Ver células em atenção`, `Ver equipe`), evitando `Abrir` genérico;
-- manter listas abaixo mais compactas e com `Ver mais` quando necessário.
+- manter listas compactas e com `Ver mais` quando necessário;
+- não repetir no subtítulo o mesmo status já exibido no chip.
 
 ### Detalhe de célula
 
@@ -267,6 +275,8 @@ O detalhe de célula deve priorizar diagnóstico, resumo e listas filtráveis. N
 Regras:
 
 - manter o pulso pastoral como leitura de contexto, não como tarefa obrigatória;
+- separar membros em `Sinais`, `Em cuidado` e `Ativos`; `Em cuidado` indica cuidado já iniciado, não novo alerta;
+- no filtro `Todos`, mostrar o recorte prioritário sem esconder que outros sinais podem aparecer no detalhe;
 - evitar CTAs redundantes para recortes que a própria tela já mostra;
 - presença pendente continua visível no card próprio de encontro, sem virar um segundo CTA de próxima ação;
 - links de ação devem existir apenas nos cards naturais da tela, como encontro pendente, edição de célula ou pessoa da lista.

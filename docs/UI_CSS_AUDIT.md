@@ -216,10 +216,10 @@ Casos que devem virar nova tarefa:
 
 - [ ] Login.
 - [ ] Home pastoral.
-- [ ] Card de próxima ação pastoral aparece antes de listas densas quando há prioridade clara.
+- [ ] Primeiro cuidado aparece cedo quando a home usa esse padrão, sem competir com pulso ou radar.
 - [ ] Lista de células.
 - [ ] Detalhe de célula sem card redundante de próxima ação, mantendo pulso, filtros e listas claros.
-- [ ] Detalhe de pessoa com acompanhamento atual, histórico de cuidado e registro pastoral.
+- [ ] Detalhe de pessoa com próximo cuidado, motivo da atenção, histórico e registro pastoral.
 - [ ] Lista de eventos.
 - [ ] Detalhe de evento com orientação pastoral não obrigatória quando houver ausente/justificado/pendente.
 - [ ] Check-in com save bar.
@@ -229,8 +229,8 @@ Casos que devem virar nova tarefa:
 
 ### Sobreposição
 
-- [ ] Cards de próxima ação dos dashboards não competem visualmente com busca, radar, hero, pulso ou cards analíticos.
-- [ ] Card de acompanhamento atual no detalhe da pessoa não compete com sinal aberto nem com registro de cuidado.
+- [ ] Primeiro cuidado das homes não compete visualmente com busca, radar, pulso ou cards analíticos.
+- [ ] Card de próximo cuidado no detalhe da pessoa não compete com sinal aberto nem com registro de cuidado.
 - [ ] Último item de lista não fica atrás de `BottomNav`.
 - [ ] Último item de check-in não fica atrás de `FixedActionBar`.
 - [ ] `BottomSheet` não compete com `FixedActionBar`.

@@ -110,19 +110,22 @@ Use:
 
 - `Ligar`;
 - `WhatsApp`;
-- `Registrar contato pastoral`;
+- `Guardar contato pastoral`;
+- `Guardar cuidado`;
+- `Atualizar cuidado`;
 - `Sim, houve contato`;
 - `Ainda não consegui contato`;
-- `Contato feito`;
-- `Registrar cuidado`;
+- `Ligação registrada`;
+- `WhatsApp registrado`;
+- `Cuidado registrado`;
 - `Anotar cuidado`;
 - `Salvar sem anotação`;
 - `Histórico de cuidado`;
 - `Mostrar histórico completo`;
 - `Em cuidado`;
-- `Acolhidos em cuidado`.
+- `Membros em cuidado`.
 
-`Ligar` e `WhatsApp` são atalhos externos de aproximação. O histórico persistido usa `Contato feito`, sem classificar o canal.
+`Ligar` e `WhatsApp` são atalhos externos de aproximação. O registro só deve ser salvo depois de contato real, conversa ou cuidado já realizado.
 
 ## Navegação E Superfícies
 
@@ -138,10 +141,10 @@ Use `Equipe` para supervisores, liderança e células do pastor/admin. Não tran
 
 | Seção | Conteúdo |
 | --- | --- |
-| `Irmãos que precisam de um olhar especial` | urgentes e encaminhados ao cuidado pastoral |
+| `Urgência percebida` / `Cuidado urgente` | urgentes e encaminhados ao cuidado pastoral |
 | `Pedidos de apoio` | pedidos de apoio da supervisão |
-| `Acompanhar de perto` | atenções locais comuns |
-| `Acolhidos em cuidado` | pessoas em `Em cuidado` |
+| `Atenção percebida` | atenções locais comuns |
+| `Membros em cuidado` / `Em cuidado` | pessoas em `Em cuidado` |
 | `Células que pedem atenção` | células com caso pastoral, pedido de apoio, atenção acumulada ou presença baixa registrada |
 | `Sem presença recente` | células sem presença recente registrada; não conta como risco automático |
 
@@ -161,7 +164,7 @@ Use `Equipe` para supervisores, liderança e células do pastor/admin. Não tran
 | `Cuidado pastoral` | pastor/admin vendo selo de cuidado pastoral solicitado | vermelho/care |
 | `Encaminhado` | líder/supervisor vendo envio ao pastor | vermelho |
 | `Em cuidado` | pessoa que recebeu cuidado e continua no radar | care |
-| `Contato feito` | contato/cuidado registrado | care |
+| `Cuidado registrado` | contato/cuidado salvo no histórico | care |
 | `Informativo` | sinal `INFO`, quando exibido | neutro |
 | `Sem registro` | ausência de dado de presença | neutro |
 | `Sem presença recente` | célula sem presença recente registrada | neutro |
@@ -185,13 +188,13 @@ Não rebaixe `Urgente` para `Em atenção`. O contexto pode mudar a mensagem, ma
 | Lista de pessoas/casos | `Abrir pessoa` |
 | Pedido recebido pelo supervisor | `Abrir apoio` |
 | Lista com muitos itens | `Ver mais`, `Mostrar menos` |
-| Detalhe da pessoa | `Ligar`, `WhatsApp`, `Registrar contato pastoral` |
+| Detalhe da pessoa | `Ligar`, `WhatsApp`, `Guardar contato pastoral`, `Guardar cuidado`, `Atualizar cuidado` |
 | Célula | `Abrir célula`, `Editar célula`, `Salvar célula` |
 | Encontro futuro | `Ver encontro`, `Remarcar encontro`, `Cancelar encontro` |
 | Encontro pendente | `Registrar presença`, `Não houve encontro` |
 | Encontro registrado | `Ver detalhes`, `Ajustar presença`, `Ajustar local` |
 | Operação de presença | `Cancelar`, `Voltar`, `Salvar presença`, `Salvar ajuste` |
-| Cuidado | `Registrar cuidado`, `Salvar sem anotação` |
+| Cuidado | `Anotar`, `Salvar sem anotação`, `Salvar cuidado` |
 
 Evite `Abrir cuidado` em listas, porque sugere módulo formal de acompanhamento.
 

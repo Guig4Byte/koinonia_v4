@@ -454,9 +454,9 @@ Regras:
 - líder/supervisor resolvem sinais dos grupos ativos visíveis da pessoa;
 - se resolver todos os sinais ativos, muda `Person.status` para `COOLING_AWAY`.
 
-`Ligar` e `WhatsApp` são atalhos externos de aproximação. O registro persistido de contato confirmado usa `MARKED_CARED` e aparece como `Contato feito`, sem classificar o canal.
+`Ligar` e `WhatsApp` são atalhos externos de aproximação. O registro persistido usa `CareTouch` com o tipo adequado (`CALL`, `WHATSAPP`, `MARKED_CARED`, apoio ou encaminhamento) e aparece no histórico como cuidado registrado, sem criar acompanhamento formal.
 
-`Registrar contato pastoral` só chama a rota depois de confirmação explícita. O detalhe da pessoa mostra poucos itens em `Histórico de cuidado` e revela o restante com `Mostrar histórico completo`.
+`Guardar contato pastoral`, `Guardar cuidado` e `Atualizar cuidado` só chamam a rota depois de confirmação explícita. O detalhe da pessoa começa por `Próximo cuidado`, mostra o motivo da atenção quando houver e mantém `Histórico de cuidado` como linha do tempo curta.
 
 Componentes client-side que chamam APIs devem preferir `src/hooks/use-api-action.ts` para manter o padrão de `useTransition`, leitura de erro e `router.refresh()`. Rotas de API devem preferir `src/lib/api-response.ts` para respostas JSON simples sem mudar o contrato de payload.
 
@@ -476,7 +476,7 @@ Regras:
 - a ação atualiza `CareSignal.assignedToId`;
 - a ação cria um `CareTouch` com `REQUESTED_SUPPORT` ou `ESCALATED_TO_PASTOR`;
 - a anotação é opcional, limitada e não resolve o sinal automaticamente;
-- o histórico da pessoa mostra esse registro como cuidado recente, sem virar tarefa ou prontuário;
+- o histórico da pessoa mostra o apoio ou encaminhamento como registro pastoral, sem virar tarefa ou prontuário;
 - o detalhe da pessoa mostra poucos registros inicialmente e usa `Mostrar histórico completo` para revelar os demais.
 
 ## Queries de visão
@@ -491,7 +491,7 @@ Regras:
 
 - visão do pastor: saúde geral + casos pastorais;
 - visão do supervisor: grupos supervisionados + pedidos de apoio + exceções;
-- visão do líder: célula liderada + encontro relevante + pessoas no radar;
+- visão do líder: célula liderada + encontro relevante + seções de sinais e membros em cuidado;
 - evitar duplicar pessoa em seções da mesma tela;
 - `supportRequests` representa pessoas/casos relevantes, não fila bruta de sinais;
 - métricas de presença consideram apenas encontros com dado válido.
@@ -521,7 +521,12 @@ Regras:
 - `src/components/ui` concentra primitives visuais genéricos antes de novas classes locais ou variantes soltas.
 - `src/components/shared/structure-search.tsx` centraliza busca e chips de superfícies estruturais; wrappers de feature ficam em `features/groups` e `features/team`.
 - `src/components/shared/presence-metric.tsx` centraliza indicadores visuais de presença; novas superfícies devem reutilizá-lo antes de criar anéis/barras próprios.
-- `src/features/people/components/member-priority-list.tsx` centraliza a lista pastoral de membros, separando pessoas no radar e ativos.
+- `src/components/ui/signal-heart-indicator.tsx` centraliza chips pastorais com coração + texto, usando ícone de presença quando o rótulo for de presença.
+- `src/components/shared/person-cards.tsx` centraliza o card compacto de pessoa e remove subtítulo que repete o chip.
+- `src/features/pastoral-home/components/person-signal-card.tsx` centraliza os cards de pessoa das visões pastorais e também evita repetir o status no contexto.
+- `src/features/pastoral-home/components/pastoral-list-cards.tsx` centraliza as seções compactas da visão do líder, incluindo sinais e membros em cuidado.
+- `src/components/shared/filter-context-card.tsx` centraliza mensagens de contexto dos filtros em listas estruturais, como `Todas`/`Todos`.
+- `src/features/people/components/member-priority-list.tsx` centraliza a lista pastoral de membros, separando `Sinais`, `Em cuidado` e `Ativos`.
 - `member-filters.ts`, `cells-page-filters.ts` e `team-filters.ts` devem usar `src/lib/filter-param.ts` para valores, labels comuns e parsing de query param.
 - `firstParam()` deve ser usado para leitura simples de `searchParams` em páginas server-side.
 - `normalizeSearchText()` e `matchesNormalizedQuery()` devem ser usados para busca local sem acento/case-insensitive.
@@ -640,4 +645,12 @@ npm run build
 
 ## Próximas ações pastorais
 
-Use `src/components/shared/next-action-card.tsx` como superfície visual compartilhada para a próxima ação pastoral dos dashboards. A decisão de prioridade, rota e CTA deve vir de helpers de view da home correspondente, não do JSX da página. Detalhes consultivos, como célula ou encontro, devem preferir diagnóstico e orientação pastoral sem criar um CTA quando o usuário já tem caminhos naturais na tela.
+Use `src/components/shared/next-action-card.tsx` como superfície visual compartilhada quando uma home precisa destacar o primeiro cuidado. A decisão de prioridade, rota e CTA deve vir de helpers de view da home correspondente, não do JSX da página.
+
+Uso atual:
+
+- pastor/admin usa `NextPastoralActionCard` quando há prioridade clara depois do radar;
+- supervisor usa `SupervisorFocusPanel`, que compõe `NextActionCard` para o primeiro cuidado da supervisão;
+- líder usa pulso, seções compactas e encontro relevante, sem forçar card único de próxima ação.
+
+Detalhes consultivos, como célula ou encontro, devem preferir diagnóstico e orientação pastoral sem criar um CTA quando o usuário já tem caminhos naturais na tela.

@@ -34,7 +34,7 @@ Supervisor acompanha.
 Pastor interpreta.
 ```
 
-O sistema hoje possui autenticação real, sessão por cookie assinado, temas locais, tamanho de texto local, pessoas, células, encontros, check-in do líder, visitantes, métricas de presença, sinais de atenção, pedido de apoio, encaminhamento pastoral, cuidado recente, busca de pessoa e visões por papel.
+O sistema hoje possui autenticação real, sessão por cookie assinado, temas locais, tamanho de texto local, pessoas, células, encontros, check-in do líder, visitantes, métricas de presença, sinais de atenção, pedido de apoio, encaminhamento pastoral, membros em cuidado, histórico de cuidado, busca de pessoa, visões por papel, equipe pastoral, células supervisionadas, cadastro/edição mínima de célula e consultas de encontros por pendência/histórico.
 
 O escopo completo e os limites do MVP ficam em `docs/PRODUCT.md`.
 

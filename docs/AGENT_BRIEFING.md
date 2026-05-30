@@ -61,7 +61,7 @@ A UI usa `Encontros`. Rotas e entidades técnicas continuam usando `eventos`/`Ev
 
 ## O Que Existe No MVP
 
-O sistema atual inclui autenticação por e-mail/senha, sessão em cookie assinado, temas locais, tamanho de texto local, pessoas, células, encontros, check-in do líder, visitantes, métricas de presença, sinais de atenção, pedido de apoio, encaminhamento pastoral, cuidado recente, busca de pessoa, visões por papel, equipe pastoral, células supervisionadas, cadastro/edição mínima de célula e consultas de encontros por pendência/histórico.
+O sistema atual inclui autenticação por e-mail/senha, sessão em cookie assinado, temas locais, tamanho de texto local, pessoas, células, encontros, check-in do líder, visitantes, métricas de presença, sinais de atenção, pedido de apoio, encaminhamento pastoral, membros em cuidado, histórico de cuidado, busca de pessoa, visões por papel, equipe pastoral, células supervisionadas, cadastro/edição mínima de célula e consultas de encontros por pendência/histórico.
 
 Para a lista normativa de escopo e limites, use `docs/PRODUCT.md`.
 
