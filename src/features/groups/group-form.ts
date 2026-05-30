@@ -55,7 +55,7 @@ function parseMeetingDayOfWeek(value: unknown) {
   return { ok: true as const, value: day };
 }
 
-function parseMeetingTime(value: unknown) {
+function parseMeetingTimeField(value: unknown) {
   const time = nullableStringValue(value);
   if (!time) return { ok: true as const, value: null };
 
@@ -79,7 +79,7 @@ export function parseGroupFormFields(fields: GroupFormFields): GroupFormParseRes
   const meetingDayOfWeek = parseMeetingDayOfWeek(fields.meetingDayOfWeek);
   if (!meetingDayOfWeek.ok) return { ok: false, error: meetingDayOfWeek.error };
 
-  const meetingTime = parseMeetingTime(fields.meetingTime);
+  const meetingTime = parseMeetingTimeField(fields.meetingTime);
   if (!meetingTime.ok) return { ok: false, error: meetingTime.error };
 
   if ((meetingDayOfWeek.value === null && meetingTime.value !== null) || (meetingDayOfWeek.value !== null && meetingTime.value === null)) {
