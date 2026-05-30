@@ -963,7 +963,7 @@ function scanCssBlocks({ content, lineStarts, relativePath }) {
 
 function scanCssLineRules({ lines, relativePath }) {
   const findings = [];
-  const isTokenFile = relativePath === "src/styles/tokens.css";
+  const isTokenSourceFile = relativePath === "src/styles/tokens.css" || relativePath === "src/styles/themes.css";
   const isMotionFile = relativePath === "src/styles/motion.css";
 
   lines.forEach((lineContent, index) => {
@@ -988,7 +988,7 @@ function scanCssLineRules({ lines, relativePath }) {
       );
     }
 
-    if (!isTokenFile && /(?:#[0-9a-fA-F]{3,8}\b|\brgba?\s*\()/.test(trimmedLine)) {
+    if (!isTokenSourceFile && /(?:#[0-9a-fA-F]{3,8}\b|\brgba?\s*\()/.test(trimmedLine)) {
       findings.push(
         createFinding({
           file: relativePath,

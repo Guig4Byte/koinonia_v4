@@ -83,16 +83,9 @@
   padding: 0 0.95rem 0.85rem;
 }
 
-.supervisorGroups > div,
-.structureRows > div {
+.compactProgressiveList {
   display: grid;
   gap: 0.58rem;
-  width: 100%;
-}
-
-.supervisorGroups > div > * + *,
-.structureRows > div > * + * {
-  margin-top: 0 !important;
 }
 
 .supervisorGroups :global(button),

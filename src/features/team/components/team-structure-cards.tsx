@@ -179,6 +179,7 @@ export function TeamSupervisorCard({
             step={TEAM_SUPERVISOR_PREVIEW_LIMIT}
             moreLabel={`Ver ${countLabel(supervisor.groups.length, "célula", "células")}`}
             lessLabel="Mostrar menos"
+            className={styles.compactProgressiveList}
           >
             {supervisor.groups.map((group) => (
               <TeamGroupLink
@@ -339,6 +340,7 @@ export function TeamStructureAdjustments({
               step={STRUCTURE_ADJUSTMENTS_LIMIT}
               moreLabel="Ver mais células"
               lessLabel="Mostrar menos"
+              className={styles.compactProgressiveList}
             >
               {unassignedGroups.map((group) => (
                 <StructureGroupLink
@@ -363,6 +365,7 @@ export function TeamStructureAdjustments({
               step={STRUCTURE_ADJUSTMENTS_LIMIT}
               moreLabel="Ver mais células"
               lessLabel="Mostrar menos"
+              className={styles.compactProgressiveList}
             >
               {inactiveGroups.map((group) => (
                 <InactiveStructureGroupLink key={group.id} group={group} />

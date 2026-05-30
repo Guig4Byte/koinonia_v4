@@ -33,22 +33,22 @@ export default async function LoginPage({
   return (
     <main data-page="login" className={`${styles.page} safe-page flex min-h-screen items-center`}>
       <section className="w-full">
-        <div className={`${styles.card} rounded-[24px] border p-5 shadow-card`}>
+        <div className={styles.card}>
           <div className="k-card-header-row">
-            <div className={`${styles.logo} inline-flex h-10 w-10 items-center justify-center rounded-[12px] border`}>
+            <div className={styles.logo}>
               <HeartHandshake className="h-5 w-5" aria-hidden="true" />
             </div>
             <ThemeToggle variant="card" />
           </div>
 
-          <div className="mt-6 border-b border-[var(--login-divider)] pb-5">
-            <p className={`${styles.brandKicker} text-[length:var(--text-xs)] font-extrabold uppercase tracking-[0.18em]`}>
+          <div className={styles.intro}>
+            <p className={styles.brandKicker}>
               Koinonia
             </p>
-            <h1 className="font-serif-display mt-2 max-w-[15ch] text-[length:var(--text-3xl)] font-bold leading-[0.98] tracking-normal text-[color:var(--login-title)] sm:text-[length:var(--text-display)]">
+            <h1 className={styles.title}>
               Cuidado pastoral em suas mãos.
             </h1>
-            <p className="mt-3 max-w-[34rem] text-[length:var(--text-sm)] leading-[1.5] text-[color:var(--login-text)]">
+            <p className={styles.subtitle}>
               Entre com seu e-mail e sua senha para acessar sua visão pastoral.
             </p>
           </div>

@@ -2,6 +2,7 @@
 
 import { Children, type ReactNode, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/cn";
 
 export function ProgressiveList({
   children,
@@ -9,12 +10,14 @@ export function ProgressiveList({
   step = 4,
   moreLabel = "Ver mais",
   lessLabel = "Mostrar menos",
+  className,
 }: {
   children: ReactNode;
   initialCount?: number;
   step?: number;
   moreLabel?: string;
   lessLabel?: string;
+  className?: string;
 }) {
   const items = Children.toArray(children);
   const [visibleCount, setVisibleCount] = useState(initialCount);
@@ -23,7 +26,7 @@ export function ProgressiveList({
   const isExpanded = visibleCount >= items.length && items.length > initialCount;
 
   return (
-    <div className="min-w-0 w-full space-y-3">
+    <div className={cn("min-w-0 w-full", className ?? "space-y-3")}>
       {visibleItems}
       {hasHiddenItems ? (
         <Button
