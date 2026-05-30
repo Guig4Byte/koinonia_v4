@@ -11,7 +11,7 @@ import { PresenceMetricDisplay } from "@/components/shared/presence-metric";
 import { checkInMarkedLabel, type CheckInSummary } from "@/features/check-in/check-in-view";
 import { countLabel } from "@/lib/format";
 import { cn } from "@/lib/cn";
-import styles from "./check-in.module.css";
+import styles from "./check-in-summary-card.module.css";
 
 type CheckInSummaryCardProps = {
   summary: CheckInSummary;

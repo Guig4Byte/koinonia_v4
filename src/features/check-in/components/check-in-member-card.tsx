@@ -16,7 +16,7 @@ import {
 } from "@/features/check-in/check-in-view";
 import { cn } from "@/lib/cn";
 import { initials } from "@/lib/text";
-import styles from "./check-in.module.css";
+import styles from "./check-in-member-card.module.css";
 
 function memberCardTone(status: AttendanceSelection): StatusCardTone {
   if (status === ATTENDANCE.PRESENT) return "success";

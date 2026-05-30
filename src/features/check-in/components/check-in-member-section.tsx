@@ -15,7 +15,7 @@ import {
   type MemberAttendanceStatus,
 } from "@/features/check-in/check-in-view";
 import { cn } from "@/lib/cn";
-import styles from "./check-in.module.css";
+import styles from "./check-in-member-section.module.css";
 
 type CheckInMemberSectionProps = {
   activeFilter: CheckInMemberFilter;
