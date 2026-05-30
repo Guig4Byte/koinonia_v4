@@ -1,27 +1,26 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { filterChipClassName } from "@/components/ui/filter-chip";
+import { useMemo, useState } from "react";
 import { FixedActionBarContent } from "@/components/ui/fixed-action-bar";
-import { Feedback } from "@/components/ui/feedback";
-import { CheckInMemberCard } from "@/features/check-in/components/check-in-member-card";
-import { CheckInSaveBar, shouldShowCheckInSaveBar } from "@/features/check-in/components/check-in-save-bar";
+import { CheckInMemberSection } from "@/features/check-in/components/check-in-member-section";
+import {
+  CheckInSaveBar,
+  shouldShowCheckInSaveBar,
+} from "@/features/check-in/components/check-in-save-bar";
 import { CheckInSummaryCard } from "@/features/check-in/components/check-in-summary-card";
 import { CheckInVisitorsCard } from "@/features/check-in/components/check-in-visitors-card";
-import { useCheckInController, type CheckInMember, type CheckInVisitorRecord } from "@/features/check-in/hooks/use-check-in-controller";
 import {
-  CHECK_IN_MEMBER_FILTERS,
-  checkInFilterCount,
-  checkInFilterLabel,
-  checkInFilteredEmptyMessage,
-  filterCheckInItems,
+  useCheckInController,
+  type CheckInMember,
+  type CheckInVisitorRecord,
+} from "@/features/check-in/hooks/use-check-in-controller";
+import { useCheckInUnsavedWarning } from "@/features/check-in/hooks/use-check-in-unsaved-warning";
+import {
+  sortCheckInItemsForDisplay,
   type CheckInMemberFilter,
   type CheckInMode,
 } from "@/features/check-in/check-in-view";
-import { cn } from "@/lib/cn";
 import styles from "./check-in.module.css";
-
-const unsavedCheckInMessage = "Há alterações de presença não salvas. Deseja sair sem salvar?";
 
 export function CheckInList({
   eventId,
@@ -51,45 +50,25 @@ export function CheckInList({
     mode,
   });
 
-  useEffect(() => {
-    if (!checkIn.hasUnsavedChanges || checkIn.isPending) return undefined;
-
-    function confirmBrowserLeave(event: BeforeUnloadEvent) {
-      event.preventDefault();
-      event.returnValue = "";
-    }
-
-    window.addEventListener("beforeunload", confirmBrowserLeave);
-
-    return () => {
-      window.removeEventListener("beforeunload", confirmBrowserLeave);
-    };
-  }, [checkIn.hasUnsavedChanges, checkIn.isPending]);
+  const confirmCancel = useCheckInUnsavedWarning({
+    hasUnsavedChanges: checkIn.hasUnsavedChanges,
+    isPending: checkIn.isPending,
+  });
 
   const displayItems = useMemo(
-    () => checkIn.items
-      .map((item, index) => ({ item, index }))
-      .sort((a, b) => {
-        if (a.item.status === null && b.item.status !== null) return -1;
-        if (a.item.status !== null && b.item.status === null) return 1;
-        return a.index - b.index;
-      })
-      .map(({ item }) => item),
+    () => sortCheckInItemsForDisplay(checkIn.items),
     [checkIn.items],
   );
-  const filteredItems = filterCheckInItems(displayItems, activeFilter);
-  const activeFilterCount = checkInFilterCount(checkIn.summary, activeFilter);
-
-  function confirmCancel() {
-    if (checkIn.isPending || !checkIn.hasUnsavedChanges) return true;
-    return window.confirm(unsavedCheckInMessage);
-  }
 
   const showSaveBar = shouldShowCheckInSaveBar();
 
   return (
     <section className={styles.list}>
-      <FixedActionBarContent className={styles.content} reserveSpace={showSaveBar} data-testid="check-in-content">
+      <FixedActionBarContent
+        className={styles.content}
+        reserveSpace={showSaveBar}
+        data-testid="check-in-content"
+      >
         <CheckInSummaryCard
           summary={checkIn.summary}
           errorMessage={checkIn.errorMessage}
@@ -97,52 +76,14 @@ export function CheckInList({
           onMarkAllPresent={checkIn.markAllPresent}
         />
 
-        <div className={styles.memberSection}>
-          <div className={styles.memberSectionHeader}>
-            <div className={styles.memberSectionCopy}>
-              <p className={styles.memberSectionTitle}>Membros da célula</p>
-              <p className={styles.memberSectionDescription}>
-                Presença, ausência ou justificativa de cada irmão.
-              </p>
-            </div>
-            <span className={styles.memberCount} aria-live="polite">
-              {activeFilterCount} / {checkIn.summary.totalMembers}
-            </span>
-          </div>
-
-          <div className={styles.filterScroller} role="group" aria-label="Filtrar membros por status de presença">
-            {CHECK_IN_MEMBER_FILTERS.map((filter) => {
-              const active = activeFilter === filter;
-              const count = checkInFilterCount(checkIn.summary, filter);
-
-              return (
-                <button
-                  key={filter}
-                  type="button"
-                  className={cn(filterChipClassName({ active, variant: "period" }), styles.filterButton)}
-                  aria-pressed={active}
-                  onClick={() => setActiveFilter(filter)}
-                  disabled={checkIn.isPending}
-                >
-                  <span>{checkInFilterLabel(filter)}</span>
-                  <span className={styles.filterCount}>{count}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {filteredItems.length > 0 ? (
-            <div className={styles.memberList}>
-              {filteredItems.map((item) => (
-                <CheckInMemberCard key={item.personId} item={item} onSetStatus={checkIn.setStatus} disabled={checkIn.isPending} />
-              ))}
-            </div>
-          ) : (
-            <Feedback tone="info" compact>
-              {checkInFilteredEmptyMessage(activeFilter)}
-            </Feedback>
-          )}
-        </div>
+        <CheckInMemberSection
+          activeFilter={activeFilter}
+          disabled={checkIn.isPending}
+          items={displayItems}
+          summary={checkIn.summary}
+          onActiveFilterChange={setActiveFilter}
+          onSetStatus={checkIn.setStatus}
+        />
 
         <CheckInVisitorsCard
           savedVisitors={checkIn.savedVisitors}

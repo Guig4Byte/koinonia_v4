@@ -102,6 +102,17 @@ export function checkInFilterCount(summary: CheckInSummary, filter: CheckInMembe
   return summary.justified;
 }
 
+export function sortCheckInItemsForDisplay(items: CheckInItem[]) {
+  return items
+    .map((item, index) => ({ item, index }))
+    .sort((a, b) => {
+      if (a.item.status === null && b.item.status !== null) return -1;
+      if (a.item.status !== null && b.item.status === null) return 1;
+      return a.index - b.index;
+    })
+    .map(({ item }) => item);
+}
+
 export function filterCheckInItems(items: CheckInItem[], filter: CheckInMemberFilter) {
   if (filter === "all") return items;
   if (filter === "pending") return items.filter((item) => item.status === null);

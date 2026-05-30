@@ -10,6 +10,7 @@ import {
   filterCheckInItems,
   getInitialMemberStatus,
   markedMembersCount,
+  sortCheckInItemsForDisplay,
   summarizeCheckInItems,
 } from "./check-in-view";
 
@@ -66,6 +67,18 @@ describe("check-in view helpers", () => {
     ], 0);
 
     expect(checkInMarkedLabel(summary)).toBe("2 de 2 marcados");
+  });
+
+  it("sorts pending members first without mutating the original list", () => {
+    const items = [
+      { personId: "1", fullName: "Ana", status: ATTENDANCE.PRESENT },
+      { personId: "2", fullName: "Bia", status: null },
+      { personId: "3", fullName: "Caio", status: ATTENDANCE.ABSENT },
+      { personId: "4", fullName: "Davi", status: null },
+    ];
+
+    expect(sortCheckInItemsForDisplay(items).map((item) => item.fullName)).toEqual(["Bia", "Davi", "Ana", "Caio"]);
+    expect(items.map((item) => item.fullName)).toEqual(["Ana", "Bia", "Caio", "Davi"]);
   });
 
   it("filters members by check-in status", () => {
