@@ -7,6 +7,8 @@ export type BadgeTone = (typeof badgeTones)[number];
 export type BadgeSize = "md" | "sm" | "xs";
 export type BadgeShape = "pill" | "rounded";
 export type BadgeMaxWidth = "full" | "none" | "header" | "tightHeader" | "list" | "row" | "narrow";
+export type BadgeElevation = "none" | "soft";
+export type BadgeResponsive = "none" | "fullBelowXs";
 
 const badgeToneValues = new Set<string>(badgeTones);
 
@@ -45,12 +47,24 @@ const badgeMaxWidthClass: Record<BadgeMaxWidth, string> = {
   narrow: "max-w-[6rem]",
 };
 
+const badgeElevationClass: Record<BadgeElevation, string> = {
+  none: "",
+  soft: "shadow-[inset_0_1px_0_color-mix(in_srgb,var(--surface-alt)_48%,transparent),0_8px_18px_color-mix(in_srgb,currentColor_10%,transparent)]",
+};
+
+const badgeResponsiveClass: Record<BadgeResponsive, string> = {
+  none: "",
+  fullBelowXs: "max-[380px]:min-h-[2.2rem] max-[380px]:w-full max-[380px]:justify-start max-[380px]:px-[0.8rem] max-[380px]:text-[length:var(--text-sm)]",
+};
+
 export function Badge({
   tone = "neutral",
   size = "md",
   shape = "pill",
   maxWidth = "full",
   truncate = true,
+  elevation = "none",
+  responsive = "none",
   className,
   children,
 }: {
@@ -59,6 +73,8 @@ export function Badge({
   shape?: BadgeShape;
   maxWidth?: BadgeMaxWidth;
   truncate?: boolean;
+  elevation?: BadgeElevation;
+  responsive?: BadgeResponsive;
   className?: string;
   children: ReactNode;
 }) {
@@ -71,6 +87,8 @@ export function Badge({
         badgeSizeClass[size],
         badgeShapeClass[shape],
         badgeMaxWidthClass[maxWidth],
+        badgeElevationClass[elevation],
+        badgeResponsiveClass[responsive],
         className,
       )}
     >

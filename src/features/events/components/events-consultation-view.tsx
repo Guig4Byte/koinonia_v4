@@ -4,7 +4,6 @@ import { PageHero } from "@/components/shared/page-hero";
 import { ButtonLink } from "@/components/ui/button-link";
 import { buildEventsConsultationView, type EventConsultationMode, type EventListEvent, type EventPeriod } from "@/features/events/events-page-view";
 import type { PermissionUser } from "@/features/permissions/permissions";
-import { cn } from "@/lib/cn";
 import { ROUTES } from "@/lib/routes";
 import { EVENTS_CONSULTATION_SECTION_ID, eventsConsultationSectionHref } from "./event-consultation-routes";
 import { EventList } from "./event-list";
@@ -26,11 +25,13 @@ function ConsultationModeTab({ mode, activeMode, period, count, icon: Icon, labe
   return (
     <ButtonLink
       href={eventsConsultationSectionHref(mode, period)}
-      variant="quiet"
+      variant={active ? "tabActive" : "tab"}
       size="sm"
       shape="rounded"
+      density="tab"
+      align="left"
+      fullWidth
       aria-current={active ? "page" : undefined}
-      className={cn(styles.consultationModeTab, active && styles.consultationModeTabActive)}
     >
       <Icon className={styles.consultationModeIcon} aria-hidden="true" />
       <span className={styles.consultationModeLabel}>{label}</span>

@@ -33,13 +33,6 @@ export function EventCard({
   const { metrics } = state;
   const isPendingConsultation = variant === "pendingConsultation" && state.isPendingEvent;
   const consultationTitle = event.group?.name ?? event.title;
-  const eventCardToneClass = state.recordedPresence
-    ? styles.eventCardRecorded
-    : state.isPendingEvent
-      ? styles.eventCardPending
-      : state.badgeTone === "info"
-        ? styles.eventCardScheduled
-        : styles.eventCardNeutral;
 
   if (isPendingConsultation) {
     return (
@@ -49,10 +42,10 @@ export function EventCard({
         padding="xs"
         radius="sm"
         containment="hidden"
-        surface="brand"
+        surface="event"
         priorityTone="warn"
         data-testid="event-card"
-        className={cn("group", styles.consultationEventCard, styles.pendingConsultationCard)}
+        className="group"
       >
         <div className={styles.pendingContent}>
           <span className={styles.pendingIconWrap} aria-hidden="true">
@@ -91,12 +84,11 @@ export function EventCard({
 
             <span className={styles.pendingFooter}>
               <ActionPill
-                tone="primary"
+                tone="accentSoft"
                 size="sm"
                 minWidth="action"
                 iconBefore={<UsersRound />}
                 pressOnGroupActive
-                className={styles.eventActionPill}
                 data-testid="event-card-action"
               >
                 {state.actionLabel}
@@ -110,11 +102,10 @@ export function EventCard({
 
   const eventAction = (
     <ActionPill
-      tone={state.canRegisterPresence ? "primary" : "secondary"}
+      tone="accentSoft"
       size="sm"
       iconAfter={<ArrowRight />}
       shiftIcon
-      className={styles.eventActionPill}
       data-testid="event-card-action"
     >
       {state.actionLabel}
@@ -128,10 +119,10 @@ export function EventCard({
       padding={state.recordedPresence ? "sm" : "relaxedSm"}
       radius="sm"
       containment="hidden"
-      surface="brand"
-      priorityTone={state.isPendingEvent ? "warn" : state.recordedPresence ? "stable" : undefined}
+      surface="event"
+      priorityTone={state.isPendingEvent ? "warn" : state.recordedPresence ? "stable" : state.badgeTone === "info" ? undefined : "muted"}
       data-testid="event-card"
-      className={cn("group", styles.eventCard, eventCardToneClass)}
+      className="group"
     >
       <CardHeader
         className={styles.header}

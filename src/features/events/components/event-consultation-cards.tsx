@@ -1,7 +1,6 @@
 import { ArrowRight, CalendarClock, ClipboardCheck, type LucideIcon } from "lucide-react";
 import { CardLink } from "@/components/ui/card-link";
 import type { EventsConsultationSummary } from "@/features/events/events-page-view";
-import { cn } from "@/lib/cn";
 import { countLabel } from "@/lib/format";
 import { eventsConsultationSectionHref } from "./event-consultation-routes";
 import styles from "./events-page-sections.module.css";
@@ -30,12 +29,9 @@ function ConsultationCard({
       padding="sm"
       radius="sm"
       minHeight="sm"
-      surface="consultation"
-      className={cn(
-        "group",
-        styles.consultationCard,
-        tone === "attention" ? styles.consultationCardAttention : styles.consultationCardHistory,
-      )}
+      surface="consultationAccent"
+      priorityTone={tone === "attention" ? "warn" : "support"}
+      className="group"
       aria-label={`${title}: ${consultationDescription}`}
     >
       <span className={styles.consultationLayout}>

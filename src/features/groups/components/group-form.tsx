@@ -56,7 +56,7 @@ export function GroupForm({
           {backLabel}
         </GroupFormBackLink>
 
-        <Card padding="lg" radius="lg" className={styles.heroCard}>
+        <Card padding="sm" radius="lg" surface="heroGlow">
           <p className={styles.heroKicker}>Célula</p>
           <h2 className={styles.heroTitle}>{title}</h2>
           <p className={styles.heroDescription}>{description}</p>

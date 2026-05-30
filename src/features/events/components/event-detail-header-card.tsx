@@ -48,7 +48,7 @@ export function EventDetailHeaderCard({
       <div className={styles.header}>
         <div className={styles.headerTop}>
           <p className={styles.eyebrow}>{checkInLabel}</p>
-          <Badge tone={eventStatusTone} className={styles.statusBadge} maxWidth="none">
+          <Badge tone={eventStatusTone} maxWidth="none" elevation="soft" responsive="fullBelowXs">
             {eventStatusLabel}
           </Badge>
         </div>
@@ -60,7 +60,7 @@ export function EventDetailHeaderCard({
           <div className={styles.detail}>
             {locationName ? <p className={styles.location}>{locationName}</p> : null}
             {groupId && showGroupLink ? (
-              <ButtonLink href={ROUTES.group(groupId)} variant="quiet" size="sm" shape="pill" density="compact" className={styles.groupLink}>
+              <ButtonLink href={ROUTES.group(groupId)} variant="warmSoft" size="sm" shape="pill" density="inlineCompact">
                 Abrir célula
                 <ArrowRight className={styles.groupLinkIcon} aria-hidden="true" />
               </ButtonLink>

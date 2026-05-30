@@ -2,132 +2,6 @@
   gap: 8px;
 }
 
-.eventCard.eventCard,
-.consultationEventCard.consultationEventCard {
-  --event-card-accent: var(--color-brand-accent);
-  position: relative;
-  isolation: isolate;
-  border-color: color-mix(in srgb, var(--event-card-accent) 24%, var(--color-border-card));
-  border-left: 4px solid color-mix(in srgb, var(--event-card-accent) 88%, var(--color-brand));
-  background:
-    linear-gradient(90deg, color-mix(in srgb, var(--event-card-accent) 7%, transparent), transparent 48%),
-    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--event-card-accent) 6%), var(--color-bg-card) 62%);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--event-card-accent) 10%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--event-card-accent) 8%, transparent),
-    var(--color-shadow-card);
-}
-
-.eventCard.eventCard::before,
-.consultationEventCard.consultationEventCard::before {
-  content: "";
-  position: absolute;
-  inset-block: 0.75rem auto;
-  inset-inline-start: 0.8rem;
-  z-index: -1;
-  width: 4.75rem;
-  height: 4.75rem;
-  border-radius: 999px;
-  background: radial-gradient(circle, color-mix(in srgb, var(--event-card-accent) 14%, transparent), transparent 70%);
-  filter: blur(11px);
-  opacity: 0.72;
-  pointer-events: none;
-}
-
-.eventCard.eventCardRecorded {
-  --event-card-accent: var(--color-metric-presenca);
-}
-
-.eventCardRecorded .header {
-  gap: 8px;
-}
-
-.eventCardRecorded .location {
-  margin-top: 6px;
-}
-
-.eventCardRecorded .locationLine {
-  min-height: 25px;
-  padding: 3px 8px;
-}
-
-.eventCardRecorded .stats {
-  margin-top: 9px;
-  padding-top: 8px;
-}
-
-.eventCardRecorded .stat {
-  padding-inline: 6px;
-}
-
-.eventCardRecorded .stats strong {
-  font-size: var(--text-sm);
-}
-
-.eventCardRecorded .stat > span:last-child {
-  margin-top: 2px;
-}
-
-.eventCardRecorded .footer {
-  margin-top: 8px;
-  padding-top: 8px;
-}
-
-.recordedFooter {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.65rem;
-  align-items: end;
-  margin-top: 9px;
-  border-top: 1px solid color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 16%, var(--color-border-divider));
-  padding-top: 8px;
-}
-
-.recordedFooter .stats {
-  margin-top: 0;
-  border-top: 0;
-  padding-top: 0;
-}
-
-.recordedFooter .stat {
-  display: grid;
-  align-content: start;
-  gap: 0.2rem;
-  min-height: 2.35rem;
-}
-
-.recordedFooter .stat > span:first-child {
-  min-height: 1.25rem;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.recordedFooter .stat > strong {
-  display: flex;
-  min-height: 1.25rem;
-  align-items: center;
-}
-
-.recordedFooterAction.recordedFooterAction {
-  margin-top: 0;
-  border-top: 0;
-  padding-top: 0;
-}
-
-.eventCard.eventCardPending,
-.consultationEventCard.pendingConsultationCard {
-  --event-card-accent: var(--color-badge-atencao-text);
-  --priority-accent: var(--event-card-accent);
-}
-
-.eventCard.eventCardScheduled {
-  --event-card-accent: var(--color-card-decoration);
-}
-
-.eventCard.eventCardNeutral {
-  --event-card-accent: color-mix(in srgb, var(--color-text-muted) 64%, transparent);
-}
-
 .title {
   font-size: var(--text-base);
   font-weight: 700;
@@ -151,9 +25,9 @@
   min-height: 26px;
   align-items: center;
   gap: 6px;
-  border: 1px solid color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--priority-accent, var(--color-brand-accent)) 12%, transparent);
   border-radius: var(--radius-pill);
-  background: color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 7%, var(--surface-alt));
+  background: color-mix(in srgb, var(--priority-accent, var(--color-brand-accent)) 7%, var(--surface-alt));
   padding: 4px 9px;
   color: var(--color-text-secondary);
   font-size: var(--text-xs);
@@ -172,7 +46,7 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: 10px;
-  border-top: 1px solid color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 16%, var(--color-border-divider));
+  border-top: 1px solid color-mix(in srgb, var(--priority-accent, var(--color-brand-accent)) 16%, var(--color-border-divider));
   padding-top: 8px;
 }
 
@@ -190,7 +64,7 @@
 }
 
 .stat + .stat {
-  border-left: 1px solid color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 14%, var(--color-border-divider));
+  border-left: 1px solid color-mix(in srgb, var(--priority-accent, var(--color-brand-accent)) 14%, var(--color-border-divider));
 }
 
 .stat > strong,
@@ -215,7 +89,7 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 10px;
-  border-top: 1px solid color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 16%, var(--color-border-divider));
+  border-top: 1px solid color-mix(in srgb, var(--priority-accent, var(--color-brand-accent)) 16%, var(--color-border-divider));
   padding-top: 8px;
 }
 
@@ -223,49 +97,10 @@
   margin-top: 10px;
 }
 
-.eventActionPill.eventActionPill {
-  border: 1px solid color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 42%, var(--color-border-card));
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 14%, var(--color-bg-card)), color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 8%, var(--color-bg-card))),
-    var(--color-bg-card);
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, var(--surface-alt) 44%, transparent),
-    0 8px 16px color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 7%, transparent);
-  color: color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 76%, var(--color-text-primary));
-}
-
-:global(.group:hover) .eventActionPill.eventActionPill {
-  border-color: color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 58%, var(--color-focus-ring));
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 18%, var(--color-bg-card)), color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 10%, var(--color-bg-card))),
-    var(--color-bg-card);
-  color: color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 86%, var(--color-text-primary));
-}
-
 .consultationActions {
   display: grid;
   gap: 0.62rem;
   margin-top: 0.95rem;
-}
-
-.consultationCard.consultationCard {
-  --consultation-accent: var(--color-brand-accent);
-
-  border-color: color-mix(in srgb, var(--consultation-accent) 22%, var(--color-border-card));
-  background:
-    radial-gradient(ellipse 78% 58% at 96% 0%, color-mix(in srgb, var(--consultation-accent) 7%, transparent), transparent 72%),
-    linear-gradient(145deg, color-mix(in srgb, var(--surface-alt) 20%, var(--color-bg-card)), var(--color-bg-card) 76%);
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, var(--surface-alt) 26%, transparent),
-    var(--color-shadow-card);
-}
-
-.consultationCardAttention {
-  --consultation-accent: var(--color-badge-atencao-text);
-}
-
-.consultationCardHistory {
-  --consultation-accent: var(--color-badge-apoio-text);
 }
 
 .consultationLayout {
@@ -283,12 +118,12 @@
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  border: 1px solid color-mix(in srgb, var(--consultation-accent) 24%, var(--color-border-card));
+  border: 1px solid color-mix(in srgb, var(--priority-accent) 24%, var(--color-border-card));
   border-radius: 0.95rem;
   background:
-    radial-gradient(circle at 40% 30%, color-mix(in srgb, var(--consultation-accent) 16%, transparent), transparent 64%),
-    color-mix(in srgb, var(--consultation-accent) 10%, var(--surface-alt));
-  color: color-mix(in srgb, var(--consultation-accent) 88%, var(--color-brand));
+    radial-gradient(circle at 40% 30%, color-mix(in srgb, var(--priority-accent) 16%, transparent), transparent 64%),
+    color-mix(in srgb, var(--priority-accent) 10%, var(--surface-alt));
+  color: color-mix(in srgb, var(--priority-accent) 88%, var(--color-brand));
 }
 
 .consultationCopy {
@@ -326,10 +161,10 @@
   min-width: 2.55rem;
   height: 2.35rem;
   place-items: center;
-  border: 1px solid color-mix(in srgb, var(--consultation-accent) 28%, var(--color-border-card));
+  border: 1px solid color-mix(in srgb, var(--priority-accent) 28%, var(--color-border-card));
   border-radius: 0.78rem;
-  background: color-mix(in srgb, var(--consultation-accent) 9%, var(--surface-alt));
-  color: color-mix(in srgb, var(--consultation-accent) 86%, var(--color-text-primary));
+  background: color-mix(in srgb, var(--priority-accent) 9%, var(--surface-alt));
+  color: color-mix(in srgb, var(--priority-accent) 86%, var(--color-text-primary));
   font-family: ui-rounded, "SF Pro Rounded", "Nunito", var(--font-body);
   font-size: var(--text-lg);
   font-weight: 780;
@@ -394,27 +229,6 @@
     radial-gradient(ellipse 80% 70% at 0% 0%, color-mix(in srgb, var(--brown-400) 6%, transparent), transparent 72%),
     color-mix(in srgb, var(--surface-alt) 34%, var(--color-bg-card));
   padding: 0.35rem;
-}
-
-.consultationModeTab.consultationModeTab {
-  min-width: 0;
-  min-height: 3.08rem;
-  justify-content: flex-start;
-  gap: 0.48rem;
-  border-color: transparent;
-  background: transparent;
-  padding: 0.5rem 0.58rem;
-  color: var(--color-text-secondary);
-  box-shadow: none;
-}
-
-.consultationModeTabActive.consultationModeTabActive {
-  border-color: color-mix(in srgb, var(--color-brand-accent) 38%, var(--color-border-card));
-  background:
-    radial-gradient(ellipse 82% 68% at 18% 0%, color-mix(in srgb, var(--color-brand-accent) 16%, transparent), transparent 70%),
-    color-mix(in srgb, var(--color-brand-accent) 10%, var(--color-bg-card));
-  color: color-mix(in srgb, var(--color-brand-accent) 88%, var(--color-text-primary));
-  box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--color-brand-accent) 68%, transparent);
 }
 
 .consultationModeIcon {
@@ -488,12 +302,12 @@
   width: 38px;
   height: 38px;
   place-items: center;
-  border: 1px solid color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 20%, var(--color-border-card));
+  border: 1px solid color-mix(in srgb, var(--priority-accent, var(--color-brand-accent)) 20%, var(--color-border-card));
   border-radius: 999px;
   background:
-    radial-gradient(circle at 48% 36%, color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 14%, transparent), transparent 68%),
+    radial-gradient(circle at 48% 36%, color-mix(in srgb, var(--priority-accent, var(--color-brand-accent)) 14%, transparent), transparent 68%),
     color-mix(in srgb, var(--surface-alt) 86%, transparent);
-  color: color-mix(in srgb, var(--color-text-secondary) 88%, var(--event-card-accent, var(--color-brand)));
+  color: color-mix(in srgb, var(--color-text-secondary) 88%, var(--priority-accent, var(--color-brand)));
   box-shadow: var(--color-shadow-icon);
 }
 
@@ -580,7 +394,7 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 8px;
-  border-top: 1px solid color-mix(in srgb, var(--event-card-accent, var(--color-brand-accent)) 16%, var(--color-border-divider));
+  border-top: 1px solid color-mix(in srgb, var(--priority-accent, var(--color-brand-accent)) 16%, var(--color-border-divider));
   padding-top: 8px;
 }
 

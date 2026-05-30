@@ -202,21 +202,6 @@
   gap: 0.75rem;
 }
 
-.contextCard.contextCard {
-  border-color: color-mix(in srgb, var(--person-decor-color) 24%, var(--color-border-card));
-  border-left: 4px solid color-mix(in srgb, var(--person-decor-color) 76%, var(--color-border-card));
-  background:
-    linear-gradient(90deg, color-mix(in srgb, var(--person-decor-color) 7%, transparent), transparent 58%),
-    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--person-decor-color) 6%), var(--color-bg-card) 66%);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--person-decor-color) 6%, transparent),
-    var(--color-shadow-card);
-}
-
-.contextCard.contextCard::before {
-  display: none;
-}
-
 .contextHeader {
   display: flex;
   align-items: center;

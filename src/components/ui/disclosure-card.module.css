@@ -149,3 +149,21 @@
     flex: 1 1 auto;
   }
 }
+
+.accentInsetTone {
+  --disclosure-card-accent: var(--color-metric-presenca);
+  overflow: hidden;
+  border: 0;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--disclosure-card-accent) 8%, transparent), transparent 58%),
+    color-mix(in srgb, var(--surface-alt) 22%, transparent);
+  box-shadow: inset 3px 0 0 color-mix(in srgb, var(--disclosure-card-accent) 72%, transparent);
+}
+
+.accentInsetTone .summary {
+  border-radius: inherit;
+}
+
+.accentInsetTone .content {
+  border-top: 1px solid color-mix(in srgb, var(--disclosure-card-accent) 12%, var(--color-border-divider));
+}

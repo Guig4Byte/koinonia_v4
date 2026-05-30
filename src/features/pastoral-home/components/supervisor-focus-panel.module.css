@@ -66,9 +66,6 @@
   gap: 0.66rem;
 }
 
-.secondaryCard {
-  min-height: 7.25rem;
-}
 
 .secondaryContent {
   position: relative;
@@ -142,13 +139,13 @@
     transform 160ms ease;
 }
 
-.secondaryCard:hover .secondaryAction {
+:global(.group:hover) .secondaryAction {
   background: color-mix(in srgb, var(--priority-accent) 10%, transparent);
   color: color-mix(in srgb, var(--priority-accent) 86%, var(--color-text-primary));
   transform: translateX(1px);
 }
 
-.secondaryCard:active .secondaryAction {
+:global(.group:active) .secondaryAction {
   transform: translateX(0);
 }
 

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AttendanceStatus } from "@/generated/prisma/client";
-import { Card } from "@/components/ui/card";
+import { Card, type CardAccentTone } from "@/components/ui/card";
+import { DisclosureCard } from "@/components/ui/disclosure-card";
 import {
   buildEventReadOnlyAttendanceView,
   eventReadOnlyEmptyMessage,
@@ -29,6 +30,13 @@ const attendanceToneClass: Record<AttendanceVisualTone, string> = {
   pending: styles.rowPending,
   visitor: styles.rowVisitor,
 };
+
+function pastoralCueAccentTone(tone: string): CardAccentTone {
+  if (tone === "ok") return "success";
+  if (tone === "warn") return "warning";
+  if (tone === "risk") return "danger";
+  return "default";
+}
 
 function AttendancePersonRow({
   href,
@@ -84,6 +92,17 @@ function AttendanceGroup({ group }: { group: EventAttendanceGroup }) {
   );
 }
 
+
+function PresentDisclosureAction() {
+  return (
+    <span className={styles.presentAction} aria-hidden="true">
+      <span className={styles.closedLabel}>Ver lista de presentes</span>
+      <span className={styles.openLabel}>Ocultar presentes</span>
+      <span className={styles.presentArrow}>→</span>
+    </span>
+  );
+}
+
 function Metric({ value, label, tone }: { value: number | string; label: string; tone?: "present" | "attention" | "justified" }) {
   return (
     <div className={cn(styles.metric, tone === "present" && styles.metricPresent, tone === "attention" && styles.metricAttention, tone === "justified" && styles.metricJustified)}>
@@ -128,12 +147,12 @@ export function EventReadOnlySummary({
   return (
     <section className={styles.summarySection}>
       {permissionHint ? (
-        <Card className={styles.permissionHint}>
+        <Card surface="notice" className="text-[length:var(--text-sm)] font-semibold leading-[1.42] text-[color:var(--color-text-secondary)]">
           {permissionHint}
         </Card>
       ) : null}
 
-      <Card className={cn(styles.pastoralCueCard, styles[`pastoralCue-${attendanceView.pastoralCue.tone}`])}>
+      <Card surface="pastoralCue" accentTone={pastoralCueAccentTone(attendanceView.pastoralCue.tone)} layout="media">
         <span className={styles.pastoralCueIcon} aria-hidden="true">♡</span>
         <div>
           <p className={styles.pastoralCueTitle}>{attendanceView.pastoralCue.title}</p>
@@ -141,7 +160,7 @@ export function EventReadOnlySummary({
         </div>
       </Card>
 
-      <Card className={styles.attendanceCard}>
+      <Card surface="summaryGlow">
         <div className={styles.cardHeader}>
           <p className={styles.title}>Membros da célula</p>
           <span className={styles.statusPill}>Registrada</span>
@@ -163,29 +182,28 @@ export function EventReadOnlySummary({
         </div>
 
         {attendanceView.presentMembers.length > 0 ? (
-          <details className={styles.presentDisclosure}>
-            <summary className={styles.presentSummary}>
-              <span className={styles.presentSummaryCopy}>
-                <span className={styles.groupTitle}>Presentes ({attendanceView.presentMembers.length})</span>
-                <span className={styles.groupDescription}>Lista completa dos presentes.</span>
-              </span>
-              <span className={styles.presentAction} aria-hidden="true">
-                <span className={styles.closedLabel}>Ver lista de presentes</span>
-                <span className={styles.openLabel}>Ocultar presentes</span>
-                <span className={styles.presentArrow}>→</span>
-              </span>
-            </summary>
-            <div className={styles.presentContent}>
+          <div className={styles.presentDisclosureWrap}>
+            <DisclosureCard
+              title={`Presentes (${attendanceView.presentMembers.length})`}
+              description="Lista completa dos presentes."
+              tone="accentInset"
+              size="sm"
+              layout="stacked"
+              action={<PresentDisclosureAction />}
+              contentClassName={styles.presentContent}
+              titleClassName={styles.groupTitle}
+              descriptionClassName={styles.groupDescription}
+            >
               {attendanceView.presentMembers.map((member) => (
                 <AttendanceMemberRow key={member.personId} member={member} />
               ))}
-            </div>
-          </details>
+            </DisclosureCard>
+          </div>
         ) : null}
       </Card>
 
       {visitors.length > 0 ? (
-        <Card className={styles.attendanceCard}>
+        <Card surface="summaryGlow">
           <div className={styles.cardHeader}>
             <div className={styles.heading}>
               <p className={styles.title}>Visitantes</p>

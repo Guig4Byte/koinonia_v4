@@ -12,10 +12,13 @@ export type ButtonVariant =
   | "dangerSoft"
   | "infoSoft"
   | "supportSoft"
+  | "warmSoft"
+  | "tab"
+  | "tabActive"
   | "outline";
 export type ButtonSize = "sm" | "md" | "lg";
 export type ButtonShape = "default" | "rounded" | "pill";
-export type ButtonDensity = "default" | "compact" | "badge" | "status";
+export type ButtonDensity = "default" | "compact" | "badge" | "status" | "inlineAction" | "inlineCompact" | "tab";
 export type ButtonAlign = "center" | "left" | "between";
 export type ButtonResponsiveWidth = "auto" | "full" | "fullUntilSm";
 
@@ -53,6 +56,12 @@ const buttonVariantClass: Record<ButtonVariant, string> = {
     "border border-[var(--color-badge-info-border)] bg-[var(--color-badge-info-bg)] text-[color:var(--color-badge-info-text)]",
   supportSoft:
     "border border-[var(--color-badge-apoio-border)] bg-[var(--color-badge-apoio-bg)] text-[color:var(--color-badge-apoio-text)]",
+  warmSoft:
+    "border border-[color-mix(in_srgb,var(--brown-400)_58%,var(--color-border-card))] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brown-300)_24%,var(--color-bg-card)),color-mix(in_srgb,var(--brown-400)_12%,var(--color-bg-card)))] text-[color:color-mix(in_srgb,var(--status-warning-text)_78%,var(--color-brand-accent))] shadow-[inset_0_1px_0_color-mix(in_srgb,var(--surface-alt)_54%,transparent),0_10px_22px_color-mix(in_srgb,var(--brown-400)_12%,transparent)] hover:border-[color-mix(in_srgb,var(--brown-300)_82%,var(--color-focus-ring))] hover:bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brown-300)_30%,var(--color-bg-card)),color-mix(in_srgb,var(--brown-400)_16%,var(--color-bg-card)))] hover:text-[color:var(--status-warning-text)]",
+  tab:
+    "min-w-0 border border-transparent bg-transparent text-[color:var(--color-text-secondary)] shadow-none hover:border-[var(--color-border-card)] hover:bg-[var(--surface-alt)]",
+  tabActive:
+    "min-w-0 border border-[color-mix(in_srgb,var(--color-brand-accent)_38%,var(--color-border-card))] bg-[radial-gradient(ellipse_82%_68%_at_18%_0%,color-mix(in_srgb,var(--color-brand-accent)_16%,transparent),transparent_70%),color-mix(in_srgb,var(--color-brand-accent)_10%,var(--color-bg-card))] text-[color:color-mix(in_srgb,var(--color-brand-accent)_88%,var(--color-text-primary))] shadow-[inset_0_-2px_0_color-mix(in_srgb,var(--color-brand-accent)_68%,transparent)]",
   outline: "border border-[var(--color-border-card)] bg-[var(--color-bg-card)] text-[color:var(--color-text-primary)] hover:bg-[var(--surface-alt)]",
 };
 
@@ -73,6 +82,9 @@ const buttonDensityClass: Record<ButtonDensity, string> = {
   compact: "min-h-10 px-3 py-1.5 text-[length:var(--text-xs)]",
   badge: "min-h-11 px-3 py-2 text-[length:var(--text-xs)]",
   status: "min-h-[2.15rem] px-[0.78rem] py-[0.34rem] text-[length:var(--text-xs)]",
+  inlineAction: "min-h-[2.34rem] px-[1.14rem] py-[0.38rem] text-[length:var(--text-sm)] font-bold",
+  inlineCompact: "min-h-[2.35rem] px-[0.88rem] py-[0.38rem] text-[length:var(--text-xs)] font-extrabold",
+  tab: "min-h-[3.08rem] gap-[0.48rem] px-[0.58rem] py-2 text-[length:var(--text-sm)]",
 };
 
 const buttonAlignClass: Record<ButtonAlign, string> = {

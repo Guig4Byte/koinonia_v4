@@ -9,9 +9,11 @@ export type CardElevation = "auto" | "none" | "card" | "soft";
 export type CardContainment = "visible" | "hidden";
 export type CardMinHeight = "none" | "sm" | "md";
 export type CardStatusTone = "none" | "care" | "warning" | "success" | "danger" | "info";
-export type CardSurface = "default" | "warmGlow" | "accentGlow";
+export type CardSurface = "default" | "warmGlow" | "accentGlow" | "notice" | "summaryGlow" | "pastoralCue" | "heroGlow";
+export type CardAccentTone = "default" | "success" | "warning" | "danger" | "info" | "muted" | "presence" | "support" | "care";
+export type CardLayout = "block" | "media" | "split";
 
-type CardProps = HTMLAttributes<HTMLDivElement> & {
+export type CardProps = HTMLAttributes<HTMLDivElement> & {
   tone?: CardTone;
   padding?: CardPadding;
   radius?: CardRadius;
@@ -20,6 +22,8 @@ type CardProps = HTMLAttributes<HTMLDivElement> & {
   minHeight?: CardMinHeight;
   statusTone?: CardStatusTone;
   surface?: CardSurface;
+  accentTone?: CardAccentTone;
+  layout?: CardLayout;
   interactive?: boolean;
   children: ReactNode;
 };
@@ -75,6 +79,28 @@ const cardSurfaceClass: Record<CardSurface, string> = {
   default: "",
   warmGlow: styles.warmGlow,
   accentGlow: styles.accentGlow,
+  notice: styles.notice,
+  summaryGlow: styles.summaryGlow,
+  pastoralCue: styles.pastoralCue,
+  heroGlow: styles.heroGlow,
+};
+
+const cardAccentToneClass: Record<CardAccentTone, string> = {
+  default: "",
+  success: styles.accentSuccess,
+  warning: styles.accentWarning,
+  danger: styles.accentDanger,
+  info: styles.accentInfo,
+  muted: styles.accentMuted,
+  presence: styles.accentPresence,
+  support: styles.accentSupport,
+  care: styles.accentCare,
+};
+
+const cardLayoutClass: Record<CardLayout, string> = {
+  block: "",
+  media: styles.mediaLayout,
+  split: styles.splitLayout,
 };
 
 function resolveCardElevation(tone: CardTone, elevation: CardElevation) {
@@ -95,6 +121,8 @@ export function Card({
   minHeight = "none",
   statusTone = "none",
   surface = "default",
+  accentTone = "default",
+  layout = "block",
   interactive = false,
   children,
   ...props
@@ -110,6 +138,8 @@ export function Card({
         cardMinHeightClass[minHeight],
         cardStatusToneClass[statusTone],
         cardSurfaceClass[surface],
+        cardAccentToneClass[accentTone],
+        cardLayoutClass[layout],
         interactive && "card-hover-lift transition active:scale-[0.99]",
         className,
       )}

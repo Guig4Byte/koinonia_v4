@@ -2,7 +2,7 @@ import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import styles from "./action-pill.module.css";
 
-export type ActionPillTone = "secondary" | "primary" | "prioritySoft";
+export type ActionPillTone = "secondary" | "primary" | "prioritySoft" | "accentSoft";
 export type ActionPillSize = "md" | "sm" | "xs";
 export type ActionPillMinWidth = "none" | "action";
 

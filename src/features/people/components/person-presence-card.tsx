@@ -26,7 +26,7 @@ export function PersonPresenceCard({ view }: { view: PersonPresenceView }) {
   } = view;
 
   return (
-    <Card className={styles.presenceCard}>
+    <Card surface="heroGlow">
       <div className={styles.presenceHeader}>
         <div className={styles.presenceCopy}>
           <p className={styles.presenceTitle}>Presença recente</p>

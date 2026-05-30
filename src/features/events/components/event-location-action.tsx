@@ -62,11 +62,10 @@ export function EventLocationAction({
 
         <Button
           type="button"
-          variant="quiet"
+          variant="warmSoft"
           size="sm"
           shape="pill"
-          density="compact"
-          className={styles.editButton}
+          density="inlineAction"
           onClick={openEditor}
           disabled={disabled}
         >

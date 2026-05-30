@@ -100,7 +100,9 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
                   key={membership.id}
                   href={membership.href}
                   priorityTone="muted"
-                  className={styles.contextCard}
+                  surface="event"
+                  containment="hidden"
+                  accent="left"
                 >
                   <div className={styles.contextHeader}>
                     <div className={styles.contextCopy}>

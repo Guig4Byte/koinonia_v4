@@ -2,7 +2,7 @@ import type { DetailsHTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import styles from "./disclosure-card.module.css";
 
-export type DisclosureCardTone = "default" | "inset" | "transparent";
+export type DisclosureCardTone = "default" | "inset" | "accentInset" | "transparent";
 export type DisclosureCardSize = "sm" | "md";
 export type DisclosureCardLayout = "stacked" | "responsive";
 
@@ -28,6 +28,7 @@ type DisclosureCardProps = Omit<DetailsHTMLAttributes<HTMLDetailsElement>, "chil
 const toneClassName: Record<DisclosureCardTone, string> = {
   default: styles.defaultTone,
   inset: styles.insetTone,
+  accentInset: styles.accentInsetTone,
   transparent: styles.transparentTone,
 };
 

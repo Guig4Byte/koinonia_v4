@@ -11,7 +11,6 @@
   border-radius: 0.9rem;
 }
 
-.heroCard.heroCard,
 .formCard {
   --form-decor-color: var(--color-card-decoration);
 
@@ -22,25 +21,6 @@
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--brown-400) 6%, transparent),
     var(--color-shadow-card);
-}
-
-.heroCard.heroCard {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  padding: 0.85rem 0.95rem;
-}
-
-.heroCard::after {
-  content: "";
-  position: absolute;
-  inset: auto -48px -74px auto;
-  z-index: -1;
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--form-decor-color) 15%, transparent);
-  pointer-events: none;
 }
 
 .heroKicker,

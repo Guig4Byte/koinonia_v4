@@ -19,3 +19,109 @@
     inset 0 1px 0 color-mix(in srgb, var(--surface-alt) 28%, transparent),
     var(--color-shadow-card);
 }
+
+.notice {
+  border-color: color-mix(in srgb, var(--color-card-decoration) 14%, var(--color-border-card));
+  background:
+    radial-gradient(circle at 14% 0%, color-mix(in srgb, var(--color-card-decoration) 8%, transparent), transparent 58%),
+    color-mix(in srgb, var(--surface-alt) 70%, var(--color-bg-card));
+}
+
+.summaryGlow,
+.pastoralCue,
+.heroGlow {
+  --card-surface-accent: var(--color-card-decoration);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--card-surface-accent) 14%, var(--color-border-card));
+  background:
+    radial-gradient(ellipse 78% 58% at 8% 0%, color-mix(in srgb, var(--card-surface-accent) 13%, transparent), transparent 70%),
+    linear-gradient(145deg, color-mix(in srgb, var(--surface-alt) 28%, var(--color-bg-card)), var(--color-bg-card) 72%);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--card-surface-accent) 5%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--surface-alt) 30%, transparent),
+    0 18px 40px color-mix(in srgb, var(--card-surface-accent) 8%, transparent);
+}
+
+.summaryGlow::before,
+.pastoralCue::before,
+.heroGlow::before {
+  content: "";
+  position: absolute;
+  inset-block-start: -1.4rem;
+  inset-inline-start: -1.2rem;
+  z-index: -1;
+  width: 6.5rem;
+  height: 6.5rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--card-surface-accent) 18%, transparent), transparent 72%);
+  filter: blur(18px);
+  opacity: 0.58;
+  pointer-events: none;
+}
+
+.pastoralCue {
+  border-left: 3px solid color-mix(in srgb, var(--card-surface-accent) 66%, var(--color-border-card));
+  background:
+    radial-gradient(ellipse 82% 62% at 0% 0%, color-mix(in srgb, var(--card-surface-accent) 18%, transparent), transparent 70%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 88%, var(--card-surface-accent) 12%), var(--color-bg-card) 72%);
+}
+
+.heroGlow {
+  border-color: color-mix(in srgb, var(--card-surface-accent) 24%, var(--color-border-card));
+  background:
+    radial-gradient(ellipse 86% 64% at 96% 0%, color-mix(in srgb, var(--card-surface-accent) 10%, transparent), transparent 70%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--card-surface-accent) 6%), var(--color-bg-card) 68%);
+}
+
+.accentSuccess {
+  --card-surface-accent: var(--color-badge-estavel-text);
+}
+
+.accentWarning {
+  --card-surface-accent: var(--color-badge-atencao-text);
+}
+
+.accentDanger {
+  --card-surface-accent: var(--color-badge-risco-text);
+}
+
+.accentInfo {
+  --card-surface-accent: var(--color-badge-info-text);
+}
+
+.accentMuted {
+  --card-surface-accent: var(--color-text-muted);
+}
+
+.accentPresence {
+  --card-surface-accent: var(--color-metric-presenca);
+}
+
+.accentSupport {
+  --card-surface-accent: var(--color-badge-apoio-text);
+}
+
+.accentCare {
+  --card-surface-accent: var(--color-badge-cuidado-text);
+}
+
+.mediaLayout {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.78rem;
+}
+
+.splitLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+@media (max-width: 360px) {
+  .mediaLayout {
+    gap: 0.62rem;
+  }
+}

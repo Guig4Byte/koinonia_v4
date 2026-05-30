@@ -31,9 +31,10 @@ function SecondaryFocusCard({ item }: { item: SupervisorFocusItem }) {
       radius="default"
       elevation="soft"
       containment="hidden"
+      minHeight="lg"
       accent="left"
       priorityTone={priorityToneMap[item.tone]}
-      className={["group", styles.secondaryCard].join(" ")}
+      className="group"
       aria-label={`${item.title}: ${item.valueLabel}. ${item.actionLabel}`}
     >
       <span className={styles.secondaryContent}>
