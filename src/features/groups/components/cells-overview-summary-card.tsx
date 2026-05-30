@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { CalendarClock, ChartNoAxesCombined, Check, Heart, UsersRound } from "lucide-react";
+import { Card } from "@/components/ui/card";
 import {
   clampPresenceRate,
   metricTextClass,
@@ -76,7 +77,7 @@ function WeeklyPresenceSpotlight({ weeklyPresence }: { weeklyPresence: WeeklyPre
   };
 
   return (
-    <div className="rounded-2xl border px-3.5 py-3 shadow-[var(--color-shadow-metric-card)]" style={style}>
+    <Card padding="metric" radius="sm" elevation="metric" style={style}>
       <div className="grid grid-cols-[auto_1fr] gap-3 min-[390px]:grid-cols-[auto_1fr_auto] min-[390px]:items-center">
         <MetricIcon tone={tone}>
           <ChartNoAxesCombined className="h-4 w-4" strokeWidth={2.35} absoluteStrokeWidth />
@@ -131,7 +132,7 @@ function WeeklyPresenceSpotlight({ weeklyPresence }: { weeklyPresence: WeeklyPre
           />
         </span>
       ) : null}
-    </div>
+    </Card>
   );
 }
 
@@ -178,14 +179,14 @@ export function CellsOverviewSummaryCard({
   groupsWithoutPresenceCount: number;
 }) {
   return (
-    <section className="mb-5 rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
+    <Card as="section" className="mb-5">
       <HeaderMetric cellsCount={cellsCount} />
 
-      <div className="mt-4 border-t border-[var(--color-border-divider)] pt-4">
+      <div className="k-divided-section">
         <WeeklyPresenceSpotlight weeklyPresence={weeklyPresence} />
       </div>
 
-      <div className="mt-4 grid gap-4 border-t border-[var(--color-border-divider)] pt-4 min-[440px]:grid-cols-2 min-[440px]:gap-5">
+      <div className="k-divided-section grid gap-4 min-[440px]:grid-cols-2 min-[440px]:gap-5">
         <FooterMetric
           icon={<Heart className="h-4 w-4" strokeWidth={2.35} absoluteStrokeWidth />}
           label="Cuidado em destaque"
@@ -201,6 +202,6 @@ export function CellsOverviewSummaryCard({
           tone={groupsWithoutPresenceCount > 0 ? "neutral" : "ok"}
         />
       </div>
-    </section>
+    </Card>
   );
 }

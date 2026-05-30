@@ -77,7 +77,7 @@ export function PastoralHealthCard({
             />
           ))
         ) : (
-          <span className="h-full w-full bg-[var(--color-border-divider)]" />
+          <span className={styles.emptySegment} />
         )}
       </div>
 

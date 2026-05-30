@@ -71,7 +71,7 @@ export function SignalSupportActions({
     : null;
 
   return (
-    <div className="mt-3 space-y-2 border-t border-[var(--color-border-divider)] pt-3">
+    <div className="k-divided-section space-y-2">
       <SignalSupportFeedback
         guidance={guidance}
         assignmentMessage={assignmentMessage ?? null}

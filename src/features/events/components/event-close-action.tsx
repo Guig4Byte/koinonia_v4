@@ -1,4 +1,5 @@
-import { GhostButton } from "@/components/ui/button";
+import { ActionPanel } from "@/components/ui/action-panel";
+import { Button } from "@/components/ui/button";
 import { closeEventActionCopy, closedWithoutPresenceCopy } from "@/features/events/event-actions-view";
 
 export function EventCloseAction({
@@ -16,30 +17,25 @@ export function EventCloseAction({
 }) {
   if (isClosedWithoutPresence) {
     return (
-      <div className="mt-4 rounded-2xl border border-[var(--color-border-divider)] bg-[var(--surface-alt)] p-3">
-        <p className="k-item-title-sm">Aconteceu nesta semana?</p>
-        <p className="k-item-detail">{closedWithoutPresenceCopy(isFutureEvent)}</p>
-        <GhostButton type="button" onClick={onReopen} disabled={disabled} className="mt-3 w-full rounded-xl">
+      <ActionPanel
+        title="Aconteceu nesta semana?"
+        description={closedWithoutPresenceCopy(isFutureEvent)}
+        className="mt-4"
+      >
+        <Button type="button" variant="secondary" shape="soft" fullWidth onClick={onReopen} disabled={disabled}>
           Marcar que houve encontro
-        </GhostButton>
-      </div>
+        </Button>
+      </ActionPanel>
     );
   }
 
   const copy = closeEventActionCopy(isFutureEvent);
 
   return (
-    <div className="mt-4 rounded-2xl border border-[var(--color-border-divider)] bg-[var(--surface-alt)] p-3">
-      <p className="k-item-title-sm">{copy.title}</p>
-      <p className="k-item-detail">{copy.description}</p>
-      <GhostButton
-        type="button"
-        onClick={onClose}
-        disabled={disabled}
-        className="mt-3 w-full rounded-xl"
-      >
+    <ActionPanel title={copy.title} description={copy.description} className="mt-4">
+      <Button type="button" variant="secondary" shape="soft" fullWidth onClick={onClose} disabled={disabled}>
         {copy.actionLabel}
-      </GhostButton>
-    </div>
+      </Button>
+    </ActionPanel>
   );
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, CheckCircle2, AlertCircle, Info, Heart } from "lucide-react";
 import type { ReactNode } from "react";
 import type { BadgeTone } from "@/components/ui/badge";
+import { Card, type CardStatusTone, type CardTextStyle } from "@/components/ui/card";
 import { CardHeader } from "@/components/ui/card-header";
 import { CardLink } from "@/components/ui/card-link";
 import { MetricRow, SummaryCard } from "@/components/ui/summary-card";
@@ -39,8 +40,12 @@ export function PulseCard({
   }[tone];
 
   return (
-    <section
-      className={cn("relative isolate mb-4 overflow-hidden rounded-[1.35rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-4 py-3.5 shadow-card", className)}
+    <Card
+      as="section"
+      radius="lg"
+      padding="pulse"
+      containment="hidden"
+      className={cn("relative isolate mb-4", className)}
       style={toneStyles.surfaceStyle}
     >
       <div className={cn("absolute inset-x-0 top-0 h-0.5", toneStyles.accentClass)} />
@@ -51,7 +56,7 @@ export function PulseCard({
       <p className="k-eyebrow mb-2">Radar pastoral</p>
       <p className="font-serif-display text-[length:var(--text-xl)] font-semibold leading-[1.12] tracking-normal text-[color:var(--color-text-primary)] text-balance">{title}</p>
       {subtitle ? <p className="mt-1.5 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{subtitle}</p> : null}
-    </section>
+    </Card>
   );
 }
 
@@ -187,11 +192,18 @@ export function InfoCard({
   children: ReactNode;
   tone?: "default" | "success" | "error" | "warning";
 }) {
-  const toneStyles = {
-    default: "border-[var(--color-border-card)] bg-[var(--color-bg-card)] text-[color:var(--color-text-secondary)]",
-    success: "border-[var(--color-metric-presenca)]/25 bg-[var(--color-metric-presenca)]/8 text-[color:var(--color-metric-presenca)]",
-    error: "border-[var(--color-metric-atencoes)]/25 bg-[var(--color-metric-atencoes)]/8 text-[color:var(--color-metric-atencoes)]",
-    warning: "border-[var(--color-badge-atencao-text)]/25 bg-[var(--color-badge-atencao-text)]/8 text-[color:var(--color-badge-atencao-text)]",
+  const cardTone: Record<typeof tone, CardStatusTone> = {
+    default: "none",
+    success: "success",
+    error: "danger",
+    warning: "warning",
+  };
+
+  const textStyle: Record<typeof tone, CardTextStyle> = {
+    default: "bodyMuted",
+    success: "bodyPrimary",
+    error: "bodyPrimary",
+    warning: "bodyPrimary",
   };
 
   const Icon = {
@@ -202,10 +214,15 @@ export function InfoCard({
   }[tone];
 
   return (
-    <div className={cn("mb-4 flex items-start gap-2.5 rounded-2xl border p-4 text-[length:var(--text-sm)] leading-relaxed shadow-card", toneStyles[tone])}>
+    <Card
+      radius="sm"
+      statusTone={cardTone[tone]}
+      textStyle={textStyle[tone]}
+      className="mb-4 flex items-start gap-2.5"
+    >
       <Icon className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
       <p>{children}</p>
-    </div>
+    </Card>
   );
 }
 
@@ -275,7 +292,7 @@ export function DetailLinkCard({
         titleClassName="truncate"
         subtitleClassName="k-supporting-copy"
       />
-      {children ? <div className="mt-3 border-t border-[var(--color-border-divider)] pt-3 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">{children}</div> : null}
+      {children ? <div className="k-divided-copy">{children}</div> : null}
       <p className="mt-3 text-[length:var(--text-sm)] font-semibold text-[color:var(--color-brand)]">{actionLabel} <span className="inline-block transition group-active:translate-x-0.5">→</span></p>
     </CardLink>
   );

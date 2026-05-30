@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { Plus } from "lucide-react";
 import { GhostButton } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { InputField } from "@/components/ui/field";
 import { countLabel } from "@/lib/format";
 
@@ -37,10 +38,10 @@ function VisitorSectionTitle({ children }: { children: string }) {
 
 function VisitorRow({ name, trailing }: { name: string; trailing: ReactNode }) {
   return (
-    <div className="flex items-center justify-between rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 text-[length:var(--text-sm)]">
-      <span className="font-medium text-[color:var(--color-text-primary)]">{name}</span>
+    <Card tone="metric" padding="row" radius="sm" elevation="none" className="flex items-center justify-between" textStyle="bodyPrimary">
+      <span className="font-medium">{name}</span>
       {trailing}
-    </div>
+    </Card>
   );
 }
 
@@ -55,7 +56,7 @@ export function CheckInVisitorsCard({
   disabled = false,
 }: CheckInVisitorsCardProps) {
   return (
-    <div className="rounded-[1.15rem] border border-[var(--color-border-card)] bg-[var(--color-bg-card)] p-4 shadow-card">
+    <Card>
       <p className="k-item-title">Visitantes do encontro</p>
       {savedVisitors.length > 0 ? (
         <div className="mt-3 space-y-2">
@@ -71,9 +72,9 @@ export function CheckInVisitorsCard({
           ))}
         </div>
       ) : fallbackSavedVisitorCount > 0 ? (
-        <p className="mt-3 rounded-2xl bg-[var(--metric-card-bg)] px-3 py-2 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">
+        <Card tone="metric" padding="row" radius="sm" elevation="none" textStyle="bodyMuted" className="mt-3">
           {countLabel(fallbackSavedVisitorCount, "visitante já salvo", "visitantes já salvos")}.
-        </p>
+        </Card>
       ) : (
         <p className="mt-2 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">Nenhum visitante marcado neste encontro até agora.</p>
       )}
@@ -123,6 +124,6 @@ export function CheckInVisitorsCard({
           ))}
         </div>
       ) : null}
-    </div>
+    </Card>
   );
 }

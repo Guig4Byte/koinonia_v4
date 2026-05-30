@@ -2,18 +2,21 @@ import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import styles from "./card.module.css";
 
-export type CardTone = "default" | "featured" | "inset" | "dashed" | "transparent";
-export type CardPadding = "none" | "sm" | "md" | "lg";
+export type CardTone = "default" | "featured" | "inset" | "subtle" | "metric" | "dashed" | "transparent";
+export type CardPadding = "none" | "row" | "sm" | "metric" | "pulse" | "md" | "lg";
 export type CardRadius = "default" | "sm" | "lg";
-export type CardElevation = "auto" | "none" | "card" | "soft";
+export type CardElevation = "auto" | "none" | "card" | "soft" | "metric";
 export type CardContainment = "visible" | "hidden";
 export type CardMinHeight = "none" | "sm" | "md";
 export type CardStatusTone = "none" | "care" | "warning" | "success" | "danger" | "info";
 export type CardSurface = "default" | "warmGlow" | "accentGlow" | "notice" | "summaryGlow" | "pastoralCue" | "heroGlow";
 export type CardAccentTone = "default" | "success" | "warning" | "danger" | "info" | "muted" | "presence" | "support" | "care";
 export type CardLayout = "block" | "media" | "split";
+export type CardTextStyle = "none" | "bodyMuted" | "bodyPrimary" | "noticeStrong";
+export type CardElement = "div" | "section" | "article";
 
-export type CardProps = HTMLAttributes<HTMLDivElement> & {
+export type CardProps = HTMLAttributes<HTMLElement> & {
+  as?: CardElement;
   tone?: CardTone;
   padding?: CardPadding;
   radius?: CardRadius;
@@ -24,6 +27,7 @@ export type CardProps = HTMLAttributes<HTMLDivElement> & {
   surface?: CardSurface;
   accentTone?: CardAccentTone;
   layout?: CardLayout;
+  textStyle?: CardTextStyle;
   interactive?: boolean;
   children: ReactNode;
 };
@@ -32,13 +36,18 @@ const cardToneClass: Record<CardTone, string> = {
   default: "border border-[var(--color-border-card)] bg-[var(--color-bg-card)]",
   featured: "k-feature-card border border-[var(--color-border-card)] bg-[var(--color-bg-card)]",
   inset: "border border-[var(--color-border-card)] bg-[var(--surface-alt)]",
+  subtle: "border border-[var(--color-border-divider)] bg-[var(--surface-alt)]",
+  metric: "bg-[var(--metric-card-bg)]",
   dashed: "border border-dashed border-[var(--color-border-card)] bg-[var(--surface-alt)]",
   transparent: "border border-transparent bg-transparent",
 };
 
 const cardPaddingClass: Record<CardPadding, string> = {
   none: "p-0",
+  row: "px-3 py-2",
   sm: "p-3",
+  metric: "px-3.5 py-3",
+  pulse: "px-4 py-3.5",
   md: "p-4",
   lg: "p-5",
 };
@@ -53,6 +62,7 @@ const cardElevationClass: Record<Exclude<CardElevation, "auto">, string> = {
   none: "shadow-none",
   card: "shadow-card",
   soft: "shadow-card",
+  metric: "shadow-[var(--color-shadow-metric-card)]",
 };
 
 const cardContainmentClass: Record<CardContainment, string> = {
@@ -103,6 +113,13 @@ const cardLayoutClass: Record<CardLayout, string> = {
   split: styles.splitLayout,
 };
 
+const cardTextStyleClass: Record<CardTextStyle, string> = {
+  none: "",
+  bodyMuted: "text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]",
+  bodyPrimary: "text-[length:var(--text-sm)] text-[color:var(--color-text-primary)]",
+  noticeStrong: "text-[length:var(--text-sm)] font-semibold leading-[1.42] text-[color:var(--color-text-secondary)]",
+};
+
 function resolveCardElevation(tone: CardTone, elevation: CardElevation) {
   if (elevation !== "auto") {
     return cardElevationClass[elevation];
@@ -112,6 +129,7 @@ function resolveCardElevation(tone: CardTone, elevation: CardElevation) {
 }
 
 export function Card({
+  as: Component = "div",
   className,
   tone = "default",
   padding = "md",
@@ -123,12 +141,13 @@ export function Card({
   surface = "default",
   accentTone = "default",
   layout = "block",
+  textStyle = "none",
   interactive = false,
   children,
   ...props
 }: CardProps) {
   return (
-    <div
+    <Component
       className={cn(
         cardRadiusClass[radius],
         cardToneClass[tone],
@@ -140,12 +159,13 @@ export function Card({
         cardSurfaceClass[surface],
         cardAccentToneClass[accentTone],
         cardLayoutClass[layout],
+        cardTextStyleClass[textStyle],
         interactive && "card-hover-lift transition active:scale-[0.99]",
         className,
       )}
       {...props}
     >
       {children}
-    </div>
+    </Component>
   );
 }

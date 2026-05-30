@@ -17,7 +17,7 @@ export type ButtonVariant =
   | "tabActive"
   | "outline";
 export type ButtonSize = "sm" | "md" | "lg";
-export type ButtonShape = "default" | "rounded" | "pill";
+export type ButtonShape = "default" | "soft" | "rounded" | "pill";
 export type ButtonDensity = "default" | "compact" | "badge" | "status" | "inlineAction" | "inlineCompact" | "tab";
 export type ButtonAlign = "center" | "left" | "between";
 export type ButtonResponsiveWidth = "auto" | "full" | "fullUntilSm";
@@ -73,6 +73,7 @@ const buttonSizeClass: Record<ButtonSize, string> = {
 
 const buttonShapeClass: Record<ButtonShape, string> = {
   default: "",
+  soft: "rounded-xl",
   rounded: "rounded-2xl",
   pill: "rounded-full",
 };

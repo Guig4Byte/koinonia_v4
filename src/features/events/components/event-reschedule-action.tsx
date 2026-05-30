@@ -1,9 +1,9 @@
 import type { CalendarMonth, DateParts } from "@/features/events/brasilia-date-time";
 import type { OpenEventPicker } from "@/features/events/event-actions-view";
-import { GhostButton } from "@/components/ui/button";
+import { ActionPanel } from "@/components/ui/action-panel";
+import { Button } from "@/components/ui/button";
 import { EventDatePickerField } from "@/features/events/components/event-date-picker-field";
 import { EventTimePickerField } from "@/features/events/components/event-time-picker-field";
-import { cn } from "@/lib/cn";
 import styles from "./event-reschedule-action.module.css";
 
 export function EventRescheduleAction({
@@ -36,12 +36,12 @@ export function EventRescheduleAction({
   onReschedule: () => void;
 }) {
   return (
-    <div className="mt-4 rounded-2xl border border-[var(--color-border-divider)] bg-[var(--surface-alt)] p-3">
-      <p className="k-item-title-sm">Remarcar encontro</p>
-      <p className="k-item-detail">
-        Para quando a célula vai se reunir em outro dia ou horário. O local pode ser ajustado separadamente, se também mudou.
-      </p>
-      <div className={cn(styles.fields, "mt-3")}>
+    <ActionPanel
+      title="Remarcar encontro"
+      description="Para quando a célula vai se reunir em outro dia ou horário. O local pode ser ajustado separadamente, se também mudou."
+      className="mt-4"
+    >
+      <div className={styles.fields}>
         <EventDatePickerField
           value={localDate}
           isOpen={openPicker === "date"}
@@ -60,12 +60,12 @@ export function EventRescheduleAction({
           onTimeSelect={onTimeSelect}
         />
       </div>
-      <p className="mt-2 text-[length:var(--text-xs)] leading-relaxed text-[color:var(--color-text-secondary)]">
+      <p className="k-item-detail-tight">
         Data e horário seguem Brasília (UTC-3), em formato 24h.
       </p>
-      <GhostButton type="button" onClick={onReschedule} disabled={disabled} className="mt-3 w-full rounded-xl">
+      <Button type="button" variant="secondary" shape="soft" fullWidth onClick={onReschedule} disabled={disabled} className="mt-3">
         Remarcar encontro
-      </GhostButton>
-    </div>
+      </Button>
+    </ActionPanel>
   );
 }

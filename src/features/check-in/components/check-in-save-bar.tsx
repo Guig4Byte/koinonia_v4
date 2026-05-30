@@ -128,7 +128,7 @@ export function CheckInSaveBar({
       </div>
 
       {errorMessage ? (
-        <p role="alert" aria-live="assertive" className="mt-2 text-[length:var(--text-xs)] font-medium text-[color:var(--color-badge-risco-text)]">
+        <p role="alert" aria-live="assertive" className="k-inline-error mt-2">
           {errorMessage}
         </p>
       ) : null}

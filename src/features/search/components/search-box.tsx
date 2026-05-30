@@ -10,6 +10,7 @@ import { readJsonResponse } from "@/lib/json";
 import { API_ROUTES } from "@/lib/api-routes";
 import { ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/cn";
+import styles from "./search-box.module.css";
 import {
   NO_ACTIVE_SEARCH_OPTION,
   SEARCH_DEBOUNCE_MS,
@@ -128,8 +129,8 @@ export function SearchBox({ placeholder = "Buscar irmão..." }: { placeholder?: 
 
   return (
     <div id="buscar" className="relative mb-4">
-      <div className="flex min-h-12 items-center gap-3 rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] px-4 shadow-[var(--color-shadow-metric-card)] transition focus-within:border-[var(--color-focus-ring)] focus-within:ring-2 focus-within:ring-[var(--color-focus-ring-soft)]">
-        <Search className="h-4 w-4 shrink-0 text-[color:var(--color-text-secondary)]" />
+      <div className={styles.form}>
+        <Search className={styles.icon} />
         <input
           id="search-input"
           value={query}
@@ -143,14 +144,14 @@ export function SearchBox({ placeholder = "Buscar irmão..." }: { placeholder?: 
           aria-describedby={statusId}
           aria-expanded={showPanel}
           aria-activedescendant={activeOptionId}
-          className="w-full min-w-0 bg-transparent text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)]"
+          className={styles.control}
         />
         {query ? (
           <button
             type="button"
             aria-label="Limpar busca"
             onClick={clearSearch}
-            className="-mr-2 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[color:var(--color-text-secondary)] transition hover:bg-[var(--surface-alt)] active:scale-[0.96]"
+            className={styles.clear}
           >
             <X className="h-4 w-4" aria-hidden="true" />
           </button>
@@ -174,21 +175,21 @@ export function SearchBox({ placeholder = "Buscar irmão..." }: { placeholder?: 
           id={listboxId}
           role="listbox"
           aria-label="Resultados da busca de irmãos"
-          className="absolute left-0 right-0 top-14 z-30 overflow-y-auto rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] shadow-card"
+          className={styles.results}
           style={{ maxHeight: "min(48svh, 22rem)" }}
         >
           {status === "loading" ? (
-            <div className="px-4 py-3 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">Buscando irmãos...</div>
+            <div className={styles.message}>Buscando irmãos...</div>
           ) : null}
 
           {status === "error" ? (
-            <div role="alert" className="px-4 py-3 text-[length:var(--text-sm)] font-medium text-[color:var(--color-badge-risco-text)]">
+            <div role="alert" className={cn(styles.message, styles.messageError)}>
               Não foi possível buscar agora. Vale tentar novamente em instantes.
             </div>
           ) : null}
 
           {status === "success" && !hasResults ? (
-            <div className="px-4 py-3 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">Nenhum irmão encontrado. Tente buscar pelo nome completo ou pela célula.</div>
+            <div className={styles.message}>Nenhum irmão encontrado. Tente buscar pelo nome completo ou pela célula.</div>
           ) : null}
 
           {status === "success" && hasResults
@@ -202,10 +203,7 @@ export function SearchBox({ placeholder = "Buscar irmão..." }: { placeholder?: 
                     href={ROUTES.person(person.id)}
                     role="option"
                     aria-selected={isActive}
-                    className={cn(
-                      "block border-b border-[var(--color-border-divider)] px-4 py-3 outline-none last:border-0 focus:bg-[var(--surface-alt)]",
-                      isActive && "bg-[var(--surface-alt)]",
-                    )}
+                    className={cn(styles.option, isActive && styles.optionActive)}
                     onMouseEnter={() => setActiveIndex(index)}
                   >
                     <CardHeader
@@ -214,7 +212,7 @@ export function SearchBox({ placeholder = "Buscar irmão..." }: { placeholder?: 
                       badgeLabel={person.status}
                       badgeTone={person.statusTone ?? "neutral"}
                       titleClassName="k-item-title-sm block truncate"
-                      subtitleClassName="mt-0.5 block truncate text-[length:var(--text-xs)] text-[color:var(--color-text-secondary)]"
+                      subtitleClassName={styles.optionSubtitle}
                     />
                   </Link>
                 );

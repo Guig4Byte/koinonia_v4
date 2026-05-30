@@ -133,7 +133,7 @@ export function EventReadOnlySummary({
 
   if (emptyMessage) {
     return (
-      <Card className="text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">
+      <Card textStyle="bodyMuted">
         {emptyMessage}
       </Card>
     );
@@ -147,7 +147,7 @@ export function EventReadOnlySummary({
   return (
     <section className={styles.summarySection}>
       {permissionHint ? (
-        <Card surface="notice" className="text-[length:var(--text-sm)] font-semibold leading-[1.42] text-[color:var(--color-text-secondary)]">
+        <Card surface="notice" textStyle="noticeStrong">
           {permissionHint}
         </Card>
       ) : null}
