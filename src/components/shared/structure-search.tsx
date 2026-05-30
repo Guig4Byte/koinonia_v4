@@ -6,6 +6,13 @@ import { Search, X } from "lucide-react";
 import { FilterChip } from "@/components/ui/filter-chip";
 import { cn } from "@/lib/cn";
 import type { FilterOption, FilterTone } from "@/lib/filter-param";
+import {
+  LIVE_SEARCH_DEBOUNCE_MS,
+  getStructureSearchStatus,
+  structureSearchFilterPath,
+  structureSearchPath,
+  structureSearchQueryForPath,
+} from "./structure-search-view";
 import styles from "./structure-search.module.css";
 
 export type StructureSearchOption<TFilter extends string> =
@@ -27,9 +34,6 @@ export type StructureSearchConfig<TFilter extends string> = Pick<
   "basePath" | "defaultFilter" | "filters" | "ariaLabel" | "placeholder"
 >;
 
-const LIVE_SEARCH_MIN_QUERY_LENGTH = 2;
-const LIVE_SEARCH_DEBOUNCE_MS = 300;
-
 const filterDotToneClass: Record<FilterTone, string> = {
   risk: styles.filterDotRisk,
   support: styles.filterDotSupport,
@@ -38,37 +42,6 @@ const filterDotToneClass: Record<FilterTone, string> = {
   neutral: styles.filterDotNeutral,
   ok: styles.filterDotOk,
 };
-
-function structurePath<TFilter extends string>({
-  basePath,
-  defaultFilter,
-  filter,
-  query,
-  sectionId,
-}: {
-  basePath: string;
-  defaultFilter: TFilter;
-  filter: TFilter;
-  query: string;
-  sectionId: string;
-}) {
-  const normalizedQuery = query.trim();
-  const params = new URLSearchParams();
-
-  if (normalizedQuery) params.set("q", normalizedQuery);
-  if (filter !== defaultFilter) params.set("filtro", filter);
-
-  const queryString = params.toString();
-  const path = queryString ? `${basePath}?${queryString}` : basePath;
-  return `${path}#${sectionId}`;
-}
-
-function searchQueryForPath(query: string) {
-  const normalizedQuery = query.trim();
-  return normalizedQuery.length >= LIVE_SEARCH_MIN_QUERY_LENGTH
-    ? normalizedQuery
-    : "";
-}
 
 function StructureSearchContent<TFilter extends string>({
   basePath,
@@ -86,45 +59,28 @@ function StructureSearchContent<TFilter extends string>({
   const activeFilterRef = useRef<HTMLAnchorElement | null>(null);
   const [draftQuery, setDraftQuery] = useState(query);
   const normalizedDraftQuery = draftQuery.trim();
-  const queryForPath = searchQueryForPath(draftQuery);
-  const currentQueryForPath = searchQueryForPath(query);
-  const showMinHint =
-    normalizedDraftQuery.length > 0 &&
-    normalizedDraftQuery.length < LIVE_SEARCH_MIN_QUERY_LENGTH;
+  const queryForPath = structureSearchQueryForPath(draftQuery);
+  const currentQueryForPath = structureSearchQueryForPath(query);
+  const searchStatus = getStructureSearchStatus(draftQuery);
 
   function searchPath(nextQuery: string) {
-    return structurePath({
+    return structureSearchPath({
       basePath,
       defaultFilter,
       filter,
-      query: searchQueryForPath(nextQuery),
+      query: structureSearchQueryForPath(nextQuery),
       sectionId,
     });
   }
 
   const nextSearchPath = searchPath(draftQuery);
-  const searchStatus = showMinHint
-    ? `Digite pelo menos ${LIVE_SEARCH_MIN_QUERY_LENGTH} letras para filtrar.`
-    : normalizedDraftQuery.length > 0
-      ? "A lista será atualizada automaticamente."
-      : "Busque pelo nome ou use os filtros para ajustar a lista.";
 
   function filterPath(nextFilter: TFilter) {
-    if (nextFilter === defaultFilter) {
-      return structurePath({
-        basePath,
-        defaultFilter,
-        filter: defaultFilter,
-        query: "",
-        sectionId,
-      });
-    }
-
-    return structurePath({
+    return structureSearchFilterPath({
       basePath,
       defaultFilter,
-      filter: nextFilter,
-      query: queryForPath,
+      currentQuery: draftQuery,
+      nextFilter,
       sectionId,
     });
   }

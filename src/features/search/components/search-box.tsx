@@ -4,69 +4,21 @@ import Link from "next/link";
 import { useEffect, useId, useState, type KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Search, X } from "lucide-react";
-import { isBadgeTone, type BadgeTone } from "@/components/ui/badge";
 import { CardHeader } from "@/components/ui/card-header";
-import { SEARCH_MIN_QUERY_LENGTH, shouldSearchPeople, normalizeSearchQuery } from "@/features/search/search-view";
-import { isRecord, readJsonResponse } from "@/lib/json";
+import { shouldSearchPeople, normalizeSearchQuery } from "@/features/search/search-view";
+import { readJsonResponse } from "@/lib/json";
 import { API_ROUTES } from "@/lib/api-routes";
 import { ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/cn";
-
-type SearchResult = {
-  id: string;
-  fullName: string;
-  context: string;
-  status: string;
-  statusTone?: BadgeTone;
-};
-
-type SearchResponse = {
-  people: SearchResult[];
-};
-
-type SearchStatus = "idle" | "loading" | "success" | "error";
-
-const SEARCH_DEBOUNCE_MS = 300;
-const NO_ACTIVE_OPTION = -1;
-
-function isSearchResult(value: unknown): value is SearchResult {
-  if (!isRecord(value)) return false;
-
-  return (
-    typeof value.id === "string"
-    && typeof value.fullName === "string"
-    && typeof value.context === "string"
-    && typeof value.status === "string"
-    && (value.statusTone === undefined || isBadgeTone(value.statusTone))
-  );
-}
-
-function isSearchResponse(value: unknown): value is SearchResponse {
-  return isRecord(value) && Array.isArray(value.people) && value.people.every(isSearchResult);
-}
-
-function pluralizeResults(count: number) {
-  return count === 1 ? "1 irmão encontrado." : `${count} irmãos encontrados.`;
-}
-
-function getSearchMessage({
-  query,
-  resultsCount,
-  status,
-}: {
-  query: string;
-  resultsCount: number;
-  status: SearchStatus;
-}) {
-  const normalizedQuery = normalizeSearchQuery(query);
-
-  if (normalizedQuery.length === 0) return "Nome ou sobrenome ajudam na busca.";
-  if (!shouldSearchPeople(normalizedQuery)) return `Pelo menos ${SEARCH_MIN_QUERY_LENGTH} letras ajudam na busca.`;
-  if (status === "loading") return "Buscando irmãos...";
-  if (status === "error") return "Não foi possível buscar agora. Vale tentar novamente em instantes.";
-  if (resultsCount === 0) return "Nenhum irmão encontrado.";
-  return pluralizeResults(resultsCount);
-}
+import {
+  NO_ACTIVE_SEARCH_OPTION,
+  SEARCH_DEBOUNCE_MS,
+  getPeopleSearchMessage,
+  isSearchResponse,
+  nextActiveSearchOption,
+  type SearchResult,
+  type SearchStatus,
+} from "@/features/search/search-box-view";
 
 export function SearchBox({ placeholder = "Buscar irmão..." }: { placeholder?: string }) {
   const router = useRouter();
@@ -75,7 +27,7 @@ export function SearchBox({ placeholder = "Buscar irmão..." }: { placeholder?: 
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [status, setStatus] = useState<SearchStatus>("idle");
-  const [activeIndex, setActiveIndex] = useState(NO_ACTIVE_OPTION);
+  const [activeIndex, setActiveIndex] = useState(NO_ACTIVE_SEARCH_OPTION);
 
   const normalizedQuery = normalizeSearchQuery(query);
   const canSearch = shouldSearchPeople(normalizedQuery);
@@ -83,7 +35,7 @@ export function SearchBox({ placeholder = "Buscar irmão..." }: { placeholder?: 
   const hasResults = results.length > 0;
   const activePerson = activeIndex >= 0 ? results[activeIndex] : undefined;
   const activeOptionId = activePerson ? `${listboxId}-option-${activePerson.id}` : undefined;
-  const searchMessage = getSearchMessage({ query, resultsCount: results.length, status });
+  const searchMessage = getPeopleSearchMessage({ query, resultsCount: results.length, status });
 
   useEffect(() => {
     if (!canSearch) return;
@@ -117,14 +69,14 @@ export function SearchBox({ placeholder = "Buscar irmão..." }: { placeholder?: 
     setQuery("");
     setResults([]);
     setStatus("idle");
-    setActiveIndex(NO_ACTIVE_OPTION);
+    setActiveIndex(NO_ACTIVE_SEARCH_OPTION);
   }
 
   function handleQueryChange(value: string) {
     const nextNormalizedQuery = normalizeSearchQuery(value);
 
     setQuery(value);
-    setActiveIndex(NO_ACTIVE_OPTION);
+    setActiveIndex(NO_ACTIVE_SEARCH_OPTION);
 
     if (!shouldSearchPeople(nextNormalizedQuery)) {
       setResults([]);
@@ -141,8 +93,11 @@ export function SearchBox({ placeholder = "Buscar irmão..." }: { placeholder?: 
   function moveActiveOption(direction: 1 | -1) {
     if (!hasResults) return;
     setActiveIndex((current) => {
-      if (current === NO_ACTIVE_OPTION) return direction === 1 ? 0 : results.length - 1;
-      return (current + direction + results.length) % results.length;
+      return nextActiveSearchOption({
+        currentIndex: current,
+        direction,
+        resultsCount: results.length,
+      });
     });
   }
 
