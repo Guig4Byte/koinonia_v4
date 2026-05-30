@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import type { BadgeTone } from "@/components/ui/badge";
 import { CardHeader } from "@/components/ui/card-header";
+import { CardActionCue } from "@/components/ui/card-action-cue";
 import { PriorityCard } from "@/components/ui/priority-card";
 import type { CardPriorityTone } from "@/lib/card-priority";
 import { PresenceMetricDisplay, PresenceTrendDelta, type PresenceTrend } from "@/components/shared/presence-metric";
@@ -73,10 +73,9 @@ export function GroupCard({
           </span>
         </span>
         {href ? (
-          <span className={styles.action}>
+          <CardActionCue tone="decorative" size="md" mobileCompact>
             Abrir célula
-            <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.35} aria-hidden="true" />
-          </span>
+          </CardActionCue>
         ) : null}
       </div>
     </PriorityCard>

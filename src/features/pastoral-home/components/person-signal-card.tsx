@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { CardActionCue } from "@/components/ui/card-action-cue";
 import { Avatar } from "@/components/ui/avatar";
 import type { BadgeTone } from "@/components/ui/badge";
 import { SignalHeartIndicator } from "@/components/ui/signal-heart-indicator";
@@ -95,9 +95,7 @@ export function PersonSignalCard(props: {
             <span className={styles.headerActions}>
               <SignalHeartIndicator tone={resolvedBadgeTone} size="sm" label={resolvedSignalLabel} showLabel className={styles.signalIndicator} />
               {showIconAction ? (
-                <span className={styles.iconAction} aria-hidden="true">
-                  <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.35} />
-                </span>
+                <CardActionCue variant="icon" tone="neutral" enhanceOnGroupHover mobileCompact aria-hidden="true" />
               ) : null}
             </span>
           </div>
@@ -107,10 +105,9 @@ export function PersonSignalCard(props: {
 
       {showFooterAction ? (
         <div className={styles.footer} aria-hidden="true">
-          <span className={styles.action}>
+          <CardActionCue tone="brand" enhanceOnGroupHover>
             {ctaLabel}
-            <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.35} />
-          </span>
+          </CardActionCue>
         </div>
       ) : null}
     </PriorityCard>
