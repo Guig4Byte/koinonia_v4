@@ -9,6 +9,7 @@ import {
   groupLocalAttentionCount,
   hasLowPresence,
 } from "@/features/groups/group-pastoral-priority";
+import { matchesSupervisorGroupFilter } from "@/features/groups/group-filtering";
 import { FALLBACK_LEADER_NAME } from "@/features/groups/group-display";
 import { responsibilityNames } from "@/features/groups/responsibility-display";
 import { GroupResponsibilityRole } from "@/generated/prisma/client";
@@ -182,21 +183,15 @@ export function compareGroups(left: SupervisorGroup, right: SupervisorGroup) {
   return compareByName(left, right);
 }
 
-export function groupMatchesFilter(group: SupervisorGroup, filter: CellsFilter) {
-  if (filter === FILTER_URGENT) return groupUrgentCount(group) > 0;
-  if (filter === FILTER_PASTORAL) return groupPastoralEscalatedCount(group) > 0;
-  if (filter === FILTER_SUPPORT) return groupSupportRequestsCount(group) > 0;
-  if (filter === FILTER_ATTENTION) return groupLocalAttentionCount(group) > 0;
-  if (filter === FILTER_IN_CARE) return group.inCareCount > 0;
-  if (filter === FILTER_PRESENCE) return !group.hasPresenceData || hasLowPresence(group);
-  if (filter === FILTER_NO_RECENT_PRESENCE) return !group.hasPresenceData;
-  if (filter === FILTER_LOW_PRESENCE) return hasLowPresence(group);
-  return true;
+export function supervisorGroupMatchesFilter(group: SupervisorGroup, filter: CellsFilter) {
+  return matchesSupervisorGroupFilter(group, filter);
 }
+
+export const groupMatchesFilter = supervisorGroupMatchesFilter;
 
 export function filterCellsPageGroups(groups: SupervisorGroup[], normalizedQuery: string, filter: CellsFilter) {
   return groups
-    .filter((group) => groupMatchesFilter(group, filter))
+    .filter((group) => supervisorGroupMatchesFilter(group, filter))
     .filter((group) => matchesNormalizedQuery(groupSearchText(group), normalizedQuery))
     .sort(compareGroups);
 }

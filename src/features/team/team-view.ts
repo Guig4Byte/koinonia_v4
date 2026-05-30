@@ -1,9 +1,6 @@
 import type { getPastorTeamOverview } from "@/features/dashboard/queries";
-import {
-  groupPastoralStatusKey,
-  hasLowPresence,
-  type GroupPastoralStatusKey,
-} from "@/features/groups/group-pastoral-priority";
+import { hasLowPresence } from "@/features/groups/group-pastoral-priority";
+import { matchesTeamGroupFilter } from "@/features/groups/group-filtering";
 import { weekdayLabel } from "@/features/groups/weekdays";
 import {
   teamFilterToGroupFocus,
@@ -30,15 +27,6 @@ export {
   TEAM_FILTERS,
   type TeamFilter,
 } from "@/features/team/team-filters";
-
-const filterToStatusKey: Partial<Record<TeamFilter, GroupPastoralStatusKey>> = {
-  [FILTER_URGENT]: "urgent",
-  [FILTER_PASTORAL]: "pastoralCase",
-  [FILTER_SUPPORT]: "supportRequest",
-  [FILTER_ATTENTION]: "localAttention",
-  [FILTER_NO_RECENT_PRESENCE]: "withoutRecentPresence",
-  [FILTER_STABLE]: "stable",
-};
 
 const teamFilterCopy: Record<
   TeamFilter,
@@ -178,11 +166,11 @@ export function inactiveGroupMatchesQuery(
   );
 }
 
-export function groupMatchesFilter(group: TeamGroup, filter: TeamFilter) {
-  const statusKey = filterToStatusKey[filter];
-  if (statusKey) return groupPastoralStatusKey(group) === statusKey;
-  return true;
+export function teamGroupMatchesFilter(group: TeamGroup, filter: TeamFilter) {
+  return matchesTeamGroupFilter(group, filter);
 }
+
+export const groupMatchesFilter = teamGroupMatchesFilter;
 
 export function filterGroups(
   groups: TeamGroup[],
@@ -191,7 +179,7 @@ export function filterGroups(
 ) {
   return groups.filter(
     (group) =>
-      groupMatchesFilter(group, filter) &&
+      teamGroupMatchesFilter(group, filter) &&
       groupMatchesQuery(group, normalizedQuery),
   );
 }
@@ -204,7 +192,7 @@ export function filterSupervisorGroups(
   const supervisorMatches = supervisorMatchesQuery(supervisor, normalizedQuery);
 
   return supervisor.groups.filter((group) => {
-    if (!groupMatchesFilter(group, filter)) return false;
+    if (!teamGroupMatchesFilter(group, filter)) return false;
     if (!normalizedQuery) return true;
     return supervisorMatches || groupMatchesQuery(group, normalizedQuery);
   });
