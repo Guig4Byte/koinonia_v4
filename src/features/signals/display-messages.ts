@@ -6,7 +6,7 @@ import {
   isAssignedToSupervisor,
   shouldShowEscalationStatusForViewer,
 } from "./escalation";
-import type { SignalDetailLike, SignalDisplayViewerLike, SignalPastoralMessage } from "./display";
+import type { SignalDetailLike, SignalDisplayViewerLike, SignalPastoralMessage } from "./display-types";
 
 function isAttendanceSignal(signal: SignalDetailLike): boolean {
   return signal.source === SignalSource.ATTENDANCE;

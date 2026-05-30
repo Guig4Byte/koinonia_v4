@@ -1,7 +1,7 @@
 import { UserRole } from "@/generated/prisma/client";
-import type { PastoralPulseMessage, PastoralPulseScope, PastoralPulseSubject } from ".";
+import type { PastoralPulseMessage, PastoralPulseScope, PastoralPulseSubject } from "./types";
 import { isPastoralRole } from "@/features/permissions/permissions";
-import { groupPrefix } from "@/features/pastoral-pulse/message-utils";
+import { groupPrefix } from "./message-utils";
 import { SIGNAL_COPY } from "@/features/signals/signal-copy";
 
 export function mixedCareMessage(role: UserRole, scope: PastoralPulseScope, urgentOrPastoral: number): PastoralPulseMessage {

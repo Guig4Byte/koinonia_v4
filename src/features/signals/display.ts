@@ -1,45 +1,28 @@
-import { SignalSeverity, SignalSource, UserRole } from "@/generated/prisma/client";
+import { SignalSeverity, UserRole } from "@/generated/prisma/client";
 import { isPastoralRole } from "@/features/permissions/permissions";
 import {
   escalationStatusLabelForViewer,
   isAssignedToPastoralRole,
   isAssignedToSupervisor,
-  type SignalAssigneeLike,
 } from "./escalation";
 import { signalPastoralMessageForViewer } from "./display-messages";
 import { SIGNAL_COPY } from "./signal-copy";
+import type {
+  SignalBadge,
+  SignalDetailLike,
+  SignalDisplayLike,
+  SignalDisplayViewerLike,
+} from "./display-types";
 
 export { signalPastoralMessageForViewer } from "./display-messages";
-
-export type SignalBadgeTone = "neutral" | "ok" | "warn" | "risk" | "info" | "care" | "support";
-
-export type SignalBadge = {
-  label: string;
-  tone: SignalBadgeTone;
-};
-
-export type SignalDisplayLike = {
-  severity: SignalSeverity;
-  assignedToId?: string | null;
-  assignedTo?: SignalAssigneeLike | null;
-};
-
-export type SignalDisplayViewerLike = {
-  id?: string | null;
-  role: UserRole;
-};
-
-export type SignalDetailLike = SignalDisplayLike & {
-  reason?: string | null;
-  evidence?: string | null;
-  source?: SignalSource | null;
-  pastoralEscalationActorName?: string | null;
-};
-
-export type SignalPastoralMessage = {
-  title: string;
-  description?: string;
-};
+export type {
+  SignalBadge,
+  SignalBadgeTone,
+  SignalDetailLike,
+  SignalDisplayLike,
+  SignalDisplayViewerLike,
+  SignalPastoralMessage,
+} from "./display-types";
 
 /**
  * Resolves the user-facing signal badge for a specific viewer role.

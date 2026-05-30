@@ -1,6 +1,6 @@
 import { UserRole } from "@/generated/prisma/client";
 import { DEFAULT_PRESENCE_TONE_THRESHOLDS } from "@/features/events/presence-display";
-import type { PastoralPulseCounts, PastoralPulseMessage, PastoralPulseScope, PastoralPulseSubject } from ".";
+import type { PastoralPulseCounts, PastoralPulseMessage, PastoralPulseScope, PastoralPulseSubject } from "./types";
 import { isPastoralRole } from "@/features/permissions/permissions";
 
 export function inCareMessage(
