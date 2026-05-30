@@ -1,23 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
-import {
-  formatBrasiliaDate,
-  parseBrasiliaDateTime,
-  parseBrasiliaDateValue,
-  toBrasiliaDateTimeParts,
-} from "@/features/events/brasilia-date-time";
-import type { CalendarMonth } from "@/features/events/brasilia-date-time";
+import { useState } from "react";
+import { parseBrasiliaDateTime } from "@/features/events/brasilia-date-time";
 import {
   closeEventActionCopy,
-  eventActionResponseError,
   eventActionsAvailability,
-  initialEventCalendarMonth,
 } from "@/features/events/event-actions-view";
-import type { EventActionStatus, EventPatchPayload, OpenEventPicker } from "@/features/events/event-actions-view";
-import { API_ROUTES } from "@/lib/api-routes";
-import { readJsonResponse } from "@/lib/json";
+import type { EventActionStatus } from "@/features/events/event-actions-view";
+import { useEventActionRequest } from "@/features/events/hooks/use-event-action-request";
+import { useEventDateTimeDraft } from "@/features/events/hooks/use-event-date-time-draft";
 
 type UseEventDetailsActionsControllerOptions = {
   eventId: string;
@@ -38,47 +29,17 @@ export function useEventDetailsActionsController({
   hasPresenceData,
   isFutureEvent,
 }: UseEventDetailsActionsControllerOptions) {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
   const [localLocationName, setLocalLocationName] = useState(locationName ?? defaultLocationName ?? "");
-  const initialStartsAt = toBrasiliaDateTimeParts(startsAt);
-  const [localDate, setLocalDate] = useState(initialStartsAt.date);
-  const [localTime, setLocalTime] = useState(initialStartsAt.time);
-  const [openPicker, setOpenPicker] = useState<OpenEventPicker>(null);
-  const [calendarMonth, setCalendarMonth] = useState<CalendarMonth>(() => initialEventCalendarMonth(initialStartsAt.date));
-  const [message, setMessage] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const dateTimeDraft = useEventDateTimeDraft(startsAt);
+  const request = useEventActionRequest(eventId);
 
   const { canReschedule, isClosedWithoutPresence } = eventActionsAvailability(status, hasPresenceData);
-  const selectedDateParts = parseBrasiliaDateValue(localDate);
-
-  async function patchEvent(payload: EventPatchPayload, successMessage: string) {
-    setMessage(null);
-    setErrorMessage(null);
-
-    const response = await fetch(API_ROUTES.event(eventId), {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    const body = await readJsonResponse(response);
-
-    if (!response.ok) {
-      setErrorMessage(eventActionResponseError(body));
-      return;
-    }
-
-    setMessage(successMessage);
-    router.refresh();
-  }
 
   function readRequiredLocation(locationNameValue = localLocationName) {
     const nextLocationName = locationNameValue.trim();
 
     if (!nextLocationName) {
-      setMessage(null);
-      setErrorMessage("O local do encontro precisa estar preenchido para salvar.");
+      request.showValidationError("O local do encontro precisa estar preenchido para salvar.");
       return null;
     }
 
@@ -90,29 +51,23 @@ export function useEventDetailsActionsController({
     if (!nextLocationName) return;
 
     setLocalLocationName(nextLocationName);
-
-    startTransition(() => {
-      void patchEvent({ locationName: nextLocationName }, "Local do encontro atualizado.");
-    });
+    request.runPatch({ locationName: nextLocationName }, "Local do encontro atualizado.");
   }
 
   function rescheduleMeeting() {
     const nextLocationName = readRequiredLocation();
     if (!nextLocationName) return;
 
-    const nextStartsAt = parseBrasiliaDateTime(localDate, localTime);
+    const nextStartsAt = parseBrasiliaDateTime(dateTimeDraft.localDate, dateTimeDraft.localTime);
     if (!nextStartsAt) {
-      setMessage(null);
-      setErrorMessage("A data e o horário precisam estar válidos no horário de Brasília.");
+      request.showValidationError("A data e o horário precisam estar válidos no horário de Brasília.");
       return;
     }
 
-    startTransition(() => {
-      void patchEvent(
-        { startsAt: nextStartsAt, locationName: nextLocationName },
-        "Encontro remarcado.",
-      );
-    });
+    request.runPatch(
+      { startsAt: nextStartsAt, locationName: nextLocationName },
+      "Encontro remarcado.",
+    );
   }
 
   function markAsCancelled() {
@@ -120,64 +75,35 @@ export function useEventDetailsActionsController({
     const confirmed = window.confirm(copy.confirmationMessage);
     if (!confirmed) return;
 
-    startTransition(() => {
-      void patchEvent({ status: copy.status }, copy.successMessage);
-    });
+    request.runPatch({ status: copy.status }, copy.successMessage);
   }
 
   function reopenMeeting() {
-    startTransition(() => {
-      void patchEvent({ status: "SCHEDULED" }, "Encontro reaberto.");
-    });
-  }
-
-  function updateLocalDate(value: string) {
-    setLocalDate(value);
-
-    const nextDateParts = parseBrasiliaDateValue(value);
-    if (nextDateParts) {
-      setCalendarMonth({ year: nextDateParts.year, monthIndex: nextDateParts.month - 1 });
-    }
-  }
-
-  function selectCalendarDay(day: number) {
-    const nextDate = formatBrasiliaDate({
-      year: calendarMonth.year,
-      month: calendarMonth.monthIndex + 1,
-      day,
-    });
-
-    setLocalDate(nextDate);
-    setOpenPicker(null);
-  }
-
-  function selectTime(time: string) {
-    setLocalTime(time);
-    setOpenPicker(null);
+    request.runPatch({ status: "SCHEDULED" }, "Encontro reaberto.");
   }
 
   return {
-    calendarMonth,
+    calendarMonth: dateTimeDraft.calendarMonth,
     canReschedule,
-    errorMessage,
+    errorMessage: request.errorMessage,
     isClosedWithoutPresence,
-    isPending,
-    localDate,
+    isPending: request.isPending,
+    localDate: dateTimeDraft.localDate,
     localLocationName,
-    localTime,
-    message,
-    openPicker,
-    selectedDateParts,
+    localTime: dateTimeDraft.localTime,
+    message: request.message,
+    openPicker: dateTimeDraft.openPicker,
+    selectedDateParts: dateTimeDraft.selectedDateParts,
     markAsCancelled,
     reopenMeeting,
     rescheduleMeeting,
     saveLocation,
-    selectCalendarDay,
-    selectTime,
-    setCalendarMonth,
+    selectCalendarDay: dateTimeDraft.selectCalendarDay,
+    selectTime: dateTimeDraft.selectTime,
+    setCalendarMonth: dateTimeDraft.setCalendarMonth,
     setLocalLocationName,
-    setLocalTime,
-    setOpenPicker,
-    updateLocalDate,
+    setLocalTime: dateTimeDraft.setLocalTime,
+    setOpenPicker: dateTimeDraft.setOpenPicker,
+    updateLocalDate: dateTimeDraft.updateLocalDate,
   };
 }
