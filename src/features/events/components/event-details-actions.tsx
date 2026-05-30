@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { EventCloseAction } from "@/features/events/components/event-close-action";
 import { EventLocationAction } from "@/features/events/components/event-location-action";
 import { EventRescheduleAction } from "@/features/events/components/event-reschedule-action";
-import { useEventDetailsActionsController } from "@/hooks/use-event-details-actions-controller";
+import { useEventDetailsActionsController } from "@/features/events/hooks/use-event-details-actions-controller";
 import { eventLocationActionLabel, type EventActionStatus } from "@/features/events/event-actions-view";
 import styles from "./event-details-actions.module.css";
 

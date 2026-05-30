@@ -8,7 +8,7 @@ import { CheckInMemberCard } from "@/features/check-in/components/check-in-membe
 import { CheckInSaveBar, shouldShowCheckInSaveBar } from "@/features/check-in/components/check-in-save-bar";
 import { CheckInSummaryCard } from "@/features/check-in/components/check-in-summary-card";
 import { CheckInVisitorsCard } from "@/features/check-in/components/check-in-visitors-card";
-import { useCheckInController, type CheckInMember, type CheckInVisitorRecord } from "@/hooks/use-check-in-controller";
+import { useCheckInController, type CheckInMember, type CheckInVisitorRecord } from "@/features/check-in/hooks/use-check-in-controller";
 import {
   CHECK_IN_MEMBER_FILTERS,
   checkInFilterCount,
