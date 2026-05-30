@@ -10,6 +10,7 @@ export type PriorityCardContainment = "visible" | "hidden";
 export type PriorityCardMinHeight = "none" | "sm" | "md";
 export type PriorityCardAccent = "none" | "left";
 export type PriorityCardSurface = "default" | "brand" | "consultation" | "spotlight" | "spotlightCompact";
+export type PriorityCardLayout = "block" | "split";
 export type PriorityCardElement = "article" | "section" | "div";
 
 type PriorityCardProps = HTMLAttributes<HTMLElement> & {
@@ -22,6 +23,7 @@ type PriorityCardProps = HTMLAttributes<HTMLElement> & {
   minHeight?: PriorityCardMinHeight;
   accent?: PriorityCardAccent;
   surface?: PriorityCardSurface;
+  layout?: PriorityCardLayout;
   interactive?: boolean;
   children: ReactNode;
 };
@@ -71,6 +73,11 @@ const priorityCardSurfaceClass: Record<PriorityCardSurface, string> = {
   spotlightCompact: styles.spotlightCompact,
 };
 
+const priorityCardLayoutClass: Record<PriorityCardLayout, string> = {
+  block: "",
+  split: styles.split,
+};
+
 export function priorityCardSurfaceClassName({
   priorityTone,
   padding = "md",
@@ -80,6 +87,7 @@ export function priorityCardSurfaceClassName({
   minHeight = "none",
   accent = "none",
   surface = "default",
+  layout = "block",
   interactive = false,
   className,
 }: {
@@ -91,6 +99,7 @@ export function priorityCardSurfaceClassName({
   minHeight?: PriorityCardMinHeight;
   accent?: PriorityCardAccent;
   surface?: PriorityCardSurface;
+  layout?: PriorityCardLayout;
   interactive?: boolean;
   className?: string;
 } = {}) {
@@ -104,6 +113,7 @@ export function priorityCardSurfaceClassName({
     priorityCardMinHeightClass[minHeight],
     priorityCardAccentClass[accent],
     priorityCardSurfaceClass[surface],
+    priorityCardLayoutClass[layout],
     priorityCardClass(priorityTone),
     className,
   );
@@ -119,6 +129,7 @@ export function PriorityCard({
   minHeight = "none",
   accent = "none",
   surface = "default",
+  layout = "block",
   interactive = false,
   className,
   children,
@@ -135,6 +146,7 @@ export function PriorityCard({
         minHeight,
         accent,
         surface,
+        layout,
         interactive,
         className,
       })}

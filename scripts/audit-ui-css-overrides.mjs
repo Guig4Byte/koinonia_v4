@@ -815,6 +815,26 @@ function extractCssClassName(selector) {
   return match?.[1] ?? "";
 }
 
+function cssPropertyPattern(propertyNames) {
+  return new RegExp(`(?:^|[;\s])(?:${propertyNames.join("|")})\s*:`, "i");
+}
+
+function hasCssProperty(body, propertyNames) {
+  return cssPropertyPattern(propertyNames).test(body);
+}
+
+function hasClassSignal(className, signals, { excludeSuffixes = [] } = {}) {
+  if (!className) return false;
+
+  const normalizedClassName = className.toLowerCase();
+  const normalizedSignals = signals.map((signal) => signal.toLowerCase());
+  const hasSignal = normalizedSignals.some((signal) => normalizedClassName.includes(signal));
+
+  if (!hasSignal) return false;
+
+  return !excludeSuffixes.some((suffix) => normalizedClassName.endsWith(suffix.toLowerCase()));
+}
+
 function classifyCssModuleBlock({ body, relativePath, selector }) {
   const className = extractCssClassName(selector);
   const isFeatureCssModule = relativePath.includes("/features/") && relativePath.endsWith(".module.css");
@@ -822,10 +842,9 @@ function classifyCssModuleBlock({ body, relativePath, selector }) {
     "src/components/ui/fixed-action-bar.module.css",
     "src/components/ui/bottom-sheet.module.css",
   ].includes(relativePath);
-  const normalizedClassName = className.toLowerCase();
   const findings = [];
 
-  if (!isSystemFixedStackFile && /position\s*:\s*(?:fixed|sticky)\b/.test(body) && /(?:bottom|top|z-index)\s*:/.test(body)) {
+  if (!isSystemFixedStackFile && hasCssProperty(body, ["position"]) && /position\s*:\s*(?:fixed|sticky)\b/.test(body) && hasCssProperty(body, ["bottom", "top", "z-index"])) {
     findings.push({
       id: "fixed-or-sticky-local-stack",
       severity: "alta",
@@ -839,14 +858,32 @@ function classifyCssModuleBlock({ body, relativePath, selector }) {
     return findings;
   }
 
-  const hasSurfaceProperties = /\b(?:border|border-radius|background|background-color|box-shadow|padding|min-height|height)\s*:/.test(
-    body,
-  );
-  const hasBadgeProperties = /\b(?:max-width|padding|font-size|border-radius|background|border)\s*:/.test(body);
-  const hasButtonProperties = /\b(?:min-height|height|padding|border-radius|font-size|background|border)\s*:/.test(body);
-  const hasFieldProperties = /\b(?:height|min-height|padding|border-radius|background|border|font-size)\s*:/.test(body);
+  const hasSurfaceProperties = hasCssProperty(body, [
+    "border",
+    "border-radius",
+    "background",
+    "background-color",
+    "box-shadow",
+    "padding",
+    "min-height",
+    "height",
+  ]);
+  const hasBadgeProperties = hasCssProperty(body, ["max-width", "padding", "font-size", "border-radius", "background", "border"]);
+  const hasButtonProperties = hasCssProperty(body, ["min-height", "height", "padding", "border-radius", "font-size", "background", "border"]);
+  const hasFieldProperties = hasCssProperty(body, ["height", "min-height", "padding", "border-radius", "background", "border", "font-size"]);
 
-  if (/card|surface|panel|summary/.test(normalizedClassName) && hasSurfaceProperties) {
+  const isSurfaceClass = hasClassSignal(className, ["card", "surface", "panel"]);
+  const isBadgeClass = hasClassSignal(className, ["badge", "pill", "tag"], {
+    excludeSuffixes: ["icon", "iconsvg", "svg", "copy", "label", "value", "text", "count", "line", "meta"],
+  });
+  const isButtonClass = hasClassSignal(className, ["button", "trigger"], {
+    excludeSuffixes: ["icon", "text", "label", "status"],
+  }) || hasClassSignal(className, ["action"], { excludeSuffixes: ["icon", "text", "label", "status", "copy"] });
+  const isFieldClass = hasClassSignal(className, ["input", "select", "textarea"]) ||
+    hasClassSignal(className, ["field"], { excludeSuffixes: ["label", "hint", "error", "description"] });
+  const isDisclosureClass = hasClassSignal(className, ["details", "accordion", "disclosure"]);
+
+  if (isSurfaceClass && hasSurfaceProperties) {
     findings.push({
       id: "feature-css-module-surface",
       severity: "média",
@@ -856,7 +893,7 @@ function classifyCssModuleBlock({ body, relativePath, selector }) {
     });
   }
 
-  if (/badge|pill|tag/.test(normalizedClassName) && hasBadgeProperties) {
+  if (isBadgeClass && hasBadgeProperties) {
     findings.push({
       id: "feature-css-module-badge",
       severity: "média",
@@ -865,7 +902,7 @@ function classifyCssModuleBlock({ body, relativePath, selector }) {
     });
   }
 
-  if (/button|action|trigger/.test(normalizedClassName) && hasButtonProperties) {
+  if (isButtonClass && hasButtonProperties) {
     findings.push({
       id: "feature-css-module-button",
       severity: "média",
@@ -874,7 +911,7 @@ function classifyCssModuleBlock({ body, relativePath, selector }) {
     });
   }
 
-  if (/field|input|select|textarea/.test(normalizedClassName) && hasFieldProperties) {
+  if (isFieldClass && hasFieldProperties) {
     findings.push({
       id: "feature-css-module-field",
       severity: "média",
@@ -883,7 +920,7 @@ function classifyCssModuleBlock({ body, relativePath, selector }) {
     });
   }
 
-  if (/details|summary|accordion|disclosure/.test(normalizedClassName) && hasSurfaceProperties) {
+  if (isDisclosureClass && hasSurfaceProperties) {
     findings.push({
       id: "feature-css-module-disclosure",
       severity: "média",

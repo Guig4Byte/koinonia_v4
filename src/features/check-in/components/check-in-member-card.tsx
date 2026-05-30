@@ -146,7 +146,7 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
       padding="sm"
       radius="sm"
       containment="hidden"
-      className={styles.memberCard}
+      elevation="none"
       data-testid="check-in-member-card"
     >
       <div className={styles.memberRow}>
@@ -163,8 +163,8 @@ export function CheckInMemberCard({ item, onSetStatus, disabled = false }: Check
             variant: statusTriggerVariant(item.status),
             size: "sm",
             shape: "pill",
-            density: "badge",
-            className: cn(styles.memberStatusButton, "shrink-0 gap-1.5 font-semibold"),
+            density: "status",
+            className: "shrink-0 gap-1.5 font-semibold",
           })}
           aria-haspopup="dialog"
           aria-expanded={selectorOpen}

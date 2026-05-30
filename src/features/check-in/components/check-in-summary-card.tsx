@@ -58,11 +58,11 @@ export function CheckInSummaryCard({ summary, errorMessage, disabled = false, on
   }
 
   return (
-    <Card tone="featured" className={styles.summaryCard}>
+    <Card tone="featured" surface="warmGlow" containment="hidden">
       <div className={styles.summaryTopRow}>
         <div className={styles.summaryRateBlock}>
           <p className={styles.summaryEyebrow}>Presença do encontro</p>
-          <div data-testid="check-in-presence-rate">
+          <div className={styles.summaryMetricWrap} data-testid="check-in-presence-rate">
             <PresenceMetricDisplay
               hasPresenceData={summary.hasPresenceData}
               presenceRate={summary.presenceRate}
@@ -71,7 +71,7 @@ export function CheckInSummaryCard({ summary, errorMessage, disabled = false, on
               context="attendance"
               size="lg"
               weight="light"
-              className={styles.summaryMetric}
+              align="start"
             />
           </div>
           <p className={styles.summaryMeta}>
@@ -80,15 +80,18 @@ export function CheckInSummaryCard({ summary, errorMessage, disabled = false, on
         </div>
 
         {onMarkAllPresent ? (
-          <button
+          <Button
             type="button"
-            className={styles.markAllButton}
+            variant="attentionSoft"
+            size="sm"
+            shape="rounded"
+            density="status"
             onClick={() => setIsConfirmingMarkAll(true)}
             disabled={!canMarkAllPresent}
           >
             <UsersRound className={styles.markAllIcon} aria-hidden="true" />
-            <span className={styles.markAllText}>Marcar todos</span>
-          </button>
+            <span>Marcar todos</span>
+          </Button>
         ) : null}
       </div>
 

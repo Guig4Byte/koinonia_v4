@@ -1,5 +1,6 @@
 import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/cn";
+import styles from "./card.module.css";
 
 export type CardTone = "default" | "featured" | "inset" | "dashed" | "transparent";
 export type CardPadding = "none" | "sm" | "md" | "lg";
@@ -8,6 +9,7 @@ export type CardElevation = "auto" | "none" | "card" | "soft";
 export type CardContainment = "visible" | "hidden";
 export type CardMinHeight = "none" | "sm" | "md";
 export type CardStatusTone = "none" | "care" | "warning" | "success" | "danger" | "info";
+export type CardSurface = "default" | "warmGlow" | "accentGlow";
 
 type CardProps = HTMLAttributes<HTMLDivElement> & {
   tone?: CardTone;
@@ -17,6 +19,7 @@ type CardProps = HTMLAttributes<HTMLDivElement> & {
   containment?: CardContainment;
   minHeight?: CardMinHeight;
   statusTone?: CardStatusTone;
+  surface?: CardSurface;
   interactive?: boolean;
   children: ReactNode;
 };
@@ -68,6 +71,12 @@ const cardStatusToneClass: Record<CardStatusTone, string> = {
   info: "border-[var(--color-badge-info-border)] bg-[var(--color-badge-info-bg)]",
 };
 
+const cardSurfaceClass: Record<CardSurface, string> = {
+  default: "",
+  warmGlow: styles.warmGlow,
+  accentGlow: styles.accentGlow,
+};
+
 function resolveCardElevation(tone: CardTone, elevation: CardElevation) {
   if (elevation !== "auto") {
     return cardElevationClass[elevation];
@@ -85,6 +94,7 @@ export function Card({
   containment = "visible",
   minHeight = "none",
   statusTone = "none",
+  surface = "default",
   interactive = false,
   children,
   ...props
@@ -99,6 +109,7 @@ export function Card({
         cardContainmentClass[containment],
         cardMinHeightClass[minHeight],
         cardStatusToneClass[statusTone],
+        cardSurfaceClass[surface],
         interactive && "card-hover-lift transition active:scale-[0.99]",
         className,
       )}

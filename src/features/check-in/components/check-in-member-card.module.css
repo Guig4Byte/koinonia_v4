@@ -6,11 +6,6 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, currentcolor 16%, transparent);
 }
 
-.memberCard.memberCard {
-  border-radius: 1rem;
-  box-shadow: none;
-}
-
 .memberRow {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto auto;
@@ -61,11 +56,6 @@
   white-space: nowrap;
 }
 
-.memberStatusButton.memberStatusButton {
-  min-height: 2.15rem;
-  padding: 0.34rem 0.78rem;
-}
-
 .memberChevron {
   width: 1rem;
   height: 1rem;
@@ -82,11 +72,6 @@
   .memberAvatar {
     width: 2rem;
     height: 2rem;
-  }
-
-  .memberStatusButton.memberStatusButton {
-    min-height: 2rem;
-    padding-inline: 0.64rem;
   }
 
   .memberChevron {

@@ -3,6 +3,7 @@ import { EmptyState, SectionTitle } from "@/components/shared/base-cards";
 import { metricTextClass } from "@/components/shared/presence-metric";
 import { AttendanceStatus } from "@/generated/prisma/client";
 import { ProgressiveList } from "@/components/shared/progressive-list";
+import { CardActionCue } from "@/components/ui/card-action-cue";
 import { CardLink } from "@/components/ui/card-link";
 import { formatPresenceRate, presenceTone } from "@/features/events/presence-display";
 import { summarizeEventPresence } from "@/features/events/presence-summary";
@@ -42,7 +43,10 @@ export function GroupRegisteredEncountersList({ events }: { events: GroupRegiste
                 padding="sm"
                 radius="sm"
                 containment="hidden"
-                className={styles.encounterCard}
+                minHeight="sm"
+                accent="left"
+                surface="brand"
+                layout="split"
               >
                 <span className={styles.encounterMain}>
                   <span className={styles.encounterDate}>
@@ -59,9 +63,9 @@ export function GroupRegisteredEncountersList({ events }: { events: GroupRegiste
                     </span>
                   </span>
                 </span>
-                <span className={styles.action}>
-                  Abrir →
-                </span>
+                <CardActionCue tone="decorative" enhanceOnGroupHover>
+                  Abrir
+                </CardActionCue>
               </CardLink>
             );
           })}

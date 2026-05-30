@@ -34,6 +34,10 @@
   overflow: hidden;
 }
 
+.elevationNone {
+  box-shadow: none;
+}
+
 .toneNeutral {
   --status-card-accent: var(--color-text-muted);
 }

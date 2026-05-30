@@ -173,7 +173,8 @@ function StructureSearchContent<TFilter extends string>({
                   href={filterPath(option.value)}
                   active={active}
                   aria-current={active ? "page" : undefined}
-                  className={styles.filterChip}
+                  layout="withDot"
+                  maxWidth="none"
                 >
                   {option.tone ? (
                     <span

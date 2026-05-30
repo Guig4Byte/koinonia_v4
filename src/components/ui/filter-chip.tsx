@@ -4,11 +4,15 @@ import { cn } from "@/lib/cn";
 import styles from "./filter-chip.module.css";
 
 export type FilterChipVariant = "team" | "period";
+export type FilterChipLayout = "default" | "withDot";
+export type FilterChipMaxWidth = "default" | "none";
 
 type FilterChipProps = LinkProps &
   Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps | "className"> & {
     active?: boolean;
     variant?: FilterChipVariant;
+    layout?: FilterChipLayout;
+    maxWidth?: FilterChipMaxWidth;
     className?: string;
     children: ReactNode;
   };
@@ -20,25 +24,35 @@ const periodInactiveClass = "border-[var(--color-border-card)] bg-[var(--surface
 export function filterChipClassName({
   active = false,
   variant = "team",
+  layout = "default",
+  maxWidth = "default",
   className,
 }: {
   active?: boolean;
   variant?: FilterChipVariant;
+  layout?: FilterChipLayout;
+  maxWidth?: FilterChipMaxWidth;
   className?: string;
 } = {}) {
   if (variant === "period") {
     return cn(periodBaseClass, active ? periodActiveClass : periodInactiveClass, className);
   }
 
-  return cn(styles.team, active && styles.teamActive, className);
+  return cn(
+    styles.team,
+    active && styles.teamActive,
+    layout === "withDot" && styles.withDot,
+    maxWidth === "none" && styles.maxWidthNone,
+    className,
+  );
 }
 
 export const FilterChip = forwardRef<HTMLAnchorElement, FilterChipProps>(function FilterChip(
-  { active = false, variant = "team", className, children, ...props },
+  { active = false, variant = "team", layout = "default", maxWidth = "default", className, children, ...props },
   ref,
 ) {
   return (
-    <Link ref={ref} className={filterChipClassName({ active, variant, className })} {...props}>
+    <Link ref={ref} className={filterChipClassName({ active, variant, layout, maxWidth, className })} {...props}>
       {children}
     </Link>
   );

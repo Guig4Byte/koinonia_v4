@@ -6,6 +6,7 @@ export type StatusCardTone = "neutral" | "success" | "danger" | "warning" | "inf
 export type StatusCardPadding = "sm" | "md";
 export type StatusCardRadius = "sm" | "default";
 export type StatusCardContainment = "visible" | "hidden";
+export type StatusCardElevation = "default" | "none";
 export type StatusCardElement = "article" | "section" | "div";
 
 type StatusCardProps<TElement extends StatusCardElement = "div"> = HTMLAttributes<HTMLElement> & {
@@ -14,6 +15,7 @@ type StatusCardProps<TElement extends StatusCardElement = "div"> = HTMLAttribute
   padding?: StatusCardPadding;
   radius?: StatusCardRadius;
   containment?: StatusCardContainment;
+  elevation?: StatusCardElevation;
   children: ReactNode;
 };
 
@@ -41,12 +43,18 @@ const containmentClass: Record<StatusCardContainment, string> = {
   hidden: styles.containmentHidden,
 };
 
+const elevationClass: Record<StatusCardElevation, string> = {
+  default: "",
+  none: styles.elevationNone,
+};
+
 export function StatusCard<TElement extends StatusCardElement = "div">({
   as,
   tone = "neutral",
   padding = "md",
   radius = "default",
   containment = "visible",
+  elevation = "default",
   className,
   children,
   ...props
@@ -55,7 +63,15 @@ export function StatusCard<TElement extends StatusCardElement = "div">({
 
   return (
     <Component
-      className={cn(styles.root, toneClass[tone], paddingClass[padding], radiusClass[radius], containmentClass[containment], className)}
+      className={cn(
+        styles.root,
+        toneClass[tone],
+        paddingClass[padding],
+        radiusClass[radius],
+        containmentClass[containment],
+        elevationClass[elevation],
+        className,
+      )}
       {...props}
     >
       {children}

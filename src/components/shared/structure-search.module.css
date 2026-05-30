@@ -124,12 +124,6 @@
   flex: 0 0 var(--structure-filter-fade);
 }
 
-.filterChip {
-  gap: 0.42rem;
-  max-width: none;
-  padding-inline: 14px;
-}
-
 .filterDot {
   --structure-filter-dot: color-mix(
     in srgb,

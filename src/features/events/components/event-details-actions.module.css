@@ -1,18 +1,3 @@
-.actionsCard.actionsCard {
-  --actions-accent: var(--color-card-decoration);
-
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  border-color: color-mix(in srgb, var(--actions-accent) 30%, var(--color-border-card));
-  background:
-    radial-gradient(ellipse 86% 64% at 94% 4%, color-mix(in srgb, var(--actions-accent) 8%, transparent), transparent 70%),
-    var(--color-bg-card);
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, var(--surface-alt) 28%, transparent),
-    var(--color-shadow-card);
-}
-
 .actionsHeader {
   display: grid;
   grid-template-columns: 1.35rem minmax(0, 1fr);
@@ -48,10 +33,6 @@
 }
 
 @media (max-width: 360px) {
-  .actionsCard.actionsCard {
-    padding-inline: 0.98rem;
-  }
-
   .actionsHeader {
     grid-template-columns: 1.18rem minmax(0, 1fr);
     gap: 0.72rem;

@@ -177,7 +177,6 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
               href={membersFilterHref(basePath, option.value)}
               aria-current={active ? "page" : undefined}
               active={active}
-              className={cn(styles.filterChip, active && styles.filterChipActive)}
             >
               <span>{option.label}</span>
               {count !== undefined ? (

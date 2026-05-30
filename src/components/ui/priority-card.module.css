@@ -73,3 +73,10 @@
     linear-gradient(90deg, transparent, color-mix(in srgb, var(--priority-accent) 30%, transparent), transparent) top / 100% 1px no-repeat,
     radial-gradient(ellipse 82% 44% at 50% 0%, color-mix(in srgb, var(--priority-accent) 13%, transparent), transparent 72%);
 }
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+}

@@ -42,7 +42,7 @@ export function EventDetailsActions({
     : "O local pode ser ajustado apenas para esta semana. Isso vale só para este encontro.";
 
   return (
-    <Card className={styles.actionsCard}>
+    <Card surface="accentGlow" containment="hidden">
       <div className={styles.actionsHeader}>
         <span className={styles.actionsIcon} aria-hidden="true">
           <MapPin className={styles.actionsIconSvg} />
