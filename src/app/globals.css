@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 @import "../styles/tokens.css";
+@import "../styles/themes.css";
+@import "../styles/text-size.css";
 @import "../styles/base.css";
 @import "../styles/layout.css";
 @import "../styles/utilities.css";
