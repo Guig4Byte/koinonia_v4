@@ -1,11 +1,12 @@
 import { CARE_COPY } from "@/features/care/care-copy";
 import { ACTIVE_STATUS, IN_CARE_STATUS } from "@/features/people/person-status";
 import { getOpenSignalInActiveGroupWhere, getVisibleOpenSignalWhere, type PermissionUser } from "@/features/permissions/permissions";
+import { commandError, commandOk, type ApiCommandResult } from "@/lib/api-command-result";
 import { prisma } from "@/lib/prisma";
 
-export type MarkPersonActiveResult =
-  | { ok: true; status: typeof ACTIVE_STATUS }
-  | { ok: false; status: 409; message: string };
+export type MarkPersonActiveResult = ApiCommandResult<{
+  status: typeof ACTIVE_STATUS;
+}>;
 
 export async function markPersonActiveAfterCare(user: PermissionUser, personId: string): Promise<MarkPersonActiveResult> {
   const visibleOpenSignalWhere = getVisibleOpenSignalWhere(user);
@@ -19,13 +20,12 @@ export async function markPersonActiveAfterCare(user: PermissionUser, personId: 
   ]);
 
   if (openSignalsCount > 0) {
-    return {
-      ok: false,
-      status: 409,
-      message: visibleOpenSignalsCount > 0
+    return commandError(
+      visibleOpenSignalsCount > 0
         ? CARE_COPY.statusActions.openSignalInVisibleScope
         : CARE_COPY.statusActions.openSignalOutsideScope,
-    };
+      409,
+    );
   }
 
   await prisma.person.updateMany({
@@ -33,5 +33,5 @@ export async function markPersonActiveAfterCare(user: PermissionUser, personId: 
     data: { status: ACTIVE_STATUS },
   });
 
-  return { ok: true, status: ACTIVE_STATUS };
+  return commandOk({ status: ACTIVE_STATUS });
 }

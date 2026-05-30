@@ -22,5 +22,5 @@ export async function POST(_request: Request, context: { params: Promise<{ perso
     return apiError(result.message, result.status);
   }
 
-  return apiOk({ status: result.status });
+  return apiOk(result.data);
 }
