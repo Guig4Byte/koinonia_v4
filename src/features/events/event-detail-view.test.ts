@@ -52,7 +52,7 @@ describe("event-detail-view", () => {
 
   it("keeps neutral read-only messages for cancelled, future and pending encounters", () => {
     expect(eventReadOnlyEmptyMessage({ completed: false, isFutureEvent: true, isCancelled: false, closedLabel: "Sobre o encontro" })).toContain("ainda não começou");
-    expect(eventReadOnlyEmptyMessage({ completed: false, isFutureEvent: false, isCancelled: false, closedLabel: "Sobre o encontro" })).toContain("líder da célula registra");
+    expect(eventReadOnlyEmptyMessage({ completed: false, isFutureEvent: false, isCancelled: false, closedLabel: "Sobre o encontro" })).toContain("liderança da célula registra");
     expect(eventReadOnlyEmptyMessage({ completed: false, isFutureEvent: false, isCancelled: true, closedLabel: "Não houve encontro" })).toContain("não realizado");
   });
 

@@ -62,6 +62,6 @@ describe("group pastoral priority", () => {
     expect(teamGroupPastoralPriorityScore({ urgentCount: 1, pastoralCasesCount: 1, supportRequestsCount: 1, localAttentionCount: 1, hasPresenceData: true, presenceRate: 60 })).toBe(1200 + 1000 + 700 + 400 + 10);
     expect(teamGroupStatusLabel({ urgentCount: 0, pastoralCasesCount: 1, hasNoPresenceData: false, hasLowPresence: false })).toBe("1 encaminhado");
     expect(teamGroupStatusLabel({ urgentCount: 0, pastoralCasesCount: 0, supportRequestsCount: 2, hasNoPresenceData: false, hasLowPresence: false })).toBe("2 pedidos de apoio");
-    expect(teamGroupStatusLabel({ urgentCount: 0, pastoralCasesCount: 0, hasNoPresenceData: true, hasLowPresence: false })).toBe("Sem presença recente");
+    expect(teamGroupStatusLabel({ urgentCount: 0, pastoralCasesCount: 0, hasNoPresenceData: true, hasLowPresence: false })).toBe("Retomar contato");
   });
 });

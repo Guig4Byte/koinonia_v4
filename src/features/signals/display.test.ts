@@ -61,7 +61,7 @@ describe("signal display helpers", () => {
       "Ana Martins compartilhou este cuidado para um olhar mais próximo. Um contato pode ajudar a entender melhor o momento.",
     );
     expect(signalDescriptionForViewer(pastoralSignal, { role: UserRole.PASTOR })).toBe(
-      "Há um contexto que pede um olhar mais próximo.",
+      "Há um contexto que pede um olhar pastoral mais próximo.",
     );
     expect(signalTitleForViewer(pastoralSignal, { role: UserRole.LEADER })).toBe("Encaminhado ao pastor");
   });

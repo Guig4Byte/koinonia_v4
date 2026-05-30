@@ -115,7 +115,7 @@ describe("group detail focus", () => {
   it("monta o card de foco do detalhe da célula", () => {
     expect(groupDetailFocusCard("apoio", 2)).toMatchObject({ title: "Pedido de apoio nesta célula", tone: "default" });
     expect(groupDetailFocusCard("em-cuidado", 1)).toMatchObject({ title: "Em cuidado nesta célula", tone: "default" });
-    expect(groupDetailFocusCard("sem-presenca", 0)).toMatchObject({ title: "Sem presença recente" });
+    expect(groupDetailFocusCard("sem-presenca", 0)).toMatchObject({ title: "Retomar contato" });
     expect(groupDetailFocusCard("presenca-baixa", 0)).toMatchObject({ title: "Presença baixa nesta célula", tone: "warning" });
     expect(groupDetailFocusCard(null, 0)).toBeNull();
   });
