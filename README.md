@@ -129,3 +129,19 @@ npm run build
 npm run test:e2e
 npm run db:studio
 ```
+
+## Validação
+
+Para validar uma refatoração localmente, rode:
+
+```bash
+npm run verify
+```
+
+Para a rotina completa com auditoria visual estrita e E2E, rode:
+
+```bash
+npm run verify:all
+```
+
+O checklist detalhado fica em `docs/VALIDATION.md`.
