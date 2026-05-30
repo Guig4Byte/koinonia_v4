@@ -9,6 +9,7 @@ import {
 } from "./signal-assignment";
 import { SIGNAL_COPY } from "./signal-copy";
 import type { ParsedSignalSupportPayload } from "./support-payload";
+import { commandError, commandOk, type ApiCommandResult } from "@/lib/api-command-result";
 import { prisma } from "@/lib/prisma";
 
 export type SignalSupportCommandSuccess = {
@@ -17,9 +18,7 @@ export type SignalSupportCommandSuccess = {
   message: string;
 };
 
-export type SignalSupportCommandResult =
-  | { ok: true; data: SignalSupportCommandSuccess }
-  | { ok: false; status: number; message: string };
+export type SignalSupportCommandResult = ApiCommandResult<SignalSupportCommandSuccess>;
 
 type SignalSupportInput = {
   user: PermissionUser;
@@ -29,23 +28,16 @@ type SignalSupportInput = {
 
 type SupportSignal = NonNullable<Awaited<ReturnType<typeof findSignalForSupport>>>;
 
-function signalSupportError(message: string, status: number): SignalSupportCommandResult {
-  return { ok: false, message, status };
-}
-
 function signalSupportSuccess(input: {
   assignedToId: string | null;
   assignedToName?: string | null;
   message: string;
 }): SignalSupportCommandResult {
-  return {
-    ok: true,
-    data: {
-      assignedToId: input.assignedToId,
-      assignedToName: input.assignedToName ?? undefined,
-      message: input.message,
-    },
-  };
+  return commandOk({
+    assignedToId: input.assignedToId,
+    assignedToName: input.assignedToName ?? undefined,
+    message: input.message,
+  });
 }
 
 async function findSignalForSupport(signalId: string) {
@@ -68,13 +60,13 @@ async function requestSupervisorSupport(
   note?: string,
 ): Promise<SignalSupportCommandResult> {
   if (!canRequestSupervisorSupport(user, signal)) {
-    return signalSupportError(SIGNAL_COPY.errors.leaderOnlySupervisorRequest, 403);
+    return commandError(SIGNAL_COPY.errors.leaderOnlySupervisorRequest, 403);
   }
 
   const supervisorAssigneeId = supervisorAssigneeIdFromGroup(signal.group);
 
   if (!supervisorAssigneeId) {
-    return signalSupportError(SIGNAL_COPY.errors.noSupervisor, 400);
+    return commandError(SIGNAL_COPY.errors.noSupervisor, 400);
   }
 
   const updated = await prisma.$transaction((tx) => assignSignalWithCareTouch({
@@ -99,13 +91,13 @@ async function escalateSignalToPastor(
   note?: string,
 ): Promise<SignalSupportCommandResult> {
   if (!canEscalateSignalToPastor(user, signal)) {
-    return signalSupportError(SIGNAL_COPY.errors.leaderOrSupervisorOnlyPastoralEscalation, 403);
+    return commandError(SIGNAL_COPY.errors.leaderOrSupervisorOnlyPastoralEscalation, 403);
   }
 
   const pastoralAssignee = await findPastoralAssignee(user.churchId);
 
   if (!pastoralAssignee) {
-    return signalSupportError(SIGNAL_COPY.errors.noPastoralAssignee, 400);
+    return commandError(SIGNAL_COPY.errors.noPastoralAssignee, 400);
   }
 
   const updated = await prisma.$transaction((tx) => assignSignalWithCareTouch({
@@ -132,11 +124,11 @@ export async function requestSignalSupport({
   const signal = await findSignalForSupport(signalId);
 
   if (!signal || signal.churchId !== user.churchId || signal.status !== SignalStatus.OPEN) {
-    return signalSupportError(SIGNAL_COPY.errors.signalNotFound, 404);
+    return commandError(SIGNAL_COPY.errors.signalNotFound, 404);
   }
 
   if (!canViewGroup(user, signal.group)) {
-    return signalSupportError(SIGNAL_COPY.errors.noCarePermission, 403);
+    return commandError(SIGNAL_COPY.errors.noCarePermission, 403);
   }
 
   if (payload.action === "REQUEST_SUPERVISOR") {

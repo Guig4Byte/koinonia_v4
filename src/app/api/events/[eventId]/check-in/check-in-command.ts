@@ -6,7 +6,7 @@ import { canCheckInEvent, type PermissionUser } from "@/features/permissions/per
 import { recalculateAttendanceSignalsForGroup } from "@/features/signals/rules";
 import { AttendanceStatus, EventStatus, MembershipRole, PersonStatus, SignalStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
-import { commandError, commandOk, type ApiCommandResult } from "../route-result";
+import { commandError, commandOk, type ApiCommandResult } from "@/lib/api-command-result";
 
 const memberAttendanceStatusSchema = z.union([
   z.literal(AttendanceStatus.PRESENT),

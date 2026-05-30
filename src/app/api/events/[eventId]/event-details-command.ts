@@ -4,7 +4,7 @@ import { activeGroupResponsibilitiesScopeInclude } from "@/features/groups/group
 import { canManageEventDetails, type PermissionUser } from "@/features/permissions/permissions";
 import { EventStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
-import { commandError, commandOk, type ApiCommandResult } from "./route-result";
+import { commandError, commandOk, type ApiCommandResult } from "@/lib/api-command-result";
 
 export const eventDetailsPayloadSchema = z.object({
   locationName: z.string().trim().min(1).max(EVENT_LOCATION_MAX_LENGTH).optional(),
