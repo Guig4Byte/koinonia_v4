@@ -6,7 +6,7 @@ import {
   LEADER_RELEVANT_EVENT_LOOKBACK_DAYS,
   type LeaderDashboard,
   type LeaderPageSignal,
-} from "@/features/leader/leader-dashboard-types";
+} from "@/features/dashboard/leader-dashboard-types";
 import type { PermissionUser } from "@/features/permissions/permissions";
 import { addBrasiliaDays, startOfBrasiliaDay } from "@/lib/brasilia-time";
 import { prisma } from "@/lib/prisma";
