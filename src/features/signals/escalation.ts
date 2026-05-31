@@ -5,7 +5,7 @@ import {
   hasGroupResponsibilityScope,
   type GroupResponsibilityLike,
   type ResponsibleGroupLike,
-} from "@/features/groups/responsibility-scope";
+} from "@/lib/domain/group-responsibilities";
 
 export type SignalAssigneeLike = {
   id?: string | null;

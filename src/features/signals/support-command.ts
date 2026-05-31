@@ -1,5 +1,5 @@
 import { CareKind, SignalStatus } from "@/generated/prisma/client";
-import { activeGroupResponsibilitiesInclude } from "@/features/groups/group-query";
+import { activeGroupResponsibilitiesInclude } from "@/lib/domain/group-responsibility-query";
 import { canViewGroup, type PermissionUser } from "@/features/permissions/permissions";
 import { canEscalateSignalToPastor, canRequestSupervisorSupport } from "./escalation";
 import {
