@@ -1,6 +1,6 @@
 import { EventStatus, EventType, GroupKind, GroupResponsibilityRole } from "@/generated/prisma/client";
-import { activeGroupResponsibilityUserSelect } from "@/features/groups/group-query";
-import { DAYS_PER_WEEK, isValidWeekday } from "@/features/groups/weekdays";
+import { activeGroupResponsibilityUserSelect } from "@/lib/domain/group-responsibility-query";
+import { DAYS_PER_WEEK, isValidWeekday } from "@/lib/domain/weekdays";
 import { getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { addBrasiliaDays, dateFromBrasiliaParts, getBrasiliaDateParts, startOfBrasiliaDay } from "@/lib/brasilia-time";
 import { prisma } from "@/lib/prisma";

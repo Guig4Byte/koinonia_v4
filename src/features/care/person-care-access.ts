@@ -1,6 +1,6 @@
 import { canRegisterCare, getVisibleGroupIdsForPerson, type PermissionUser } from "@/features/permissions/permissions";
 import { CARE_COPY } from "@/features/care/care-copy";
-import { activeGroupResponsibilitiesScopeInclude } from "@/features/groups/group-query";
+import { activeGroupResponsibilitiesScopeInclude } from "@/lib/domain/group-responsibility-query";
 import { prisma } from "@/lib/prisma";
 
 export type PersonCareAccessOptions = {
