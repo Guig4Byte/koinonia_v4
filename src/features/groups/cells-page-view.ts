@@ -1,4 +1,3 @@
-import type { getSupervisorDashboard } from "@/features/dashboard/queries";
 import {
   groupNeedsPastoralAttention,
   groupPastoralEscalatedCount,
@@ -8,12 +7,14 @@ import {
   groupSupportRequestsCount,
   groupLocalAttentionCount,
   hasLowPresence,
+  type GroupPastoralSignalLike,
 } from "@/features/groups/group-pastoral-priority";
 import { matchesSupervisorGroupFilter } from "@/features/groups/group-filtering";
 import { FALLBACK_LEADER_NAME } from "@/features/groups/group-display";
 import { responsibilityNames } from "@/features/groups/responsibility-display";
-import { GroupResponsibilityRole } from "@/generated/prisma/client";
+import { GroupResponsibilityRole, type PersonStatus } from "@/generated/prisma/client";
 import { groupAttentionLabel, type SignalBadge } from "@/features/signals/display";
+import type { PresenceTrend } from "@/features/events/presence-summary";
 import { compareByName, matchesNormalizedQuery, normalizeSearchText } from "@/lib/text";
 import { countLabel } from "@/lib/format";
 import { joinLabelsPtBr } from "@/lib/list-label";
@@ -35,8 +36,23 @@ import { routeWithQuery } from "@/lib/routes";
 export const CELLS_PAGE_SECTION_LIMIT = 4;
 const NO_RECENT_PRESENCE_BADGE_LABEL = "Sem presença";
 
-export type SupervisorDashboard = Awaited<ReturnType<typeof getSupervisorDashboard>>;
-export type SupervisorGroup = SupervisorDashboard["groups"][number];
+export type SupervisorGroup = {
+  id: string;
+  name: string;
+  responsibilities: Array<{ role: GroupResponsibilityRole; user: { name: string } }>;
+  memberships: Array<{ id?: string; person: { id: string; fullName: string; status: PersonStatus } }>;
+  signals: GroupPastoralSignalLike[];
+  presenceRate: number;
+  hasPresenceData: boolean;
+  presenceTrend?: PresenceTrend | null;
+  attentionCount: number;
+  supportRequestsCount: number;
+  inCareCount: number;
+};
+
+export type SupervisorDashboard = {
+  groups: SupervisorGroup[];
+};
 export type GroupSectionKey = "care" | "presence" | "stable";
 
 export const GROUP_SECTIONS: Array<{ key: GroupSectionKey; title: string; detail: string }> = [

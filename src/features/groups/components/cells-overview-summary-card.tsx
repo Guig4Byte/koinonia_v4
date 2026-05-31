@@ -11,7 +11,7 @@ import {
   weeklyPresenceDetail,
   weeklyPresenceTone,
   type WeeklyPresenceSummary,
-} from "@/features/dashboard/presence-health";
+} from "@/features/events/weekly-presence-health";
 import { formatPresenceRate } from "@/features/events/presence-display";
 import { cn } from "@/lib/cn";
 import { NO_RECENT_PRESENCE_LABEL } from "@/lib/filter-param";
