@@ -1,5 +1,5 @@
 import { GroupResponsibilityRole, SignalStatus, UserRole, type Prisma } from "@/generated/prisma/client";
-import { activeGroupResponsibilityWhere } from "@/features/groups/group-query";
+import { activeGroupResponsibilityWhere } from "@/lib/domain/group-responsibility-query";
 
 export type PermissionUser = {
   id: string;

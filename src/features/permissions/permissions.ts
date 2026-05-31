@@ -1,5 +1,5 @@
 import { EventStatus, GroupResponsibilityRole, UserRole } from "@/generated/prisma/client";
-import { hasGroupResponsibilityScope, type ResponsibleGroupLike } from "@/features/groups/responsibility-scope";
+import { hasGroupResponsibilityScope, type ResponsibleGroupLike } from "@/lib/domain/group-responsibilities";
 import { hasWholeChurchScope } from "./permission-query";
 import type { PermissionUser } from "./permission-query";
 
