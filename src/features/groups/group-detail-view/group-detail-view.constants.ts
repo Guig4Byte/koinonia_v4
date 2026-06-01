@@ -1,0 +1,28 @@
+import {
+  FILTER_ATTENTION,
+  FILTER_IN_CARE,
+  FILTER_LOW_PRESENCE,
+  FILTER_NO_RECENT_PRESENCE,
+  FILTER_PASTORAL,
+  FILTER_STABLE,
+  FILTER_SUPPORT,
+  FILTER_URGENT,
+} from "@/lib/filter-param";
+import { type GroupDetailFocus } from "@/features/groups/group-detail-view/group-detail-view.types";
+
+export const GROUP_MEMBER_SIGNAL_MAX_PRIORITY = 3;
+export const GROUP_MEMBER_IN_CARE_PRIORITY = 4;
+export const GROUP_REGULAR_MEMBER_INITIAL_COUNT = 5;
+export const GROUP_REGULAR_MEMBER_STEP = 5;
+export const GROUP_DETAIL_EVENT_HISTORY_LIMIT = 12;
+
+export const GROUP_DETAIL_FOCUS_VALUES: ReadonlyArray<GroupDetailFocus> = [
+  FILTER_URGENT,
+  FILTER_PASTORAL,
+  FILTER_SUPPORT,
+  FILTER_ATTENTION,
+  FILTER_IN_CARE,
+  FILTER_NO_RECENT_PRESENCE,
+  FILTER_LOW_PRESENCE,
+  FILTER_STABLE,
+];
