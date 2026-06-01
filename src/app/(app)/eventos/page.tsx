@@ -1,5 +1,6 @@
 import { AppShell } from "@/components/layout/app-shell";
-import { EmptyState, SectionTitle } from "@/components/shared/base-cards";
+import { EmptyState } from "@/components/shared/base-cards";
+import { SectionHeader } from "@/components/ui/section-header";
 import { PageHero } from "@/components/shared/page-hero";
 import { EventConsultationCards, EventList, EventsConsultationView } from "@/features/events/components/events-page-sections";
 import {
@@ -77,7 +78,7 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
             <EventConsultationCards summary={consultationSummary} />
 
             <section className={pageStyles.eventsHomeSection}>
-              <SectionTitle className={pageStyles.eventsHomeSectionTitle}>Hoje</SectionTitle>
+              <SectionHeader title="Hoje" className={pageStyles.eventsHomeSectionTitle} />
               {todayEvents.length > 0 ? (
                 <EventList events={todayEvents} user={user} now={now} />
               ) : (
@@ -86,7 +87,7 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
             </section>
 
             <section className={pageStyles.eventsHomeSection}>
-              <SectionTitle className={pageStyles.eventsHomeSectionTitle}>Próximos encontros</SectionTitle>
+              <SectionHeader title="Próximos encontros" className={pageStyles.eventsHomeSectionTitle} />
               {weekEvents.length > 0 ? (
                 <EventList events={weekEvents} user={user} now={now} />
               ) : (

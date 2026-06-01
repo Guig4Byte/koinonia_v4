@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { Plus } from "lucide-react";
-import { GhostButton } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { InputField } from "@/components/ui/field";
 import { countLabel } from "@/lib/format";
@@ -98,9 +98,9 @@ export function CheckInVisitorsCard({
           surface="muted"
           className="flex-1"
         />
-        <GhostButton type="button" onClick={onAddVisitor} className="px-3" aria-label="Adicionar visitante" disabled={disabled}>
+        <Button type="button" variant="secondary" size="sm" shape="rounded" onClick={onAddVisitor} aria-label="Adicionar visitante" disabled={disabled}>
           <Plus className="h-4 w-4" />
-        </GhostButton>
+        </Button>
       </div>
 
       {visitors.length > 0 ? (

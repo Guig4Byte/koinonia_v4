@@ -1,6 +1,7 @@
 import { PencilLine } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
-import { BackLink, InfoCard, PulseCard, SectionTitle } from "@/components/shared/base-cards";
+import { BackLink, InfoCard, PulseCard } from "@/components/shared/base-cards";
+import { SectionHeader } from "@/components/ui/section-header";
 import { GroupDetailSummaryCard } from "@/features/groups/components/group-detail-summary-card";
 import { GroupPendingEventCard } from "@/features/groups/components/group-pending-event-card";
 import { GroupRegisteredEncountersList } from "@/features/groups/components/group-registered-encounters-list";
@@ -117,7 +118,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
         ) : null}
 
         <section id="membros" className="scroll-mt-6">
-          <SectionTitle detail={membersView.sectionDetail} className="mt-0">Membros</SectionTitle>
+          <SectionHeader title="Membros" detail={membersView.sectionDetail} className="mt-0" />
           <MemberPriorityList
             basePath={ROUTES.group(group.id)}
             activeFilter={activeMembersFilter}

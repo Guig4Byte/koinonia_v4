@@ -1,5 +1,6 @@
 import { UsersRound } from "lucide-react";
-import { EmptyState, SectionTitle } from "@/components/shared/base-cards";
+import { EmptyState } from "@/components/shared/base-cards";
+import { SectionHeader } from "@/components/ui/section-header";
 import { metricTextClass } from "@/components/shared/presence-metric";
 import { AttendanceStatus } from "@/generated/prisma/client";
 import { ProgressiveList } from "@/components/shared/progressive-list";
@@ -24,7 +25,7 @@ export type GroupRegisteredEncounter = {
 export function GroupRegisteredEncountersList({ events }: { events: GroupRegisteredEncounter[] }) {
   return (
     <section>
-      <SectionTitle>Últimos encontros registrados</SectionTitle>
+      <SectionHeader title="Últimos encontros registrados" />
       <div>
         <ProgressiveList
           initialCount={4}

@@ -7,7 +7,8 @@ import { CellsPageSections } from "@/features/groups/components/cells-page-secti
 import { CellsStructureSearch } from "@/features/groups/components/cells-structure-search";
 import { ButtonLink } from "@/components/ui/button-link";
 import { PageHero } from "@/components/shared/page-hero";
-import { EmptyState, SectionTitle } from "@/components/shared/base-cards";
+import { EmptyState } from "@/components/shared/base-cards";
+import { SectionHeader } from "@/components/ui/section-header";
 import { CellsOverviewSummaryCard } from "@/features/groups/components/cells-overview-summary-card";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { CELLS_SECTION_ID, readCellsFilter } from "@/features/groups/cells-page-filters";
@@ -98,7 +99,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
         </div>
 
         <section id={CELLS_SECTION_ID} className="scroll-mt-4">
-          <SectionTitle detail="Busca e filtros ajudam a encontrar a célula certa sem perder o contexto.">Células supervisionadas</SectionTitle>
+          <SectionHeader title="Células supervisionadas" detail="Busca e filtros ajudam a encontrar a célula certa sem perder o contexto." />
           <CellsStructureSearch query={query} filter={activeFilter} sectionId={CELLS_SECTION_ID} />
           <CellsFilterContextCard filter={activeFilter} />
 

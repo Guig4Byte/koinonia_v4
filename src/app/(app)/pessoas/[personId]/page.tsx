@@ -1,5 +1,6 @@
 import { AppShell } from "@/components/layout/app-shell";
-import { BackLink, EmptyState, SectionTitle } from "@/components/shared/base-cards";
+import { BackLink, EmptyState } from "@/components/shared/base-cards";
+import { SectionHeader } from "@/components/ui/section-header";
 import { Avatar } from "@/components/ui/avatar";
 import { CardLink } from "@/components/ui/card-link";
 import { PriorityCard } from "@/components/ui/priority-card";
@@ -46,13 +47,13 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           </div>
         </PriorityCard>
 
-        <SectionTitle detail="O próximo gesto, sem repetir o histórico.">Próximo cuidado</SectionTitle>
+        <SectionHeader title="Próximo cuidado" detail="O próximo gesto, sem repetir o histórico." />
         <CareOverviewCard id="registrar-cuidado" view={data.care.overview} className={styles.primaryCareCard}>
           <CareActions personId={data.person.id} phone={data.person.phone} className={styles.careActions} />
           {data.care.canMarkActive ? <PersonStatusActions personId={data.person.id} /> : null}
         </CareOverviewCard>
 
-        <SectionTitle detail={data.signals.sectionDetail}>{data.signals.sectionTitle}</SectionTitle>
+        <SectionHeader title={data.signals.sectionTitle} detail={data.signals.sectionDetail} />
         <div className={styles.sectionStack}>
           {data.signals.cards.map((signal) => (
             <PriorityCard key={signal.id} priorityTone={signal.priorityTone} className={cn("card-hover-lift", styles.signalCard)}>
@@ -79,11 +80,11 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           ) : null}
         </div>
 
-        <SectionTitle>Ritmo de presença</SectionTitle>
+        <SectionHeader title="Ritmo de presença" />
         <PersonPresenceCard view={data.presence.view} />
 
         <div id="historico-cuidado" className={styles.anchorSection}>
-          <SectionTitle detail="Registros recentes antes de um novo cuidado.">Histórico de cuidado</SectionTitle>
+          <SectionHeader title="Histórico de cuidado" detail="Registros recentes antes de um novo cuidado." />
           {data.care.historyItems.length > 0 ? (
             <CareTouchHistory items={data.care.historyItems} />
           ) : (
@@ -93,7 +94,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
 
         {data.memberships.cards.length > 0 ? (
           <>
-            <SectionTitle>{data.memberships.sectionTitle}</SectionTitle>
+            <SectionHeader title={data.memberships.sectionTitle} />
             <div className={styles.contextList}>
               {data.memberships.cards.map((membership) => (
                 <CardLink

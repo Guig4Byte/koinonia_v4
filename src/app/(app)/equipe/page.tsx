@@ -1,11 +1,8 @@
 import { redirect } from "next/navigation";
 import { Plus } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
-import {
-  EmptyState,
-  InfoCard,
-  SectionTitle,
-} from "@/components/shared/base-cards";
+import { EmptyState, InfoCard } from "@/components/shared/base-cards";
+import { SectionHeader } from "@/components/ui/section-header";
 import { ButtonLink } from "@/components/ui/button-link";
 import { PageHero } from "@/components/shared/page-hero";
 import { ProgressiveList } from "@/components/shared/progressive-list";
@@ -146,12 +143,11 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
         />
 
         <section id={SUPERVISORS_SECTION_ID} className="scroll-mt-6">
-          <SectionTitle
+          <SectionHeader
+            title={filterContent.listTitle}
             detail={filterContent.listDetail}
             className={teamCardStyles.teamSectionHeading}
-          >
-            {filterContent.listTitle}
-          </SectionTitle>
+          />
           {filteredSupervisors.length > 0 ? (
             <ProgressiveList
               initialCount={SUPERVISOR_SECTION_LIMIT}

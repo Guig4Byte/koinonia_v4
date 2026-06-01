@@ -160,6 +160,3 @@ export function Button({
   );
 }
 
-export function GhostButton(props: Omit<ButtonProps, "variant">) {
-  return <Button variant="secondary" {...props} />;
-}

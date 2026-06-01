@@ -1,5 +1,6 @@
 import { AppShell } from "@/components/layout/app-shell";
-import { BackLink, InfoCard, SectionTitle } from "@/components/shared/base-cards";
+import { BackLink, InfoCard } from "@/components/shared/base-cards";
+import { SectionHeader } from "@/components/ui/section-header";
 import { ButtonLink } from "@/components/ui/button-link";
 import { CheckInList } from "@/features/check-in/components/check-in-list";
 import { EventDetailsActions } from "@/features/events/components/event-details-actions";
@@ -72,7 +73,7 @@ export default async function EventDetailPage({ params, searchParams }: EventDet
         showContextSummary={!showCheckInForm}
       />
 
-      <SectionTitle>{detailState.checkInSectionTitle}</SectionTitle>
+      <SectionHeader title={detailState.checkInSectionTitle} />
       {event.groupId ? (
         showCheckInForm ? (
           <CheckInList
