@@ -46,6 +46,7 @@ export default async function LeaderPage() {
 
   const dashboard = await getLeaderDashboard(user);
   const view = buildLeaderPageView({ dashboard, viewer: user });
+  const leaderCellHref = dashboard.primaryGroupId ? ROUTES.group(dashboard.primaryGroupId) : ROUTES.cells;
   const urgentSection = signalSectionHeading(view.urgentSignals, user, "Cuidado urgente");
   const supportSection = signalSectionHeading(view.supportSignals, user, "Pedidos de apoio");
   const attentionSection = signalSectionHeading(view.attentionSignals, user, "Membros em atenção");
@@ -54,7 +55,7 @@ export default async function LeaderPage() {
     <AppShell
       userName={user.name}
       role={user.role}
-      nav={appNavForRole(user, { active: "home", indicator: view.navIndicator })}
+      nav={appNavForRole(user, { active: "home", indicator: view.navIndicator, secondaryHref: leaderCellHref })}
     >
       <div className={styles.pageFlow}>
         <PulseCard

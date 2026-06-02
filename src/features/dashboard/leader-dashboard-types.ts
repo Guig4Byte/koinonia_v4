@@ -31,6 +31,7 @@ export type LeaderCurrentEvent = RelevantEventCandidate & {
 };
 
 export type LeaderDashboard = {
+  primaryGroupId: string | null;
   attentionPeople: LeaderPageSignal[];
   inCarePeople: LeaderPageInCarePerson[];
   currentEvent: LeaderCurrentEvent | null;

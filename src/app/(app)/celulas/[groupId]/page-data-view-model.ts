@@ -19,6 +19,7 @@ import {
 import { FALLBACK_LEADER_NAME } from "@/features/groups/group-display";
 import { responsibilityNames } from "@/features/groups/responsibility-display";
 import { appNavForRole, homeHrefForRole, secondaryNavHrefForRole } from "@/features/navigation/app-nav";
+import { leaderCellHrefFromGroup } from "@/features/navigation/leader-cell-nav";
 import { readMembersFilter } from "@/features/people/member-filters";
 import { isInCarePerson } from "@/features/people/person-status";
 import { canManageGroups, isGroupLeader, type PermissionUser } from "@/features/permissions/permissions";
@@ -174,6 +175,7 @@ export function buildGroupDetailPageModel({
       tone: attentionPeople.length > 0 ? hasRiskSignal ? "risk" : "warn" : "ok",
     },
   };
+  const leaderCellHref = leaderCellHrefFromGroup(user, group.id);
 
   return {
     activeFocus,
@@ -186,7 +188,7 @@ export function buildGroupDetailPageModel({
     group,
     leadershipName,
     membersView,
-    nav: appNavForRole(user, { active: "secondary", indicator: navIndicator }),
+    nav: appNavForRole(user, { active: "secondary", indicator: navIndicator, secondaryHref: leaderCellHref }),
     pastoralPulse,
     pendingEvent,
     pendingEventActionLabel,

@@ -54,6 +54,7 @@ describe("leader-page-view", () => {
     const hiddenInCare = person("attention-person", "Pessoa em atenção");
 
     const dashboard = {
+      primaryGroupId: "group-1",
       attentionPeople: [attention, support, urgent],
       inCarePeople: [inCare, hiddenInCare],
       currentEvent: null,

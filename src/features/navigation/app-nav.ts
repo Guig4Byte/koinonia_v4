@@ -35,11 +35,15 @@ export function secondaryNavLabelForRole(role: UserRole) {
 
 export function appNavForRole(
   userOrRole: UserWithRole | UserRole,
-  options: { active?: AppNavActive; indicator?: NavIndicatorTone } = {},
+  options: { active?: AppNavActive; indicator?: NavIndicatorTone; secondaryHref?: string } = {},
 ): NavItem[] {
   const role = typeof userOrRole === "string" ? userOrRole : userOrRole.role;
   const active = options.active ?? "none";
-  const secondaryNav = secondaryNavForRole(role);
+  const defaultSecondaryNav = secondaryNavForRole(role);
+  const secondaryNav = {
+    ...defaultSecondaryNav,
+    href: options.secondaryHref ?? defaultSecondaryNav.href,
+  };
   const indicatorTarget = active === "none" ? "home" : active;
 
   return [

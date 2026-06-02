@@ -26,6 +26,12 @@ describe("app navigation", () => {
     expect(nav.map((item) => item.indicator)).toEqual([undefined, "attention", undefined]);
   });
 
+  it("allows overriding the secondary href when the concrete target is known", () => {
+    const nav = appNavForRole(UserRole.LEADER, { secondaryHref: ROUTES.group("group-1") });
+
+    expect(nav[1]).toMatchObject({ href: "/celulas/group-1", label: "Célula" });
+  });
+
   it("keeps a pastoral indicator visible on Visão when no tab is active", () => {
     const nav = appNavForRole(UserRole.PASTOR, { active: "none", indicator: "risk" });
 

@@ -8,6 +8,7 @@ import {
   FilterChipsSkeleton,
   GroupCardSkeleton,
   PageIntroSkeleton,
+  PersonCardSkeleton,
   SearchSkeleton,
   SummarySkeleton,
   TeamSupervisorSkeleton,
@@ -16,9 +17,9 @@ import { AppLoadingShell } from "./app-loading-shell";
 
 export function CellsPageSkeleton() {
   return (
-    <AppLoadingShell>
+    <AppLoadingShell headerVariant="compact">
       <div className={pageStyles.page}>
-        <PageIntroSkeleton action />
+        <PageIntroSkeleton />
 
         <div className={pageStyles.summaryBlock}>
           <SummarySkeleton />
@@ -38,14 +39,95 @@ export function CellsPageSkeleton() {
             </div>
           </div>
         </SkeletonSection>
-
-        <SkeletonSection titleWidth="w-24">
-          <SkeletonCard>
-            <SkeletonText className="h-3.5 w-full" />
-            <SkeletonText className="mt-2 h-3.5 w-3/4" />
-          </SkeletonCard>
-        </SkeletonSection>
       </div>
+    </AppLoadingShell>
+  );
+}
+
+function PulseCardSkeleton() {
+  return (
+    <SkeletonCard className="relative mb-4 overflow-hidden rounded-[1.35rem] p-5">
+      <Skeleton className="absolute inset-x-0 top-0 h-0.5 rounded-none bg-[var(--color-brand-accent)]" />
+      <SkeletonText className="h-3 w-24" />
+      <SkeletonText className="mt-3 h-6 w-full max-w-72 rounded-2xl" />
+      <SkeletonText className="mt-3 h-3.5 w-full" />
+      <SkeletonText className="mt-2 h-3.5 w-3/4" />
+    </SkeletonCard>
+  );
+}
+
+function PastoralPeopleSectionSkeleton({ compact = false }: { compact?: boolean }) {
+  return (
+    <SkeletonSection titleWidth="w-44" detailWidth="w-72" className={compact ? "mt-5" : undefined}>
+      <SkeletonList count={compact ? 2 : 3}>{() => <PersonCardSkeleton compact={compact} />}</SkeletonList>
+    </SkeletonSection>
+  );
+}
+
+export function LeaderPageSkeleton() {
+  return (
+    <AppLoadingShell>
+      <PulseCardSkeleton />
+      <PastoralPeopleSectionSkeleton />
+      <PastoralPeopleSectionSkeleton compact />
+      <SkeletonSection titleWidth="w-36" detailWidth="w-64">
+        <EventCardSkeleton />
+      </SkeletonSection>
+    </AppLoadingShell>
+  );
+}
+
+function SupervisorPrimaryFocusSkeleton() {
+  return (
+    <SkeletonCard className="relative overflow-hidden rounded-[1.35rem] p-5">
+      <Skeleton className="absolute inset-y-0 left-0 w-1 rounded-none bg-[var(--color-brand-accent)]" />
+      <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3">
+        <Skeleton className="h-10 w-10 rounded-full" />
+        <div className="min-w-0">
+          <SkeletonText className="h-3 w-28" />
+          <SkeletonText className="mt-3 h-5 w-52 rounded-2xl" />
+          <SkeletonText className="mt-2 h-3.5 w-full" />
+          <SkeletonText className="mt-2 h-3.5 w-3/4" />
+        </div>
+      </div>
+      <SkeletonText className="mt-4 h-9 w-full rounded-2xl" />
+    </SkeletonCard>
+  );
+}
+
+function SupervisorSecondaryFocusSkeleton() {
+  return (
+    <div className="mt-3 space-y-3">
+      <div className="flex items-end justify-between gap-3 px-0.5">
+        <div className="min-w-0">
+          <SkeletonText className="h-4 w-36" />
+          <SkeletonText className="mt-2 h-3 w-52" />
+        </div>
+        <Skeleton className="h-6 w-20 shrink-0 rounded-full" />
+      </div>
+      <SkeletonList count={2}>
+        {() => (
+          <SkeletonCard className="grid min-h-24 grid-cols-[2rem_minmax(0,1fr)_1.5rem] items-center gap-3 rounded-[1.15rem] p-3">
+            <Skeleton className="h-8 w-8 rounded-full" />
+            <div className="min-w-0">
+              <SkeletonText className="h-3 w-20" />
+              <SkeletonText className="mt-2 h-4 w-40" />
+              <SkeletonText className="mt-2 h-3 w-full" />
+            </div>
+            <Skeleton className="h-6 w-6 rounded-full" />
+          </SkeletonCard>
+        )}
+      </SkeletonList>
+    </div>
+  );
+}
+
+export function SupervisorPageSkeleton() {
+  return (
+    <AppLoadingShell>
+      <PulseCardSkeleton />
+      <SupervisorPrimaryFocusSkeleton />
+      <SupervisorSecondaryFocusSkeleton />
     </AppLoadingShell>
   );
 }
@@ -216,11 +298,15 @@ export function PastorPageSkeleton() {
 
 export function EventsPageSkeleton() {
   return (
-    <AppLoadingShell>
+    <AppLoadingShell headerVariant="compact">
       <div className={cn(pageStyles.page, pageStyles.eventsPage)}>
         <SkeletonText className="h-8 w-36 rounded-2xl" />
         <SkeletonText className="mt-3 h-3.5 w-full max-w-80" />
         <SkeletonText className="mt-2 h-3.5 w-2/3" />
+
+        <div className="mt-4">
+          <ConsultationCardsSkeleton />
+        </div>
 
         <SkeletonSection titleWidth="w-16">
           <SkeletonList count={2}>{() => <EventCardSkeleton />}</SkeletonList>
@@ -228,10 +314,6 @@ export function EventsPageSkeleton() {
 
         <SkeletonSection titleWidth="w-40">
           <SkeletonList count={3}>{() => <EventCardSkeleton />}</SkeletonList>
-        </SkeletonSection>
-
-        <SkeletonSection titleWidth="w-52" detailWidth="w-72">
-          <ConsultationCardsSkeleton />
         </SkeletonSection>
       </div>
     </AppLoadingShell>

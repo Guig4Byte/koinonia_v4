@@ -59,6 +59,7 @@ export function buildPersonDetailPageData(context: Awaited<ReturnType<typeof loa
     },
     shell: buildPersonDetailShell({
       user,
+      primaryGroupId: primaryGroup?.id,
       openSignalsCount,
       isInCare: personIsInCare,
       hasRiskSignal,

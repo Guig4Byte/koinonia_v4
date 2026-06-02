@@ -55,6 +55,26 @@ function PersonPresenceDetailSkeleton() {
   );
 }
 
+function CareOverviewSkeleton() {
+  return (
+    <SkeletonCard className="rounded-[1.35rem] p-4">
+      <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3">
+        <Skeleton className="h-10 w-10 rounded-full" />
+        <div className="min-w-0">
+          <SkeletonText className="h-4 w-44" />
+          <SkeletonText className="mt-2 h-3 w-full" />
+          <SkeletonText className="mt-2 h-3 w-3/4" />
+        </div>
+      </div>
+      <SkeletonText className="mt-4 h-8 w-full rounded-2xl" />
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <SkeletonText className="h-10 rounded-2xl" />
+        <SkeletonText className="h-10 rounded-2xl" />
+      </div>
+    </SkeletonCard>
+  );
+}
+
 function SignalDetailCardSkeleton() {
   return (
     <SkeletonCard className="rounded-[1.15rem] p-4">
@@ -133,19 +153,23 @@ function EventReadOnlyDetailSkeleton() {
 
 export function PersonDetailPageSkeleton() {
   return (
-    <AppLoadingShell>
+    <AppLoadingShell headerVariant="compact">
       <BackLinkSkeleton />
       <PersonDetailHeroSkeleton />
+
+      <SkeletonSection titleWidth="w-36" detailWidth="w-64">
+        <CareOverviewSkeleton />
+      </SkeletonSection>
+
+      <SkeletonSection titleWidth="w-44" detailWidth="w-72">
+        <SkeletonList count={2}>{() => <SignalDetailCardSkeleton />}</SkeletonList>
+      </SkeletonSection>
 
       <SkeletonSection titleWidth="w-36">
         <PersonPresenceDetailSkeleton />
       </SkeletonSection>
 
-      <SkeletonSection titleWidth="w-44">
-        <SkeletonList count={2}>{() => <SignalDetailCardSkeleton />}</SkeletonList>
-      </SkeletonSection>
-
-      <SkeletonSection titleWidth="w-32">
+      <SkeletonSection titleWidth="w-32" detailWidth="w-64">
         <HistoryCardSkeleton />
       </SkeletonSection>
 
@@ -166,13 +190,9 @@ export function PersonDetailPageSkeleton() {
 
 export function GroupDetailPageSkeleton() {
   return (
-    <AppLoadingShell>
+    <AppLoadingShell headerVariant="compact">
       <div className={styles.groupPage}>
         <BackLinkSkeleton />
-
-        <div className="mb-4 flex justify-end">
-          <Skeleton className="h-10 w-28 rounded-2xl" />
-        </div>
 
         <GroupDetailHeroSkeleton />
 
@@ -215,7 +235,7 @@ export function GroupDetailPageSkeleton() {
 
 export function EventDetailPageSkeleton() {
   return (
-    <AppLoadingShell>
+    <AppLoadingShell headerVariant="compact">
       <BackLinkSkeleton />
       <EventDetailHeaderSkeleton />
 

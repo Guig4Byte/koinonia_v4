@@ -1,10 +1,18 @@
 .filterRow {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 7px;
   margin: 0 -2px 0.85rem;
-  padding: 3px 2px 5px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  padding: 3px 2px 8px;
+  scrollbar-width: none;
+}
+
+.filterRow::-webkit-scrollbar {
+  display: none;
 }
 
 .filterCount {

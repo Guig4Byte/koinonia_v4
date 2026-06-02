@@ -12,6 +12,7 @@ import { presenceTone } from "@/features/events/presence-display";
 import { summarizeEventPresence } from "@/features/events/presence-summary";
 import { activeGroupResponsibilitiesScopeInclude } from "@/features/groups/group-query";
 import { appNavForRole } from "@/features/navigation/app-nav";
+import { leaderCellHrefFromGroup } from "@/features/navigation/leader-cell-nav";
 import {
   canCheckInEvent,
   canManageEventDetails,
@@ -89,6 +90,7 @@ export async function getEventDetailPageData({
   const cancelHref = completed ? ROUTES.event(event.id) : ROUTES.events;
   const cancelLabel = completed ? "Cancelar" : "Voltar";
   const checkInMode: CheckInMode = completed ? "adjust" : "register";
+  const leaderCellHref = leaderCellHrefFromGroup(user, event.group?.id);
 
   return {
     adjustmentHref: ROUTES.eventCheckInAdjustment(event.id),
@@ -107,7 +109,7 @@ export async function getEventDetailPageData({
     isFutureEvent,
     locationName,
     members,
-    nav: appNavForRole(user, { active: "events" }),
+    nav: appNavForRole(user, { active: "events", secondaryHref: leaderCellHref }),
     presence,
     presenceTone: presenceTone(presence.hasPresenceData, presence.presenceRate),
     savedMessage,

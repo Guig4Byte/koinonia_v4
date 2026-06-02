@@ -59,6 +59,7 @@ export async function getLeaderDashboard(user: PermissionUser): Promise<LeaderDa
   }));
 
   return {
+    primaryGroupId: groupIds[0] ?? null,
     attentionPeople,
     inCarePeople,
     currentEvent,

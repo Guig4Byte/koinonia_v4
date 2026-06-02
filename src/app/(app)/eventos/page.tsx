@@ -14,6 +14,7 @@ import {
 import { ensureUpcomingCellMeetingsForUser } from "@/features/events/schedule";
 import { activeGroupResponsibilitiesScopeInclude } from "@/features/groups/group-query";
 import { appNavForRole } from "@/features/navigation/app-nav";
+import { leaderCellHrefForUser } from "@/features/navigation/leader-cell-nav";
 import { getVisibleEventWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { addBrasiliaDays, endOfBrasiliaWeek, startOfBrasiliaDay } from "@/lib/brasilia-time";
@@ -50,7 +51,10 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
   const now = new Date();
   await ensureUpcomingCellMeetingsForUser(user, { referenceDate: now });
 
-  const events = await getEventsForUser(user, now);
+  const [events, leaderCellHref] = await Promise.all([
+    getEventsForUser(user, now),
+    leaderCellHrefForUser(user),
+  ]);
   const resolvedSearchParams: Awaited<EventsSearchParams> = searchParams ? await searchParams : {};
   const mode = readEventConsultationMode(firstParam(resolvedSearchParams.consulta));
   const period = readEventPeriod(firstParam(resolvedSearchParams.periodo));
@@ -61,7 +65,7 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
     <AppShell
       userName={user.name}
       role={user.role}
-      nav={appNavForRole(user, { active: "events" })}
+      nav={appNavForRole(user, { active: "events", secondaryHref: leaderCellHref })}
       headerVariant="compact"
     >
       <div className={cn(pageStyles.page, pageStyles.eventsPage)}>
