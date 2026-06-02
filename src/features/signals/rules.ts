@@ -1,4 +1,4 @@
-import { MembershipRole, PersonStatus, SignalSource, SignalStatus } from "@/generated/prisma/client";
+import { MembershipRole, PersonStatus, SignalSeverity, SignalSource, SignalStatus } from "@/generated/prisma/client";
 import { presenceHistoryEventWhere } from "@/features/events/presence-query";
 import { ATTENTION_ELIGIBLE_PERSON_STATUSES } from "@/features/people/person-status";
 import { prisma } from "@/lib/prisma";
@@ -15,6 +15,15 @@ import {
 
 type AttendanceSignalDatabase = Pick<typeof prisma, "smallGroup" | "careSignal" | "person">;
 
+type OpenAttendanceSignal = { id: string; personId: string };
+type ResolvedAttendanceSignal = {
+  personId: string;
+  severity: SignalSeverity;
+  reason: string;
+  evidence: string | null;
+  resolvedAt: Date | null;
+};
+
 async function markPersonInAttention(db: AttendanceSignalDatabase, personId: string) {
   await db.person.updateMany({
     where: { id: personId, status: { in: ATTENTION_ELIGIBLE_PERSON_STATUSES } },
@@ -22,27 +31,76 @@ async function markPersonInAttention(db: AttendanceSignalDatabase, personId: str
   });
 }
 
+function mapFirstOpenSignalByPerson(signals: OpenAttendanceSignal[]) {
+  const signalsByPerson = new Map<string, { id: string }>();
+
+  for (const signal of signals) {
+    if (!signalsByPerson.has(signal.personId)) {
+      signalsByPerson.set(signal.personId, { id: signal.id });
+    }
+  }
+
+  return signalsByPerson;
+}
+
+function mapLatestResolvedSignalByPerson(signalsNewestFirst: ResolvedAttendanceSignal[]) {
+  const signalsByPerson = new Map<string, Omit<ResolvedAttendanceSignal, "personId">>();
+
+  for (const signal of signalsNewestFirst) {
+    if (!signalsByPerson.has(signal.personId)) {
+      signalsByPerson.set(signal.personId, {
+        severity: signal.severity,
+        reason: signal.reason,
+        evidence: signal.evidence,
+        resolvedAt: signal.resolvedAt,
+      });
+    }
+  }
+
+  return signalsByPerson;
+}
+
 export async function recalculateAttendanceSignalsForGroup(groupId: string, db: AttendanceSignalDatabase = prisma) {
   const now = new Date();
   const group = await db.smallGroup.findUnique({
     where: { id: groupId },
-    include: {
+    select: {
+      id: true,
+      churchId: true,
       memberships: {
         where: { leftAt: null, role: { not: MembershipRole.VISITOR } },
-        include: { person: true },
+        select: { personId: true },
       },
       events: {
         where: presenceHistoryEventWhere(now),
         orderBy: { startsAt: "desc" },
         take: ATTENDANCE_SIGNAL_EVENT_LOOKBACK_COUNT,
-        include: { attendances: true },
+        select: {
+          startsAt: true,
+          attendances: {
+            select: { personId: true, status: true },
+          },
+        },
       },
     },
   });
 
-  if (!group) return;
+  if (!group || group.memberships.length === 0) return;
 
-  for (const membership of group.memberships) {
+  const personIds = group.memberships.map((membership) => membership.personId);
+  const existingOpenSignals = await db.careSignal.findMany({
+    where: {
+      churchId: group.churchId,
+      groupId: group.id,
+      personId: { in: personIds },
+      source: SignalSource.ATTENDANCE,
+      status: SignalStatus.OPEN,
+    },
+    select: { id: true, personId: true },
+  });
+  const openSignalsByPerson = mapFirstOpenSignalByPerson(existingOpenSignals);
+
+  const plannedInputs = group.memberships.map((membership) => {
     const statuses = getRecordedStatusesNewestFirst(group.events, membership.personId);
     const absences = countConsecutiveAbsences(statuses);
     const absenceDates = getConsecutiveAbsenceDatesNewestFirst(group.events, membership.personId);
@@ -51,43 +109,48 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string, db: 
       ?? group.events.find((event) => event.attendances.some((item) => item.personId === membership.personId))?.startsAt
       ?? null;
 
-    const existingOpenSignal = await db.careSignal.findFirst({
-      where: {
-        churchId: group.churchId,
-        groupId: group.id,
-        personId: membership.personId,
-        source: SignalSource.ATTENDANCE,
-        status: SignalStatus.OPEN,
-      },
-      select: { id: true },
-    });
-
-    const lastResolvedAttendanceSignal = signal && !existingOpenSignal
-      ? await db.careSignal.findFirst({
-          where: {
-            churchId: group.churchId,
-            groupId: group.id,
-            personId: membership.personId,
-            source: SignalSource.ATTENDANCE,
-            status: SignalStatus.RESOLVED,
-          },
-          orderBy: { resolvedAt: "desc" },
-          select: { severity: true, reason: true, evidence: true, resolvedAt: true },
-        })
-      : null;
-
-    const plan = planAttendanceSignalSync({
+    return {
+      membership,
       signal,
       latestEvidenceAt,
+      existingOpenSignal: openSignalsByPerson.get(membership.personId) ?? null,
+    };
+  });
+
+  const resolvedSignalCandidatePersonIds = plannedInputs
+    .filter((input) => input.signal && !input.existingOpenSignal)
+    .map((input) => input.membership.personId);
+
+  const resolvedSignals = resolvedSignalCandidatePersonIds.length > 0
+    ? await db.careSignal.findMany({
+        where: {
+          churchId: group.churchId,
+          groupId: group.id,
+          personId: { in: resolvedSignalCandidatePersonIds },
+          source: SignalSource.ATTENDANCE,
+          status: SignalStatus.RESOLVED,
+        },
+        orderBy: { resolvedAt: "desc" },
+        select: { personId: true, severity: true, reason: true, evidence: true, resolvedAt: true },
+      })
+    : [];
+  const resolvedSignalsByPerson = mapLatestResolvedSignalByPerson(resolvedSignals);
+
+  for (const input of plannedInputs) {
+    const personId = input.membership.personId;
+    const existingOpenSignal = input.existingOpenSignal;
+    const plan = planAttendanceSignalSync({
+      signal: input.signal,
+      latestEvidenceAt: input.latestEvidenceAt,
       existingOpenSignal,
-      lastResolvedAttendanceSignal,
+      lastResolvedAttendanceSignal: resolvedSignalsByPerson.get(personId) ?? null,
       fallbackDate: now,
     });
 
     if (plan.action === "none") continue;
 
     if (plan.action === "keep-open-signal") {
-      await markPersonInAttention(db, membership.personId);
+      await markPersonInAttention(db, personId);
       continue;
     }
 
@@ -104,7 +167,7 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string, db: 
         },
       });
 
-      await markPersonInAttention(db, membership.personId);
+      await markPersonInAttention(db, personId);
       continue;
     }
 
@@ -112,7 +175,7 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string, db: 
       data: {
         churchId: group.churchId,
         groupId: group.id,
-        personId: membership.personId,
+        personId,
         assignedToId: null,
         source: SignalSource.ATTENDANCE,
         severity: plan.signal.severity,
@@ -122,6 +185,6 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string, db: 
       },
     });
 
-    await markPersonInAttention(db, membership.personId);
+    await markPersonInAttention(db, personId);
   }
 }
