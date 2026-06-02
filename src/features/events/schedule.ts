@@ -17,6 +17,7 @@ export type EnsureUpcomingCellMeetingsOptions = {
   referenceDate?: Date;
   weeksAhead?: number;
   groupIds?: string[];
+  force?: boolean;
 };
 
 export type EnsureUpcomingCellMeetingsResult = {
@@ -74,6 +75,7 @@ export async function ensureUpcomingCellMeetingsForUser(
   const generationStart = startOfBrasiliaDay(referenceDate);
   const weeksAhead = options.weeksAhead ?? DEFAULT_CELL_MEETING_GENERATION_WEEKS;
   const generatedUntil = addBrasiliaDays(generationStart, weeksAhead * DAYS_PER_WEEK);
+  const shouldForceGeneration = options.force ?? false;
 
   const groups = await prisma.smallGroup.findMany({
     where: {
@@ -85,6 +87,14 @@ export async function ensureUpcomingCellMeetingsForUser(
           meetingDayOfWeek: { not: null },
           meetingTime: { not: null },
           ...(options.groupIds && options.groupIds.length > 0 ? { id: { in: options.groupIds } } : {}),
+          ...(shouldForceGeneration
+            ? {}
+            : {
+                OR: [
+                  { eventsGeneratedUntil: null },
+                  { eventsGeneratedUntil: { lt: generatedUntil } },
+                ],
+              }),
         },
       ],
     },

@@ -52,7 +52,7 @@ async function refreshFutureGeneratedMeetings(
   });
 
   if (group.isActive && group.meetingDayOfWeek !== null && group.meetingTime !== null) {
-    await ensureUpcomingCellMeetingsForUser(user, { groupIds: [group.id], referenceDate: now });
+    await ensureUpcomingCellMeetingsForUser(user, { groupIds: [group.id], referenceDate: now, force: true });
   }
 }
 
