@@ -14,7 +14,14 @@ export async function getAuthenticatedUser() {
       churchId: session.churchId,
       role: session.role,
     },
-    include: { church: true, person: true },
+    select: {
+      id: true,
+      churchId: true,
+      personId: true,
+      name: true,
+      email: true,
+      role: true,
+    },
   });
 }
 

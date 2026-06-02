@@ -2,7 +2,12 @@ import { NextRequest } from "next/server";
 import { groupNameOrFallback } from "@/features/groups/group-display";
 import { getVisibleMembershipWhere, getVisibleOpenSignalWhere, getVisiblePersonWhere } from "@/features/permissions/permissions";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
-import { SEARCH_PRIMARY_MEMBERSHIP_LIMIT, SEARCH_RESULT_LIMIT, shouldSearchPeople } from "@/features/search/search-view";
+import {
+  SEARCH_ACCENT_FALLBACK_SCAN_LIMIT,
+  SEARCH_PRIMARY_MEMBERSHIP_LIMIT,
+  SEARCH_RESULT_LIMIT,
+  shouldSearchPeople,
+} from "@/features/search/search-view";
 import { getPastoralSectionSignalsByPerson } from "@/features/signals/sections";
 import type { Prisma } from "@/generated/prisma/client";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -43,19 +48,32 @@ export async function GET(request: NextRequest) {
 
   if (matchingPeople.length < SEARCH_RESULT_LIMIT) {
     const directMatchIds = new Set(directMatches.map((person) => person.id));
-    const accentFallbackMatches = await prisma.person.findMany({
+    const remainingResultLimit = SEARCH_RESULT_LIMIT - directMatches.length;
+
+    const accentFallbackCandidates = await prisma.person.findMany({
       where: {
         ...getVisiblePersonWhere(user),
         id: { notIn: [...directMatchIds] },
       },
-      include: includeVisibleContext,
+      select: { id: true, fullName: true },
       orderBy: { fullName: "asc" },
+      take: SEARCH_ACCENT_FALLBACK_SCAN_LIMIT,
     });
 
-    matchingPeople = [
-      ...directMatches,
-      ...accentFallbackMatches.filter((person) => matchesNormalizedQuery(person.fullName, normalizedQuery)),
-    ].slice(0, SEARCH_RESULT_LIMIT);
+    const accentFallbackIds = accentFallbackCandidates
+      .filter((person) => matchesNormalizedQuery(person.fullName, normalizedQuery))
+      .slice(0, remainingResultLimit)
+      .map((person) => person.id);
+
+    const accentFallbackMatches = accentFallbackIds.length
+      ? await prisma.person.findMany({
+          where: { id: { in: accentFallbackIds } },
+          include: includeVisibleContext,
+          orderBy: { fullName: "asc" },
+        })
+      : [];
+
+    matchingPeople = [...directMatches, ...accentFallbackMatches];
   }
 
   return apiJson({

@@ -10,6 +10,7 @@ import {
   type PresenceTrend,
 } from "@/features/events/presence-summary";
 export const PERSON_DETAIL_ATTENDANCE_HISTORY_LIMIT = 12;
+export const PERSON_DETAIL_CARE_TOUCH_HISTORY_LIMIT = 24;
 
 export const attendanceLabels: Record<AttendanceStatus, string> = {
   PRESENT: "Presente",

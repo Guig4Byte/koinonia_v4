@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
-import { PERSON_DETAIL_ATTENDANCE_HISTORY_LIMIT } from "@/features/people/person-detail-view";
+import { PERSON_DETAIL_ATTENDANCE_HISTORY_LIMIT, PERSON_DETAIL_CARE_TOUCH_HISTORY_LIMIT } from "@/features/people/person-detail-view";
 import { activeGroupResponsibilitiesInclude } from "@/features/groups/group-query";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
@@ -46,6 +46,7 @@ export async function loadPersonDetailContext(personId: string) {
       where: visibleCareTouchWhere,
       include: { actor: true, group: { include: { responsibilities: activeGroupResponsibilitiesInclude } } },
       orderBy: { happenedAt: "desc" },
+      take: PERSON_DETAIL_CARE_TOUCH_HISTORY_LIMIT,
     }),
   ]);
 
