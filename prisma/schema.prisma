@@ -246,8 +246,11 @@ model Event {
   @@unique([groupId, startsAt, type])
   @@unique([groupId, scheduleStartsAt, type])
   @@index([churchId, startsAt])
+  @@index([churchId, type, startsAt])
   @@index([groupId, startsAt])
+  @@index([groupId, type, startsAt])
   @@index([groupId, scheduleStartsAt])
+  @@index([groupId, type, scheduleStartsAt])
   @@map("events")
 }
 
@@ -290,6 +293,7 @@ model CareSignal {
   @@index([churchId, status, severity])
   @@index([personId, status])
   @@index([groupId, status])
+  @@index([groupId, source, status, personId, resolvedAt])
   @@map("care_signals")
 }
 
