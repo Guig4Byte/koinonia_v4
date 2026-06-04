@@ -41,7 +41,7 @@ async function getEventsForUser(user: PermissionUser, referenceDate: Date) {
       ],
     },
     include: { group: { include: { responsibilities: activeGroupResponsibilitiesScopeInclude } }, attendances: true },
-    orderBy: { startsAt: "asc" },
+    orderBy: { startsAt: "desc" },
     take: EVENTS_PAGE_QUERY_LIMIT,
   });
 }

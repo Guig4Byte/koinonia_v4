@@ -27,6 +27,7 @@ import {
   addBrasiliaDays,
   dateFromBrasiliaParts,
   getBrasiliaDateParts,
+  startOfBrasiliaDay,
   startOfBrasiliaWeek,
 } from "../src/lib/brasilia-time";
 
@@ -160,6 +161,29 @@ function attendanceStatusFor({
   }
 
   return AttendanceStatus.PRESENT;
+}
+
+async function createPerformanceAttendanceRecords({
+  eventId,
+  group,
+  weekIndex,
+}: {
+  eventId: string;
+  group: PerformanceGroup;
+  weekIndex: number;
+}) {
+  await createSeedAttendanceRecords({
+    prisma,
+    eventId,
+    records: group.members.map((member, memberIndex) => ({
+      personId: member.id,
+      status: attendanceStatusFor({
+        groupIndex: group.index,
+        memberIndex,
+        weekIndex,
+      }),
+    })),
+  });
 }
 
 async function createUser({
@@ -303,17 +327,10 @@ async function createCompletedMeetings({
       scheduleStartsAt: startsAt,
     });
 
-    await createSeedAttendanceRecords({
-      prisma,
+    await createPerformanceAttendanceRecords({
       eventId: event.id,
-      records: group.members.map((member, memberIndex) => ({
-        personId: member.id,
-        status: attendanceStatusFor({
-          groupIndex: group.index,
-          memberIndex,
-          weekIndex,
-        }),
-      })),
+      group,
+      weekIndex,
     });
   }
 }
@@ -322,28 +339,42 @@ async function createFutureMeetings({
   churchId,
   group,
   futureWeeks,
+  completedWeeks,
 }: {
   churchId: string;
   group: PerformanceGroup;
   futureWeeks: number;
+  completedWeeks: number;
 }) {
+  const tomorrowStart = addBrasiliaDays(startOfBrasiliaDay(new Date()), 1);
+
   for (let weekIndex = 0; weekIndex < futureWeeks; weekIndex += 1) {
     const startsAt = groupMeetingStartsAt(group.index, weekIndex);
+    const isDueThisWeek = weekIndex === 0 && startsAt < tomorrowStart;
 
-    await createSeedEvent({
+    const event = await createSeedEvent({
       prisma,
       churchId,
       groupId: group.id,
       createdById: group.leader.id,
       title: group.name,
       startsAt,
-      status:
-        weekIndex === 0 && group.index % 8 === 0
+      status: isDueThisWeek
+        ? EventStatus.COMPLETED
+        : weekIndex === 0 && group.index % 8 === 0
           ? EventStatus.CHECKIN_OPEN
           : EventStatus.SCHEDULED,
       locationName: `Casa Performance ${String(group.index + 1).padStart(2, "0")}`,
       scheduleStartsAt: startsAt,
     });
+
+    if (isDueThisWeek) {
+      await createPerformanceAttendanceRecords({
+        eventId: event.id,
+        group,
+        weekIndex: completedWeeks,
+      });
+    }
   }
 }
 
@@ -488,15 +519,21 @@ async function main() {
       churchId: church.id,
       group,
       futureWeeks: config.futureWeeks,
+      completedWeeks: config.completedWeeks,
     });
   }
 
   await createSignalsAndCare({ churchId: church.id, groups });
 
+  const tomorrowStart = addBrasiliaDays(startOfBrasiliaDay(new Date()), 1);
+  const completedCurrentWeekGroups = groups.filter(
+    (group) => groupMeetingStartsAt(group.index, 0) < tomorrowStart,
+  ).length;
   const totalEvents =
     config.groups * (config.completedWeeks + config.futureWeeks);
   const totalAttendances =
-    config.groups * config.membersPerGroup * config.completedWeeks;
+    (config.groups * config.completedWeeks + completedCurrentWeekGroups) *
+    config.membersPerGroup;
   const [
     persistedEvents,
     persistedAttendances,
