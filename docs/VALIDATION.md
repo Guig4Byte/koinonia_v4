@@ -19,6 +19,14 @@ npm run db:generate
 npm run verify
 ```
 
+Quando a mudança depender de dados realistas ou performance percebida, rode também:
+
+```bash
+npm run db:seed:performance
+```
+
+A seed de performance limpa e repopula o banco local/dev; use apenas quando puder perder os dados atuais.
+
 O script `verify` executa:
 
 ```txt
@@ -79,6 +87,14 @@ Depois rode `npm run verify` para capturar impactos indiretos.
 - Componentes client-side não importam Prisma, sessão server-side ou commands de API.
 - Estados derivados foram extraídos para helpers puros quando possível.
 
+### Banco, queries e performance
+
+- Mudança em `schema.prisma` deve ter migration em `prisma/migrations`.
+- Queries com `findMany` sem `take` devem estar limitadas por escopo, data, grupo, evento ou IDs já controlados.
+- Page load não deve disparar writes pesados sem short-circuit ou necessidade clara.
+- Regras de domínio com muitos membros/eventos devem preferir consultas em lote em vez de N+1.
+- Seeds de volume devem ficar separadas da seed narrativa padrão.
+
 ### UI/CSS
 
 - CSS Modules permanecem próximos dos componentes que usam suas classes.
@@ -117,7 +133,7 @@ Uma mini entrega está pronta quando:
 
 ```bash
 npm run verify
-npm run audit:ui-css
+npm run audit:ui-css:strict
 npm run test:e2e
 ```
 

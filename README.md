@@ -4,21 +4,26 @@ Koinonia Lite é um radar pastoral mobile-first para igrejas com células.
 
 > O Koinonia não registra cuidado por obrigação. Ele ajuda a não esquecer pessoas.
 
-## Como Ler A Documentação
+## Como ler a documentação
 
-Leia nesta ordem quando for entender ou alterar o sistema:
+Cada documento tem uma responsabilidade própria. Evite copiar a mesma regra em vários lugares; quando houver conflito, siga o documento responsável pelo assunto e atualize esse documento junto com o código.
 
-1. `docs/AGENT_BRIEFING.md` - briefing operacional para agentes e desenvolvedores.
-2. `docs/PRODUCT.md` - comportamento, escopo e fluxos do MVP atual.
-3. `docs/GLOSSARY.md` - vocabulário oficial, rótulos, CTAs e tons da UI.
-4. `docs/ARCHITECTURE.md` - entidades, permissões, rotas, autenticação e helpers.
-5. `docs/FRONTEND.md` - organização visual, componentes, CSS e loading states.
-6. `docs/Perfil.txt` - norte de experiência mobile/pastoral.
-7. `docs/Koinonia.txt` - visão futura/legada; não governa o MVP atual.
+| Documento | Propósito |
+| --- | --- |
+| `docs/AGENT_BRIEFING.md` | orientação operacional rápida para humanos e agentes antes de alterar código |
+| `docs/HANDOFF.md` | contexto recente do trabalho, decisões tomadas e próximos passos sugeridos |
+| `docs/PRODUCT.md` | comportamento esperado, escopo do MVP e limites de produto |
+| `docs/GLOSSARY.md` | vocabulário oficial, rótulos, CTAs e tons da UI |
+| `docs/ARCHITECTURE.md` | implementação, entidades, permissões, rotas, dados e performance |
+| `docs/FRONTEND.md` | organização visual, componentes, CSS e loading states |
+| `docs/UI_PRIMITIVES_GUIDE.md` | API prática das primitives visuais |
+| `docs/UI_CSS_AUDIT.md` | guardrail e estado atual da auditoria UI/CSS |
+| `docs/DEVELOPMENT.md` | setup local, migrations, seeds e cenário de performance |
+| `docs/VALIDATION.md` | rotina de validação antes de merge |
+| `docs/Perfil.txt` | norte de experiência mobile/pastoral |
+| `docs/Koinonia.txt` | visão futura/legada; não governa o MVP atual |
 
-Cada documento tem uma responsabilidade própria. Se houver conflito, siga o documento responsável pelo assunto. Se o código atual divergir dos docs, preserve o comportamento existente e atualize o documento responsável na mesma mudança.
-
-## MVP Atual
+## MVP atual
 
 O recorte atual segue este ciclo:
 
@@ -51,14 +56,14 @@ O escopo completo e os limites do MVP ficam em `docs/PRODUCT.md`.
 - `bcryptjs` para senha.
 - `jose` para sessão assinada.
 
-## Como Rodar
+## Como rodar localmente
 
 ```bash
 npm install
 cp .env.example .env
 # edite DATABASE_URL e KOINONIA_SESSION_SECRET
 npm run db:generate
-npm run db:push
+npm run db:migrate
 npm run db:seed
 npm run dev
 ```
@@ -69,7 +74,15 @@ Acesse:
 http://localhost:3000
 ```
 
-## Autenticação Local
+Para massa maior de desenvolvimento/performance, use:
+
+```bash
+npm run db:seed:performance
+```
+
+Detalhes de banco, migrations, seeds e reset ficam em `docs/DEVELOPMENT.md`.
+
+## Autenticação local
 
 A seed de desenvolvimento cria usuários locais com a senha:
 
@@ -77,15 +90,21 @@ A seed de desenvolvimento cria usuários locais com a senha:
 koinonia123
 ```
 
-Acessos principais:
+Acessos principais da seed padrão:
 
 - Pastor: `pastor@koinonia.local`
 - Supervisor: `ana@koinonia.local`
 - Líder: `bruno@koinonia.local`
 
+A seed de performance usa também:
+
+- Pastor: `pastor@koinonia.local`
+- Supervisor: `supervisor01@koinonia.local`
+- Líder: `lider01@koinonia.local`
+
 A tela de login não deve exibir credenciais de desenvolvimento.
 
-## Rotas Principais
+## Rotas principais
 
 | Rota | Uso |
 | --- | --- |
@@ -113,13 +132,13 @@ A tela de login não deve exibir credenciais de desenvolvimento.
 src/app              Rotas, páginas, login/logout, server actions e APIs.
 src/components       UI primitives, layout global e componentes compartilhados.
 src/features         Regras e componentes de domínio por feature.
+src/lib              Prisma, autenticação, sessão, domínio compartilhado e utilitários.
 src/styles           Tokens, base, layout, motion e utilitários globais.
-src/lib              Prisma, autenticação, sessão e utilitários.
-prisma               Schema, client gerado e seed.
+prisma               Schema, migrations, seeds e scripts de banco.
 docs                 Documentação por responsabilidade.
 ```
 
-## Scripts Úteis
+## Scripts úteis
 
 ```bash
 npm run lint
@@ -127,6 +146,9 @@ npm run typecheck
 npm test
 npm run build
 npm run test:e2e
+npm run db:migrate
+npm run db:seed
+npm run db:seed:performance
 npm run db:studio
 ```
 

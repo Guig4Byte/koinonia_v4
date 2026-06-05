@@ -44,14 +44,45 @@ src/styles
   Fundação visual global: tokens, base, layout, motion e utilitários.
 
 src/lib
-  Infraestrutura: Prisma, autenticação, sessão, respostas de API, helpers genéricos de texto/query e utilitários compartilhados.
+  Infraestrutura e domínio compartilhado: Prisma, autenticação, sessão, respostas de API, helpers genéricos, `src/lib/domain` e utilitários.
 
 prisma
-  Schema, client gerado, seed e scripts de manutenção.
+  Schema, migrations, seeds e scripts de manutenção.
 
 docs
-  Produto, vocabulário, arquitetura, front-end e briefing para agentes.
+  Produto, vocabulário, arquitetura, front-end, desenvolvimento, validação e briefing para agentes.
 ```
+
+## Organização modular atual
+
+A base usa `features` para domínio e telas, mas regras puras compartilhadas não devem morar em uma feature concreta só porque nasceram ali.
+
+Regra de direção:
+
+```txt
+feature concreta -> pode importar helper neutro
+helper neutro -> não importa feature concreta
+```
+
+Use `src/lib/domain` para helpers compartilhados entre features, como:
+
+```txt
+src/lib/domain/group-responsibilities.ts
+src/lib/domain/group-responsibility-query.ts
+src/lib/domain/weekdays.ts
+```
+
+Arquivos que foram divididos podem continuar como fachadas públicas curtas para preservar imports existentes. Esse padrão é intencional quando reduz risco de regressão:
+
+```txt
+src/features/dashboard/queries.ts
+src/components/shared/base-cards.tsx
+src/components/shared/presence-metric.tsx
+src/features/groups/cells-page-view.ts
+src/features/groups/group-detail-view.ts
+```
+
+Não crie fachada ou wrapper novo se ele apenas renomeia outro componente sem semântica, regra visual ou compatibilidade real.
 
 ## Regra de UI/CSS
 
@@ -268,10 +299,11 @@ Regras:
 - respeita o escopo visível do usuário;
 - copia `SmallGroup.locationName` para `Event.locationName`;
 - grava `scheduleStartsAt` com a ocorrência original;
-- verifica eventos existentes por `startsAt` e `scheduleStartsAt`;
+- usa `SmallGroup.eventsGeneratedUntil` para pular células já cobertas em page load;
+- quando precisa gerar, verifica eventos existentes por `startsAt` e `scheduleStartsAt`;
 - atualiza `SmallGroup.eventsGeneratedUntil`.
 
-Chamadas atuais ocorrem nas telas que dependem de encontros, como `/eventos` e `/lider`.
+Chamadas atuais ocorrem nas telas que dependem de encontros, como `/eventos` e `/lider`. A criação/edição de célula deve chamar a geração com `force: true` quando agenda, local padrão ou status puder exigir regeneração de encontros futuros.
 
 ## Listagem e consultas de encontros
 
@@ -294,6 +326,7 @@ Regras:
 - `readEventConsultationMode()` aceita apenas `sem-presenca` e `historico`;
 - `readEventPeriod()` aceita `semana`, `semana-passada` e `30d`, conforme o modo;
 - cards de consulta têm variantes próprias para pendência e histórico, sem alterar a regra de permissão;
+- a query da página carrega eventos recentes primeiro para que `take` não corte a semana atual quando houver histórico grande;
 - `eventMeta()` evita repetir o nome da célula quando o título já identifica o grupo.
 
 ## Ações do encontro
@@ -339,6 +372,7 @@ Fontes principais:
 ```txt
 src/features/events/presence-summary.ts
 src/features/events/presence-display.ts
+src/features/events/weekly-presence-health.ts
 src/components/shared/presence-metric.tsx
 src/features/dashboard/presence-health.ts
 ```
@@ -371,7 +405,7 @@ Regras:
 - eventos concluídos sem marcação válida continuam sendo ausência de dado, não `0%`;
 - use `presenceTone()` para tom visual de presença, mantendo limiares explícitos quando a superfície usa thresholds diferentes;
 - `PresenceMetricDisplay` e derivados centralizam indicador visual, progresso, `aria-label` e tratamento de ausência de dado;
-- saúde semanal usa `src/features/dashboard/presence-health.ts` para labels e thresholds de visão geral.
+- saúde semanal usa `src/features/events/weekly-presence-health.ts` para labels e thresholds; `src/features/dashboard/presence-health.ts` é fachada de compatibilidade.
 
 ## Check-in
 
@@ -481,11 +515,18 @@ Regras:
 
 ## Queries de visão
 
-Fonte:
+Fontes:
 
 ```txt
 src/features/dashboard/queries.ts
+src/features/dashboard/queries/pastor-dashboard.query.ts
+src/features/dashboard/queries/pastor-team-overview.query.ts
+src/features/dashboard/queries/group-scoped-dashboard.query.ts
+src/features/dashboard/queries/supervisor-dashboard.query.ts
+src/features/dashboard/queries/leader-dashboard.query.ts
 ```
+
+`queries.ts` é fachada pública. As queries específicas ficam em módulos menores por papel/escopo.
 
 Regras:
 
@@ -514,13 +555,16 @@ src/lib/filter-param.ts
 src/lib/search-params.ts
 src/lib/text.ts
 src/lib/format.ts
+src/lib/domain/group-responsibilities.ts
+src/lib/domain/group-responsibility-query.ts
+src/lib/domain/weekdays.ts
 ```
 
 Regras:
 
 - `src/components/ui` concentra primitives visuais genéricos antes de novas classes locais ou variantes soltas.
 - `src/components/shared/structure-search.tsx` centraliza busca e chips de superfícies estruturais; wrappers de feature ficam em `features/groups` e `features/team`.
-- `src/components/shared/presence-metric.tsx` centraliza indicadores visuais de presença; novas superfícies devem reutilizá-lo antes de criar anéis/barras próprios.
+- `src/components/shared/presence-metric.tsx` é fachada pública para os módulos internos de presença; novas superfícies devem reutilizá-lo antes de criar anéis/barras próprios.
 - `src/components/ui/signal-heart-indicator.tsx` centraliza chips pastorais com coração + texto, usando ícone de presença quando o rótulo for de presença.
 - `src/components/shared/person-cards.tsx` centraliza o card compacto de pessoa e remove subtítulo que repete o chip.
 - `src/features/pastoral-home/components/person-signal-card.tsx` centraliza os cards de pessoa das visões pastorais e também evita repetir o status no contexto.
@@ -531,6 +575,7 @@ Regras:
 - `firstParam()` deve ser usado para leitura simples de `searchParams` em páginas server-side.
 - `normalizeSearchText()` e `matchesNormalizedQuery()` devem ser usados para busca local sem acento/case-insensitive.
 - `countLabel()`, datas curtas e horários devem sair de `src/lib/format.ts`; código de app não deve importar `brasilia-time.ts` diretamente sem motivo específico.
+- Regras neutras de responsabilidades e agenda semanal compartilhadas entre features devem ficar em `src/lib/domain`, não em `features/groups`.
 - Cards pastorais devem calcular apresentação visual localmente ou por helpers compartilhados; páginas não devem duplicar iniciais, tons de presença ou composição básica de card.
 
 ## Cadastro mínimo de célula
@@ -609,16 +654,46 @@ Regras:
 - `TextSizeToggle` alterna entre `Normal`, `Grande` e `Muito grande`;
 - tema e tamanho do texto são preferências locais do aparelho e não devem ser persistidos no banco nesta fase.
 
-## Seed de desenvolvimento
+## Banco, migrations e performance
 
-A seed é para desenvolvimento e teste local. Produção deve usar migrations e cadastros reais.
+O projeto usa Prisma Migrate com PostgreSQL. Alteração de schema que deve permanecer no projeto precisa ser versionada em `prisma/migrations`; `db:push` fica reservado para experimento local descartável.
 
-Usuários principais de desenvolvimento:
+Índices relevantes atuais:
+
+```txt
+Event: churchId/type/startsAt, groupId/type/startsAt, groupId/type/scheduleStartsAt
+CareSignal: groupId/source/status/personId/resolvedAt
+```
+
+Guardrails de performance já aplicados:
+
+- busca global com limite no fallback normalizado;
+- `getAuthenticatedUser()` com `select` enxuto;
+- histórico de cuidado da pessoa com limite explícito;
+- recálculo de sinais de presença com busca em lote;
+- geração de encontros com short-circuit por `eventsGeneratedUntil`;
+- `/eventos` carrega eventos recentes primeiro antes de montar as seções.
+
+Para setup local, reset e seeds, use `docs/DEVELOPMENT.md`.
+
+## Seeds de desenvolvimento
+
+A seed padrão é para desenvolvimento e teste local. A seed de performance é para volume e validação manual com massa maior. Produção deve usar migrations e cadastros reais.
+
+Usuários principais da seed padrão:
 
 ```txt
 pastor@koinonia.local
 ana@koinonia.local
 bruno@koinonia.local
+```
+
+Usuários úteis da seed de performance:
+
+```txt
+pastor@koinonia.local
+supervisor01@koinonia.local
+lider01@koinonia.local
 ```
 
 Senha padrão local:
@@ -633,9 +708,9 @@ A tela de login não deve exibir credenciais de desenvolvimento.
 
 ```txt
 npm run db:generate
-npm run db:push
 npm run db:migrate
 npm run db:seed
+npm run db:seed:performance
 npm run lint
 npm run typecheck
 npm test

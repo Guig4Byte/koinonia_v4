@@ -18,6 +18,8 @@ Use este documento junto com `FRONTEND.md` e `UI_CSS_AUDIT.md`.
 | `src/features/*/components` | layout interno e linguagem da feature | recriar primitive global |
 | `src/app` | composição de rota e dados | markup visual repetido |
 
+Arquivos públicos em `src/components/shared`, como `base-cards.tsx` e `presence-metric.tsx`, podem ser fachadas de compatibilidade para módulos internos menores. Não importe submódulos internos diretamente sem necessidade clara.
+
 ## Button e ButtonLink
 
 Use para ações reais e links com aparência de botão.
@@ -26,10 +28,10 @@ Props principais:
 
 | Prop | Valores | Uso |
 | --- | --- | --- |
-| `variant` | `primary`, `secondary`, `quiet`, `ghost`, `outline`, tons soft | intenção visual |
+| `variant` | `primary`, `primaryFlat`, `secondary`, `quiet`, `ghost`, `outline`, `tab`, `tabActive` e tons soft | intenção visual |
 | `size` | `sm`, `md`, `lg` | altura base |
-| `shape` | `default`, `rounded`, `pill` | forma |
-| `density` | `default`, `compact`, `badge` | densidade interna |
+| `shape` | `default`, `soft`, `rounded`, `pill` | forma |
+| `density` | `default`, `compact`, `badge`, `status`, `inlineAction`, `inlineCompact`, `tab` | densidade interna |
 | `align` | `center`, `left`, `between` | alinhamento do conteúdo |
 | `responsiveWidth` | `auto`, `full`, `fullUntilSm` | comportamento em mobile |
 
@@ -56,6 +58,8 @@ Props principais:
 | `shape` | `pill`, `rounded` | forma |
 | `maxWidth` | `full`, `none`, `header`, `tightHeader`, `list`, `row`, `narrow` | limite de largura |
 | `truncate` | boolean | truncamento oficial |
+| `elevation` | `none`, `soft` | sombra interna leve |
+| `responsive` | `none`, `fullBelowXs` | ajuste para mobile estreito |
 
 Exemplo:
 
@@ -73,13 +77,17 @@ Props principais:
 
 | Prop | Valores | Uso |
 | --- | --- | --- |
-| `tone` | `default`, `featured`, `inset`, `dashed`, `transparent` | tipo de superfície |
-| `padding` | `none`, `sm`, `md`, `lg` | espaçamento interno |
+| `tone` | `default`, `featured`, `inset`, `subtle`, `metric`, `dashed`, `transparent` | tipo de superfície |
+| `padding` | `none`, `row`, `sm`, `metric`, `pulse`, `md`, `lg` | espaçamento interno |
 | `radius` | `default`, `sm`, `lg` | arredondamento |
-| `elevation` | `auto`, `none`, `card`, `soft` | sombra |
+| `elevation` | `auto`, `none`, `card`, `soft`, `metric` | sombra |
 | `containment` | `visible`, `hidden` | overflow |
 | `minHeight` | `none`, `sm`, `md` | altura mínima |
 | `statusTone` | `none`, `care`, `warning`, `success`, `danger`, `info` | superfície com status |
+| `surface` | `default`, `warmGlow`, `accentGlow`, `notice`, `summaryGlow`, `pastoralCue`, `heroGlow` | preset de superfície |
+| `accentTone` | `default`, `success`, `warning`, `danger`, `info`, `muted`, `presence`, `support`, `care` | accent semântico |
+| `layout` | `block`, `media`, `split` | composição interna |
+| `textStyle` | `none`, `bodyMuted`, `bodyPrimary`, `noticeStrong` | estilo textual curto |
 
 ```tsx
 <Card tone="inset" padding="sm" radius="sm" statusTone="care">...</Card>
@@ -111,7 +119,7 @@ Props:
 
 | Prop | Valores |
 | --- | --- |
-| `tone` | `secondary`, `primary`, `prioritySoft` |
+| `tone` | `secondary`, `primary`, `prioritySoft`, `accentSoft` |
 | `size` | `xs`, `sm`, `md` |
 | `minWidth` | `none`, `action` |
 | `iconBefore` / `iconAfter` | ícone opcional |
@@ -132,6 +140,7 @@ Props:
 | `padding` | `sm`, `md` |
 | `radius` | `sm`, `default` |
 | `containment` | `visible`, `hidden` |
+| `elevation` | `default`, `none` |
 | `as` | `article`, `section`, `div` |
 
 ```tsx
@@ -288,4 +297,5 @@ Não crie nova variante quando:
 
 - o ajuste é layout único da tela;
 - a regra só posiciona conteúdo interno;
-- a composição é claramente de domínio e não se repete.
+- a composição é claramente de domínio e não se repete;
+- o componente seria apenas um wrapper de uma linha sobre outra primitive.

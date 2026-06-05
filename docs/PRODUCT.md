@@ -260,7 +260,7 @@ Regras:
 - evitar duplicar a mesma pessoa na mesma superfície;
 - não repetir no subtítulo o mesmo status que já aparece no chip do card;
 - manter busca de pessoa para consulta explícita;
-- usar CTAs específicos por intenção, evitando `Abrir` quando a ação puder ser mais clara.
+- usar CTAs específicos por intenção, evitando `Abrir` quando a ação puder ser mais clara;
 - não criar fila, SLA ou tarefa a partir dessas seções.
 
 ## Contato, Apoio E Cuidado

@@ -5,12 +5,15 @@ Este é o primeiro arquivo para qualquer pessoa ou IA que vá alterar o projeto.
 ## Ordem E Autoridade
 
 1. `docs/AGENT_BRIEFING.md` - orientação operacional rápida.
-2. `docs/PRODUCT.md` - comportamento, escopo e fluxos do MVP.
-3. `docs/GLOSSARY.md` - vocabulário oficial da UI.
-4. `docs/ARCHITECTURE.md` - implementação, permissões, rotas, entidades e helpers.
-5. `docs/FRONTEND.md` - organização visual, componentes, CSS e loading states.
-6. `docs/Perfil.txt` - sensação mobile/pastoral.
-7. `docs/Koinonia.txt` - visão futura/legada, sem autoridade sobre o MVP atual.
+2. `docs/HANDOFF.md` - contexto recente e próximos passos, sem substituir docs normativos.
+3. `docs/PRODUCT.md` - comportamento, escopo e fluxos do MVP.
+4. `docs/GLOSSARY.md` - vocabulário oficial da UI.
+5. `docs/ARCHITECTURE.md` - implementação, permissões, rotas, entidades, dados e performance.
+6. `docs/FRONTEND.md` - organização visual, componentes, CSS e loading states.
+7. `docs/DEVELOPMENT.md` - setup local, migrations, seeds e validação de volume.
+8. `docs/VALIDATION.md` - rotina de validação.
+9. `docs/Perfil.txt` - sensação mobile/pastoral.
+10. `docs/Koinonia.txt` - visão futura/legada, sem autoridade sobre o MVP atual.
 
 Cada doc tem uma responsabilidade. Não copie regras entre documentos quando bastar apontar para o doc responsável. Se o código atual divergir dos docs, preserve o comportamento existente e atualize o documento responsável.
 
@@ -89,12 +92,14 @@ Consulte `docs/ARCHITECTURE.md` para detalhes. Pontos mais usados:
 | Células e responsabilidades | `src/features/groups`, `src/app/(app)/celulas` |
 | Encontros e agenda | `src/features/events`, `src/app/(app)/eventos`, `src/app/api/events` |
 | Check-in | `src/features/check-in`, `src/app/api/events/[eventId]/check-in` |
-| Presença | `src/features/events/presence-summary.ts`, `src/features/events/presence-display.ts`, `src/components/shared/presence-metric.tsx` |
+| Presença | `src/features/events/presence-summary.ts`, `src/features/events/presence-display.ts`, `src/features/events/weekly-presence-health.ts`, `src/components/shared/presence-metric.tsx` |
 | Sinais | `src/features/signals` |
 | Cuidado | `src/features/care`, `src/app/api/care/[personId]` |
 | Busca | `src/features/search`, `src/app/api/search` |
 | Tema e texto | `src/features/theme`, `src/features/text-size`, `src/components/layout` |
-| UI compartilhada | `src/components/ui`, `src/components/shared`, `docs/FRONTEND.md` |
+| UI compartilhada | `src/components/ui`, `src/components/shared`, `docs/FRONTEND.md`, `docs/UI_PRIMITIVES_GUIDE.md` |
+| Domínio compartilhado | `src/lib/domain` |
+| Banco, migrations e seeds | `prisma/schema.prisma`, `prisma/migrations`, `prisma/seed.ts`, `prisma/seed-performance.ts`, `docs/DEVELOPMENT.md` |
 
 ## Checklist Antes De Codar Ou Responder
 
@@ -107,4 +112,6 @@ Consulte `docs/ARCHITECTURE.md` para detalhes. Pontos mais usados:
 7. A linguagem vem do `GLOSSARY.md`?
 8. A UI continua mobile-first, curta e sem burocracia?
 9. Helpers compartilhados continuam seguros para client/server?
-10. O patch promete apenas o que o código entrega?
+10. Regra neutra compartilhada ficou em `src/lib/domain` em vez de uma feature concreta?
+11. A mudança preserva `0` ciclos reais entre arquivos?
+12. O patch promete apenas o que o código entrega?

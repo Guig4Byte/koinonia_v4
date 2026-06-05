@@ -35,6 +35,7 @@ src/components/layout
 src/components/shared
   Componentes compartilhados entre features, mas ainda ligados à apresentação do produto.
   Exemplos: ProgressiveList, PresenceMetricDisplay, StructureSearch, base cards, person cards e loading skeletons.
+  Arquivos públicos como `base-cards.tsx` e `presence-metric.tsx` podem ser fachadas para módulos internos menores.
 
 src/features/*/components
   Componentes visuais de domínio. Podem usar linguagem e dados da feature.
@@ -176,6 +177,8 @@ Uma primitive em `ui` deve:
 
 Não crie uma primitive nova apenas para esconder uma linha de Tailwind usada uma única vez. Crie variante ou primitive quando o ajuste se repetir ou quando o ajuste local estiver corrigindo um componente base.
 
+Wrappers finos só devem existir quando preservam compatibilidade pública, nomeiam uma semântica real do produto ou concentram uma regra visual reutilizada. Se o componente apenas repassa props para outro componente sem valor próprio, use a primitive diretamente.
+
 ### Guardrail de overrides locais
 
 Use o script de auditoria para revisar mudanças de UI:
@@ -202,7 +205,9 @@ Use o modo estrito total apenas quando a intenção for investigar todos os baix
 npm run audit:ui-css:strict-all
 ```
 
-Achados altos e médios devem ser corrigidos antes de merge. Achados baixos são uma fila de revisão: só promova para primitive quando o padrão for recorrente ou quando o ajuste estiver brigando com um componente base. O fechamento da auditoria e o checklist ficam em `docs/UI_CSS_AUDIT.md`.
+Achados altos e médios devem ser corrigidos antes de merge. Achados baixos são uma fila de revisão: só promova para primitive quando o padrão for recorrente ou quando o ajuste estiver brigando com um componente base.
+
+Estado esperado após o ciclo atual: `0` altos, `0` médios e baixos aceitos pelo guardrail. O fechamento da auditoria e o checklist ficam em `docs/UI_CSS_AUDIT.md`.
 
 ## Componentes Compartilhados Importantes
 
@@ -232,7 +237,7 @@ Regras:
 - formulários de criação/edição dentro do app, como nova/editar célula, ocultam `BottomNav`, usam barra fixa de ação e protegem saída quando existem alterações não salvas;
 - telas consultivas e listagens mantêm `BottomNav`;
 - full-page screenshots ou validações visuais podem ocultar `BottomNav`, mas isso não muda o comportamento real da tela;
-- indicadores de presença devem reutilizar `src/components/shared/presence-metric.tsx`;
+- indicadores de presença devem reutilizar `src/components/shared/presence-metric.tsx`, que é a fachada pública dos módulos internos de presença;
 - quando não houver dado de presença, indicador e texto devem comunicar ausência de dado, não risco.
 - formulários com alteração sensível, como desativar célula ativa, devem pedir confirmação antes de enviar.
 - dashboards pastorais podem usar uma única próxima ação quando isso reduzir a decisão; líder, supervisor e pastor não precisam ter a mesma composição visual;
@@ -262,7 +267,7 @@ As homes de líder, supervisor e pastor começam com uma leitura curta do moment
 
 Regras:
 
-- calcular prioridade em `leader-page-view.ts`, `supervisor-page-view.ts` ou `pastor-page-view.ts`;
+- calcular prioridade em `leader-page-view.ts`, `supervisor-page-view.ts` ou nos módulos internos de `supervisor-page-view/` e `pastor-page-view.ts`;
 - priorizar urgente, pedido de apoio, atenção, cuidado ativo e, por fim, estabilidade;
 - usar CTA específico (`Ver pedido`, `Acompanhar pessoa`, `Ver células em atenção`, `Ver equipe`), evitando `Abrir` genérico;
 - manter listas compactas e com `Ver mais` quando necessário;

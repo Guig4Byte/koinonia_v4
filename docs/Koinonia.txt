@@ -5,11 +5,12 @@ Este arquivo é inspiração histórica e futura. Ele **não governa o MVP atual
 Para qualquer decisão sobre a base atual, use primeiro:
 
 1. `docs/AGENT_BRIEFING.md`
-2. `docs/PRODUCT.md`
-3. `docs/GLOSSARY.md`
-4. `docs/ARCHITECTURE.md`
-5. `docs/FRONTEND.md`
-6. `docs/Perfil.txt`
+2. `docs/HANDOFF.md`
+3. `docs/PRODUCT.md`
+4. `docs/GLOSSARY.md`
+5. `docs/ARCHITECTURE.md`
+6. `docs/FRONTEND.md`
+7. `docs/Perfil.txt`
 
 ## Como ler este arquivo
 
