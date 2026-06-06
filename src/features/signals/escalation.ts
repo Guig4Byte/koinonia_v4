@@ -3,7 +3,6 @@ import { SIGNAL_COPY, pastoralEscalationCopy, supervisorEscalationCopy } from ".
 import {
   hasAnyGroupResponsibilityScope,
   hasGroupResponsibilityScope,
-  type GroupResponsibilityLike,
   type ResponsibleGroupLike,
 } from "@/lib/domain/group-responsibilities";
 
@@ -26,8 +25,6 @@ export type EscalationViewerLike = {
   id?: string | null;
   role: UserRole;
 };
-
-export type EscalationGroupResponsibilityLike = GroupResponsibilityLike;
 
 export type EscalationGroupLike = ResponsibleGroupLike;
 

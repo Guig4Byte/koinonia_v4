@@ -42,6 +42,3 @@ export const ROUTES = {
   loginError: (nextPath?: string | null) => routeWithQuery("/login", { erro: "credenciais", next: nextPath }),
 } as const;
 
-export function isAuthRoute(pathname: string): boolean {
-  return pathname.startsWith(ROUTES.login) || pathname.startsWith(ROUTES.logout);
-}

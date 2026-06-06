@@ -11,7 +11,6 @@ export const FILTER_IN_CARE = "em-cuidado";
 export const FILTER_ACTIVE = "ativos";
 
 export const NO_RECENT_PRESENCE_LABEL = "Retomar contato";
-export const NO_RECENT_PRESENCE_FILTER_LABEL = NO_RECENT_PRESENCE_LABEL;
 
 export type FilterTone =
   | "risk"

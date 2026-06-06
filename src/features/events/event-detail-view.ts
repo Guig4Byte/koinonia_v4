@@ -29,13 +29,6 @@ export type EventPastoralCue = {
   tone: EventDetailBadgeTone;
 };
 
-export const eventAttendanceLabels: Record<AttendanceStatus, string> = {
-  PRESENT: "Presente",
-  ABSENT: "Ausente",
-  JUSTIFIED: "Justificou",
-  VISITOR: "Visitante",
-};
-
 export function eventAttendanceStatusTone(status?: AttendanceStatus | null): EventDetailBadgeTone {
   if (status === AttendanceStatus.PRESENT) return "ok";
   if (status === AttendanceStatus.JUSTIFIED) return "warn";
@@ -46,7 +39,6 @@ export function eventAttendanceStatusTone(status?: AttendanceStatus | null): Eve
 export function sortPeopleByName<T extends { fullName: string }>(people: T[]) {
   return [...people].sort(compareByFullName);
 }
-
 
 export function justifiedCountLabel(count: number) {
   return count === 1 ? "1 justificou" : `${count} justificaram`;

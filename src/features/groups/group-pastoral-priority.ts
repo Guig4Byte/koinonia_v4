@@ -225,14 +225,6 @@ export function groupPastoralStatusKey(group: GroupPastoralPriorityInput): Group
   return groupPastoralState(group).statusKey;
 }
 
-export function groupNeedsPastoralAttention(group: GroupPastoralPriorityInput) {
-  return groupPastoralState(group).needsPastoralAttention;
-}
-
-export function groupNeedsTeamAttention(group: GroupPastoralPriorityInput) {
-  return groupPastoralState(group).needsTeamAttention;
-}
-
 export function groupPastoralPriorityScore(group: GroupPastoralPriorityInput) {
   return groupPastoralState(group).priorityScore;
 }

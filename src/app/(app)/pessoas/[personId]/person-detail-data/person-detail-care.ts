@@ -2,7 +2,7 @@ import { CareKind, GroupResponsibilityRole } from "@/generated/prisma/client";
 import { careContactInfo } from "@/features/care/care-actions-view";
 import { canRegisterCare } from "@/features/permissions/permissions";
 import { buildPersonCareOverviewView } from "@/features/people/person-care-overview";
-import { careKindLabels } from "@/features/people/person-detail-view";
+import { careKindLabels } from "@/features/care/care-copy";
 import { responsibilityNames } from "@/features/groups/responsibility-display";
 import { formatShortDate, formatTime } from "@/lib/format";
 import type { loadPersonDetailContext } from "./person-detail.loader";

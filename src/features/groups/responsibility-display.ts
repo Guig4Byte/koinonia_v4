@@ -6,19 +6,10 @@ type ResponsibilityDisplayItem = {
   user: { name: string };
 };
 
-export const responsibilityRoleLabels: Record<GroupResponsibilityRole, string> = {
-  LEADER: "Líder",
-  SUPERVISOR: "Supervisor",
-};
-
 export const responsibilityFallbackNames: Record<GroupResponsibilityRole, string> = {
   LEADER: FALLBACK_LEADER_NAME,
   SUPERVISOR: FALLBACK_SUPERVISOR_NAME,
 };
-
-export function responsibilityRoleLabel(role: GroupResponsibilityRole) {
-  return responsibilityRoleLabels[role];
-}
 
 export function responsibilityNames(
   responsibilities: ResponsibilityDisplayItem[],

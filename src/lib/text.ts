@@ -59,6 +59,3 @@ export function matchesNormalizedQuery(haystack: string, normalizedQuery: string
   return normalizeSearchText(haystack).includes(normalizedQuery);
 }
 
-export function joinNonEmpty(values: Array<string | null | undefined>, separator = " "): string {
-  return values.filter((value): value is string => Boolean(value)).join(separator);
-}
