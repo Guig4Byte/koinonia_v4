@@ -111,11 +111,10 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
             canCreateGroup ? (
               <ButtonLink
                 href={ROUTES.newCell}
-                variant="secondary"
+                variant="actionPillPrimary"
                 size="sm"
-                density="compact"
-                shape="rounded"
-                className="k-action-pill k-action-pill-primary shrink-0"
+                density="actionPill"
+                className="shrink-0"
               >
                 <Plus className="h-4 w-4" aria-hidden="true" />
                 Nova célula

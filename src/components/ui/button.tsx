@@ -15,10 +15,22 @@ export type ButtonVariant =
   | "warmSoft"
   | "tab"
   | "tabActive"
-  | "outline";
+  | "outline"
+  | "brandGhost"
+  | "actionPillPrimary"
+  | "actionPillSecondary";
 export type ButtonSize = "sm" | "md" | "lg";
 export type ButtonShape = "default" | "soft" | "rounded" | "pill";
-export type ButtonDensity = "default" | "compact" | "badge" | "status" | "inlineAction" | "inlineCompact" | "tab";
+export type ButtonDensity =
+  | "default"
+  | "compact"
+  | "badge"
+  | "status"
+  | "inlineAction"
+  | "inlineCompact"
+  | "tab"
+  | "progressiveControl"
+  | "actionPill";
 export type ButtonAlign = "center" | "left" | "between";
 export type ButtonResponsiveWidth = "auto" | "full" | "fullUntilSm";
 
@@ -63,6 +75,12 @@ const buttonVariantClass: Record<ButtonVariant, string> = {
   tabActive:
     "min-w-0 border border-[color-mix(in_srgb,var(--color-brand-accent)_38%,var(--color-border-card))] bg-[radial-gradient(ellipse_82%_68%_at_18%_0%,color-mix(in_srgb,var(--color-brand-accent)_16%,transparent),transparent_70%),color-mix(in_srgb,var(--color-brand-accent)_10%,var(--color-bg-card))] text-[color:color-mix(in_srgb,var(--color-brand-accent)_88%,var(--color-text-primary))] shadow-[inset_0_-2px_0_color-mix(in_srgb,var(--color-brand-accent)_68%,transparent)]",
   outline: "border border-[var(--color-border-card)] bg-[var(--color-bg-card)] text-[color:var(--color-text-primary)] hover:bg-[var(--surface-alt)]",
+  brandGhost:
+    "border-0 bg-transparent text-[color:var(--color-brand)] shadow-none hover:bg-[color-mix(in_srgb,var(--color-card-decoration)_10%,transparent)]",
+  actionPillPrimary:
+    "border border-[color-mix(in_srgb,var(--brown-400)_40%,var(--color-border-card))] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brown-400)_18%,var(--surface-alt)),color-mix(in_srgb,var(--brown-400)_10%,var(--color-bg-card))),var(--color-bg-card)] text-[color:var(--color-text-primary)] hover:border-[color-mix(in_srgb,var(--brown-400)_56%,var(--color-border-card))] hover:bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brown-400)_24%,var(--surface-alt)),color-mix(in_srgb,var(--brown-400)_14%,var(--color-bg-card))),var(--color-bg-card)]",
+  actionPillSecondary:
+    "border border-[color-mix(in_srgb,var(--brown-400)_38%,var(--color-border-card))] bg-[color-mix(in_srgb,var(--brown-400)_7%,transparent)] text-[color:color-mix(in_srgb,var(--brown-400)_72%,var(--color-text-primary))] hover:border-[color-mix(in_srgb,var(--brown-400)_56%,var(--color-border-card))] hover:bg-[color-mix(in_srgb,var(--brown-400)_12%,var(--surface-alt))] hover:text-[color:var(--color-text-primary)]",
 };
 
 const buttonSizeClass: Record<ButtonSize, string> = {
@@ -86,6 +104,9 @@ const buttonDensityClass: Record<ButtonDensity, string> = {
   inlineAction: "min-h-[2.34rem] px-[1.14rem] py-[0.38rem] text-[length:var(--text-sm)] font-bold",
   inlineCompact: "min-h-[2.35rem] px-[0.88rem] py-[0.38rem] text-[length:var(--text-xs)] font-extrabold",
   tab: "min-h-[3.08rem] gap-[0.48rem] px-[0.58rem] py-2 text-[length:var(--text-sm)]",
+  progressiveControl: "min-h-[2.15rem] px-3 py-1.5 text-[length:var(--text-sm)] font-extrabold",
+  actionPill:
+    "min-h-[2.45rem] gap-[0.45rem] rounded-[1rem] px-[0.78rem] py-1.5 text-[length:calc(var(--text-xs)*1.02)] font-[850] leading-none tracking-normal shadow-[inset_0_1px_0_color-mix(in_srgb,var(--surface-alt)_34%,transparent)]",
 };
 
 const buttonAlignClass: Record<ButtonAlign, string> = {

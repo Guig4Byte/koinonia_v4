@@ -82,7 +82,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
           title="Células"
           description="Células sob sua supervisão, organizadas por leitura pastoral."
           action={canCreateGroup ? (
-            <ButtonLink href={ROUTES.newCell} variant="secondary" size="sm" density="compact" shape="rounded" className="k-action-pill k-action-pill-primary shrink-0">
+            <ButtonLink href={ROUTES.newCell} variant="actionPillPrimary" size="sm" density="actionPill" className="shrink-0">
               <Plus className="h-4 w-4" aria-hidden="true" />
               Nova célula
             </ButtonLink>

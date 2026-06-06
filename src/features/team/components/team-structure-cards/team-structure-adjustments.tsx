@@ -165,6 +165,8 @@ export function TeamStructureAdjustments({
               moreLabel="Ver mais células"
               lessLabel="Mostrar menos"
               className={styles.compactProgressiveList}
+              actionVariant="brandGhost"
+              actionDensity="progressiveControl"
             >
               {unassignedGroups.map((group) => (
                 <StructureGroupLink
@@ -190,6 +192,8 @@ export function TeamStructureAdjustments({
               moreLabel="Ver mais células"
               lessLabel="Mostrar menos"
               className={styles.compactProgressiveList}
+              actionVariant="brandGhost"
+              actionDensity="progressiveControl"
             >
               {inactiveGroups.map((group) => (
                 <InactiveStructureGroupLink key={group.id} group={group} />

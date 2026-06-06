@@ -88,21 +88,6 @@
   gap: 0.58rem;
 }
 
-.supervisorGroups :global(button),
-.structureRows :global(button) {
-  min-height: 2.15rem;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-  color: var(--color-brand);
-  font-size: var(--text-sm);
-  font-weight: 800;
-}
-
-.supervisorGroups :global(button:hover),
-.structureRows :global(button:hover) {
-  background: color-mix(in srgb, var(--color-card-decoration) 10%, transparent);
-}
 
 .cellLink {
   --team-cell-accent: color-mix(

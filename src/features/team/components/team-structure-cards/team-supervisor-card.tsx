@@ -54,6 +54,8 @@ export function TeamSupervisorCard({
             moreLabel={`Ver ${countLabel(supervisor.groups.length, "célula", "células")}`}
             lessLabel="Mostrar menos"
             className={styles.compactProgressiveList}
+            actionVariant="brandGhost"
+            actionDensity="progressiveControl"
           >
             {supervisor.groups.map((group) => (
               <TeamGroupLink

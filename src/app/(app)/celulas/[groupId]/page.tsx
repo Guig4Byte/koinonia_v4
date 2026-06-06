@@ -75,11 +75,10 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
             {canEditGroup ? (
               <ButtonLink
                 href={ROUTES.editGroup(group.id)}
-                variant="secondary"
+                variant="actionPillSecondary"
                 size="sm"
-                density="compact"
-                shape="rounded"
-                className="k-action-pill k-action-pill-secondary shrink-0 whitespace-nowrap"
+                density="actionPill"
+                className="shrink-0 whitespace-nowrap"
               >
                 <PencilLine className="h-3.5 w-3.5" aria-hidden="true" />
                 Editar célula

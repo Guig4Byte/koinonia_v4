@@ -1,7 +1,7 @@
 "use client";
 
 import { Children, type ReactNode, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button, type ButtonDensity, type ButtonSize, type ButtonVariant } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 
 export function ProgressiveList({
@@ -11,6 +11,9 @@ export function ProgressiveList({
   moreLabel = "Ver mais",
   lessLabel = "Mostrar menos",
   className,
+  actionVariant = "secondary",
+  actionSize = "sm",
+  actionDensity = "default",
 }: {
   children: ReactNode;
   initialCount?: number;
@@ -18,6 +21,9 @@ export function ProgressiveList({
   moreLabel?: string;
   lessLabel?: string;
   className?: string;
+  actionVariant?: ButtonVariant;
+  actionSize?: ButtonSize;
+  actionDensity?: ButtonDensity;
 }) {
   const items = Children.toArray(children);
   const [visibleCount, setVisibleCount] = useState(initialCount);
@@ -31,8 +37,9 @@ export function ProgressiveList({
       {hasHiddenItems ? (
         <Button
           type="button"
-          variant="secondary"
-          size="sm"
+          variant={actionVariant}
+          size={actionSize}
+          density={actionDensity}
           fullWidth
           onClick={() => setVisibleCount((current) => Math.min(current + step, items.length))}
         >
@@ -40,7 +47,14 @@ export function ProgressiveList({
         </Button>
       ) : null}
       {isExpanded ? (
-        <Button type="button" variant="secondary" size="sm" fullWidth onClick={() => setVisibleCount(initialCount)}>
+        <Button
+          type="button"
+          variant={actionVariant}
+          size={actionSize}
+          density={actionDensity}
+          fullWidth
+          onClick={() => setVisibleCount(initialCount)}
+        >
           {lessLabel}
         </Button>
       ) : null}
