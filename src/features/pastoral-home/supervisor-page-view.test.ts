@@ -178,7 +178,7 @@ describe("supervisor-page-view", () => {
     const view = buildSupervisorPageView({
       dashboard: dashboard({
         groups: [
-          group({ id: "group-no-presence", hasPresenceData: false }),
+          group({ id: "group-no-presence", hasPresenceData: false, recordedEventsCount: 1 }),
         ],
       }),
       user,
@@ -196,7 +196,7 @@ describe("supervisor-page-view", () => {
     const view = buildSupervisorPageView({
       dashboard: dashboard({
         groups: [
-          group({ id: "group-no-presence", hasPresenceData: false }),
+          group({ id: "group-no-presence", hasPresenceData: false, recordedEventsCount: 1 }),
           group({ id: "group-low-presence", presenceRate: 60 }),
         ],
       }),
@@ -206,6 +206,21 @@ describe("supervisor-page-view", () => {
     expect(view.focusItems.map((item) => item.key)).toEqual(["presence"]);
     expect(view.focusItems[0].tone).toBe("presence");
     expect(view.nextAction?.href).toBe("/celulas?filtro=presenca#celulas-supervisionadas");
+  });
+
+  it("mantém célula nova fora do foco de presença", () => {
+    const view = buildSupervisorPageView({
+      dashboard: dashboard({
+        groups: [
+          group({ id: "group-new", hasPresenceData: false, recordedEventsCount: 0 }),
+        ],
+      }),
+      user,
+    });
+
+    expect(view.navIndicator).toBeUndefined();
+    expect(view.focusItems).toEqual([]);
+    expect(view.nextAction).toBeNull();
   });
 
 });

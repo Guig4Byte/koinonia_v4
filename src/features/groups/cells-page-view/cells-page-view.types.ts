@@ -19,6 +19,7 @@ export type SupervisorGroup = {
   signals: GroupPastoralSignalLike[];
   presenceRate: number;
   hasPresenceData: boolean;
+  recordedEventsCount?: number;
   presenceTrend?: PresenceTrend | null;
   attentionCount: number;
   supportRequestsCount: number;

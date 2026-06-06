@@ -1,6 +1,7 @@
 import {
   groupRiskCount,
   hasLowPresence,
+  hasNoRecentPresence,
 } from "@/features/groups/group-pastoral-priority";
 import type { GroupSectionKey, SupervisorGroup } from "@/features/groups/cells-page-view/cells-page-view.types";
 
@@ -9,7 +10,7 @@ export function groupSectionKey(group: SupervisorGroup): GroupSectionKey {
     return "care";
   }
 
-  if (!group.hasPresenceData || hasLowPresence(group)) {
+  if (hasNoRecentPresence(group) || hasLowPresence(group)) {
     return "presence";
   }
 

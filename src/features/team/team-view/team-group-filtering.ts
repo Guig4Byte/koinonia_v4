@@ -1,5 +1,5 @@
 import { matchesTeamGroupFilter } from "@/features/groups/group-filtering";
-import { groupNeedsTeamAttention } from "@/features/groups/group-pastoral-priority";
+import { groupNeedsTeamAttention, hasNoRecentPresence } from "@/features/groups/group-pastoral-priority";
 import type { TeamFilter } from "@/features/team/team-filters";
 import { FILTER_ALL } from "@/lib/filter-param";
 import { matchesNormalizedQuery } from "@/lib/text";
@@ -96,8 +96,7 @@ export function withFilteredGroups(
       (total, group) => total + group.attentionCount,
       0,
     ),
-    groupsWithoutPresenceCount: groups.filter((group) => !group.hasPresenceData)
-      .length,
+    groupsWithoutPresenceCount: groups.filter(hasNoRecentPresence).length,
     lowPresenceGroupsCount: groups.filter(
       (group) => group.hasPresenceData && group.hasLowPresence,
     ).length,

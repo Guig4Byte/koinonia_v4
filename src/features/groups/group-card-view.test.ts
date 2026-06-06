@@ -8,6 +8,7 @@ import {
 describe("group-card-view", () => {
   it("mantém o rótulo de presença sem dados recentes", () => {
     expect(groupCardPresenceLabel({ hasPresenceData: false, presenceRate: 0 })).toBe("Sem presença recente");
+    expect(groupCardPresenceLabel({ hasPresenceData: false, presenceRate: 0, recordedEventsCount: 0 })).toBe("Sem encontros registrados");
   });
 
   it("marca presença baixa abaixo do limite de risco", () => {

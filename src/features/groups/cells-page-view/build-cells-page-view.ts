@@ -1,6 +1,7 @@
 import {
   groupNeedsPastoralAttention,
   groupRiskCount,
+  hasNoRecentPresence,
 } from "@/features/groups/group-pastoral-priority";
 import type { CellsFilter } from "@/features/groups/cells-page-filters";
 import { FILTER_ALL } from "@/lib/filter-param";
@@ -23,7 +24,7 @@ export function buildCellsPageView({
 }): CellsPageView {
   const groups = filterCellsPageGroups(dashboard.groups, normalizedQuery, filter);
   const groupsNeedingAttentionCount = dashboard.groups.filter(groupNeedsPastoralAttention).length;
-  const groupsWithoutPresenceCount = dashboard.groups.filter((group) => !group.hasPresenceData).length;
+  const groupsWithoutPresenceCount = dashboard.groups.filter(hasNoRecentPresence).length;
   const hasRisk = dashboard.groups.some((group) => groupRiskCount(group) > 0);
   const hasCare = dashboard.groups.some((group) => group.inCareCount > 0);
   const navIndicator = hasRisk ? "risk" : groupsNeedingAttentionCount > 0 ? "attention" : hasCare ? "care" : undefined;

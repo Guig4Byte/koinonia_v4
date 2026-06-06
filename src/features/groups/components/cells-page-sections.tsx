@@ -29,6 +29,7 @@ function CellsGroupCard({ group, sectionKey, activeFilter }: { group: Supervisor
       cardTone={sectionCardTone(sectionKey)}
       href={groupDetailHref(group, activeFilter)}
       hasPresenceData={group.hasPresenceData}
+      recordedEventsCount={group.recordedEventsCount}
       presenceTrend={group.presenceTrend}
     />
   );

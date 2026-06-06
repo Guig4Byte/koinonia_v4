@@ -10,6 +10,7 @@ import type { CardPriorityTone } from "@/lib/card-priority";
 export type GroupCardViewInput = {
   presenceRate: number;
   hasPresenceData: boolean;
+  recordedEventsCount?: number;
   badgeTone?: BadgeTone;
   cardTone?: CardPriorityTone;
 };
@@ -37,8 +38,13 @@ export function resolveGroupCardPriorityTone({
 export function groupCardPresenceLabel({
   hasPresenceData,
   presenceRate,
-}: Pick<GroupCardViewInput, "hasPresenceData" | "presenceRate">): string {
-  if (!hasPresenceData) return "Sem presença recente";
+  recordedEventsCount,
+}: Pick<GroupCardViewInput, "hasPresenceData" | "presenceRate" | "recordedEventsCount">): string {
+  if (!hasPresenceData) {
+    if (recordedEventsCount === 0) return "Sem encontros registrados";
+
+    return "Sem presença recente";
+  }
 
   return presenceRate < DEFAULT_PRESENCE_TONE_THRESHOLDS.risk
     ? "Presença baixa"

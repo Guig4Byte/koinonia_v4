@@ -135,7 +135,7 @@ describe("cells-page-view", () => {
     const urgent = group({ id: "urgent", name: "Célula Urgente", signals: [signal({ severity: SignalSeverity.URGENT })], attentionCount: 1 });
     const inCare = group({ id: "in-care", name: "Célula Vale", inCareCount: 1 });
     const lowPresence = group({ id: "low-presence", name: "Célula Oeste", presenceRate: 62 });
-    const noPresence = group({ id: "no-presence", name: "Célula Sem Registro", hasPresenceData: false });
+    const noPresence = group({ id: "no-presence", name: "Célula Sem Registro", hasPresenceData: false, recordedEventsCount: 1 });
 
     expect(filterCellsPageGroups([regular, attention], "sul", "todos").map((item) => item.id)).toEqual(["attention"]);
     expect(filterCellsPageGroups([regular, attention, support, urgent], "", "atencao").map((item) => item.id)).toEqual(["attention"]);
@@ -147,7 +147,8 @@ describe("cells-page-view", () => {
 
   it("separa células por cuidado, presença e estabilidade", () => {
     expect(groupSectionKey(group({ supportRequestsCount: 1 }))).toBe("care");
-    expect(groupSectionKey(group({ hasPresenceData: false }))).toBe("presence");
+    expect(groupSectionKey(group({ hasPresenceData: false, recordedEventsCount: 1 }))).toBe("presence");
+    expect(groupSectionKey(group({ hasPresenceData: false, recordedEventsCount: 0 }))).toBe("stable");
     expect(groupSectionKey(group())).toBe("stable");
   });
 
@@ -158,7 +159,8 @@ describe("cells-page-view", () => {
     expect(groupDetailNavigationFocus(group({ supportRequestsCount: 1 }))).toBe("apoio");
     expect(groupDetailNavigationFocus(group({ attentionCount: 1 }))).toBe("atencao");
     expect(groupDetailNavigationFocus(group({ inCareCount: 1 }))).toBe("em-cuidado");
-    expect(groupDetailNavigationFocus(group({ hasPresenceData: false }))).toBe("sem-presenca");
+    expect(groupDetailNavigationFocus(group({ hasPresenceData: false, recordedEventsCount: 1 }))).toBe("sem-presenca");
+    expect(groupDetailNavigationFocus(group({ hasPresenceData: false, recordedEventsCount: 0 }))).toBeNull();
     expect(groupDetailNavigationFocus(group({ presenceRate: 60 }))).toBe("presenca-baixa");
     expect(groupDetailNavigationFocus(group())).toBeNull();
     expect(groupDetailNavigationFocus(group({ supportRequestsCount: 1, inCareCount: 1 }), "em-cuidado")).toBe("em-cuidado");
@@ -177,7 +179,8 @@ describe("cells-page-view", () => {
     expect(groupBadge(group({ supportRequestsCount: 2 }))).toEqual({ label: "2 apoios", tone: "support" });
     expect(groupBadge(group({ supportRequestsCount: 1, inCareCount: 2 }), "em-cuidado")).toEqual({ label: "2 em cuidado", tone: "care" });
     expect(groupBadge(group({ inCareCount: 2 }))).toEqual({ label: "2 em cuidado", tone: "care" });
-    expect(groupBadge(group({ hasPresenceData: false }))).toEqual({ label: "Sem presença", tone: "neutral" });
+    expect(groupBadge(group({ hasPresenceData: false, recordedEventsCount: 1 }))).toEqual({ label: "Sem presença", tone: "neutral" });
+    expect(groupBadge(group({ hasPresenceData: false, recordedEventsCount: 0 }))).toBeNull();
     expect(groupBadge(group({ presenceRate: 60 }))).toEqual({ label: "Presença baixa", tone: "warn" });
     expect(groupBadge(group({ signals: [signal({ severity: SignalSeverity.ATTENTION, assignedTo: { role: UserRole.PASTOR } as SupervisorGroup["signals"][number]["assignedTo"] })] }))).toEqual({ label: "1 encaminhado", tone: "risk" });
   });
@@ -203,7 +206,7 @@ describe("cells-page-view", () => {
 
   it("monta visão da página com contadores e indicador de navegação", () => {
     const risky = group({ id: "risk", signals: [signal({ severity: SignalSeverity.URGENT, assignedTo: null })] });
-    const noPresence = group({ id: "no-presence", hasPresenceData: false });
+    const noPresence = group({ id: "no-presence", hasPresenceData: false, recordedEventsCount: 1 });
     const view = buildCellsPageView({ dashboard: dashboard([risky, noPresence]), query: "", normalizedQuery: "", filter: "todos" });
 
     expect(view.groups).toHaveLength(2);

@@ -45,8 +45,12 @@ describe("group-filtering", () => {
       true,
     );
     expect(
-      matchesTeamGroupFilter(group({ hasPresenceData: false }), "sem-presenca"),
+      matchesTeamGroupFilter(group({ hasPresenceData: false, recordedEventsCount: 1 }), "sem-presenca"),
     ).toBe(true);
+    expect(
+      matchesTeamGroupFilter(group({ hasPresenceData: false, recordedEventsCount: 0 }), "sem-presenca"),
+    ).toBe(false);
+    expect(matchesTeamGroupFilter(group({ hasPresenceData: false, recordedEventsCount: 0 }), "estaveis")).toBe(true);
     expect(matchesTeamGroupFilter(group(), "estaveis")).toBe(true);
   });
 });

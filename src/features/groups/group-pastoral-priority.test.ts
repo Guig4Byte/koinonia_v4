@@ -37,7 +37,8 @@ describe("group pastoral priority", () => {
     expect(groupPastoralStatusKey({ supportRequestsCount: 1, attentionCount: 1, hasPresenceData: true, presenceRate: 90 })).toBe("supportRequest");
     expect(groupPastoralStatusKey({ localAttentionCount: 1, hasPresenceData: true, presenceRate: 90 })).toBe("localAttention");
     expect(groupPastoralStatusKey({ hasPresenceData: true, presenceRate: 60 })).toBe("localAttention");
-    expect(groupPastoralStatusKey({ hasPresenceData: false, presenceRate: 0 })).toBe("withoutRecentPresence");
+    expect(groupPastoralStatusKey({ hasPresenceData: false, presenceRate: 0, recordedEventsCount: 1 })).toBe("withoutRecentPresence");
+    expect(groupPastoralStatusKey({ hasPresenceData: false, presenceRate: 0, recordedEventsCount: 0 })).toBe("stable");
     expect(groupPastoralStatusKey({ hasPresenceData: true, presenceRate: 90 })).toBe("stable");
   });
 
@@ -52,6 +53,7 @@ describe("group pastoral priority", () => {
       inCareCount: 1,
       hasPresenceData: false,
       presenceRate: 0,
+      recordedEventsCount: 1,
     });
 
     expect(score).toBe(1200 + 1000 + 2 * 700 + 1 * 400 + 1 * 200 + 25);

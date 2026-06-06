@@ -37,7 +37,10 @@ export type GroupPastoralPriorityInput = {
   inCareCount?: number;
   hasPresenceData: boolean;
   presenceRate: number;
+  recordedEventsCount?: number;
 };
+
+export type GroupPresenceHistoryInput = Pick<GroupPastoralPriorityInput, "hasPresenceData" | "recordedEventsCount">;
 
 function countSignals(signals: GroupPastoralSignalLike[] | undefined, predicate: (signal: GroupPastoralSignalLike) => boolean) {
   return (signals ?? []).filter(predicate).length;
@@ -61,6 +64,18 @@ export function isPastoralCaseSignal(signal: GroupPastoralSignalLike) {
 
 export function hasLowPresence(group: Pick<GroupPastoralPriorityInput, "hasPresenceData" | "presenceRate">) {
   return group.hasPresenceData && group.presenceRate < LOW_PRESENCE_THRESHOLD;
+}
+
+export function hasPresenceHistory(group: GroupPresenceHistoryInput) {
+  if (group.recordedEventsCount !== undefined) {
+    return group.hasPresenceData || group.recordedEventsCount > 0;
+  }
+
+  return true;
+}
+
+export function hasNoRecentPresence(group: GroupPresenceHistoryInput) {
+  return !group.hasPresenceData && hasPresenceHistory(group);
 }
 
 export function groupUrgentCount(group: Pick<GroupPastoralPriorityInput, "signals" | "urgentCount">) {
@@ -98,7 +113,7 @@ export function groupPastoralStatusKey(group: GroupPastoralPriorityInput): Group
   if (groupPastoralCasesCount(group) > 0) return "pastoralCase";
   if (groupSupportRequestsCount(group) > 0) return "supportRequest";
   if (groupLocalAttentionCount(group) > 0 || (group.inCareCount ?? 0) > 0 || hasLowPresence(group)) return "localAttention";
-  if (!group.hasPresenceData) return "withoutRecentPresence";
+  if (hasNoRecentPresence(group)) return "withoutRecentPresence";
 
   return "stable";
 }
@@ -123,7 +138,7 @@ export function groupPastoralPriorityScore(group: GroupPastoralPriorityInput) {
   const localAttention = groupLocalAttentionCount(group);
   const inCare = group.inCareCount ?? 0;
   const lowPresenceScore = hasLowPresence(group) ? LOW_PRESENCE_THRESHOLD - group.presenceRate : 0;
-  const noPresenceScore = group.hasPresenceData ? 0 : NO_RECENT_PRESENCE_PRIORITY;
+  const noPresenceScore = hasNoRecentPresence(group) ? NO_RECENT_PRESENCE_PRIORITY : 0;
 
   return urgent * GROUP_PRIORITY_WEIGHTS.urgent
     + pastoralCases * GROUP_PRIORITY_WEIGHTS.pastoralCase

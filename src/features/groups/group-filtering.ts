@@ -5,6 +5,7 @@ import {
   groupSupportRequestsCount,
   groupUrgentCount,
   hasLowPresence,
+  hasNoRecentPresence,
   type GroupPastoralPriorityInput,
 } from "@/features/groups/group-pastoral-priority";
 import {
@@ -56,8 +57,8 @@ export function matchesSupervisorGroupFilter(
   if (filter === FILTER_ATTENTION) return groupLocalAttentionCount(group) > 0;
   if (filter === FILTER_IN_CARE) return (group.inCareCount ?? 0) > 0;
   if (filter === FILTER_PRESENCE)
-    return !group.hasPresenceData || hasLowPresence(group);
-  if (filter === FILTER_NO_RECENT_PRESENCE) return !group.hasPresenceData;
+    return hasNoRecentPresence(group) || hasLowPresence(group);
+  if (filter === FILTER_NO_RECENT_PRESENCE) return hasNoRecentPresence(group);
   if (filter === FILTER_LOW_PRESENCE) return hasLowPresence(group);
 
   return true;

@@ -118,6 +118,7 @@ describe("team-view", () => {
       groupMatchesFilter(
         teamGroup({
           hasPresenceData: false,
+          recordedEventsCount: 1,
           hasNoPresenceData: true,
           presenceRate: 0,
         }),
@@ -228,8 +229,11 @@ describe("team-view", () => {
         }),
       ),
     ).toBe("warn");
-    expect(groupSignalTone(teamGroup({ hasPresenceData: false }))).toBe(
+    expect(groupSignalTone(teamGroup({ hasPresenceData: false, recordedEventsCount: 1 }))).toBe(
       "neutral",
+    );
+    expect(groupSignalTone(teamGroup({ hasPresenceData: false, recordedEventsCount: 0 }))).toBe(
+      "ok",
     );
     expect(groupSignalTone(teamGroup({ presenceRate: 60 }))).toBe("warn");
     expect(groupSignalTone(teamGroup({ presenceRate: 80 }))).toBe("ok");

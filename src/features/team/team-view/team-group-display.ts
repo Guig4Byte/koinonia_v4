@@ -1,4 +1,4 @@
-import { hasLowPresence } from "@/features/groups/group-pastoral-priority";
+import { hasLowPresence, hasNoRecentPresence } from "@/features/groups/group-pastoral-priority";
 import { weekdayLabel } from "@/features/groups/weekdays";
 import { countLabel } from "@/lib/format";
 import type {
@@ -18,7 +18,7 @@ export function groupSignalTone(group: TeamGroup): TeamSignalTone {
   if (group.supportRequestsCount > 0) return "support";
   if (group.localAttentionCount > 0 || hasLowPresence(group)) return "warn";
   if (group.inCareCount > 0) return "care";
-  if (!group.hasPresenceData) return "neutral";
+  if (hasNoRecentPresence(group)) return "neutral";
   return "ok";
 }
 

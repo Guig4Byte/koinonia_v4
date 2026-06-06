@@ -14,6 +14,7 @@ export function GroupCard({
   presenceRate,
   href,
   hasPresenceData = true,
+  recordedEventsCount,
   badgeLabel,
   badgeTone,
   statusSummary,
@@ -25,6 +26,7 @@ export function GroupCard({
   presenceRate: number;
   href?: string;
   hasPresenceData?: boolean;
+  recordedEventsCount?: number;
   badgeLabel?: string;
   badgeTone?: BadgeTone;
   statusSummary?: string;
@@ -34,6 +36,7 @@ export function GroupCard({
   const view = buildGroupCardView({
     presenceRate,
     hasPresenceData,
+    recordedEventsCount,
     badgeTone,
     cardTone,
   });

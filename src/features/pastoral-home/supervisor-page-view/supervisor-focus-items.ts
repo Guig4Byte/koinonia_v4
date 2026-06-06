@@ -8,6 +8,7 @@ import {
   groupSupportRequestsCount,
   groupUrgentCount,
   hasLowPresence,
+  hasNoRecentPresence,
 } from "@/features/groups/group-pastoral-priority";
 import type { SupervisorFocusItem, SupervisorFocusKey, SupervisorPageInCarePerson, SupervisorPageSignal } from "@/features/pastoral-home/supervisor-page-view/supervisor-page-view.types";
 import {
@@ -28,7 +29,7 @@ function focusCount(groupCount: number, itemCount: number) {
 }
 
 export function hasPresenceFocus(group: SupervisorGroup) {
-  return !group.hasPresenceData || hasLowPresence(group);
+  return hasNoRecentPresence(group) || hasLowPresence(group);
 }
 
 function focusHrefForGroups(groups: SupervisorGroup[], listFilter: CellsFilter, detailFocus?: string) {
@@ -52,7 +53,7 @@ function riskDetailFocus(group: SupervisorGroup | undefined) {
 
 function presenceDetailFocus(group: SupervisorGroup | undefined) {
   if (!group) return undefined;
-  if (!group.hasPresenceData) return FILTER_NO_RECENT_PRESENCE;
+  if (hasNoRecentPresence(group)) return FILTER_NO_RECENT_PRESENCE;
   if (hasLowPresence(group)) return FILTER_LOW_PRESENCE;
   return undefined;
 }

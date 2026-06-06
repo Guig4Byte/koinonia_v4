@@ -111,14 +111,31 @@ describe("dashboard-view", () => {
     expect(team.pastoralCasesCount).toBe(1);
   });
 
-  it("não trata célula sem presença como atenção pastoral", () => {
+  it("mantém célula nova sem histórico como estável", () => {
     const team = buildSupervisorTeam({
       supervisor: { id: "sup-1", name: "Ana", email: "ana@igreja.com" },
       groups: [group({ events: [], memberships: [{ person: { status: PersonStatus.ACTIVE } }] })],
     });
 
+    expect(team.groups[0]?.hasPresenceData).toBe(false);
+    expect(team.groups[0]?.recordedEventsCount).toBe(0);
+    expect(team.groups[0]?.hasNoPresenceData).toBe(false);
+    expect(team.groups[0]?.pastoralPriorityScore).toBe(0);
+    expect(team.groups[0]?.statusLabel).toBe("Estável");
+    expect(team.groupsNeedingAttentionCount).toBe(0);
+  });
+
+  it("mantém retomar contato apenas quando já houve histórico de encontro", () => {
+    const team = buildSupervisorTeam({
+      supervisor: { id: "sup-1", name: "Ana", email: "ana@igreja.com" },
+      groups: [group({ events: [event("COMPLETED", now, [])], memberships: [{ person: { status: PersonStatus.ACTIVE } }] })],
+    });
+
+    expect(team.groups[0]?.hasPresenceData).toBe(false);
+    expect(team.groups[0]?.recordedEventsCount).toBe(1);
     expect(team.groups[0]?.hasNoPresenceData).toBe(true);
     expect(team.groups[0]?.pastoralPriorityScore).toBeGreaterThan(0);
+    expect(team.groups[0]?.statusLabel).toBe("Retomar contato");
     expect(team.groupsNeedingAttentionCount).toBe(0);
   });
 

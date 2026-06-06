@@ -6,6 +6,7 @@ import {
   groupSupportRequestsCount,
   groupUrgentCount,
   hasLowPresence,
+  hasNoRecentPresence,
   groupNeedsTeamAttention,
   teamGroupPastoralPriorityScore,
   teamGroupStatusLabel,
@@ -83,20 +84,21 @@ export function compareSupervisorPriority(left: SupervisorPriorityItem, right: S
   return compareByName(left, right);
 }
 
-export function countGroupsWithoutPresence<T extends { hasPresenceData: boolean }>(groups: T[]) {
-  return groups.filter((group) => !group.hasPresenceData).length;
+export function countGroupsWithoutPresence<T extends { hasPresenceData: boolean; recordedEventsCount?: number }>(groups: T[]) {
+  return groups.filter(hasNoRecentPresence).length;
 }
 
 export function countLowPresenceGroups<T extends { hasPresenceData: boolean; presenceRate: number }>(groups: T[]) {
   return groups.filter(hasLowPresence).length;
 }
 
-function buildGroupPastoralSignalSummary(signals: DashboardSignal[], presence: { hasPresenceData: boolean; presenceRate: number }) {
+function buildGroupPastoralSignalSummary(signals: DashboardSignal[], presence: { hasPresenceData: boolean; presenceRate: number; recordedEventsCount?: number }) {
   const primarySignals = getPrimarySignalsByPerson(signals);
   const countInput = {
     signals: primarySignals,
     hasPresenceData: presence.hasPresenceData,
     presenceRate: presence.presenceRate,
+    recordedEventsCount: presence.recordedEventsCount,
   };
   const urgentCount = groupUrgentCount(countInput);
   const pastoralCasesCount = groupPastoralCasesCount(countInput);
@@ -124,12 +126,13 @@ export function buildPastorTeamGroup(group: DashboardTeamGroup) {
   const signalSummary = buildGroupPastoralSignalSummary(group.signals, presence);
   const inCareCount = group.memberships.filter((membership) => isInCarePerson(membership.person)).length;
   const hasLowPresenceValue = hasLowPresence(presence);
-  const hasNoPresenceData = !presence.hasPresenceData;
+  const hasNoPresenceData = hasNoRecentPresence(presence);
   const pastoralPriorityScore = teamGroupPastoralPriorityScore({
     ...signalSummary,
     inCareCount,
     hasPresenceData: presence.hasPresenceData,
     presenceRate: presence.presenceRate,
+    recordedEventsCount: presence.recordedEventsCount,
   });
   const statusLabel = teamGroupStatusLabel({
     ...signalSummary,
@@ -145,6 +148,7 @@ export function buildPastorTeamGroup(group: DashboardTeamGroup) {
     membersCount: group.memberships.length,
     presenceRate: presence.presenceRate,
     hasPresenceData: presence.hasPresenceData,
+    recordedEventsCount: presence.recordedEventsCount,
     hasLowPresence: hasLowPresenceValue,
     hasNoPresenceData,
     ...signalSummary,
