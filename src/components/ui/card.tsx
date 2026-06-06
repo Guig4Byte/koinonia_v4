@@ -3,13 +3,13 @@ import { cn } from "@/lib/cn";
 import styles from "./card.module.css";
 
 export type CardTone = "default" | "featured" | "inset" | "subtle" | "metric" | "dashed" | "transparent";
-export type CardPadding = "none" | "row" | "sm" | "metric" | "pulse" | "md" | "lg";
+export type CardPadding = "none" | "row" | "sm" | "metric" | "pulse" | "summaryMetrics" | "md" | "lg";
 export type CardRadius = "default" | "sm" | "lg";
 export type CardElevation = "auto" | "none" | "card" | "soft" | "metric";
 export type CardContainment = "visible" | "hidden";
 export type CardMinHeight = "none" | "sm" | "md";
 export type CardStatusTone = "none" | "care" | "warning" | "success" | "danger" | "info";
-export type CardSurface = "default" | "warmGlow" | "accentGlow" | "notice" | "summaryGlow" | "pastoralCue" | "heroGlow";
+export type CardSurface = "default" | "warmGlow" | "accentGlow" | "notice" | "summaryGlow" | "pastoralCue" | "heroGlow" | "accentHalo";
 export type CardAccentTone = "default" | "success" | "warning" | "danger" | "info" | "muted" | "presence" | "support" | "care";
 export type CardLayout = "block" | "media" | "split";
 export type CardTextStyle = "none" | "bodyMuted" | "bodyPrimary" | "noticeStrong";
@@ -48,6 +48,7 @@ const cardPaddingClass: Record<CardPadding, string> = {
   sm: "p-3",
   metric: "px-3.5 py-3",
   pulse: "px-4 py-3.5",
+  summaryMetrics: "px-[0.8rem] py-[0.15rem]",
   md: "p-4",
   lg: "p-5",
 };
@@ -93,6 +94,7 @@ const cardSurfaceClass: Record<CardSurface, string> = {
   summaryGlow: styles.summaryGlow,
   pastoralCue: styles.pastoralCue,
   heroGlow: styles.heroGlow,
+  accentHalo: styles.accentHalo,
 };
 
 const cardAccentToneClass: Record<CardAccentTone, string> = {

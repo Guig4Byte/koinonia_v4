@@ -1,0 +1,16 @@
+.accentStrip {
+  --priority-card-before-display: none;
+  --list-link-card-accent: var(--priority-accent, var(--color-card-decoration));
+  border-color: color-mix(in srgb, var(--list-link-card-accent) 24%, var(--color-border-card));
+  border-left: 4px solid color-mix(in srgb, var(--list-link-card-accent) 82%, var(--color-border-card));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--list-link-card-accent) 8%, transparent), transparent 58%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--list-link-card-accent) 6%), var(--color-bg-card) 64%);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--list-link-card-accent) 7%, transparent),
+    var(--color-shadow-card);
+}
+
+.accentStrip:hover {
+  border-color: color-mix(in srgb, var(--list-link-card-accent) 36%, var(--color-border-card));
+}

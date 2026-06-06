@@ -3,8 +3,10 @@ import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { Badge, type BadgeMaxWidth, type BadgeShape, type BadgeSize, type BadgeTone } from "@/components/ui/badge";
 import { priorityCardClass, type CardPriorityTone } from "@/lib/card-priority";
 import { cn } from "@/lib/cn";
+import styles from "./list-link-card.module.css";
 
 type ListLinkCardSurface = "card" | "plain";
+type ListLinkCardPrioritySurface = "default" | "accentStrip";
 
 type ListLinkCardProps = LinkProps &
   Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps> & {
@@ -19,6 +21,7 @@ type ListLinkCardProps = LinkProps &
     badgeShape?: BadgeShape;
     badgeTruncate?: boolean;
     priorityTone?: CardPriorityTone;
+    prioritySurface?: ListLinkCardPrioritySurface;
     compact?: boolean;
     surface?: ListLinkCardSurface;
     showArrow?: boolean;
@@ -44,6 +47,7 @@ export function ListLinkCard({
   badgeShape,
   badgeTruncate,
   priorityTone,
+  prioritySurface = "default",
   compact = false,
   surface = "card",
   showArrow = true,
@@ -66,6 +70,7 @@ export function ListLinkCard({
           stackTrailingOnMobile && "flex-wrap items-start sm:flex-nowrap sm:items-center",
           compact ? "min-h-[3.75rem] px-3 py-2.5" : "min-h-[4.25rem] px-3 py-3",
           priorityCardClass(priorityTone ?? badgeTone),
+          prioritySurface === "accentStrip" && styles.accentStrip,
         ],
         className,
       )}

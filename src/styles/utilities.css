@@ -111,6 +111,7 @@
 .priority-card {
   --priority-accent: var(--color-brand-accent);
   --priority-soft: transparent;
+  --priority-card-before-display: block;
   position: relative;
   overflow: hidden;
   border-color: color-mix(in srgb, var(--priority-accent) 26%, var(--color-border-card));
@@ -121,6 +122,7 @@
 
 .priority-card::before {
   content: "";
+  display: var(--priority-card-before-display);
   position: absolute;
   inset-block: 0;
   inset-inline-start: 0;

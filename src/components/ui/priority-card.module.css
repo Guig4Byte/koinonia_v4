@@ -119,3 +119,39 @@
     inset 0 1px 0 color-mix(in srgb, var(--surface-alt) 26%, transparent),
     var(--color-shadow-card);
 }
+
+
+.accentStrip,
+.accentHalo,
+.pastoralHero {
+  --priority-card-before-display: none;
+  --priority-card-decor-color: var(--priority-accent, var(--color-card-decoration));
+  position: relative;
+  isolation: isolate;
+  border-color: color-mix(in srgb, var(--priority-card-decor-color) 34%, var(--color-border-card));
+  border-left: 4px solid color-mix(in srgb, var(--priority-card-decor-color) 82%, var(--color-border-card));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--priority-card-decor-color) 8%, transparent), transparent 58%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 93%, var(--priority-card-decor-color) 7%), var(--color-bg-card) 68%);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--priority-card-decor-color) 9%, transparent),
+    var(--color-shadow-card);
+}
+
+.accentHalo {
+  background:
+    radial-gradient(ellipse 86% 64% at 92% 106%, color-mix(in srgb, var(--priority-card-decor-color) 14%, transparent), transparent 72%),
+    linear-gradient(90deg, color-mix(in srgb, var(--priority-card-decor-color) 7%, transparent), transparent 58%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--priority-card-decor-color) 6%), var(--color-bg-card) 68%);
+}
+
+.pastoralHero {
+  border-color: color-mix(in srgb, var(--priority-card-decor-color) 34%, var(--color-border-card));
+  background:
+    radial-gradient(ellipse 92% 64% at 92% 108%, color-mix(in srgb, var(--priority-card-decor-color) 15%, transparent), transparent 70%),
+    linear-gradient(90deg, color-mix(in srgb, var(--priority-card-decor-color) 8%, transparent), transparent 58%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 91%, var(--priority-card-decor-color) 9%), var(--color-bg-card) 68%);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--priority-card-decor-color) 8%, transparent),
+    var(--color-shadow-card);
+}

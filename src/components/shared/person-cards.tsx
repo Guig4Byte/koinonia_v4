@@ -37,6 +37,7 @@ export function PersonMiniCard(props: {
   badgeLabel?: string;
   badgeTone?: BadgeTone;
   cardTone?: CardPriorityTone;
+  prioritySurface?: "default" | "accentStrip";
   ctaLabel?: string;
   compact?: boolean;
   className?: string;
@@ -48,6 +49,7 @@ export function PersonMiniCard(props: {
     badgeLabel,
     badgeTone = "neutral",
     cardTone,
+    prioritySurface = "default",
     ctaLabel = "Acompanhar",
     compact = false,
     className,
@@ -63,6 +65,7 @@ export function PersonMiniCard(props: {
       leading={<Avatar name={name} size={compact ? "sm" : "md"} />}
       trailing={badgeLabel ? <SignalHeartIndicator tone={badgeTone} size={compact ? "sm" : "md"} label={badgeLabel} showLabel={!compact} /> : undefined}
       priorityTone={cardTone ?? badgeTone}
+      prioritySurface={prioritySurface}
       compact={compact}
       className={className}
     />

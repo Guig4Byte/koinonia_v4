@@ -1,16 +1,5 @@
-.overview.overview {
-  --care-overview-decor-color: var(--priority-accent, var(--color-card-decoration));
-
-  border-color: color-mix(in srgb, var(--care-overview-decor-color) 30%, var(--color-border-card));
-  border-left: 4px solid color-mix(in srgb, var(--care-overview-decor-color) 82%, var(--color-border-card));
-  background:
-    radial-gradient(ellipse 86% 64% at 92% 106%, color-mix(in srgb, var(--care-overview-decor-color) 14%, transparent), transparent 72%),
-    linear-gradient(90deg, color-mix(in srgb, var(--care-overview-decor-color) 7%, transparent), transparent 58%),
-    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--care-overview-decor-color) 6%), var(--color-bg-card) 68%);
-}
-
-.overview.overview::before {
-  display: none;
+.overview {
+  --care-overview-decor-color: var(--priority-card-decor-color, var(--priority-accent, var(--color-card-decoration)));
 }
 
 .header {
@@ -85,7 +74,7 @@
 }
 
 @media (max-width: 380px) {
-  .overview.overview {
+  .overview {
     padding-inline: 0.9rem;
   }
 

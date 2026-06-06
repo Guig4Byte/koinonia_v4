@@ -1,35 +1,6 @@
-.summaryCard {
+.summaryCardWrapper {
   --summary-accent: var(--color-card-decoration);
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
   margin-bottom: 1rem;
-  border: 1px solid color-mix(in srgb, var(--summary-accent) 28%, var(--color-border-card));
-  border-left: 4px solid color-mix(in srgb, var(--summary-accent) 86%, var(--color-brand));
-  border-radius: 1.05rem;
-  background:
-    linear-gradient(90deg, color-mix(in srgb, var(--summary-accent) 7%, transparent), transparent 46%),
-    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--summary-accent) 6%), var(--color-bg-card) 64%);
-  padding: 0.15rem 0.8rem;
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--summary-accent) 8%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--surface-alt) 42%, transparent),
-    var(--color-shadow-card);
-}
-
-.summaryCard::before {
-  content: "";
-  position: absolute;
-  inset-block-start: 0.65rem;
-  inset-inline-start: 0.75rem;
-  z-index: -1;
-  width: 4.75rem;
-  height: 4.75rem;
-  border-radius: 999px;
-  background: radial-gradient(circle, color-mix(in srgb, var(--summary-accent) 14%, transparent), transparent 72%);
-  filter: blur(12px);
-  opacity: 0.62;
-  pointer-events: none;
 }
 
 .metricList {
@@ -112,10 +83,6 @@
 }
 
 @media (max-width: 380px) {
-  .summaryCard {
-    padding-inline: 0.7rem;
-  }
-
   .metricRow {
     gap: 0.62rem;
   }

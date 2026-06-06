@@ -6,6 +6,7 @@ import {
   type MetricTone,
   type PresenceTrend,
 } from "@/components/shared/presence-metric";
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/cn";
 import styles from "./group-detail-summary-card.module.css";
 
@@ -78,32 +79,34 @@ export function GroupDetailSummaryCard({ summary }: { summary: GroupDetailSummar
   const presenceTone = summary.presence.hasPresenceData ? summary.presence.tone : "neutral";
 
   return (
-    <section className={styles.summaryCard}>
-      <div className={styles.metricList}>
-        <SummaryMetricRow
-          icon={<UsersRound className={styles.icon} strokeWidth={2.35} absoluteStrokeWidth />}
-          label="Membros acompanhados"
-          detail={summary.members.detail}
-          value={summary.members.count}
-        />
+    <div className={styles.summaryCardWrapper}>
+      <Card as="section" padding="summaryMetrics" radius="default" surface="accentHalo">
+        <div className={styles.metricList}>
+          <SummaryMetricRow
+            icon={<UsersRound className={styles.icon} strokeWidth={2.35} absoluteStrokeWidth />}
+            label="Membros acompanhados"
+            detail={summary.members.detail}
+            value={summary.members.count}
+          />
 
-        <SummaryMetricRow
-          icon={<TrendingUp className={styles.icon} strokeWidth={2.35} absoluteStrokeWidth />}
-          label="Presença recente"
-          detail={summary.presence.detail}
-          value={presenceValue}
-          valueTone={presenceTone}
-          trend={summary.presence.trend}
-        />
+          <SummaryMetricRow
+            icon={<TrendingUp className={styles.icon} strokeWidth={2.35} absoluteStrokeWidth />}
+            label="Presença recente"
+            detail={summary.presence.detail}
+            value={presenceValue}
+            valueTone={presenceTone}
+            trend={summary.presence.trend}
+          />
 
-        <SummaryMetricRow
-          icon={<Heart className={styles.icon} strokeWidth={2.35} absoluteStrokeWidth />}
-          label={summary.attention.label}
-          detail={summary.attention.detail}
-          value={summary.attention.count}
-          valueTone={summary.attention.tone}
-        />
-      </div>
-    </section>
+          <SummaryMetricRow
+            icon={<Heart className={styles.icon} strokeWidth={2.35} absoluteStrokeWidth />}
+            label={summary.attention.label}
+            detail={summary.attention.detail}
+            value={summary.attention.count}
+            valueTone={summary.attention.tone}
+          />
+        </div>
+      </Card>
+    </div>
   );
 }

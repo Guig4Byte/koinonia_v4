@@ -18,7 +18,7 @@ export function CareOverviewCard({
   id?: string;
 }) {
   return (
-    <PriorityCard id={id} as="section" priorityTone={view.priorityTone} radius="lg" className={cn(styles.overview, className)}>
+    <PriorityCard id={id} as="section" priorityTone={view.priorityTone} radius="lg" surface="accentHalo" className={cn(styles.overview, className)}>
       <div className={styles.header}>
         <span className={styles.signalIcon} role="img" aria-label={view.signalLabel}>
           <Heart className={styles.signalIconSvg} aria-hidden="true" />

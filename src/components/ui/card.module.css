@@ -125,3 +125,35 @@
     gap: 0.62rem;
   }
 }
+
+
+.accentHalo {
+  --card-surface-accent: var(--color-card-decoration);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--card-surface-accent) 28%, var(--color-border-card));
+  border-left: 4px solid color-mix(in srgb, var(--card-surface-accent) 86%, var(--color-brand));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--card-surface-accent) 7%, transparent), transparent 46%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--card-surface-accent) 6%), var(--color-bg-card) 64%);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--card-surface-accent) 8%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--surface-alt) 42%, transparent),
+    var(--color-shadow-card);
+}
+
+.accentHalo::before {
+  content: "";
+  position: absolute;
+  inset-block-start: 0.65rem;
+  inset-inline-start: 0.75rem;
+  z-index: -1;
+  width: 4.75rem;
+  height: 4.75rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--card-surface-accent) 14%, transparent), transparent 72%);
+  filter: blur(12px);
+  opacity: 0.62;
+  pointer-events: none;
+}

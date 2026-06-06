@@ -32,15 +32,6 @@ type MemberCardsProps<TMember extends MemberPriorityListItem> = {
   compactForMember?: (member: TMember) => boolean;
 };
 
-function memberCardToneClass(tone: MemberPriorityCardTone | undefined) {
-  if (tone === "risk") return styles.memberCardRisk;
-  if (tone === "warn") return styles.memberCardWarn;
-  if (tone === "care" || tone === "info") return styles.memberCardCare;
-  if (tone === "support") return styles.memberCardSupport;
-  if (tone === "ok" || tone === "stable") return styles.memberCardStable;
-  return styles.memberCardMuted;
-}
-
 function memberCtaLabel(member: MemberPriorityListItem) {
   if (member.priorityRank <= 3) return "Entender motivo";
   if (member.priorityRank === 4) return "Continuar cuidado";
@@ -61,7 +52,6 @@ function MemberCards<TMember extends MemberPriorityListItem>({
     <>
       {members.map((member) => {
         const cardTone = cardToneForMember?.(member) ?? member.cardTone;
-        const effectiveTone = cardTone ?? member.badgeTone;
 
         return (
           <PersonMiniCard
@@ -74,7 +64,7 @@ function MemberCards<TMember extends MemberPriorityListItem>({
             cardTone={cardTone}
             ctaLabel={memberCtaLabel(member)}
             compact={compactForMember?.(member) ?? false}
-            className={cn(styles.memberCard, memberCardToneClass(effectiveTone))}
+            prioritySurface="accentStrip"
           />
         );
       })}

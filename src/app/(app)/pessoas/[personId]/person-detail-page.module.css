@@ -9,23 +9,9 @@
   margin-bottom: 0.75rem;
 }
 
-.personHero.personHero {
-  isolation: isolate;
-  overflow: hidden;
-  border-color: color-mix(in srgb, var(--person-decor-color) 34%, var(--color-border-card));
-  border-left: 4px solid color-mix(in srgb, var(--person-decor-color) 82%, var(--color-border-card));
-  background:
-    radial-gradient(ellipse 92% 64% at 92% 108%, color-mix(in srgb, var(--person-decor-color) 15%, transparent), transparent 70%),
-    linear-gradient(90deg, color-mix(in srgb, var(--person-decor-color) 8%, transparent), transparent 58%),
-    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 91%, var(--person-decor-color) 9%), var(--color-bg-card) 68%);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--person-decor-color) 8%, transparent),
-    var(--color-shadow-card);
+.personHero {
+  --priority-card-decor-color: var(--person-decor-color);
   animation: personHeroPulse 3.2s ease-in-out infinite;
-}
-
-.personHero.personHero::before {
-  display: none;
 }
 
 .personHeroContent {
@@ -120,7 +106,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .personHero.personHero,
+  .personHero,
   .personBadge.personBadge {
     animation: none;
   }
@@ -133,23 +119,6 @@
 
 .anchorSection {
   scroll-margin-top: 1rem;
-}
-
-.signalCard.signalCard {
-  --signal-card-accent: var(--priority-accent, var(--person-decor-color));
-
-  border-color: color-mix(in srgb, var(--signal-card-accent) 34%, var(--color-border-card));
-  border-left: 4px solid color-mix(in srgb, var(--signal-card-accent) 78%, var(--color-border-card));
-  background:
-    linear-gradient(90deg, color-mix(in srgb, var(--signal-card-accent) 8%, transparent), transparent 58%),
-    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 93%, var(--signal-card-accent) 7%), var(--color-bg-card) 68%);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--signal-card-accent) 9%, transparent),
-    var(--color-shadow-card);
-}
-
-.signalCard.signalCard::before {
-  display: none;
 }
 
 .signalHeader {

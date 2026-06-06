@@ -9,7 +9,7 @@ export type PriorityCardElevation = "card" | "none" | "soft";
 export type PriorityCardContainment = "visible" | "hidden";
 export type PriorityCardMinHeight = "none" | "sm" | "md" | "lg";
 export type PriorityCardAccent = "none" | "left";
-export type PriorityCardSurface = "default" | "brand" | "consultation" | "event" | "consultationAccent" | "spotlight" | "spotlightCompact";
+export type PriorityCardSurface = "default" | "brand" | "consultation" | "event" | "consultationAccent" | "spotlight" | "spotlightCompact" | "accentStrip" | "accentHalo" | "pastoralHero";
 export type PriorityCardLayout = "block" | "split";
 export type PriorityCardElement = "article" | "section" | "div";
 
@@ -74,6 +74,9 @@ const priorityCardSurfaceClass: Record<PriorityCardSurface, string> = {
   consultationAccent: styles.consultationAccent,
   spotlight: styles.spotlight,
   spotlightCompact: styles.spotlightCompact,
+  accentStrip: styles.accentStrip,
+  accentHalo: styles.accentHalo,
+  pastoralHero: styles.pastoralHero,
 };
 
 const priorityCardLayoutClass: Record<PriorityCardLayout, string> = {

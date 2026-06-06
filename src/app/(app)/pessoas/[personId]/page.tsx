@@ -30,7 +30,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
       <div className={styles.page}>
         <BackLink href={data.shell.backHref} className={styles.backLink}>{data.shell.backLabel}</BackLink>
 
-        <PriorityCard as="section" priorityTone={data.hero.badge.tone} radius="lg" className={cn("card-hover-lift", styles.personHero)}>
+        <PriorityCard as="section" priorityTone={data.hero.badge.tone} radius="lg" surface="pastoralHero" className={cn("card-hover-lift", styles.personHero)}>
           <div className={styles.personHeroContent}>
             <Avatar name={data.person.fullName} size="xl" className={styles.avatar} />
             <div className={styles.personMain}>
@@ -56,7 +56,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
         <SectionHeader title={data.signals.sectionTitle} detail={data.signals.sectionDetail} />
         <div className={styles.sectionStack}>
           {data.signals.cards.map((signal) => (
-            <PriorityCard key={signal.id} priorityTone={signal.priorityTone} className={cn("card-hover-lift", styles.signalCard)}>
+            <PriorityCard key={signal.id} priorityTone={signal.priorityTone} surface="accentStrip" className="card-hover-lift">
               <div className={styles.signalHeader}>
                 <p className={styles.signalTitle}>{signal.title}</p>
                 <p className={styles.signalMeta}>{signal.meta}</p>
