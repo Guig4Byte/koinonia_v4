@@ -1,4 +1,5 @@
 import { matchesTeamGroupFilter } from "@/features/groups/group-filtering";
+import { groupNeedsTeamAttention } from "@/features/groups/group-pastoral-priority";
 import type { TeamFilter } from "@/features/team/team-filters";
 import { FILTER_ALL } from "@/lib/filter-param";
 import { matchesNormalizedQuery } from "@/lib/text";
@@ -77,9 +78,7 @@ export function withFilteredGroups(
     ...supervisor,
     groups,
     highestPriorityScore: groups[0]?.pastoralPriorityScore ?? 0,
-    groupsNeedingAttentionCount: groups.filter(
-      (group) => group.pastoralPriorityScore > 0,
-    ).length,
+    groupsNeedingAttentionCount: groups.filter(groupNeedsTeamAttention).length,
     pastoralCasesCount: groups.reduce(
       (total, group) => total + group.pastoralCasesCount,
       0,

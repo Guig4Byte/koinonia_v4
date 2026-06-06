@@ -6,6 +6,7 @@ import {
   buildSupervisorTeam,
   comparePastoralPriorityThenName,
   mergeGroupsById,
+  mergeSupervisorTeamsBySharedGroups,
   type DashboardEvent,
 } from "./dashboard-view";
 import type { PermissionUser } from "@/features/permissions/permissions";
@@ -100,14 +101,42 @@ describe("dashboard-view", () => {
       supervisor: { id: "sup-1", name: "Ana", email: "ana@igreja.com" },
       groups: [
         group({ id: "group-1", signals: [signal({ severity: SignalSeverity.URGENT }), signal({ id: "pastoral", personId: "person-2", assignedTo: { role: UserRole.PASTOR } })] }),
-        group({ id: "group-2" }),
+        group({ id: "group-2", memberships: [{ person: { status: PersonStatus.ACTIVE } }] }),
       ],
     });
 
     expect(team.groups).toHaveLength(2);
-    expect(team.groupsNeedingAttentionCount).toBeGreaterThan(0);
+    expect(team.groupsNeedingAttentionCount).toBe(1);
     expect(team.urgentCount).toBe(1);
     expect(team.pastoralCasesCount).toBe(1);
+  });
+
+  it("não trata célula sem presença como atenção pastoral", () => {
+    const team = buildSupervisorTeam({
+      supervisor: { id: "sup-1", name: "Ana", email: "ana@igreja.com" },
+      groups: [group({ events: [], memberships: [{ person: { status: PersonStatus.ACTIVE } }] })],
+    });
+
+    expect(team.groups[0]?.hasNoPresenceData).toBe(true);
+    expect(team.groups[0]?.pastoralPriorityScore).toBeGreaterThan(0);
+    expect(team.groupsNeedingAttentionCount).toBe(0);
+  });
+
+  it("agrupa supervisores que acompanham exatamente as mesmas células", () => {
+    const fernando = buildSupervisorTeam({
+      supervisor: { id: "sup-1", name: "Fernando Cidade", email: "fernando.cidade@koinonia.local" },
+      groups: [group({ id: "semear", name: "Célula Semear" })],
+    });
+    const cibeli = buildSupervisorTeam({
+      supervisor: { id: "sup-2", name: "Cibeli", email: "cibeli@koinonia.local" },
+      groups: [group({ id: "semear", name: "Célula Semear" })],
+    });
+
+    const mergedTeams = mergeSupervisorTeamsBySharedGroups([fernando, cibeli]);
+
+    expect(mergedTeams).toHaveLength(1);
+    expect(mergedTeams[0]?.name).toBe("Fernando Cidade e Cibeli");
+    expect(mergedTeams[0]?.groups).toHaveLength(1);
   });
 
   it("monta item de dashboard escopado com tendência e pedidos de apoio", () => {

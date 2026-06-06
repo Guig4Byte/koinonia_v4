@@ -8,6 +8,7 @@ import {
 import { presenceHistoryEventWhere } from "@/features/events/presence-query";
 import { isPresenceRecordedEvent, summarizeEventsPresence, type PresenceEvent } from "@/features/events/presence-summary";
 import { activeGroupResponsibilityWhere } from "@/features/groups/group-query";
+import { groupNeedsTeamAttention } from "@/features/groups/group-pastoral-priority";
 import { canUsePastorDashboard, type PermissionUser } from "@/features/permissions/permissions";
 import { addBrasiliaDays, endOfBrasiliaWeek, startOfBrasiliaDay, startOfBrasiliaWeek } from "@/lib/brasilia-time";
 import { prisma } from "@/lib/prisma";
@@ -106,7 +107,7 @@ export async function getPastorDashboard(user: PermissionUser) {
   const presence = summarizeEventsPresence(completedEvents);
   const previousMonthPresence = summarizeEventsPresence(previousCompletedEvents);
   const groups = activeGroups.map(buildPastorTeamGroup);
-  const groupsNeedingAttention = groups.filter((group) => group.pastoralPriorityScore > 0);
+  const groupsNeedingAttention = groups.filter(groupNeedsTeamAttention);
 
   return {
     weeklyPresence: {

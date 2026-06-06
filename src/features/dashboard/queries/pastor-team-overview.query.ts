@@ -3,6 +3,7 @@ import {
   buildPastorTeamGroup,
   buildSupervisorTeam,
   comparePastoralPriorityThenName,
+  mergeSupervisorTeamsBySharedGroups,
   compareSupervisorPriority,
   countGroupsWithoutPresence,
   countLowPresenceGroups,
@@ -10,6 +11,7 @@ import {
 } from "@/features/dashboard/dashboard-view";
 import { presenceHistoryEventWhere } from "@/features/events/presence-query";
 import { activeGroupResponsibilityWhere } from "@/features/groups/group-query";
+import { groupNeedsTeamAttention } from "@/features/groups/group-pastoral-priority";
 import { canUsePastorDashboard, type PermissionUser } from "@/features/permissions/permissions";
 import { prisma } from "@/lib/prisma";
 import { pastorTeamGroupInclude } from "@/features/dashboard/queries/pastor-dashboard.shared";
@@ -43,7 +45,7 @@ export async function getPastorTeamOverview(user: PermissionUser) {
           orderBy: { createdAt: "asc" },
         },
       },
-      orderBy: { name: "asc" },
+      orderBy: { createdAt: "asc" },
     }),
     prisma.smallGroup.findMany({
       where: {
@@ -58,13 +60,15 @@ export async function getPastorTeamOverview(user: PermissionUser) {
 
   const toTeamGroup = buildPastorTeamGroup;
 
-  const supervisorTeams = supervisors.map((supervisor) => buildSupervisorTeam({
-    supervisor,
-    groups: supervisor.groupResponsibilities.map((responsibility) => responsibility.group),
-  })).sort(compareSupervisorPriority);
+  const supervisorTeams = mergeSupervisorTeamsBySharedGroups(
+    supervisors.map((supervisor) => buildSupervisorTeam({
+      supervisor,
+      groups: supervisor.groupResponsibilities.map((responsibility) => responsibility.group),
+    })),
+  ).sort(compareSupervisorPriority);
   const unassignedGroups = groupsWithoutSupervisor.map(toTeamGroup).sort(comparePastoralPriorityThenName);
   const allGroups = [...supervisorTeams.flatMap((supervisor) => supervisor.groups), ...unassignedGroups];
-  const priorityGroups = allGroups.filter((group) => group.pastoralPriorityScore > 0);
+  const priorityGroups = allGroups.filter(groupNeedsTeamAttention);
 
   return {
     supervisors: supervisorTeams,

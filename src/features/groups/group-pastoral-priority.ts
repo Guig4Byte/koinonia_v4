@@ -110,6 +110,12 @@ export function groupNeedsPastoralAttention(group: GroupPastoralPriorityInput) {
     || hasLowPresence(group);
 }
 
+export function groupNeedsTeamAttention(group: GroupPastoralPriorityInput) {
+  const statusKey = groupPastoralStatusKey(group);
+
+  return statusKey !== "stable" && statusKey !== "withoutRecentPresence";
+}
+
 export function groupPastoralPriorityScore(group: GroupPastoralPriorityInput) {
   const urgent = groupUrgentCount(group);
   const pastoralCases = groupPastoralCasesCount(group);

@@ -6,6 +6,7 @@ import {
   groupSupportRequestsCount,
   groupUrgentCount,
   hasLowPresence,
+  groupNeedsTeamAttention,
   teamGroupPastoralPriorityScore,
   teamGroupStatusLabel,
 } from "@/features/groups/group-pastoral-priority";
@@ -15,7 +16,7 @@ import { isInCarePerson } from "@/features/people/person-status";
 import { getPastoralSectionSignalsByPerson, isSupportRequest } from "@/features/signals/sections";
 import { getPrimarySignalsByPerson, type AttentionSignalLike } from "@/features/signals/attention";
 import type { PermissionUser } from "@/features/permissions/permissions";
-import { compareByName } from "@/lib/text";
+import { compareByName, comparePtBr } from "@/lib/text";
 
 export { compareByName } from "@/lib/text";
 
@@ -52,6 +53,12 @@ export type SupervisorPriorityItem = {
   name: string;
   highestPriorityScore: number;
   groupsNeedingAttentionCount: number;
+};
+
+type SupervisorProfile = {
+  id: string;
+  name: string;
+  email: string;
 };
 
 export function sumBy<T>(items: T[], selector: (item: T) => number) {
@@ -159,16 +166,30 @@ export function mergeGroupsById<T extends { id: string }>(groups: T[][]) {
   return Array.from(groupsById.values());
 }
 
-export function buildSupervisorTeam<TGroup extends DashboardTeamGroup>({
+function buildSupervisorDisplayName(supervisors: SupervisorProfile[]) {
+  if (supervisors.length <= 1) return supervisors[0]?.name ?? "Supervisor";
+
+  const names = supervisors.map((supervisor) => supervisor.name);
+  const lastName = names.at(-1);
+  const previousNames = names.slice(0, -1);
+
+  return `${previousNames.join(", ")} e ${lastName}`;
+}
+
+function buildSupervisorDisplayEmail(supervisors: SupervisorProfile[]) {
+  return supervisors.map((supervisor) => supervisor.email).join(" / ");
+}
+
+function buildSupervisorTeamFromGroups<TGroup extends DashboardTeamGroup>({
   supervisor,
-  groups: supervisorGroups,
+  supervisorGroups,
 }: {
-  supervisor: { id: string; name: string; email: string };
-  groups: TGroup[];
+  supervisor: SupervisorProfile;
+  supervisorGroups: TGroup[];
 }) {
   const groups = mergeGroupsById([supervisorGroups]).map(buildPastorTeamGroup).sort(comparePastoralPriorityThenName);
   const highestPriorityScore = groups[0]?.pastoralPriorityScore ?? 0;
-  const groupsNeedingAttentionCount = groups.filter((group) => group.pastoralPriorityScore > 0).length;
+  const groupsNeedingAttentionCount = groups.filter(groupNeedsTeamAttention).length;
 
   return {
     id: supervisor.id,
@@ -185,6 +206,61 @@ export function buildSupervisorTeam<TGroup extends DashboardTeamGroup>({
     groupsWithoutPresenceCount: countGroupsWithoutPresence(groups),
     lowPresenceGroupsCount: countLowPresenceGroups(groups),
   };
+}
+
+export function buildSupervisorTeam<TGroup extends DashboardTeamGroup>({
+  supervisor,
+  groups: supervisorGroups,
+}: {
+  supervisor: SupervisorProfile;
+  groups: TGroup[];
+}) {
+  return buildSupervisorTeamFromGroups({ supervisor, supervisorGroups });
+}
+
+export function mergeSupervisorTeamsBySharedGroups<TTeam extends ReturnType<typeof buildSupervisorTeam>>(teams: TTeam[]): TTeam[] {
+  const groupedTeams = new Map<string, TTeam[]>();
+  const ungroupedTeams: TTeam[] = [];
+
+  for (const team of teams) {
+    if (team.groups.length === 0) {
+      ungroupedTeams.push(team);
+      continue;
+    }
+
+    const groupKey = team.groups.map((group) => group.id).sort(comparePtBr).join("|");
+    const currentTeams = groupedTeams.get(groupKey) ?? [];
+    currentTeams.push(team);
+    groupedTeams.set(groupKey, currentTeams);
+  }
+
+  const mergedTeams = Array.from(groupedTeams.values()).map((teamsWithSameGroups) => {
+    if (teamsWithSameGroups.length === 1) return teamsWithSameGroups[0];
+
+    const supervisors = teamsWithSameGroups
+      .map((team) => ({ id: team.id, name: team.name, email: team.email }));
+    const groups = mergeGroupsById(teamsWithSameGroups.map((team) => team.groups)).sort(comparePastoralPriorityThenName);
+    const highestPriorityScore = groups[0]?.pastoralPriorityScore ?? 0;
+
+    return {
+      ...teamsWithSameGroups[0],
+      id: supervisors.map((supervisor) => supervisor.id).join("+"),
+      name: buildSupervisorDisplayName(supervisors),
+      email: buildSupervisorDisplayEmail(supervisors),
+      groups,
+      highestPriorityScore,
+      groupsNeedingAttentionCount: groups.filter(groupNeedsTeamAttention).length,
+      pastoralCasesCount: sumBy(groups, (group) => group.pastoralCasesCount),
+      urgentCount: sumBy(groups, (group) => group.urgentCount),
+      supportRequestsCount: sumBy(groups, (group) => group.supportRequestsCount),
+      localAttentionCount: sumBy(groups, (group) => group.localAttentionCount),
+      attentionCount: sumBy(groups, (group) => group.attentionCount),
+      groupsWithoutPresenceCount: countGroupsWithoutPresence(groups),
+      lowPresenceGroupsCount: countLowPresenceGroups(groups),
+    } as TTeam;
+  });
+
+  return [...mergedTeams, ...ungroupedTeams];
 }
 
 export function buildScopedGroupDashboardItem<TGroup extends DashboardTeamGroup>(group: TGroup, user: PermissionUser, now = new Date()) {
