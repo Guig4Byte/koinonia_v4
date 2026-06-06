@@ -27,6 +27,7 @@ function teamGroup(overrides: Partial<TeamGroup> = {}): TeamGroup {
     leadershipName: "Bruno",
     membersCount: 8,
     presenceRate: 90,
+    recordedEventsCount: 0,
     hasPresenceData: true,
     hasLowPresence: false,
     hasNoPresenceData: false,

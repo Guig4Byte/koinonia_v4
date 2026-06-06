@@ -12,8 +12,8 @@ describe("group-card-view", () => {
   });
 
   it("marca presença baixa abaixo do limite de risco", () => {
-    expect(groupCardPresenceLabel({ hasPresenceData: true, presenceRate: 49 })).toBe("Presença baixa");
-    expect(groupCardPresenceLabel({ hasPresenceData: true, presenceRate: 50 })).toBe("Presença recente");
+    expect(groupCardPresenceLabel({ hasPresenceData: true, presenceRate: 69 })).toBe("Presença baixa");
+    expect(groupCardPresenceLabel({ hasPresenceData: true, presenceRate: 70 })).toBe("Presença recente");
   });
 
   it("só promove tons pastorais relevantes para prioridade visual", () => {
@@ -34,7 +34,7 @@ describe("group-card-view", () => {
       presenceTone: "warn",
       priorityTone: "warn",
       presenceText: "68%",
-      presenceLabel: "Presença recente",
+      presenceLabel: "Presença baixa",
     });
   });
 });

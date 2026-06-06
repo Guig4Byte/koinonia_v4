@@ -2,7 +2,7 @@ import { groupPastoralState } from "@/features/groups/group-pastoral-priority";
 import { buildPastoralPulseMessage } from "@/features/pastoral-pulse";
 import { signalTitleForViewer } from "@/features/signals/display";
 import { splitPastoralSections } from "@/features/signals/sections";
-import { buildSupervisorFocusItems, hasPresenceFocus } from "@/features/pastoral-home/supervisor-page-view/supervisor-focus-items";
+import { buildSupervisorFocusItems } from "@/features/pastoral-home/supervisor-page-view/supervisor-focus-items";
 import { supervisorInCarePeople } from "@/features/pastoral-home/supervisor-page-view/supervisor-in-care";
 import { buildSupervisorNextPastoralAction } from "@/features/pastoral-home/supervisor-page-view/supervisor-next-action";
 import type { SupervisorPageDashboard, SupervisorPageView, SupervisorPageViewer } from "@/features/pastoral-home/supervisor-page-view/supervisor-page-view.types";
