@@ -1,4 +1,4 @@
-import { hasLowPresence, hasNoRecentPresence } from "@/features/groups/group-pastoral-priority";
+import { groupPastoralState } from "@/features/groups/group-pastoral-priority";
 import { weekdayLabel } from "@/features/groups/weekdays";
 import { countLabel } from "@/lib/format";
 import type {
@@ -14,20 +14,23 @@ export function compactGroupSubtitle(group: TeamGroup) {
 }
 
 export function groupSignalTone(group: TeamGroup): TeamSignalTone {
-  if (group.urgentCount > 0 || group.pastoralCasesCount > 0) return "risk";
-  if (group.supportRequestsCount > 0) return "support";
-  if (group.localAttentionCount > 0 || hasLowPresence(group)) return "warn";
-  if (group.inCareCount > 0) return "care";
-  if (hasNoRecentPresence(group)) return "neutral";
+  const state = groupPastoralState(group);
+
+  if (state.urgentCount > 0 || state.pastoralCasesCount > 0) return "risk";
+  if (state.supportRequestsCount > 0) return "support";
+  if (state.localAttentionCount > 0 || state.hasLowPresence) return "warn";
+  if (state.inCareCount > 0) return "care";
+  if (state.hasNoRecentPresence) return "neutral";
   return "ok";
 }
 
 export function groupSignalLabel(group: TeamGroup) {
+  const state = groupPastoralState(group);
   const tone = groupSignalTone(group);
 
-  if (group.urgentCount > 0) return "Urgente";
-  if (group.pastoralCasesCount > 0)
-    return group.pastoralCasesCount === 1 ? "Encaminhada" : "Encaminhadas";
+  if (state.urgentCount > 0) return "Urgente";
+  if (state.pastoralCasesCount > 0)
+    return state.pastoralCasesCount === 1 ? "Encaminhada" : "Encaminhadas";
   if (tone === "support") return "Apoio pedido";
   if (tone === "warn") return "Em atenção";
   if (tone === "care") return "Em cuidado";

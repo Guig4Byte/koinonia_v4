@@ -1,8 +1,4 @@
-import {
-  groupNeedsPastoralAttention,
-  groupRiskCount,
-  hasNoRecentPresence,
-} from "@/features/groups/group-pastoral-priority";
+import { groupPastoralState } from "@/features/groups/group-pastoral-priority";
 import type { CellsFilter } from "@/features/groups/cells-page-filters";
 import { FILTER_ALL } from "@/lib/filter-param";
 import { GROUP_SECTIONS } from "@/features/groups/cells-page-view/cells-page-view.constants";
@@ -23,10 +19,11 @@ export function buildCellsPageView({
   filter: CellsFilter;
 }): CellsPageView {
   const groups = filterCellsPageGroups(dashboard.groups, normalizedQuery, filter);
-  const groupsNeedingAttentionCount = dashboard.groups.filter(groupNeedsPastoralAttention).length;
-  const groupsWithoutPresenceCount = dashboard.groups.filter(hasNoRecentPresence).length;
-  const hasRisk = dashboard.groups.some((group) => groupRiskCount(group) > 0);
-  const hasCare = dashboard.groups.some((group) => group.inCareCount > 0);
+  const groupStates = dashboard.groups.map((group) => groupPastoralState(group));
+  const groupsNeedingAttentionCount = groupStates.filter((state) => state.needsPastoralAttention).length;
+  const groupsWithoutPresenceCount = groupStates.filter((state) => state.hasNoRecentPresence).length;
+  const hasRisk = groupStates.some((state) => state.riskCount > 0);
+  const hasCare = groupStates.some((state) => state.inCareCount > 0);
   const navIndicator = hasRisk ? "risk" : groupsNeedingAttentionCount > 0 ? "attention" : hasCare ? "care" : undefined;
 
   return {

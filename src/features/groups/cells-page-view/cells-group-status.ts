@@ -1,11 +1,4 @@
-import {
-  groupLocalAttentionCount,
-  groupPastoralEscalatedCount,
-  groupSupportRequestsCount,
-  groupUrgentCount,
-  hasLowPresence,
-  hasNoRecentPresence,
-} from "@/features/groups/group-pastoral-priority";
+import { groupPastoralState } from "@/features/groups/group-pastoral-priority";
 import { groupAttentionLabel, type SignalBadge } from "@/features/signals/display";
 import type { CellsFilter } from "@/features/groups/cells-page-filters";
 import type {
@@ -29,40 +22,43 @@ import {
 } from "@/lib/filter-param";
 
 function groupCareStatusSummaries(group: SupervisorGroup): GroupCareStatusSummary[] {
+  const state = groupPastoralState(group);
   const summaries: GroupCareStatusSummary[] = [
-    { key: "urgent", count: groupUrgentCount(group), label: "urgência" },
-    { key: "pastoral", count: groupPastoralEscalatedCount(group), label: "encaminhamento" },
-    { key: "support", count: groupSupportRequestsCount(group), label: "apoio" },
-    { key: "attention", count: groupLocalAttentionCount(group), label: "atenção" },
-    { key: "care", count: group.inCareCount, label: "cuidado" },
-    { key: "noPresence", count: hasNoRecentPresence(group) ? 1 : 0, label: "sem presença recente" },
-    { key: "lowPresence", count: hasLowPresence(group) ? 1 : 0, label: "presença baixa" },
+    { key: "urgent", count: state.urgentCount, label: "urgência" },
+    { key: "pastoral", count: state.pastoralCasesCount, label: "encaminhamento" },
+    { key: "support", count: state.supportRequestsCount, label: "apoio" },
+    { key: "attention", count: state.localAttentionCount, label: "atenção" },
+    { key: "care", count: state.inCareCount, label: "cuidado" },
+    { key: "noPresence", count: state.hasNoRecentPresence ? 1 : 0, label: "sem presença recente" },
+    { key: "lowPresence", count: state.hasLowPresence ? 1 : 0, label: "presença baixa" },
   ];
 
   return summaries.filter((item) => item.count > 0);
 }
 
 function groupPrimaryStatusKey(group: SupervisorGroup, filter: CellsFilter): GroupCareStatusKey | null {
-  if (filter === FILTER_URGENT && groupUrgentCount(group) > 0) return "urgent";
-  if (filter === FILTER_PASTORAL && groupPastoralEscalatedCount(group) > 0) return "pastoral";
-  if (filter === FILTER_SUPPORT && groupSupportRequestsCount(group) > 0) return "support";
-  if (filter === FILTER_ATTENTION && groupLocalAttentionCount(group) > 0) return "attention";
-  if (filter === FILTER_IN_CARE && group.inCareCount > 0) return "care";
-  if (filter === FILTER_NO_RECENT_PRESENCE && hasNoRecentPresence(group)) return "noPresence";
-  if (filter === FILTER_LOW_PRESENCE && hasLowPresence(group)) return "lowPresence";
+  const state = groupPastoralState(group);
+
+  if (filter === FILTER_URGENT && state.urgentCount > 0) return "urgent";
+  if (filter === FILTER_PASTORAL && state.pastoralCasesCount > 0) return "pastoral";
+  if (filter === FILTER_SUPPORT && state.supportRequestsCount > 0) return "support";
+  if (filter === FILTER_ATTENTION && state.localAttentionCount > 0) return "attention";
+  if (filter === FILTER_IN_CARE && state.inCareCount > 0) return "care";
+  if (filter === FILTER_NO_RECENT_PRESENCE && state.hasNoRecentPresence) return "noPresence";
+  if (filter === FILTER_LOW_PRESENCE && state.hasLowPresence) return "lowPresence";
 
   if (filter === FILTER_PRESENCE) {
-    if (hasNoRecentPresence(group)) return "noPresence";
-    if (hasLowPresence(group)) return "lowPresence";
+    if (state.hasNoRecentPresence) return "noPresence";
+    if (state.hasLowPresence) return "lowPresence";
   }
 
-  if (groupUrgentCount(group) > 0) return "urgent";
-  if (groupPastoralEscalatedCount(group) > 0) return "pastoral";
-  if (groupSupportRequestsCount(group) > 0) return "support";
-  if (groupLocalAttentionCount(group) > 0) return "attention";
-  if (hasNoRecentPresence(group)) return "noPresence";
-  if (hasLowPresence(group)) return "lowPresence";
-  if (group.inCareCount > 0) return "care";
+  if (state.urgentCount > 0) return "urgent";
+  if (state.pastoralCasesCount > 0) return "pastoral";
+  if (state.supportRequestsCount > 0) return "support";
+  if (state.localAttentionCount > 0) return "attention";
+  if (state.hasNoRecentPresence) return "noPresence";
+  if (state.hasLowPresence) return "lowPresence";
+  if (state.inCareCount > 0) return "care";
 
   return null;
 }
@@ -83,37 +79,39 @@ export function groupStatusSummary(group: SupervisorGroup, filter: CellsFilter =
 }
 
 function contextualGroupBadge(group: SupervisorGroup, filter: CellsFilter): SignalBadge | null {
-  if (filter === FILTER_URGENT && groupUrgentCount(group) > 0) {
-    return { label: groupAttentionLabel(groupUrgentCount(group), "urgente", "urgentes"), tone: "risk" };
+  const state = groupPastoralState(group);
+
+  if (filter === FILTER_URGENT && state.urgentCount > 0) {
+    return { label: groupAttentionLabel(state.urgentCount, "urgente", "urgentes"), tone: "risk" };
   }
 
-  if (filter === FILTER_PASTORAL && groupPastoralEscalatedCount(group) > 0) {
-    return { label: groupAttentionLabel(groupPastoralEscalatedCount(group), "encaminhado", "encaminhados"), tone: "risk" };
+  if (filter === FILTER_PASTORAL && state.pastoralCasesCount > 0) {
+    return { label: groupAttentionLabel(state.pastoralCasesCount, "encaminhado", "encaminhados"), tone: "risk" };
   }
 
-  if (filter === FILTER_SUPPORT && groupSupportRequestsCount(group) > 0) {
-    return { label: groupAttentionLabel(groupSupportRequestsCount(group), "apoio", "apoios"), tone: "support" };
+  if (filter === FILTER_SUPPORT && state.supportRequestsCount > 0) {
+    return { label: groupAttentionLabel(state.supportRequestsCount, "apoio", "apoios"), tone: "support" };
   }
 
-  if (filter === FILTER_ATTENTION && groupLocalAttentionCount(group) > 0) {
-    return { label: groupAttentionLabel(groupLocalAttentionCount(group), "em atenção", "em atenção"), tone: "warn" };
+  if (filter === FILTER_ATTENTION && state.localAttentionCount > 0) {
+    return { label: groupAttentionLabel(state.localAttentionCount, "em atenção", "em atenção"), tone: "warn" };
   }
 
-  if (filter === FILTER_IN_CARE && group.inCareCount > 0) {
-    return { label: groupAttentionLabel(group.inCareCount, "em cuidado", "em cuidado"), tone: "care" };
+  if (filter === FILTER_IN_CARE && state.inCareCount > 0) {
+    return { label: groupAttentionLabel(state.inCareCount, "em cuidado", "em cuidado"), tone: "care" };
   }
 
-  if (filter === FILTER_NO_RECENT_PRESENCE && hasNoRecentPresence(group)) {
+  if (filter === FILTER_NO_RECENT_PRESENCE && state.hasNoRecentPresence) {
     return { label: NO_RECENT_PRESENCE_BADGE_LABEL, tone: "neutral" };
   }
 
-  if (filter === FILTER_LOW_PRESENCE && hasLowPresence(group)) {
+  if (filter === FILTER_LOW_PRESENCE && state.hasLowPresence) {
     return { label: "Presença baixa", tone: "warn" };
   }
 
   if (filter === FILTER_PRESENCE) {
-    if (hasNoRecentPresence(group)) return { label: NO_RECENT_PRESENCE_BADGE_LABEL, tone: "neutral" };
-    if (hasLowPresence(group)) return { label: "Presença baixa", tone: "warn" };
+    if (state.hasNoRecentPresence) return { label: NO_RECENT_PRESENCE_BADGE_LABEL, tone: "neutral" };
+    if (state.hasLowPresence) return { label: "Presença baixa", tone: "warn" };
   }
 
   return null;
@@ -123,37 +121,34 @@ export function groupBadge(group: SupervisorGroup, filter: CellsFilter = FILTER_
   const contextualBadge = contextualGroupBadge(group, filter);
   if (contextualBadge) return contextualBadge;
 
-  const urgent = groupUrgentCount(group);
-  const escalated = groupPastoralEscalatedCount(group);
+  const state = groupPastoralState(group);
 
-  if (urgent > 0) {
-    return { label: groupAttentionLabel(urgent, "urgente", "urgentes"), tone: "risk" };
+  if (state.urgentCount > 0) {
+    return { label: groupAttentionLabel(state.urgentCount, "urgente", "urgentes"), tone: "risk" };
   }
 
-  if (escalated > 0) {
-    return { label: groupAttentionLabel(escalated, "encaminhado", "encaminhados"), tone: "risk" };
+  if (state.pastoralCasesCount > 0) {
+    return { label: groupAttentionLabel(state.pastoralCasesCount, "encaminhado", "encaminhados"), tone: "risk" };
   }
 
-  if (group.supportRequestsCount > 0) {
-    return { label: groupAttentionLabel(group.supportRequestsCount, "apoio", "apoios"), tone: "support" };
+  if (state.supportRequestsCount > 0) {
+    return { label: groupAttentionLabel(state.supportRequestsCount, "apoio", "apoios"), tone: "support" };
   }
 
-  const localAttention = groupLocalAttentionCount(group);
-
-  if (localAttention > 0) {
-    return { label: groupAttentionLabel(localAttention, "em atenção", "em atenção"), tone: "warn" };
+  if (state.localAttentionCount > 0) {
+    return { label: groupAttentionLabel(state.localAttentionCount, "em atenção", "em atenção"), tone: "warn" };
   }
 
-  if (hasNoRecentPresence(group)) {
+  if (state.hasNoRecentPresence) {
     return { label: NO_RECENT_PRESENCE_BADGE_LABEL, tone: "neutral" };
   }
 
-  if (hasLowPresence(group)) {
+  if (state.hasLowPresence) {
     return { label: "Presença baixa", tone: "warn" };
   }
 
-  if (group.inCareCount > 0) {
-    return { label: groupAttentionLabel(group.inCareCount, "em cuidado", "em cuidado"), tone: "care" };
+  if (state.inCareCount > 0) {
+    return { label: groupAttentionLabel(state.inCareCount, "em cuidado", "em cuidado"), tone: "care" };
   }
 
   return null;

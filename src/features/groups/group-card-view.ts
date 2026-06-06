@@ -1,10 +1,10 @@
 import type { BadgeTone } from "@/components/ui/badge";
 import {
-  DEFAULT_PRESENCE_TONE_THRESHOLDS,
   formatPresenceRate,
   presenceTone,
   type PresenceTone,
 } from "@/features/events/presence-display";
+import { groupPresenceStatusKey } from "@/features/groups/group-pastoral-priority";
 import type { CardPriorityTone } from "@/lib/card-priority";
 
 export type GroupCardViewInput = {
@@ -40,15 +40,13 @@ export function groupCardPresenceLabel({
   presenceRate,
   recordedEventsCount,
 }: Pick<GroupCardViewInput, "hasPresenceData" | "presenceRate" | "recordedEventsCount">): string {
-  if (!hasPresenceData) {
-    if (recordedEventsCount === 0) return "Sem encontros registrados";
+  const presenceStatus = groupPresenceStatusKey({ hasPresenceData, presenceRate, recordedEventsCount });
 
-    return "Sem presença recente";
-  }
+  if (presenceStatus === "newWithoutHistory") return "Sem encontros registrados";
+  if (presenceStatus === "withoutRecentPresence") return "Sem presença recente";
+  if (presenceStatus === "lowPresence") return "Presença baixa";
 
-  return presenceRate < DEFAULT_PRESENCE_TONE_THRESHOLDS.risk
-    ? "Presença baixa"
-    : "Presença recente";
+  return "Presença recente";
 }
 
 export function buildGroupCardView(input: GroupCardViewInput): GroupCardView {

@@ -1,15 +1,6 @@
 import { cellsFilterHref, type CellsFilter } from "@/features/groups/cells-page-filters";
 import type { SupervisorGroup } from "@/features/groups/cells-page-view";
-import {
-  groupLocalAttentionCount,
-  groupPastoralEscalatedCount,
-  groupPastoralPriorityScore,
-  groupRiskCount,
-  groupSupportRequestsCount,
-  groupUrgentCount,
-  hasLowPresence,
-  hasNoRecentPresence,
-} from "@/features/groups/group-pastoral-priority";
+import { groupPastoralState } from "@/features/groups/group-pastoral-priority";
 import type { SupervisorFocusItem, SupervisorFocusKey, SupervisorPageInCarePerson, SupervisorPageSignal } from "@/features/pastoral-home/supervisor-page-view/supervisor-page-view.types";
 import {
   FILTER_ATTENTION,
@@ -29,7 +20,8 @@ function focusCount(groupCount: number, itemCount: number) {
 }
 
 export function hasPresenceFocus(group: SupervisorGroup) {
-  return hasNoRecentPresence(group) || hasLowPresence(group);
+  const state = groupPastoralState(group);
+  return state.hasNoRecentPresence || state.hasLowPresence;
 }
 
 function focusHrefForGroups(groups: SupervisorGroup[], listFilter: CellsFilter, detailFocus?: string) {
@@ -41,20 +33,21 @@ function focusHrefForGroups(groups: SupervisorGroup[], listFilter: CellsFilter, 
 }
 
 function riskListFilter(groups: SupervisorGroup[]): CellsFilter {
-  if (groups.length > 0 && groups.every((group) => groupUrgentCount(group) > 0)) return FILTER_URGENT;
-  if (groups.length > 0 && groups.every((group) => groupPastoralEscalatedCount(group) > 0)) return FILTER_PASTORAL;
+  if (groups.length > 0 && groups.every((group) => groupPastoralState(group).urgentCount > 0)) return FILTER_URGENT;
+  if (groups.length > 0 && groups.every((group) => groupPastoralState(group).pastoralCasesCount > 0)) return FILTER_PASTORAL;
   return FILTER_ATTENTION;
 }
 
 function riskDetailFocus(group: SupervisorGroup | undefined) {
   if (!group) return undefined;
-  return groupUrgentCount(group) > 0 ? FILTER_URGENT : FILTER_PASTORAL;
+  return groupPastoralState(group).urgentCount > 0 ? FILTER_URGENT : FILTER_PASTORAL;
 }
 
 function presenceDetailFocus(group: SupervisorGroup | undefined) {
   if (!group) return undefined;
-  if (hasNoRecentPresence(group)) return FILTER_NO_RECENT_PRESENCE;
-  if (hasLowPresence(group)) return FILTER_LOW_PRESENCE;
+  const state = groupPastoralState(group);
+  if (state.hasNoRecentPresence) return FILTER_NO_RECENT_PRESENCE;
+  if (state.hasLowPresence) return FILTER_LOW_PRESENCE;
   return undefined;
 }
 
@@ -105,12 +98,12 @@ export function buildSupervisorFocusItems({
   attentionSignals: SupervisorPageSignal[];
   inCarePeople: SupervisorPageInCarePerson[];
 }): SupervisorFocusItem[] {
-  const groupsWithPastoralFocus = groups.filter((group) => groupPastoralPriorityScore(group) > 0);
-  const riskGroups = groupsWithPastoralFocus.filter((group) => groupRiskCount(group) > 0);
-  const supportGroups = groupsWithPastoralFocus.filter((group) => groupSupportRequestsCount(group) > 0);
+  const groupsWithPastoralFocus = groups.filter((group) => groupPastoralState(group).priorityScore > 0);
+  const riskGroups = groupsWithPastoralFocus.filter((group) => groupPastoralState(group).riskCount > 0);
+  const supportGroups = groupsWithPastoralFocus.filter((group) => groupPastoralState(group).supportRequestsCount > 0);
   const presenceGroups = groups.filter(hasPresenceFocus);
-  const attentionGroups = groupsWithPastoralFocus.filter((group) => groupLocalAttentionCount(group) > 0);
-  const careGroups = groupsWithPastoralFocus.filter((group) => group.inCareCount > 0);
+  const attentionGroups = groupsWithPastoralFocus.filter((group) => groupPastoralState(group).localAttentionCount > 0);
+  const careGroups = groupsWithPastoralFocus.filter((group) => groupPastoralState(group).inCareCount > 0);
   const urgentCount = focusCount(riskGroups.length, urgentSignals.length);
   const supportCount = focusCount(supportGroups.length, supportSignals.length);
   const presenceCount = presenceGroups.length;

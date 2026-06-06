@@ -1,4 +1,4 @@
-import { groupLocalAttentionCount, groupRiskCount, groupSupportRequestsCount } from "@/features/groups/group-pastoral-priority";
+import { groupPastoralState } from "@/features/groups/group-pastoral-priority";
 import { buildPastoralPulseMessage } from "@/features/pastoral-pulse";
 import { signalTitleForViewer } from "@/features/signals/display";
 import { splitPastoralSections } from "@/features/signals/sections";
@@ -34,15 +34,17 @@ export function buildSupervisorPageView({
   const firstSupportRequest = supportSignals[0];
   const firstAttentionSignal = attentionSignals[0];
   const firstInCarePerson = inCarePeople[0];
-  const hasRisk = urgentSignals.length > 0 || dashboard.groups.some((group) => groupRiskCount(group) > 0);
+  const groupStates = dashboard.groups.map((group) => groupPastoralState(group));
+  const hasRisk = urgentSignals.length > 0 || groupStates.some((state) => state.riskCount > 0);
   const hasAttention = supportSignals.length > 0
     || attentionSignals.length > 0
-    || dashboard.groups.some((group) => (
-      groupSupportRequestsCount(group) > 0
-      || groupLocalAttentionCount(group) > 0
-      || hasPresenceFocus(group)
+    || groupStates.some((state) => (
+      state.supportRequestsCount > 0
+      || state.localAttentionCount > 0
+      || state.hasNoRecentPresence
+      || state.hasLowPresence
     ));
-  const hasCare = inCarePeople.length > 0 || dashboard.groups.some((group) => group.inCareCount > 0);
+  const hasCare = inCarePeople.length > 0 || groupStates.some((state) => state.inCareCount > 0);
 
   return {
     navIndicator: hasRisk ? "risk" : hasAttention ? "attention" : hasCare ? "care" : undefined,

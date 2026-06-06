@@ -3,6 +3,7 @@ import { SignalSeverity, UserRole } from "@/generated/prisma/client";
 import {
   groupPastoralEscalatedCount,
   groupPastoralPriorityScore,
+  groupPastoralState,
   groupPastoralStatusKey,
   groupRiskCount,
   groupSupportRequestsCount,
@@ -40,6 +41,18 @@ describe("group pastoral priority", () => {
     expect(groupPastoralStatusKey({ hasPresenceData: false, presenceRate: 0, recordedEventsCount: 1 })).toBe("withoutRecentPresence");
     expect(groupPastoralStatusKey({ hasPresenceData: false, presenceRate: 0, recordedEventsCount: 0 })).toBe("stable");
     expect(groupPastoralStatusKey({ hasPresenceData: true, presenceRate: 90 })).toBe("stable");
+  });
+
+  it("centraliza célula nova como estado de ciclo neutro", () => {
+    const state = groupPastoralState({ hasPresenceData: false, presenceRate: 0, recordedEventsCount: 0 });
+
+    expect(state.lifecycleKey).toBe("newWithoutHistory");
+    expect(state.statusKey).toBe("stable");
+    expect(state.presenceStatusKey).toBe("newWithoutHistory");
+    expect(state.hasNoRecentPresence).toBe(false);
+    expect(state.needsPastoralAttention).toBe(false);
+    expect(state.needsTeamAttention).toBe(false);
+    expect(state.priorityScore).toBe(0);
   });
 
   it("mantém score pastoral com uma fonte de pesos", () => {

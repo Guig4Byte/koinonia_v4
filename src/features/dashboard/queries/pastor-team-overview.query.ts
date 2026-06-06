@@ -11,7 +11,7 @@ import {
 } from "@/features/dashboard/dashboard-view";
 import { presenceHistoryEventWhere } from "@/features/events/presence-query";
 import { activeGroupResponsibilityWhere } from "@/features/groups/group-query";
-import { groupNeedsTeamAttention } from "@/features/groups/group-pastoral-priority";
+import { groupPastoralState } from "@/features/groups/group-pastoral-priority";
 import { canUsePastorDashboard, type PermissionUser } from "@/features/permissions/permissions";
 import { prisma } from "@/lib/prisma";
 import { pastorTeamGroupInclude } from "@/features/dashboard/queries/pastor-dashboard.shared";
@@ -68,7 +68,7 @@ export async function getPastorTeamOverview(user: PermissionUser) {
   ).sort(compareSupervisorPriority);
   const unassignedGroups = groupsWithoutSupervisor.map(toTeamGroup).sort(comparePastoralPriorityThenName);
   const allGroups = [...supervisorTeams.flatMap((supervisor) => supervisor.groups), ...unassignedGroups];
-  const priorityGroups = allGroups.filter(groupNeedsTeamAttention);
+  const priorityGroups = allGroups.filter((group) => groupPastoralState(group).needsTeamAttention);
 
   return {
     supervisors: supervisorTeams,

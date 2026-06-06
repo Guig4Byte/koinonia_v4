@@ -1,11 +1,5 @@
 import {
-  groupLocalAttentionCount,
-  groupPastoralEscalatedCount,
-  groupPastoralStatusKey,
-  groupSupportRequestsCount,
-  groupUrgentCount,
-  hasLowPresence,
-  hasNoRecentPresence,
+  groupPastoralState,
   type GroupPastoralPriorityInput,
 } from "@/features/groups/group-pastoral-priority";
 import {
@@ -51,15 +45,17 @@ export function matchesSupervisorGroupFilter(
   group: GroupPastoralPriorityInput,
   filter: SupervisorGroupsFilter,
 ) {
-  if (filter === FILTER_URGENT) return groupUrgentCount(group) > 0;
-  if (filter === FILTER_PASTORAL) return groupPastoralEscalatedCount(group) > 0;
-  if (filter === FILTER_SUPPORT) return groupSupportRequestsCount(group) > 0;
-  if (filter === FILTER_ATTENTION) return groupLocalAttentionCount(group) > 0;
-  if (filter === FILTER_IN_CARE) return (group.inCareCount ?? 0) > 0;
+  const state = groupPastoralState(group);
+
+  if (filter === FILTER_URGENT) return state.urgentCount > 0;
+  if (filter === FILTER_PASTORAL) return state.pastoralCasesCount > 0;
+  if (filter === FILTER_SUPPORT) return state.supportRequestsCount > 0;
+  if (filter === FILTER_ATTENTION) return state.localAttentionCount > 0;
+  if (filter === FILTER_IN_CARE) return state.inCareCount > 0;
   if (filter === FILTER_PRESENCE)
-    return hasNoRecentPresence(group) || hasLowPresence(group);
-  if (filter === FILTER_NO_RECENT_PRESENCE) return hasNoRecentPresence(group);
-  if (filter === FILTER_LOW_PRESENCE) return hasLowPresence(group);
+    return state.hasNoRecentPresence || state.hasLowPresence;
+  if (filter === FILTER_NO_RECENT_PRESENCE) return state.hasNoRecentPresence;
+  if (filter === FILTER_LOW_PRESENCE) return state.hasLowPresence;
 
   return true;
 }
@@ -77,15 +73,15 @@ export function matchesTeamGroupFilter(
 ) {
   if (filter === FILTER_ALL) return true;
 
-  const statusKey = groupPastoralStatusKey(group);
+  const state = groupPastoralState(group);
 
-  if (filter === FILTER_URGENT) return statusKey === "urgent";
-  if (filter === FILTER_PASTORAL) return statusKey === "pastoralCase";
-  if (filter === FILTER_SUPPORT) return statusKey === "supportRequest";
-  if (filter === FILTER_ATTENTION) return statusKey === "localAttention";
+  if (filter === FILTER_URGENT) return state.statusKey === "urgent";
+  if (filter === FILTER_PASTORAL) return state.statusKey === "pastoralCase";
+  if (filter === FILTER_SUPPORT) return state.statusKey === "supportRequest";
+  if (filter === FILTER_ATTENTION) return state.statusKey === "localAttention";
   if (filter === FILTER_NO_RECENT_PRESENCE)
-    return statusKey === "withoutRecentPresence";
-  if (filter === FILTER_STABLE) return statusKey === "stable";
+    return state.statusKey === "withoutRecentPresence";
+  if (filter === FILTER_STABLE) return state.statusKey === "stable";
 
   return true;
 }

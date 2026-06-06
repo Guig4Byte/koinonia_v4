@@ -2,7 +2,7 @@ import { countLabel } from "@/lib/format";
 import { FILTER_ATTENTION, FILTER_NO_RECENT_PRESENCE, FILTER_PASTORAL, FILTER_STABLE, FILTER_SUPPORT, FILTER_URGENT } from "@/lib/filter-param";
 import { ROUTES } from "@/lib/routes";
 import {
-  groupPastoralStatusKey,
+  groupPastoralState,
   type GroupPastoralPriorityInput,
   type GroupPastoralStatusKey,
 } from "@/features/groups/group-pastoral-priority";
@@ -95,7 +95,7 @@ const statusToHealthKey: Record<GroupPastoralStatusKey, PastoralHealthKey> = {
 };
 
 export function classifyPastoralHealthGroup(group: PastoralHealthGroup): PastoralHealthKey {
-  return statusToHealthKey[groupPastoralStatusKey(group)];
+  return statusToHealthKey[groupPastoralState(group).statusKey];
 }
 
 function segmentSummary(segment: PastoralHealthSegment) {

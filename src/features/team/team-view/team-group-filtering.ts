@@ -1,5 +1,5 @@
 import { matchesTeamGroupFilter } from "@/features/groups/group-filtering";
-import { groupNeedsTeamAttention, hasNoRecentPresence } from "@/features/groups/group-pastoral-priority";
+import { groupPastoralState } from "@/features/groups/group-pastoral-priority";
 import type { TeamFilter } from "@/features/team/team-filters";
 import { FILTER_ALL } from "@/lib/filter-param";
 import { matchesNormalizedQuery } from "@/lib/text";
@@ -78,7 +78,7 @@ export function withFilteredGroups(
     ...supervisor,
     groups,
     highestPriorityScore: groups[0]?.pastoralPriorityScore ?? 0,
-    groupsNeedingAttentionCount: groups.filter(groupNeedsTeamAttention).length,
+    groupsNeedingAttentionCount: groups.filter((group) => groupPastoralState(group).needsTeamAttention).length,
     pastoralCasesCount: groups.reduce(
       (total, group) => total + group.pastoralCasesCount,
       0,
@@ -96,10 +96,8 @@ export function withFilteredGroups(
       (total, group) => total + group.attentionCount,
       0,
     ),
-    groupsWithoutPresenceCount: groups.filter(hasNoRecentPresence).length,
-    lowPresenceGroupsCount: groups.filter(
-      (group) => group.hasPresenceData && group.hasLowPresence,
-    ).length,
+    groupsWithoutPresenceCount: groups.filter((group) => groupPastoralState(group).hasNoRecentPresence).length,
+    lowPresenceGroupsCount: groups.filter((group) => groupPastoralState(group).hasLowPresence).length,
   };
 }
 
