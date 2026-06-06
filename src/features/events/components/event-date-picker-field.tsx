@@ -1,6 +1,14 @@
 import { CalendarDays } from "lucide-react";
-import { calendarDays, MONTH_NAMES_PT_BR, shiftCalendarMonth, WEEKDAY_LABELS_PT_BR } from "@/features/events/brasilia-date-time";
-import type { CalendarMonth, DateParts } from "@/features/events/brasilia-date-time";
+import {
+  calendarDays,
+  MONTH_NAMES_PT_BR,
+  shiftCalendarMonth,
+  WEEKDAY_LABELS_PT_BR,
+} from "@/features/events/brasilia-date-time";
+import type {
+  CalendarMonth,
+  DateParts,
+} from "@/features/events/brasilia-date-time";
 import { cn } from "@/lib/cn";
 import pickerStyles from "@/components/ui/picker.module.css";
 import styles from "./event-date-picker-field.module.css";
@@ -26,7 +34,7 @@ export function EventDatePickerField({
 }) {
   return (
     <div>
-      <label className="block text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.12em] text-[color:var(--color-text-secondary)]" htmlFor="event-start-date">
+      <label className={pickerStyles.label} htmlFor="event-start-date">
         Nova data
       </label>
       <div className={pickerStyles.field}>
@@ -36,24 +44,40 @@ export function EventDatePickerField({
           onChange={(event) => onChange(event.target.value)}
           inputMode="numeric"
           placeholder="dd/mm/aaaa"
-          className={cn(
-            pickerStyles.input,
-            "min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)] focus:border-[var(--color-focus-ring)]",
-          )}
+          className={cn(pickerStyles.input, pickerStyles.inputControl)}
         />
-        <button type="button" className={pickerStyles.trigger} aria-label="Escolher data" aria-expanded={isOpen} onClick={() => onOpenChange(!isOpen)}>
+        <button
+          type="button"
+          className={pickerStyles.trigger}
+          aria-label="Escolher data"
+          aria-expanded={isOpen}
+          onClick={() => onOpenChange(!isOpen)}
+        >
           <CalendarDays className="h-4 w-4" aria-hidden="true" />
         </button>
         {isOpen ? (
           <div className={pickerStyles.popover}>
             <div className={styles.header}>
-              <button type="button" onClick={() => onCalendarMonthChange(shiftCalendarMonth(calendarMonth, -1))} aria-label="Mês anterior">
+              <button
+                type="button"
+                onClick={() =>
+                  onCalendarMonthChange(shiftCalendarMonth(calendarMonth, -1))
+                }
+                aria-label="Mês anterior"
+              >
                 ‹
               </button>
               <span>
-                {MONTH_NAMES_PT_BR[calendarMonth.monthIndex]} {calendarMonth.year}
+                {MONTH_NAMES_PT_BR[calendarMonth.monthIndex]}{" "}
+                {calendarMonth.year}
               </span>
-              <button type="button" onClick={() => onCalendarMonthChange(shiftCalendarMonth(calendarMonth, 1))} aria-label="Próximo mês">
+              <button
+                type="button"
+                onClick={() =>
+                  onCalendarMonthChange(shiftCalendarMonth(calendarMonth, 1))
+                }
+                aria-label="Próximo mês"
+              >
                 ›
               </button>
             </div>
@@ -66,9 +90,9 @@ export function EventDatePickerField({
               {calendarDays(calendarMonth).map((day, index) => {
                 const selected = Boolean(
                   day &&
-                    selectedDateParts?.year === calendarMonth.year &&
-                    selectedDateParts.month === calendarMonth.monthIndex + 1 &&
-                    selectedDateParts.day === day,
+                  selectedDateParts?.year === calendarMonth.year &&
+                  selectedDateParts.month === calendarMonth.monthIndex + 1 &&
+                  selectedDateParts.day === day,
                 );
 
                 return day ? (
@@ -81,7 +105,11 @@ export function EventDatePickerField({
                     {day}
                   </button>
                 ) : (
-                  <span key={`empty-${index}`} className={styles.empty} aria-hidden="true" />
+                  <span
+                    key={`empty-${index}`}
+                    className={styles.empty}
+                    aria-hidden="true"
+                  />
                 );
               })}
             </div>

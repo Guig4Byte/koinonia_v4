@@ -1,17 +1,103 @@
+.label {
+  margin-bottom: 8px;
+  display: block;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
 .field {
   position: relative;
   margin-top: 8px;
 }
 
+.fieldFlush {
+  margin-top: 0;
+}
+
 .input {
   min-width: 0;
-  padding-left: 14px;
   padding-right: 50px;
+  padding-left: 14px;
   text-align: left;
 }
 
-.input:focus {
+.inputControl,
+.choiceButton {
+  min-height: 44px;
+  width: 100%;
+  border: 1px solid var(--color-border-card);
+  border-radius: 1rem;
+  background: var(--metric-card-bg);
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  outline: none;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    color 150ms ease,
+    opacity 150ms ease;
+}
+
+.inputControl {
+  font-weight: 600;
+}
+
+.inputControl::placeholder {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.inputControl:hover:not(:disabled),
+.choiceButton:hover:not(:disabled) {
+  border-color: var(--color-focus-ring);
+}
+
+.inputControl:focus,
+.inputControl:focus-visible,
+.choiceButton:focus-visible {
+  border-color: var(--color-focus-ring);
+  background: var(--color-bg-card);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-focus-ring) 20%, transparent);
+}
+
+.inputWarm,
+.choiceButtonWarm {
+  min-height: 48px;
+  border-color: color-mix(in srgb, var(--brown-400) 22%, var(--color-border-card));
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--surface-alt) 86%, var(--color-bg-card));
+}
+
+.inputWarm:hover:not(:disabled),
+.choiceButtonWarm:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--brown-400) 54%, var(--color-border-card));
+}
+
+.inputWarm:focus,
+.inputWarm:focus-visible,
+.choiceButtonWarm:focus-visible {
+  border-color: color-mix(in srgb, var(--brown-400) 68%, var(--color-focus-ring));
+  background: var(--color-bg-card);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--brown-400) 14%, transparent);
+}
+
+.inputInvalid,
+.inputInvalid:focus,
+.inputInvalid:focus-visible,
+.choiceButtonInvalid,
+.choiceButtonInvalid:focus-visible {
+  border-color: var(--color-metric-atencoes);
+}
+
+.inputControl:disabled,
+.choiceButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.68;
 }
 
 .trigger {
@@ -35,13 +121,22 @@
   transform: translateY(-50%);
 }
 
-.trigger:hover {
+.triggerWarm {
+  color: color-mix(in srgb, var(--brown-400) 78%, var(--color-text-secondary));
+}
+
+.trigger:hover:not(:disabled) {
   background: var(--color-btn-secondary-bg);
   color: var(--color-brand);
 }
 
-.trigger:active {
+.trigger:active:not(:disabled) {
   transform: translateY(-50%) scale(0.96);
+}
+
+.trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.68;
 }
 
 .popover {
@@ -55,4 +150,115 @@
   background: color-mix(in srgb, var(--color-bg-card) 96%, transparent);
   padding: 12px;
   box-shadow: var(--color-shadow-popover);
+}
+
+.popoverWarm {
+  border-color: color-mix(in srgb, var(--brown-400) 24%, var(--color-border-card));
+  background: color-mix(in srgb, var(--color-bg-card) 96%, var(--surface-alt));
+}
+
+.popoverCompact {
+  width: min(236px, calc(100vw - 48px));
+}
+
+.popoverControlWidth {
+  right: auto;
+  left: 0;
+  width: 100%;
+}
+
+.choiceButton {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0 0.72rem;
+  font-weight: 650;
+  text-align: left;
+}
+
+.choiceIcon,
+.choiceChevron {
+  display: inline-flex;
+  color: var(--color-text-secondary);
+}
+
+.choiceButtonWarm .choiceIcon,
+.choiceButtonWarm .choiceChevron {
+  color: color-mix(in srgb, var(--brown-400) 78%, var(--color-text-secondary));
+}
+
+.choiceIcon > svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.choiceChevron > svg {
+  width: 0.95rem;
+  height: 0.95rem;
+  transition: transform 150ms ease;
+}
+
+.choiceChevronOpen > svg {
+  transform: rotate(180deg);
+}
+
+.choiceValue {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.choiceOptions {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.45rem;
+}
+
+.choiceOption {
+  min-height: 2.25rem;
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  background: transparent;
+  padding: 0 0.65rem;
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  font-weight: 650;
+  text-align: left;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.choiceOption:hover {
+  border-color: color-mix(in srgb, var(--color-focus-ring) 18%, transparent);
+  background: var(--color-btn-secondary-bg);
+  color: var(--color-brand);
+}
+
+.choiceOption:active {
+  transform: scale(0.98);
+}
+
+.choiceOptionWarm:hover {
+  border-color: color-mix(in srgb, var(--brown-400) 18%, transparent);
+  background: color-mix(in srgb, var(--brown-400) 10%, var(--surface-alt));
+  color: var(--color-text-primary);
+}
+
+.choiceOptionSelected,
+.choiceOptionSelected:hover {
+  border-color: var(--color-brand);
+  background: var(--color-brand);
+  color: var(--color-btn-primary-text);
+}
+
+.choiceOptionWarmSelected,
+.choiceOptionWarmSelected:hover {
+  border-color: color-mix(in srgb, var(--brown-400) 42%, var(--color-border-card));
+  background: color-mix(in srgb, var(--brown-400) 24%, var(--surface-alt));
+  color: color-mix(in srgb, var(--brown-400) 78%, var(--color-text-primary));
 }

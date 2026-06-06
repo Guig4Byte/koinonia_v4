@@ -11,8 +11,9 @@ import { cn } from "@/lib/cn";
 import pickerStyles from "./picker.module.css";
 import styles from "./time-picker-field.module.css";
 
-const defaultTimePickerInputClassName =
-  "min-h-11 w-full rounded-2xl border border-[var(--color-border-card)] bg-[var(--metric-card-bg)] text-[length:var(--text-sm)] text-[color:var(--color-text-primary)] outline-none placeholder:text-[color:var(--color-text-muted)] focus:border-[var(--color-focus-ring)]";
+type PickerSurface = "default" | "warm";
+type PickerFieldSpacing = "label" | "none";
+type PickerPopoverWidth = "default" | "compact" | "control";
 
 type TimePickerFieldProps = {
   id: string;
@@ -33,6 +34,9 @@ type TimePickerFieldProps = {
   pattern?: string;
   title?: string;
   maxLength?: number;
+  surface?: PickerSurface;
+  fieldSpacing?: PickerFieldSpacing;
+  popoverWidth?: PickerPopoverWidth;
   className?: string;
   labelClassName?: string;
   fieldClassName?: string;
@@ -64,6 +68,9 @@ export function TimePickerField({
   pattern = CLOCK_TIME_PATTERN,
   title = CLOCK_TIME_FORMAT_HINT,
   maxLength = CLOCK_TIME_INPUT_MAX_LENGTH,
+  surface = "default",
+  fieldSpacing = "label",
+  popoverWidth = "default",
   className,
   labelClassName,
   fieldClassName,
@@ -80,12 +87,16 @@ export function TimePickerField({
   const [internalOpen, setInternalOpen] = useState(false);
   const currentValue = value ?? internalValue;
   const open = isOpen ?? internalOpen;
-  const resolvedTimeOptions = timeOptions ?? getTimeOptions?.(currentValue) ?? [];
+  const resolvedTimeOptions =
+    timeOptions ?? getTimeOptions?.(currentValue) ?? [];
 
-  const updateOpen = useCallback((nextOpen: boolean) => {
-    if (isOpen === undefined) setInternalOpen(nextOpen);
-    onOpenChange?.(nextOpen);
-  }, [isOpen, onOpenChange]);
+  const updateOpen = useCallback(
+    (nextOpen: boolean) => {
+      if (isOpen === undefined) setInternalOpen(nextOpen);
+      onOpenChange?.(nextOpen);
+    },
+    [isOpen, onOpenChange],
+  );
 
   useEffect(() => {
     if (!open) return;
@@ -122,18 +133,19 @@ export function TimePickerField({
   return (
     <div className={className}>
       {label ? (
-        <label
-          className={cn(
-            "block text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.12em] text-[color:var(--color-text-secondary)]",
-            labelClassName,
-          )}
-          htmlFor={id}
-        >
+        <label className={cn(pickerStyles.label, labelClassName)} htmlFor={id}>
           {label}
         </label>
       ) : null}
 
-      <div ref={fieldRef} className={cn(pickerStyles.field, fieldClassName)}>
+      <div
+        ref={fieldRef}
+        className={cn(
+          pickerStyles.field,
+          fieldSpacing === "none" && pickerStyles.fieldFlush,
+          fieldClassName,
+        )}
+      >
         <input
           id={id}
           name={name}
@@ -150,11 +162,20 @@ export function TimePickerField({
           aria-describedby={ariaDescribedBy}
           aria-invalid={ariaInvalid || undefined}
           onChange={(event) => updateValue(event.target.value)}
-          className={cn(pickerStyles.input, defaultTimePickerInputClassName, inputClassName)}
+          className={cn(
+            pickerStyles.input,
+            pickerStyles.inputControl,
+            surface === "warm" && pickerStyles.inputWarm,
+            ariaInvalid && pickerStyles.inputInvalid,
+            inputClassName,
+          )}
         />
         <button
           type="button"
-          className={pickerStyles.trigger}
+          className={cn(
+            pickerStyles.trigger,
+            surface === "warm" && pickerStyles.triggerWarm,
+          )}
           aria-label={ariaLabel}
           aria-expanded={open}
           disabled={disabled}
@@ -163,7 +184,16 @@ export function TimePickerField({
           <Clock3 className="h-4 w-4" aria-hidden="true" />
         </button>
         {open ? (
-          <div className={cn(pickerStyles.popover, styles.popover, popoverClassName)}>
+          <div
+            className={cn(
+              pickerStyles.popover,
+              surface === "warm" && pickerStyles.popoverWarm,
+              popoverWidth === "compact" && pickerStyles.popoverCompact,
+              popoverWidth === "control" && pickerStyles.popoverControlWidth,
+              styles.popover,
+              popoverClassName,
+            )}
+          >
             {resolvedTimeOptions.map((time) => (
               <button
                 key={time}
@@ -171,7 +201,8 @@ export function TimePickerField({
                 className={cn(
                   styles.option,
                   optionClassName,
-                  currentValue === time && cn(styles.optionSelected, selectedOptionClassName),
+                  currentValue === time &&
+                    cn(styles.optionSelected, selectedOptionClassName),
                 )}
                 onClick={() => selectTime(time)}
               >

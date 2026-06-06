@@ -9,7 +9,7 @@ import { cn } from "@/lib/cn";
 import styles from "./field.module.css";
 
 type FieldControlSize = "sm" | "md";
-type FieldControlSurface = "default" | "muted";
+type FieldControlSurface = "default" | "muted" | "warm";
 type FieldLabelVariant = "default" | "item";
 
 type FieldProps = {
@@ -81,6 +81,7 @@ function controlClassName({
     styles.control,
     size === "sm" && styles.controlSm,
     surface === "muted" && styles.controlMuted,
+    surface === "warm" && styles.controlWarm,
     invalid && styles.controlInvalid,
     className,
   );

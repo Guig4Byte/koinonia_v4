@@ -3,8 +3,6 @@
 import { TimePickerField } from "@/components/ui/time-picker-field";
 import { useGroupFormDirty } from "@/features/groups/components/group-form-actions";
 import { timeOptionsWithCurrent } from "@/features/events/time-options";
-import { cn } from "@/lib/cn";
-import styles from "./group-meeting-time-input.module.css";
 
 export function GroupMeetingTimeInput({
   defaultValue,
@@ -27,14 +25,11 @@ export function GroupMeetingTimeInput({
       ariaLabel="Escolher horário padrão"
       ariaDescribedBy={ariaDescribedBy}
       ariaInvalid={ariaInvalid}
+      surface="warm"
+      fieldSpacing="none"
+      popoverWidth="compact"
       onChange={markDirty ?? undefined}
       onTimeSelect={markDirty ?? undefined}
-      fieldClassName={styles.timeField}
-      inputClassName={cn(
-        styles.timeInput,
-        ariaInvalid && "border-[var(--color-metric-atencoes)] focus:border-[var(--color-metric-atencoes)]",
-      )}
-      popoverClassName={styles.timePopover}
     />
   );
 }

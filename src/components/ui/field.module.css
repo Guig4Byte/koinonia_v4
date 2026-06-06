@@ -108,6 +108,23 @@
   background: var(--metric-card-bg);
 }
 
+
+.controlWarm {
+  border-color: color-mix(in srgb, var(--brown-400) 22%, var(--color-border-card));
+  background: color-mix(in srgb, var(--surface-alt) 86%, var(--color-bg-card));
+}
+
+.controlWarm:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--brown-400) 54%, var(--color-border-card));
+}
+
+.controlWarm:focus,
+.controlWarm:focus-visible {
+  border-color: color-mix(in srgb, var(--brown-400) 68%, var(--color-focus-ring));
+  background: var(--color-bg-card);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--brown-400) 14%, transparent);
+}
+
 .controlInvalid {
   border-color: var(--color-metric-atencoes);
 }
