@@ -1,5 +1,11 @@
 import Link from "next/link";
 import { AttendanceStatus } from "@/generated/prisma/client";
+import {
+  attendanceVisualTone,
+  isAbsentAttendanceStatus,
+  isJustifiedAttendanceStatus,
+  type AttendanceVisualTone,
+} from "@/features/events/attendance-display";
 import { Card, type CardAccentTone } from "@/components/ui/card";
 import { DisclosureCard } from "@/components/ui/disclosure-card";
 import {
@@ -12,16 +18,6 @@ import { cn } from "@/lib/cn";
 import { ROUTES } from "@/lib/routes";
 import { initials } from "@/lib/text";
 import styles from "./event-read-only-summary.module.css";
-
-type AttendanceVisualTone = "present" | "absent" | "justified" | "pending" | "visitor";
-
-function attendanceVisualTone(status?: AttendanceStatus | null): AttendanceVisualTone {
-  if (status === AttendanceStatus.PRESENT) return "present";
-  if (status === AttendanceStatus.ABSENT) return "absent";
-  if (status === AttendanceStatus.JUSTIFIED) return "justified";
-  if (status === AttendanceStatus.VISITOR) return "visitor";
-  return "pending";
-}
 
 const attendanceToneClass: Record<AttendanceVisualTone, string> = {
   present: styles.rowPresent,
@@ -140,8 +136,8 @@ export function EventReadOnlySummary({
   }
 
   const attendanceView = buildEventReadOnlyAttendanceView(members);
-  const absentCount = members.filter((member) => member.currentStatus === AttendanceStatus.ABSENT).length;
-  const justifiedCount = members.filter((member) => member.currentStatus === AttendanceStatus.JUSTIFIED).length;
+  const absentCount = members.filter((member) => isAbsentAttendanceStatus(member.currentStatus)).length;
+  const justifiedCount = members.filter((member) => isJustifiedAttendanceStatus(member.currentStatus)).length;
   const presentCount = attendanceView.presentMembers.length;
 
   return (

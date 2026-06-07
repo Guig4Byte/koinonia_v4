@@ -1,6 +1,6 @@
 import { isAfter } from "date-fns";
 import { notFound } from "next/navigation";
-import { AttendanceStatus, MembershipRole } from "@/generated/prisma/client";
+import { MembershipRole } from "@/generated/prisma/client";
 import type { CheckInMode } from "@/features/check-in/check-in-view";
 import { savedPresenceMessage, buildEventDetailState } from "@/features/events/event-detail-view";
 import {
@@ -8,6 +8,7 @@ import {
   eventEffectiveLocation,
   isClosedWithoutPresenceStatus,
 } from "@/features/events/event-display";
+import { isVisitorAttendanceStatus } from "@/features/events/attendance-display";
 import { presenceTone } from "@/features/events/presence-display";
 import { summarizeEventPresence } from "@/features/events/presence-summary";
 import { activeGroupResponsibilitiesScopeInclude } from "@/features/groups/group-query";
@@ -60,7 +61,7 @@ export async function getEventDetailPageData({
   const canEditCheckIn = !isCancelledEvent && canCheckInEvent(user, event);
   const canEditEventDetails = canManageEventDetails(user, event);
   const presence = summarizeEventPresence(event);
-  const visitors = event.attendances.filter((attendance) => attendance.status === AttendanceStatus.VISITOR);
+  const visitors = event.attendances.filter((attendance) => isVisitorAttendanceStatus(attendance.status));
   const completed = presence.hasPresenceData;
   const isFutureEvent = isAfter(event.startsAt, new Date());
   const showCheckInForm = !isCancelledEvent && canEditCheckIn && (!completed || mode === "ajuste");

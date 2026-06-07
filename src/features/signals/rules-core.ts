@@ -1,4 +1,5 @@
 import { AttendanceStatus, SignalSeverity } from "@/generated/prisma/client";
+import { isAbsentAttendanceStatus } from "@/features/events/attendance-display";
 import { SIGNAL_COPY } from "@/features/signals/signal-copy";
 import { formatShortDate } from "@/lib/format";
 
@@ -22,7 +23,7 @@ export function getRecordedStatusesNewestFirst(eventsNewestFirst: AttendanceEven
 export function countConsecutiveAbsences(statusesNewestFirst: AttendanceStatus[]) {
   let count = 0;
   for (const status of statusesNewestFirst) {
-    if (status === AttendanceStatus.ABSENT) count += 1;
+    if (isAbsentAttendanceStatus(status)) count += 1;
     else break;
   }
   return count;
@@ -35,7 +36,7 @@ export function getConsecutiveAbsenceDatesNewestFirst(eventsNewestFirst: Attenda
     const attendance = event.attendances.find((item) => item.personId === personId);
     if (!attendance) continue;
 
-    if (attendance.status !== AttendanceStatus.ABSENT) break;
+    if (!isAbsentAttendanceStatus(attendance.status)) break;
     dates.push(event.startsAt);
   }
 

@@ -1,9 +1,16 @@
 import { AttendanceStatus } from "@/generated/prisma/client";
+import {
+  attendanceTone,
+  isAbsentAttendanceStatus,
+  isJustifiedAttendanceStatus,
+  isPresentAttendanceStatus,
+  type AttendanceTone,
+} from "@/features/events/attendance-display";
 import { closedWithoutPresenceLabel, isClosedWithoutPresenceStatus } from "@/features/events/event-display";
 import { countLabel } from "@/lib/format";
 import { compareByFullName } from "@/lib/text";
 
-export type EventDetailBadgeTone = "neutral" | "ok" | "warn" | "risk" | "info";
+export type EventDetailBadgeTone = AttendanceTone | "neutral";
 
 export type EventReadOnlyMember = {
   personId: string;
@@ -30,10 +37,7 @@ export type EventPastoralCue = {
 };
 
 export function eventAttendanceStatusTone(status?: AttendanceStatus | null): EventDetailBadgeTone {
-  if (status === AttendanceStatus.PRESENT) return "ok";
-  if (status === AttendanceStatus.JUSTIFIED) return "warn";
-  if (status === AttendanceStatus.ABSENT) return "risk";
-  return "info";
+  return attendanceTone(status);
 }
 
 export function sortPeopleByName<T extends { fullName: string }>(people: T[]) {
@@ -93,10 +97,10 @@ export function savedPresenceMessage(value?: string | null) {
 }
 
 export function buildEventReadOnlyAttendanceView(members: EventReadOnlyMember[]) {
-  const absentMembers = sortPeopleByName(members.filter((member) => member.currentStatus === AttendanceStatus.ABSENT));
-  const justifiedMembers = sortPeopleByName(members.filter((member) => member.currentStatus === AttendanceStatus.JUSTIFIED));
+  const absentMembers = sortPeopleByName(members.filter((member) => isAbsentAttendanceStatus(member.currentStatus)));
+  const justifiedMembers = sortPeopleByName(members.filter((member) => isJustifiedAttendanceStatus(member.currentStatus)));
   const pendingMembers = sortPeopleByName(members.filter((member) => !member.currentStatus));
-  const presentMembers = sortPeopleByName(members.filter((member) => member.currentStatus === AttendanceStatus.PRESENT));
+  const presentMembers = sortPeopleByName(members.filter((member) => isPresentAttendanceStatus(member.currentStatus)));
 
   const memberTotalLabel = countLabel(members.length, "membro");
   const memberBreakdownLabel = [

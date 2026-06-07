@@ -1,6 +1,20 @@
-export type MemberAttendanceStatus = "PRESENT" | "ABSENT" | "JUSTIFIED";
-export type AttendanceStatus = MemberAttendanceStatus | "VISITOR";
-export type AttendanceSelection = MemberAttendanceStatus | null;
+import {
+  ATTENDANCE,
+  MEMBER_ATTENDANCE_OPTIONS,
+  memberAttendanceLabels as ATTENDANCE_LABELS,
+  attendanceStatusDescription,
+  isMemberAttendanceStatus,
+  isPresentAttendanceStatus,
+  isAbsentAttendanceStatus,
+  isJustifiedAttendanceStatus,
+  type AttendanceSelection,
+  type AttendanceStatusValue as AttendanceStatus,
+  type MemberAttendanceStatus,
+} from "@/features/events/attendance-display";
+
+export { ATTENDANCE, ATTENDANCE_LABELS, MEMBER_ATTENDANCE_OPTIONS };
+export type { AttendanceSelection, AttendanceStatus, MemberAttendanceStatus };
+
 export type CheckInMode = "register" | "adjust";
 export type CheckInMemberFilter = "all" | "pending" | "present" | "absent" | "justified";
 
@@ -21,21 +35,7 @@ export type CheckInSummary = {
   hasPresenceData: boolean;
 };
 
-export const ATTENDANCE = {
-  PRESENT: "PRESENT",
-  ABSENT: "ABSENT",
-  JUSTIFIED: "JUSTIFIED",
-  VISITOR: "VISITOR",
-} as const satisfies Record<AttendanceStatus, AttendanceStatus>;
-
-export const MEMBER_ATTENDANCE_OPTIONS = [ATTENDANCE.PRESENT, ATTENDANCE.ABSENT, ATTENDANCE.JUSTIFIED] as const;
 export const CHECK_IN_MEMBER_FILTERS = ["all", "pending", "present", "absent", "justified"] as const satisfies readonly CheckInMemberFilter[];
-
-export const ATTENDANCE_LABELS: Record<MemberAttendanceStatus, string> = {
-  PRESENT: "Presente",
-  ABSENT: "Ausente",
-  JUSTIFIED: "Justificou",
-};
 
 const checkInFilterLabels: Record<CheckInMemberFilter, string> = {
   all: "Todos",
@@ -46,16 +46,15 @@ const checkInFilterLabels: Record<CheckInMemberFilter, string> = {
 };
 
 export function getInitialMemberStatus(status?: AttendanceStatus | null): AttendanceSelection {
-  if (!status || status === ATTENDANCE.VISITOR) return null;
-  return status;
+  return isMemberAttendanceStatus(status) ? status : null;
 }
 
 export function summarizeCheckInItems(items: CheckInItem[], visitorTotal: number): CheckInSummary {
   const counts = items.reduce(
     (acc, item) => {
-      if (item.status === ATTENDANCE.PRESENT) acc.present += 1;
-      else if (item.status === ATTENDANCE.JUSTIFIED) acc.justified += 1;
-      else if (item.status === ATTENDANCE.ABSENT) acc.absent += 1;
+      if (isPresentAttendanceStatus(item.status)) acc.present += 1;
+      else if (isJustifiedAttendanceStatus(item.status)) acc.justified += 1;
+      else if (isAbsentAttendanceStatus(item.status)) acc.absent += 1;
       else acc.pending += 1;
 
       return acc;
@@ -116,9 +115,9 @@ export function sortCheckInItemsForDisplay(items: CheckInItem[]) {
 export function filterCheckInItems(items: CheckInItem[], filter: CheckInMemberFilter) {
   if (filter === "all") return items;
   if (filter === "pending") return items.filter((item) => item.status === null);
-  if (filter === "present") return items.filter((item) => item.status === ATTENDANCE.PRESENT);
-  if (filter === "absent") return items.filter((item) => item.status === ATTENDANCE.ABSENT);
-  return items.filter((item) => item.status === ATTENDANCE.JUSTIFIED);
+  if (filter === "present") return items.filter((item) => isPresentAttendanceStatus(item.status));
+  if (filter === "absent") return items.filter((item) => isAbsentAttendanceStatus(item.status));
+  return items.filter((item) => isJustifiedAttendanceStatus(item.status));
 }
 
 export function checkInFilteredEmptyMessage(filter: CheckInMemberFilter) {
@@ -130,9 +129,7 @@ export function checkInFilteredEmptyMessage(filter: CheckInMemberFilter) {
 }
 
 export function checkInStatusOptionDescription(status: MemberAttendanceStatus) {
-  if (status === ATTENDANCE.PRESENT) return "Veio ao encontro.";
-  if (status === ATTENDANCE.ABSENT) return "Não veio e não houve justificativa.";
-  return "Avisou ou explicou a ausência.";
+  return attendanceStatusDescription(status);
 }
 
 export function checkInConfirmationParam(mode: CheckInMode) {

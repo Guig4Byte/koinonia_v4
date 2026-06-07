@@ -1,4 +1,5 @@
 import { AttendanceStatus } from "@/generated/prisma/client";
+import { isPresentAttendanceStatus, isVisitorAttendanceStatus } from "@/features/events/attendance-display";
 import { percent } from "@/lib/format";
 import { hasPresenceRecording, type PresenceRecordingCandidate } from "@/features/events/presence-recording";
 
@@ -44,9 +45,9 @@ export function isPresenceRecordedEvent(event: PresenceEvent) {
 }
 
 export function summarizePresenceFromAttendances(attendances: PresenceAttendance[]): PresenceSummary {
-  const accountable = attendances.filter((attendance) => attendance.status !== AttendanceStatus.VISITOR);
-  const presentCount = accountable.filter((attendance) => attendance.status === AttendanceStatus.PRESENT).length;
-  const visitorCount = attendances.filter((attendance) => attendance.status === AttendanceStatus.VISITOR).length;
+  const accountable = attendances.filter((attendance) => !isVisitorAttendanceStatus(attendance.status));
+  const presentCount = accountable.filter((attendance) => isPresentAttendanceStatus(attendance.status)).length;
+  const visitorCount = attendances.filter((attendance) => isVisitorAttendanceStatus(attendance.status)).length;
   const accountableCount = accountable.length;
 
   return {

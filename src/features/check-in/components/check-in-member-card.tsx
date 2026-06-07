@@ -5,8 +5,8 @@ import { ChevronRight } from "lucide-react";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Button, buttonClassName, type ButtonVariant } from "@/components/ui/button";
 import { StatusCard, type StatusCardTone } from "@/components/ui/status-card";
+import { attendanceVisualTone } from "@/features/events/attendance-display";
 import {
-  ATTENDANCE,
   ATTENDANCE_LABELS,
   MEMBER_ATTENDANCE_OPTIONS,
   checkInStatusOptionDescription,
@@ -19,30 +19,34 @@ import { initials } from "@/lib/text";
 import styles from "./check-in-member-card.module.css";
 
 function memberCardTone(status: AttendanceSelection): StatusCardTone {
-  if (status === ATTENDANCE.PRESENT) return "success";
-  if (status === ATTENDANCE.ABSENT) return "danger";
-  if (status === ATTENDANCE.JUSTIFIED) return "warning";
+  const tone = attendanceVisualTone(status);
+  if (tone === "present") return "success";
+  if (tone === "absent") return "danger";
+  if (tone === "justified") return "warning";
   return "neutral";
 }
 
-function statusButtonVariant(status: MemberAttendanceStatus, selected: boolean): ButtonVariant {
-  if (!selected) return "outline";
-  if (status === ATTENDANCE.PRESENT) return "stableSoft";
-  if (status === ATTENDANCE.ABSENT) return "dangerSoft";
-  return "attentionSoft";
-}
-
-function statusTriggerVariant(status: AttendanceSelection): ButtonVariant {
-  if (status === ATTENDANCE.PRESENT) return "stableSoft";
-  if (status === ATTENDANCE.ABSENT) return "dangerSoft";
-  if (status === ATTENDANCE.JUSTIFIED) return "attentionSoft";
+function attendanceButtonVariant(status: AttendanceSelection): ButtonVariant {
+  const tone = attendanceVisualTone(status);
+  if (tone === "present") return "stableSoft";
+  if (tone === "absent") return "dangerSoft";
+  if (tone === "justified") return "attentionSoft";
   return "outline";
 }
 
+function statusButtonVariant(status: MemberAttendanceStatus, selected: boolean): ButtonVariant {
+  return selected ? attendanceButtonVariant(status) : "outline";
+}
+
+function statusTriggerVariant(status: AttendanceSelection): ButtonVariant {
+  return attendanceButtonVariant(status);
+}
+
 function memberAvatarToneClass(status: AttendanceSelection) {
-  if (status === ATTENDANCE.PRESENT) return styles.memberAvatarPresent;
-  if (status === ATTENDANCE.ABSENT) return styles.memberAvatarAbsent;
-  if (status === ATTENDANCE.JUSTIFIED) return styles.memberAvatarJustified;
+  const tone = attendanceVisualTone(status);
+  if (tone === "present") return styles.memberAvatarPresent;
+  if (tone === "absent") return styles.memberAvatarAbsent;
+  if (tone === "justified") return styles.memberAvatarJustified;
   return styles.memberAvatarPending;
 }
 

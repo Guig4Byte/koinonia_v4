@@ -1,4 +1,7 @@
 import { AttendanceStatus } from "@/generated/prisma/client";
+import { isVisitorAttendanceStatus } from "@/features/events/attendance-display";
+export { attendanceLabels, attendanceTone } from "@/features/events/attendance-display";
+export type { AttendanceTone } from "@/features/events/attendance-display";
 export { careKindLabels } from "@/features/care/care-copy";
 import { presenceTone, type PresenceTone } from "@/features/events/presence-display";
 import {
@@ -11,13 +14,6 @@ import {
 } from "@/features/events/presence-summary";
 export const PERSON_DETAIL_ATTENDANCE_HISTORY_LIMIT = 12;
 export const PERSON_DETAIL_CARE_TOUCH_HISTORY_LIMIT = 24;
-
-export const attendanceLabels: Record<AttendanceStatus, string> = {
-  PRESENT: "Presente",
-  ABSENT: "Ausente",
-  JUSTIFIED: "Justificou",
-  VISITOR: "Visitante",
-};
 
 export type PersonRecentAttendance = {
   id: string;
@@ -39,15 +35,6 @@ export type PersonPresenceView = {
   hasPartialTrendHistory: boolean;
 };
 
-
-export type AttendanceTone = "ok" | "warn" | "risk" | "info";
-
-export function attendanceTone(status?: AttendanceStatus | null): AttendanceTone {
-  if (status === AttendanceStatus.PRESENT) return "ok";
-  if (status === AttendanceStatus.JUSTIFIED) return "warn";
-  if (status === AttendanceStatus.ABSENT) return "risk";
-  return "info";
-}
 
 export function recentPresenceCountLabel(presentCount: number, encountersCount: number) {
   if (encountersCount === 1) {
@@ -77,7 +64,7 @@ export function recentPresenceTrendLabel(trend: PresenceTrend, currentTone: Pres
 }
 
 export function buildPersonPresenceView(attendances: PersonRecentAttendance[]): PersonPresenceView {
-  const accountableAttendances = attendances.filter((attendance) => attendance.status !== AttendanceStatus.VISITOR);
+  const accountableAttendances = attendances.filter((attendance) => !isVisitorAttendanceStatus(attendance.status));
   const { recentItems: recentAttendances, previousItems: previousAttendances } = splitPresenceTrendSamples(accountableAttendances);
   const recentPresence = summarizePresenceFromAttendances(recentAttendances);
   const previousPresence = summarizePresenceFromAttendances(previousAttendances);
