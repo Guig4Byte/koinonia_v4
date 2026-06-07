@@ -38,6 +38,31 @@ export function groupMembersSectionDetail({
   return countLabel(visibleCount, "irmão neste recorte", "irmãos neste recorte");
 }
 
+function groupMemberBuckets(members: MemberDisplay[]) {
+  const signalMembers = members.filter((member) => member.priorityRank <= GROUP_MEMBER_SIGNAL_MAX_PRIORITY);
+  const inCareMembers = members.filter((member) => member.priorityRank === GROUP_MEMBER_IN_CARE_PRIORITY);
+  const activeMembers = members.filter((member) => member.priorityRank > GROUP_MEMBER_IN_CARE_PRIORITY);
+
+  return { signalMembers, inCareMembers, activeMembers };
+}
+
+export function resolveGroupMembersInitialFilter(
+  members: MemberDisplay[],
+  preferredFilter: MembersFilter,
+  isExplicitFilter: boolean,
+): MembersFilter {
+  if (isExplicitFilter) return preferredFilter;
+
+  const { signalMembers, inCareMembers, activeMembers } = groupMemberBuckets(members);
+  if (preferredFilter === FILTER_ATTENTION && signalMembers.length === 0) {
+    if (inCareMembers.length > 0) return FILTER_IN_CARE;
+    if (activeMembers.length > 0) return FILTER_ACTIVE;
+  }
+  if (preferredFilter === FILTER_IN_CARE && inCareMembers.length === 0 && activeMembers.length > 0) return FILTER_ACTIVE;
+
+  return preferredFilter;
+}
+
 export function buildGroupMembersView(
   members: MemberDisplay[],
   activeFilter: MembersFilter,
@@ -48,9 +73,7 @@ export function buildGroupMembersView(
     inCarePriorityRank: GROUP_MEMBER_IN_CARE_PRIORITY,
     activeMinPriorityRank: GROUP_MEMBER_IN_CARE_PRIORITY + 1,
   }));
-  const signalMembers = members.filter((member) => member.priorityRank <= GROUP_MEMBER_SIGNAL_MAX_PRIORITY);
-  const inCareMembers = members.filter((member) => member.priorityRank === GROUP_MEMBER_IN_CARE_PRIORITY);
-  const activeMembers = members.filter((member) => member.priorityRank > GROUP_MEMBER_IN_CARE_PRIORITY);
+  const { signalMembers, inCareMembers, activeMembers } = groupMemberBuckets(members);
   const focusedMembers = activeFocus
     ? members.filter((member) => groupMemberMatchesFocus(member, activeFocus))
     : [];

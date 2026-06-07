@@ -13,6 +13,7 @@ import {
   buildGroupMemberDisplays,
   buildGroupMembersView,
   groupDetailFocusCard,
+  resolveGroupMembersInitialFilter,
   groupPastoralPulse,
   readGroupDetailFocus,
 } from "@/features/groups/group-detail-view";
@@ -42,7 +43,7 @@ type GroupDetailPageOptions = ReturnType<typeof readGroupDetailPageOptions>;
 export function readGroupDetailPageOptions(queryParams: GroupDetailSearchParams) {
   const activeFocus = readGroupDetailFocus(firstParam(queryParams.foco));
   const requestedMembersFilter = firstParam(queryParams.membros);
-  const activeMembersFilter = requestedMembersFilter
+  const preferredMembersFilter = requestedMembersFilter
     ? readMembersFilter(requestedMembersFilter)
     : activeFocus === FILTER_IN_CARE
       ? FILTER_IN_CARE
@@ -50,7 +51,8 @@ export function readGroupDetailPageOptions(queryParams: GroupDetailSearchParams)
 
   return {
     activeFocus,
-    activeMembersFilter,
+    hasRequestedMembersFilter: Boolean(requestedMembersFilter),
+    preferredMembersFilter,
     referenceDate: new Date(),
     savedParam: firstParam(queryParams.salvo),
     sourceParam: firstParam(queryParams.from),
@@ -71,7 +73,8 @@ export function buildGroupDetailPageModel({
 }) {
   const {
     activeFocus,
-    activeMembersFilter,
+    hasRequestedMembersFilter,
+    preferredMembersFilter,
     referenceDate,
     savedParam,
     sourceParam,
@@ -136,6 +139,11 @@ export function buildGroupDetailPageModel({
     attentionSignalsByPersonId,
     viewer: user,
   });
+  const activeMembersFilter = resolveGroupMembersInitialFilter(
+    members,
+    preferredMembersFilter,
+    hasRequestedMembersFilter,
+  );
   const membersView = buildGroupMembersView(members, activeMembersFilter, activeFocus);
   const focusCard = groupDetailFocusCard(activeFocus, membersView.focusedMembersCount);
   const canEditGroup = canManageGroups(user);

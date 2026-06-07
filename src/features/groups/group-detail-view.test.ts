@@ -11,6 +11,7 @@ import {
   groupMemberPriorityRank,
   groupMembersSectionDetail,
   readGroupDetailFocus,
+  resolveGroupMembersInitialFilter,
   type GroupDetailMembership,
   type GroupDetailSignal,
   type GroupDetailViewer,
@@ -186,4 +187,23 @@ describe("buildGroupMembersView", () => {
     expect(view.priorityMembers.map((member) => member.name)).toEqual(["Bruno"]);
     expect(view.inCareMembers.map((member) => member.name)).toEqual(["Ana"]);
   });
+
+  it("abre em sem sinal aberto quando o filtro inicial padrao nao tem sinais", () => {
+    const members = [
+      { membershipId: "1", personId: "1", name: "Ana", badgeLabel: "Sem sinal aberto", badgeTone: "ok" as const, priorityRank: 5, status: PersonStatus.ACTIVE, focusKeys: [] },
+      { membershipId: "2", personId: "2", name: "Bruno", badgeLabel: "Sem sinal aberto", badgeTone: "ok" as const, priorityRank: 5, status: PersonStatus.ACTIVE, focusKeys: [] },
+    ];
+
+    expect(resolveGroupMembersInitialFilter(members, "atencao", false)).toBe("ativos");
+    expect(buildGroupMembersView(members, "ativos").sectionDetail).toBe("2 irmãos neste recorte");
+  });
+
+  it("respeita o filtro sinais quando ele foi pedido explicitamente", () => {
+    const members = [
+      { membershipId: "1", personId: "1", name: "Ana", badgeLabel: "Sem sinal aberto", badgeTone: "ok" as const, priorityRank: 5, status: PersonStatus.ACTIVE, focusKeys: [] },
+    ];
+
+    expect(resolveGroupMembersInitialFilter(members, "atencao", true)).toBe("atencao");
+  });
+
 });
