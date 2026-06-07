@@ -1,8 +1,8 @@
-import { EventType, MembershipRole, SignalStatus } from "@/generated/prisma/client";
+import { EventType, SignalStatus } from "@/generated/prisma/client";
 import { buildScopedGroupDashboardItem } from "@/features/dashboard/dashboard-view";
 import { presenceHistoryEventWhere } from "@/features/events/presence-query";
 import { isPresenceRecordedEvent, PRESENCE_TREND_TOTAL_SAMPLE_COUNT, summarizeEventsPresence } from "@/features/events/presence-summary";
-import { activeGroupResponsibilitiesInclude } from "@/features/groups/group-query";
+import { activeGroupResponsibilitiesInclude, activeNonVisitorMembershipWhere } from "@/features/groups/group-query";
 import { getVisibleEventWhere, getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { getPastoralSectionSignalsByPerson } from "@/features/signals/sections";
 import { addBrasiliaDays, endOfBrasiliaWeek, startOfBrasiliaDay, startOfBrasiliaWeek } from "@/lib/brasilia-time";
@@ -20,7 +20,7 @@ export async function getGroupScopedDashboard(user: PermissionUser) {
       where: getVisibleGroupWhere(user),
       include: {
         responsibilities: activeGroupResponsibilitiesInclude,
-        memberships: { where: { leftAt: null, role: { not: MembershipRole.VISITOR } }, include: { person: true } },
+        memberships: { where: activeNonVisitorMembershipWhere, include: { person: true } },
         signals: { where: { status: SignalStatus.OPEN }, include: { person: true, assignedTo: true } },
         events: {
           where: presenceHistoryWhere,

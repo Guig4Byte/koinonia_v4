@@ -1,6 +1,5 @@
 import { isAfter } from "date-fns";
 import { notFound } from "next/navigation";
-import { MembershipRole } from "@/generated/prisma/client";
 import type { CheckInMode } from "@/features/check-in/check-in-view";
 import { savedPresenceMessage, buildEventDetailState } from "@/features/events/event-detail-view";
 import {
@@ -11,7 +10,7 @@ import {
 import { isVisitorAttendanceStatus } from "@/features/events/attendance-display";
 import { presenceTone } from "@/features/events/presence-display";
 import { summarizeEventPresence } from "@/features/events/presence-summary";
-import { activeGroupResponsibilitiesScopeInclude } from "@/features/groups/group-query";
+import { activeGroupResponsibilitiesScopeInclude, activeNonVisitorMembershipWhere } from "@/features/groups/group-query";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { leaderCellHrefFromGroup } from "@/features/navigation/leader-cell-nav";
 import {
@@ -45,7 +44,7 @@ export async function getEventDetailPageData({
         include: {
           responsibilities: activeGroupResponsibilitiesScopeInclude,
           memberships: {
-            where: { leftAt: null, role: { not: MembershipRole.VISITOR } },
+            where: activeNonVisitorMembershipWhere,
             include: { person: true },
           },
         },

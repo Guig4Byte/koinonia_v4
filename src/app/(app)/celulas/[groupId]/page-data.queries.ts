@@ -1,7 +1,7 @@
-import { EventType, MembershipRole, SignalStatus } from "@/generated/prisma/client";
+import { EventType, SignalStatus } from "@/generated/prisma/client";
 import { presenceHistoryEventWhere } from "@/features/events/presence-query";
 import { GROUP_DETAIL_EVENT_HISTORY_LIMIT } from "@/features/groups/group-detail-view";
-import { activeGroupResponsibilitiesInclude } from "@/features/groups/group-query";
+import { activeGroupResponsibilitiesInclude, activeNonVisitorMembershipWhere } from "@/features/groups/group-query";
 import { prisma } from "@/lib/prisma";
 
 export async function getGroupDetailRecord(groupId: string) {
@@ -10,7 +10,7 @@ export async function getGroupDetailRecord(groupId: string) {
     include: {
       responsibilities: activeGroupResponsibilitiesInclude,
       memberships: {
-        where: { leftAt: null, role: { not: MembershipRole.VISITOR } },
+        where: activeNonVisitorMembershipWhere,
         include: { person: true },
         orderBy: { person: { fullName: "asc" } },
       },

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { validateMemberCheckInPayload } from "@/features/check-in/check-in-validation";
 import { validateNewVisitors } from "@/features/check-in/visitor-validation";
-import { activeGroupResponsibilitiesScopeInclude } from "@/features/groups/group-query";
+import { activeGroupResponsibilitiesScopeInclude, activeNonVisitorGroupMembershipWhere } from "@/features/groups/group-query";
 import { canCheckInEvent, type PermissionUser } from "@/features/permissions/permissions";
 import { recalculateAttendanceSignalsForGroup } from "@/features/signals/rules";
 import { AttendanceStatus, EventStatus, MembershipRole, PersonStatus, SignalStatus } from "@/generated/prisma/client";
@@ -88,7 +88,7 @@ export async function registerEventCheckIn(
   }
 
   const memberships = await prisma.groupMembership.findMany({
-    where: { groupId, leftAt: null, role: { not: MembershipRole.VISITOR } },
+    where: activeNonVisitorGroupMembershipWhere(groupId),
     select: { personId: true },
   });
 

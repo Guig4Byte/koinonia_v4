@@ -1,6 +1,7 @@
-import { MembershipRole, PersonStatus, SignalSeverity, SignalSource, SignalStatus } from "@/generated/prisma/client";
+import { PersonStatus, SignalSeverity, SignalSource, SignalStatus } from "@/generated/prisma/client";
 import { presenceHistoryEventWhere } from "@/features/events/presence-query";
 import { ATTENTION_ELIGIBLE_PERSON_STATUSES } from "@/features/people/person-status";
+import { activeNonVisitorMembershipWhere } from "@/features/groups/group-query";
 import { prisma } from "@/lib/prisma";
 import {
   countConsecutiveAbsences,
@@ -68,7 +69,7 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string, db: 
       id: true,
       churchId: true,
       memberships: {
-        where: { leftAt: null, role: { not: MembershipRole.VISITOR } },
+        where: activeNonVisitorMembershipWhere,
         select: { personId: true },
       },
       events: {
