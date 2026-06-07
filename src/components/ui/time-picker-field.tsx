@@ -166,6 +166,7 @@ export function TimePickerField({
             pickerStyles.input,
             pickerStyles.inputControl,
             surface === "warm" && pickerStyles.inputWarm,
+            surface === "warm" && pickerStyles.inputWithLeadingIcon,
             ariaInvalid && pickerStyles.inputInvalid,
             inputClassName,
           )}

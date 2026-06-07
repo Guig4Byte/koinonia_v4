@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Card } from "@/components/ui/card";
 import { InputField } from "@/components/ui/field";
+import { FormHero } from "@/components/ui/form-hero";
+import { UserAccessHeroIcon } from "@/components/ui/form-hero-icons";
 import {
   FormFieldStack,
   FormSection,
@@ -91,15 +93,12 @@ export function UserForm({
         ← {backLabel}
       </ButtonLink>
 
-      <Card padding="sm" radius="lg" surface="heroGlow">
-        <p className="k-eyebrow mb-2">Acesso</p>
-        <h2 className="font-serif-display text-[length:var(--text-2xl)] font-semibold leading-tight text-[color:var(--color-text-primary)]">
-          {title}
-        </h2>
-        <p className="mt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">
-          {description}
-        </p>
-      </Card>
+      <FormHero
+        eyebrow="Acesso"
+        title={title}
+        description={description}
+        icon={<UserAccessHeroIcon />}
+      />
 
       {errorMessage ? <InfoCard tone="error">{errorMessage}</InfoCard> : null}
       {selfEditing ? (

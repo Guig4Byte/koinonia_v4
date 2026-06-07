@@ -40,7 +40,41 @@
 
 .heroTitleBlock {
   min-width: 0;
-  flex: 1 1 auto;
+  max-width: 32rem;
+  margin-top: 0.4rem;
+}
+
+.heroAction {
+  flex-shrink: 0;
+}
+
+.heroDetails {
+  display: grid;
+  gap: 0.15rem;
+  margin-top: 0.5rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+@media (min-width: 375px) {
+  .heroHeader {
+    display: block;
+  }
+
+  .heroAction {
+    position: absolute;
+    inset-block-start: 14px;
+    inset-inline-end: 14px;
+  }
+
+  .heroTitleBlock {
+    margin-top: 0.3rem;
+  }
+
+  .heroTitle {
+    padding-inline-end: 7.15rem;
+  }
 }
 
 .heroChip {
@@ -62,5 +96,9 @@
 @media (max-width: 420px) {
   .heroHeader {
     gap: 0.65rem;
+  }
+
+  .heroTitleBlock {
+    margin-top: 0.35rem;
   }
 }

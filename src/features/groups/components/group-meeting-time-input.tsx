@@ -1,7 +1,6 @@
 "use client";
 
 import { TimePickerField } from "@/components/ui/time-picker-field";
-import { useGroupFormDirty } from "@/features/groups/components/group-form-actions";
 import { timeOptionsWithCurrent } from "@/features/events/time-options";
 
 export function GroupMeetingTimeInput({
@@ -13,8 +12,6 @@ export function GroupMeetingTimeInput({
   ariaDescribedBy?: string;
   ariaInvalid?: boolean;
 }) {
-  const markDirty = useGroupFormDirty();
-
   return (
     <TimePickerField
       id="meeting-time"
@@ -28,8 +25,6 @@ export function GroupMeetingTimeInput({
       surface="warm"
       fieldSpacing="none"
       popoverWidth="compact"
-      onChange={markDirty ?? undefined}
-      onTimeSelect={markDirty ?? undefined}
     />
   );
 }

@@ -45,6 +45,7 @@ type InputFieldProps = SharedFieldControlProps &
   Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "id" | "size"> & {
     id: string;
     inputClassName?: string;
+    startIcon?: ReactNode;
   };
 
 type SelectFieldProps = SharedFieldControlProps &
@@ -168,6 +169,7 @@ export function InputField({
   labelVariant,
   labelHidden,
   inputClassName,
+  startIcon,
   size = "md",
   surface = "default",
   required,
@@ -192,14 +194,35 @@ export function InputField({
       labelVariant={labelVariant}
       labelHidden={labelHidden}
     >
-      <input
-        id={id}
-        required={required}
-        aria-describedby={describedByIds(ariaDescribedBy, descriptionId, error ? errorId : undefined)}
-        aria-invalid={invalid || undefined}
-        className={controlClassName({ className: inputClassName, invalid, size, surface })}
-        {...props}
-      />
+      {startIcon ? (
+        <span className={styles.controlIconShell}>
+          <span className={styles.controlIcon} aria-hidden="true">
+            {startIcon}
+          </span>
+          <input
+            id={id}
+            required={required}
+            aria-describedby={describedByIds(ariaDescribedBy, descriptionId, error ? errorId : undefined)}
+            aria-invalid={invalid || undefined}
+            className={controlClassName({
+              className: cn(styles.controlWithStartIcon, inputClassName),
+              invalid,
+              size,
+              surface,
+            })}
+            {...props}
+          />
+        </span>
+      ) : (
+        <input
+          id={id}
+          required={required}
+          aria-describedby={describedByIds(ariaDescribedBy, descriptionId, error ? errorId : undefined)}
+          aria-invalid={invalid || undefined}
+          className={controlClassName({ className: inputClassName, invalid, size, surface })}
+          {...props}
+        />
+      )}
     </Field>
   );
 }

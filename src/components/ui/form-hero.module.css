@@ -1,0 +1,157 @@
+.hero {
+  --form-hero-symbol-color: var(--color-brand-accent);
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: grid;
+  border: 1px solid color-mix(in srgb, var(--form-hero-symbol-color) 24%, var(--color-border-card));
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at 18% 28%, color-mix(in srgb, var(--form-hero-symbol-color) 13%, transparent), transparent 34%),
+    linear-gradient(135deg, color-mix(in srgb, var(--form-hero-symbol-color) 7%, var(--color-bg-card)), var(--color-bg-card) 58%, color-mix(in srgb, var(--form-hero-symbol-color) 6%, var(--color-bg-card)));
+  padding: 0.85rem;
+  box-shadow:
+    0 16px 34px color-mix(in srgb, var(--form-hero-symbol-color) 7%, transparent),
+    var(--color-shadow-card);
+}
+
+.copy {
+  position: relative;
+  z-index: 1;
+  max-width: min(100%, 35rem);
+}
+
+.heroDecorated .copy {
+  max-width: min(calc(100% - 5.1rem), 35rem);
+}
+
+.kicker {
+  color: color-mix(in srgb, var(--form-hero-symbol-color) 72%, var(--color-text-secondary));
+  font-size: var(--text-sm);
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.2;
+  text-transform: none;
+}
+
+.title {
+  margin-top: 0.2rem;
+  color: var(--color-text-primary);
+  font-size: var(--text-2xl);
+  font-weight: 650;
+  letter-spacing: 0;
+  line-height: 1.1;
+}
+
+.description {
+  margin-top: 0.35rem;
+  max-width: 35rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.42;
+}
+
+.decoration {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: 0.35rem;
+  z-index: 0;
+  display: grid;
+  width: 6.9rem;
+  height: 6.9rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--form-hero-symbol-color) 24%, transparent);
+  border-radius: var(--radius-circle);
+  background:
+    radial-gradient(circle, color-mix(in srgb, var(--form-hero-symbol-color) 22%, transparent) 0 2px, transparent 3px),
+    repeating-radial-gradient(circle, transparent 0 20px, color-mix(in srgb, var(--form-hero-symbol-color) 18%, transparent) 21px 22px),
+    radial-gradient(circle, color-mix(in srgb, var(--form-hero-symbol-color) 10%, transparent), transparent 70%);
+  color: var(--form-hero-symbol-color);
+  box-shadow:
+    0 0 22px color-mix(in srgb, var(--form-hero-symbol-color) 10%, transparent),
+    inset 0 0 22px color-mix(in srgb, var(--form-hero-symbol-color) 7%, transparent);
+  transform: translateY(-50%);
+}
+
+.decoration::before,
+.decoration::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.decoration::before {
+  inset-block-start: 1.1rem;
+  inset-inline-end: 1.15rem;
+  width: 3.45rem;
+  height: 0.58rem;
+  border-radius: var(--radius-circle);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--form-hero-symbol-color) 56%, transparent), transparent);
+  filter: blur(0.5px);
+  transform: rotate(-38deg);
+  transform-origin: left center;
+}
+
+.decoration::after {
+  inset: 0;
+  margin: auto;
+  width: 3.35rem;
+  height: 3.35rem;
+  border: 1px solid color-mix(in srgb, var(--form-hero-symbol-color) 42%, transparent);
+  border-radius: var(--radius-circle);
+  background: color-mix(in srgb, var(--color-bg-card) 76%, transparent);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--form-hero-symbol-color) 12%, transparent);
+}
+
+.decoration > svg {
+  position: relative;
+  z-index: 1;
+  width: 2.15rem;
+  height: 2.15rem;
+  opacity: 0.92;
+  stroke-width: 1.85;
+}
+
+html[data-theme="light"] .hero,
+html[data-theme="parchment"] .hero {
+  --form-hero-symbol-color: var(--color-brand);
+}
+
+@media (max-width: 390px) {
+  .hero {
+    padding: 0.8rem;
+  }
+
+  .heroDecorated .copy {
+    max-width: min(calc(100% - 4.2rem), 35rem);
+  }
+
+  .description {
+    max-width: 100%;
+  }
+
+  .decoration {
+    inset-inline-end: 0;
+    width: 6.1rem;
+    height: 6.1rem;
+  }
+
+  .decoration::before {
+    inset-block-start: 1rem;
+    inset-inline-end: 1rem;
+    width: 3rem;
+  }
+
+  .decoration::after {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .decoration > svg {
+    width: 1.95rem;
+    height: 1.95rem;
+  }
+}

@@ -402,6 +402,12 @@ html[data-theme="parchment"] .k-status-info {
     align-items: stretch;
   }
 
+  .k-page-hero-copy {
+    flex: 0 1 auto;
+    width: 100%;
+    min-width: 0;
+  }
+
   .k-page-hero-action {
     width: 100%;
     justify-content: flex-start;

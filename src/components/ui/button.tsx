@@ -30,7 +30,8 @@ export type ButtonDensity =
   | "inlineCompact"
   | "tab"
   | "progressiveControl"
-  | "actionPill";
+  | "actionPill"
+  | "actionPillCompact";
 export type ButtonAlign = "center" | "left" | "between";
 export type ButtonResponsiveWidth = "auto" | "full" | "fullUntilSm";
 
@@ -107,6 +108,8 @@ const buttonDensityClass: Record<ButtonDensity, string> = {
   progressiveControl: "min-h-[2.15rem] px-3 py-1.5 text-[length:var(--text-sm)] font-extrabold",
   actionPill:
     "min-h-[2.45rem] gap-[0.45rem] rounded-[1rem] px-[0.78rem] py-1.5 text-[length:calc(var(--text-xs)*1.02)] font-[850] leading-none tracking-normal shadow-[inset_0_1px_0_color-mix(in_srgb,var(--surface-alt)_34%,transparent)]",
+  actionPillCompact:
+    "min-h-[2.16rem] gap-[0.34rem] rounded-[0.9rem] px-[0.62rem] py-[0.42rem] text-[length:var(--text-xs)] font-[850] leading-none tracking-normal shadow-[inset_0_1px_0_color-mix(in_srgb,var(--surface-alt)_34%,transparent)]",
 };
 
 const buttonAlignClass: Record<ButtonAlign, string> = {

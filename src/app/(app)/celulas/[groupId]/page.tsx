@@ -64,26 +64,28 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
 
         <section className={styles.hero}>
           <div className={styles.heroHeader}>
-            <div className={styles.heroTitleBlock}>
-              <p className="k-eyebrow">Célula</p>
-              <h2 className="k-detail-title mt-1">{group.name}</h2>
-              <p className="mt-2 text-[length:var(--text-sm)] leading-relaxed text-[color:var(--color-text-secondary)]">
-                Liderança: {leadershipName}
-                {supervisionName ? ` · Supervisão: ${supervisionName}` : ""}
-              </p>
-            </div>
+            <p className="k-eyebrow">Célula</p>
             {canEditGroup ? (
-              <ButtonLink
-                href={ROUTES.editGroup(group.id)}
-                variant="actionPillSecondary"
-                size="sm"
-                density="actionPill"
-                className="shrink-0 whitespace-nowrap"
-              >
-                <PencilLine className="h-3.5 w-3.5" aria-hidden="true" />
-                Editar célula
-              </ButtonLink>
+              <div className={styles.heroAction}>
+                <ButtonLink
+                  href={ROUTES.editGroup(group.id)}
+                  variant="actionPillSecondary"
+                  size="sm"
+                  density="actionPillCompact"
+                  className="shrink-0 whitespace-nowrap"
+                >
+                  <PencilLine className="h-3.5 w-3.5" aria-hidden="true" />
+                  Editar célula
+                </ButtonLink>
+              </div>
             ) : null}
+          </div>
+          <div className={styles.heroTitleBlock}>
+            <h2 className={`k-detail-title ${styles.heroTitle}`}>{group.name}</h2>
+            <div className={styles.heroDetails}>
+              <p>Liderança: {leadershipName}</p>
+              {supervisionName ? <p>Supervisão: {supervisionName}</p> : null}
+            </div>
           </div>
           <p className={styles.heroChip}>
             {groupMeetingText(group.meetingDayOfWeek, group.meetingTime)}

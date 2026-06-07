@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
+import pageStyles from "@/components/shared/consultation-page.module.css";
 import { GroupForm } from "@/features/groups/components/group-form";
 import { updateCellAction } from "@/app/(app)/celulas/actions";
 import { appNavForRole } from "@/features/navigation/app-nav";
@@ -9,7 +10,6 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/search-params";
 import { ROUTES } from "@/lib/routes";
-
 
 type EditCellPageProps = {
   params: Promise<{ groupId: string }>;
@@ -51,22 +51,24 @@ export default async function EditCellPage({ params, searchParams }: EditCellPag
       hideBottomNav
       headerVariant="compact"
     >
-      <GroupForm
-        title="Editar célula"
-        description="Dados básicos da célula, sem alterar liderança e supervisão nesta tela."
-        backHref={group.isActive ? ROUTES.group(group.id) : ROUTES.team}
-        backLabel={group.isActive ? "Voltar para célula" : "Voltar para equipe"}
-        action={updateCellAction.bind(null, group.id)}
-        submitLabel="Salvar célula"
-        errorCode={firstParam(queryParams.erro)}
-        initialValues={{
-          name: group.name,
-          meetingDayOfWeek: group.meetingDayOfWeek,
-          meetingTime: group.meetingTime,
-          locationName: group.locationName,
-          isActive: group.isActive,
-        }}
-      />
+      <div className={pageStyles.page}>
+        <GroupForm
+          title="Editar célula"
+          description="Dados básicos da célula, sem alterar liderança e supervisão nesta tela."
+          backHref={group.isActive ? ROUTES.group(group.id) : ROUTES.team}
+          backLabel={group.isActive ? "Voltar para célula" : "Voltar para equipe"}
+          action={updateCellAction.bind(null, group.id)}
+          submitLabel="Salvar célula"
+          errorCode={firstParam(queryParams.erro)}
+          initialValues={{
+            name: group.name,
+            meetingDayOfWeek: group.meetingDayOfWeek,
+            meetingTime: group.meetingTime,
+            locationName: group.locationName,
+            isActive: group.isActive,
+          }}
+        />
+      </div>
     </AppShell>
   );
 }

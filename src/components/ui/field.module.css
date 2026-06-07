@@ -16,7 +16,7 @@
 .labelItem {
   color: var(--color-text-primary);
   font-size: var(--text-base);
-  font-weight: 600;
+  font-weight: 800;
   letter-spacing: normal;
   text-transform: none;
 }
@@ -49,7 +49,7 @@
 }
 
 .description {
-  margin-top: 6px;
+  margin-top: 0.7rem;
   color: var(--color-text-secondary);
   font-size: var(--text-xs);
   line-height: 1.55;
@@ -83,6 +83,36 @@
     opacity 150ms ease;
 }
 
+.controlIconShell {
+  position: relative;
+  display: block;
+}
+
+.controlIcon {
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  left: 1rem;
+  z-index: 1;
+  display: inline-flex;
+  width: 1.05rem;
+  height: 1.05rem;
+  align-items: center;
+  justify-content: center;
+  color: color-mix(in srgb, var(--brown-400) 82%, var(--color-text-secondary));
+  transform: translateY(-50%);
+}
+
+.controlIcon > svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  stroke-width: 1.8;
+}
+
+.controlWithStartIcon {
+  padding-left: 3.15rem;
+}
+
 .control::placeholder {
   color: var(--color-text-muted);
   font-weight: 400;
@@ -110,8 +140,12 @@
 
 
 .controlWarm {
-  border-color: color-mix(in srgb, var(--brown-400) 22%, var(--color-border-card));
-  background: color-mix(in srgb, var(--surface-alt) 86%, var(--color-bg-card));
+  min-height: 3.55rem;
+  border-color: color-mix(in srgb, var(--brown-400) 20%, var(--color-border-card));
+  border-radius: 1.05rem;
+  background: color-mix(in srgb, var(--color-bg-page) 24%, var(--color-bg-card));
+  font-size: var(--text-base);
+  font-weight: 600;
 }
 
 .controlWarm:hover:not(:disabled) {

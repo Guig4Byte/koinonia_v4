@@ -2,7 +2,6 @@
 
 import { CalendarDays } from "lucide-react";
 import { ChoicePickerField } from "@/components/ui/choice-picker-field";
-import { useGroupFormDirty } from "@/features/groups/components/group-form-actions";
 import { WEEKDAY_OPTIONS } from "@/features/groups/weekdays";
 
 const emptyOption = { value: "", label: "Sem dia fixo" };
@@ -16,7 +15,6 @@ export function GroupMeetingDayInput({
   ariaDescribedBy?: string;
   ariaInvalid?: boolean;
 }) {
-  const markDirty = useGroupFormDirty();
   const defaultPickerValue =
     defaultValue === null || defaultValue === undefined
       ? ""
@@ -41,7 +39,6 @@ export function GroupMeetingDayInput({
       popoverWidth="control"
       ariaDescribedBy={ariaDescribedBy}
       ariaInvalid={ariaInvalid}
-      onValueChange={markDirty ?? undefined}
     />
   );
 }
