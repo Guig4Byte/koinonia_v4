@@ -3,7 +3,7 @@
 .safe-page {
   --bottom-nav-height: 62px;
   --bottom-nav-offset: 12px;
-  --bottom-nav-content-gap: 20px;
+  --bottom-nav-content-gap: 28px;
   width: 100%;
   max-width: 480px;
   margin: 0 auto;

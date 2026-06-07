@@ -11,20 +11,7 @@
   border-radius: 0.9rem;
 }
 
-.formCard {
-  --form-decor-color: var(--color-card-decoration);
-
-  border-color: color-mix(in srgb, var(--brown-400) 24%, var(--color-border-card));
-  background:
-    linear-gradient(90deg, color-mix(in srgb, var(--brown-400) 7%, transparent), transparent 60%),
-    linear-gradient(145deg, color-mix(in srgb, var(--color-bg-card) 94%, var(--brown-400) 6%), var(--color-bg-card) 66%);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--brown-400) 6%, transparent),
-    var(--color-shadow-card);
-}
-
-.heroKicker,
-.sectionKicker {
+.heroKicker {
   color: color-mix(in srgb, var(--brown-400) 72%, var(--color-text-secondary));
   font-size: var(--text-sm);
   font-weight: 800;
@@ -51,25 +38,6 @@
   line-height: 1.42;
 }
 
-.formCard {
-  display: grid;
-  gap: 0.7rem;
-  border-radius: 1.35rem;
-  padding: 0.85rem;
-}
-
-.formSection {
-  display: grid;
-  gap: 0.65rem;
-  border: 1px solid color-mix(in srgb, var(--brown-400) 14%, var(--color-border-card));
-  border-left: 4px solid color-mix(in srgb, var(--brown-400) 72%, var(--color-border-card));
-  border-radius: 1.05rem;
-  background:
-    linear-gradient(90deg, color-mix(in srgb, var(--brown-400) 5%, transparent), transparent 58%),
-    color-mix(in srgb, var(--surface-alt) 72%, var(--color-bg-card));
-  padding: 0.75rem;
-}
-
 .fieldLabel {
   display: block;
   margin-bottom: 0.42rem;
@@ -78,8 +46,6 @@
   font-weight: 750;
   line-height: 1.2;
 }
-
-
 
 .scheduleFields {
   display: grid;
@@ -100,113 +66,8 @@
   line-height: 1.55;
 }
 
-.statusOption {
-  position: relative;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  cursor: pointer;
-  border: 1px solid color-mix(in srgb, var(--brown-400) 18%, var(--color-border-card));
-  border-radius: 1rem;
-  background:
-    linear-gradient(90deg, color-mix(in srgb, var(--brown-400) 6%, transparent), transparent 62%),
-    color-mix(in srgb, var(--surface-alt) 80%, var(--color-bg-card));
-  padding: 0.75rem;
-  transition:
-    border-color 150ms ease,
-    background-color 150ms ease,
-    box-shadow 150ms ease;
-}
-
-.statusOption:hover {
-  border-color: color-mix(in srgb, var(--brown-400) 38%, var(--color-border-card));
-}
-
-.statusCheckbox {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-.statusVisual {
-  position: relative;
-  margin-top: 0.05rem;
-  display: inline-flex;
-  width: 2.45rem;
-  height: 1.45rem;
-  flex: 0 0 auto;
-  align-items: center;
-  border: 1px solid color-mix(in srgb, var(--color-text-muted) 36%, var(--color-border-card));
-  border-radius: var(--radius-pill);
-  background: color-mix(in srgb, var(--color-text-muted) 16%, var(--surface-alt));
-  padding: 0.15rem;
-  transition:
-    background-color 150ms ease,
-    border-color 150ms ease,
-    box-shadow 150ms ease;
-}
-
-.statusKnob {
-  width: 1rem;
-  height: 1rem;
-  border-radius: 50%;
-  background: var(--color-bg-card);
-  box-shadow: 0 1px 4px color-mix(in srgb, var(--color-text-primary) 18%, transparent);
-  transform: translateX(0);
-  transition: transform 150ms ease;
-}
-
-.statusCheckbox:checked + .statusVisual {
-  border-color: color-mix(in srgb, var(--brown-400) 70%, var(--color-border-card));
-  background: color-mix(in srgb, var(--brown-400) 42%, var(--surface-alt));
-}
-
-.statusCheckbox:checked + .statusVisual .statusKnob {
-  transform: translateX(1rem);
-  border: 1px solid color-mix(in srgb, var(--brown-400) 34%, var(--color-btn-primary-bg));
-  background: var(--color-btn-primary-bg);
-  box-shadow:
-    0 1px 5px color-mix(in srgb, var(--color-text-primary) 22%, transparent),
-    0 0 0 2px color-mix(in srgb, var(--color-btn-primary-bg) 18%, transparent);
-}
-
-.statusCheckbox:focus-visible + .statusVisual {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brown-400) 16%, transparent);
-}
-
-.statusCopy {
-  min-width: 0;
-}
-
-.statusTitle {
-  display: block;
-  color: var(--color-text-primary);
-  font-size: var(--text-sm);
-  font-weight: 850;
-  line-height: 1.25;
-}
-
-.statusDetail {
-  display: block;
-  margin-top: 0.25rem;
-  color: var(--color-text-secondary);
-  font-size: var(--text-xs);
-  font-weight: 550;
-  line-height: 1.45;
-}
-
 @media (max-width: 430px) {
   .scheduleFields {
     grid-template-columns: 1fr;
   }
-
-  .formCard,
-  .formSection {
-    padding: 0.75rem;
-  }
 }
-

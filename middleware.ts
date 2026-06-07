@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AUTH_SESSION_COOKIE, readAuthSessionFromToken } from "@/lib/auth/token";
-import { homeForRole } from "@/lib/auth/redirects";
 import { API_ROUTES } from "@/lib/api-routes";
 import { ROUTES } from "@/lib/routes";
 
@@ -27,10 +26,6 @@ function redirectToLogin(request: NextRequest) {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const session = await readAuthSessionFromToken(request.cookies.get(AUTH_SESSION_COOKIE)?.value);
-
-  if (pathname === ROUTES.login && session) {
-    return NextResponse.redirect(new URL(homeForRole(session.role), request.url));
-  }
 
   if (isPublicPath(pathname)) {
     return NextResponse.next();

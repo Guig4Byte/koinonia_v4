@@ -24,10 +24,14 @@ export const userRoleDescriptions: Record<UserRole, string> = {
 
 export const userRoleBadgeTone: Record<UserRole, BadgeTone> = {
   ADMIN: "care",
-  PASTOR: "care",
+  PASTOR: "warn",
   SUPERVISOR: "support",
   LEADER: "info",
 };
+
+export function isTemporaryLogin(email: string) {
+  return email.trim().toLowerCase().endsWith("@koinonia.local");
+}
 
 export function userStatusLabel(isActive: boolean) {
   return isActive ? "Ativo" : "Inativo";

@@ -93,7 +93,7 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
         </Card>
 
         {users.length > 0 ? (
-          <UserList users={users} />
+          <UserList users={users} className="mt-4" />
         ) : (
           <EmptyState
             title="Nenhum usuário cadastrado"

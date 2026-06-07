@@ -23,6 +23,14 @@ export const userFormErrorCodes = [
 
 export type UserFormError = (typeof userFormErrorCodes)[number];
 
+
+export type UserPersonOption = {
+  id: string;
+  fullName: string;
+  phone: string | null;
+  linkedUserName?: string | null;
+};
+
 export type UserFormValues = {
   name: string;
   email: string;

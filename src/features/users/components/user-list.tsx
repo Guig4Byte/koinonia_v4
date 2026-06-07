@@ -1,9 +1,17 @@
+import Link from "next/link";
 import { Mail, Phone, UserRound } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Card } from "@/components/ui/card";
-import { userRoleBadgeTone, userRoleLabels, userStatusLabel, userStatusTone } from "@/features/users/user-display";
+import {
+  isTemporaryLogin,
+  userRoleBadgeTone,
+  userRoleLabels,
+  userStatusLabel,
+  userStatusTone,
+} from "@/features/users/user-display";
 import { ROUTES } from "@/lib/routes";
+import { cn } from "@/lib/cn";
 
 export type ManagedUserListItem = {
   id: string;
@@ -18,9 +26,9 @@ export type ManagedUserListItem = {
   } | null;
 };
 
-export function UserList({ users }: { users: ManagedUserListItem[] }) {
+export function UserList({ users, className }: { users: ManagedUserListItem[]; className?: string }) {
   return (
-    <div className="space-y-3">
+    <div className={cn("space-y-4", className)}>
       {users.map((user) => (
         <Card key={user.id} padding="sm" radius="lg" className="space-y-3">
           <div className="flex items-start justify-between gap-3">
@@ -33,6 +41,11 @@ export function UserList({ users }: { users: ManagedUserListItem[] }) {
                 <Badge tone={userStatusTone(user.isActive)} size="sm" shape="rounded" maxWidth="none">
                   {userStatusLabel(user.isActive)}
                 </Badge>
+                {isTemporaryLogin(user.email) ? (
+                  <Badge tone="neutral" size="xs" shape="rounded" maxWidth="none">
+                    Login temporário
+                  </Badge>
+                ) : null}
               </div>
             </div>
             <ButtonLink href={ROUTES.editUser(user.id)} variant="secondary" size="sm" density="inlineCompact">
@@ -46,7 +59,10 @@ export function UserList({ users }: { users: ManagedUserListItem[] }) {
               <span className="truncate">{user.email}</span>
             </p>
             {user.person ? (
-              <p className="flex min-w-0 items-center gap-2">
+              <Link
+                href={ROUTES.person(user.person.id)}
+                className="flex min-w-0 items-center gap-2 rounded-md underline-offset-4 transition hover:underline"
+              >
                 {user.person.phone ? (
                   <Phone className="h-4 w-4 shrink-0" aria-hidden="true" />
                 ) : (
@@ -55,7 +71,7 @@ export function UserList({ users }: { users: ManagedUserListItem[] }) {
                 <span className="truncate">
                   {user.person.fullName}{user.person.phone ? ` · ${user.person.phone}` : ""}
                 </span>
-              </p>
+              </Link>
             ) : (
               <p className="flex min-w-0 items-center gap-2">
                 <UserRound className="h-4 w-4 shrink-0" aria-hidden="true" />

@@ -2,6 +2,12 @@ import { InfoCard } from "@/components/shared/base-cards";
 import { Card } from "@/components/ui/card";
 import { FieldError, InputField } from "@/components/ui/field";
 import {
+  FormFieldStack,
+  FormSection,
+  formStackClassName,
+} from "@/components/ui/form-section";
+import { ToggleCardField } from "@/components/ui/toggle-card-field";
+import {
   GroupFormActions,
   GroupFormBackLink,
   GroupFormGuard,
@@ -18,10 +24,6 @@ import {
 import styles from "./group-form.module.css";
 
 type GroupFormInitialValues = GroupFormValues;
-
-function FormSectionTitle({ children }: { children: string }) {
-  return <p className={styles.sectionKicker}>{children}</p>;
-}
 
 export function GroupForm({
   title,
@@ -74,41 +76,39 @@ export function GroupForm({
           submitLabel={submitLabel}
           idleMessage={idleMessage}
           confirmDeactivation={initialValues.isActive && isEditingExistingCell}
-          className={styles.formCard}
+          className={formStackClassName}
         >
-          <section className={styles.formSection}>
-            <FormSectionTitle>Dados básicos</FormSectionTitle>
+          <FormSection title="Dados básicos">
+            <FormFieldStack>
+              <InputField
+                id="group-name"
+                name="name"
+                label="Nome"
+                labelVariant="item"
+                defaultValue={initialValues.name}
+                maxLength={GROUP_NAME_MAX_LENGTH}
+                required
+                error={fieldErrors.name}
+                placeholder="Ex.: Célula Central"
+                surface="warm"
+              />
 
-            <InputField
-              id="group-name"
-              name="name"
-              label="Nome"
-              labelVariant="item"
-              defaultValue={initialValues.name}
-              maxLength={GROUP_NAME_MAX_LENGTH}
-              required
-              error={fieldErrors.name}
-              placeholder="Ex.: Célula Central"
-              surface="warm"
-            />
+              <InputField
+                id="group-location"
+                name="locationName"
+                label="Local padrão"
+                labelVariant="item"
+                defaultValue={initialValues.locationName ?? ""}
+                maxLength={GROUP_LOCATION_MAX_LENGTH}
+                error={fieldErrors.locationName}
+                description="O local padrão é copiado para novos encontros, mas cada encontro pode ter local próprio."
+                placeholder="Casa, bairro ou referência"
+                surface="warm"
+              />
+            </FormFieldStack>
+          </FormSection>
 
-            <InputField
-              id="group-location"
-              name="locationName"
-              label="Local padrão"
-              labelVariant="item"
-              defaultValue={initialValues.locationName ?? ""}
-              maxLength={GROUP_LOCATION_MAX_LENGTH}
-              error={fieldErrors.locationName}
-              description="O local padrão é copiado para novos encontros, mas cada encontro pode ter local próprio."
-              placeholder="Casa, bairro ou referência"
-              surface="warm"
-            />
-          </section>
-
-          <section className={styles.formSection}>
-            <FormSectionTitle>Agenda padrão</FormSectionTitle>
-
+          <FormSection title="Agenda padrão">
             <div className={styles.scheduleFields}>
               <div className={styles.timeFieldShell}>
                 <label
@@ -141,30 +141,16 @@ export function GroupForm({
               quando a célula não tiver agenda fixa.
             </span>
             <FieldError id={scheduleErrorId}>{fieldErrors.schedule}</FieldError>
-          </section>
+          </FormSection>
 
-          <section className={styles.formSection}>
-            <FormSectionTitle>Status</FormSectionTitle>
-
-            <label className={styles.statusOption}>
-              <input
-                name="isActive"
-                type="checkbox"
-                defaultChecked={initialValues.isActive}
-                className={styles.statusCheckbox}
-              />
-              <span className={styles.statusVisual} aria-hidden="true">
-                <span className={styles.statusKnob} />
-              </span>
-              <span className={styles.statusCopy}>
-                <span className={styles.statusTitle}>Célula ativa</span>
-                <span className={styles.statusDetail}>
-                  Células inativas ficam guardadas fora das listas principais,
-                  encontros e check-in.
-                </span>
-              </span>
-            </label>
-          </section>
+          <FormSection title="Status">
+            <ToggleCardField
+              name="isActive"
+              title="Célula ativa"
+              description="Células inativas ficam guardadas fora das listas principais, encontros e check-in."
+              defaultChecked={initialValues.isActive}
+            />
+          </FormSection>
         </GroupFormActions>
       </div>
     </GroupFormGuard>
