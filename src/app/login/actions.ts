@@ -43,10 +43,11 @@ export async function loginAction(formData: FormData) {
       churchId: true,
       role: true,
       passwordHash: true,
+      isActive: true,
     },
   });
 
-  if (!user) {
+  if (!user || !user.isActive) {
     loginErrorRedirect(nextPath);
   }
 

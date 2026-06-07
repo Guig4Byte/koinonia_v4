@@ -73,6 +73,10 @@ export function canManageGroups(user: PermissionUser) {
   return hasWholeChurchScope(user);
 }
 
+export function canManageUsers(user: PermissionUser) {
+  return hasWholeChurchScope(user);
+}
+
 export function canViewGroup(user: PermissionUser, group: ScopedGroup | null | undefined) {
   if (!group || group.churchId !== user.churchId || group.isActive === false) return false;
   if (hasWholeChurchScope(user)) return true;

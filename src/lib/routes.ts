@@ -25,6 +25,8 @@ export const ROUTES = {
   leader: "/lider",
 
   team: "/equipe",
+  users: "/usuarios",
+  newUser: "/usuarios/novo",
   cells: "/celulas",
   newCell: "/celulas/nova",
 
@@ -32,6 +34,7 @@ export const ROUTES = {
 
   group: (groupId: string) => `/celulas/${groupId}`,
   editGroup: (groupId: string) => `/celulas/${groupId}/editar`,
+  editUser: (userId: string) => `/usuarios/${userId}/editar`,
   person: (personId: string) => `/pessoas/${personId}`,
   event: (eventId: string) => `/eventos/${eventId}`,
 

@@ -33,7 +33,7 @@ export function supervisorAssigneeIdFromGroup(
 
 export async function findPastoralAssignee(churchId: string) {
   return prisma.user.findFirst({
-    where: { churchId, role: { in: [UserRole.PASTOR, UserRole.ADMIN] } },
+    where: { churchId, role: { in: [UserRole.PASTOR, UserRole.ADMIN] }, isActive: true },
     orderBy: { createdAt: "asc" },
   });
 }

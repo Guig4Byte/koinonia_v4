@@ -89,7 +89,7 @@ export async function getPastorDashboard(user: PermissionUser) {
       include: groupInclude,
       orderBy: { name: "asc" },
     }),
-    prisma.user.count({ where: { churchId, role: UserRole.SUPERVISOR } }),
+    prisma.user.count({ where: { churchId, role: UserRole.SUPERVISOR, isActive: true } }),
     prisma.smallGroup.count({
       where: {
         churchId,

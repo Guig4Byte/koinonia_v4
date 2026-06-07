@@ -244,7 +244,7 @@ describe("signal support command", () => {
       },
     });
     expect(prismaMock.user.findFirst).toHaveBeenCalledWith({
-      where: { churchId: supervisor.churchId, role: { in: [UserRole.PASTOR, UserRole.ADMIN] } },
+      where: { churchId: supervisor.churchId, isActive: true, role: { in: [UserRole.PASTOR, UserRole.ADMIN] } },
       orderBy: { createdAt: "asc" },
     });
     expect(txMock.careSignal.update).toHaveBeenCalledWith({

@@ -13,6 +13,7 @@ export async function getAuthenticatedUser() {
       id: session.id,
       churchId: session.churchId,
       role: session.role,
+      isActive: true,
     },
     select: {
       id: true,

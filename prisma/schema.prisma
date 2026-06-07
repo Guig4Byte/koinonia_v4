@@ -121,6 +121,7 @@ model User {
   email        String   @unique
   passwordHash String
   role         UserRole
+  isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -132,6 +133,7 @@ model User {
   signalsAssigned CareSignal[] @relation("SignalAssignee")
 
   @@index([churchId, role])
+  @@index([churchId, isActive, role])
   @@map("users")
 }
 

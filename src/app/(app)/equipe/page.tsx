@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { Plus } from "lucide-react";
+import { Plus, UserCog } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { EmptyState, InfoCard } from "@/components/shared/base-cards";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -109,16 +109,28 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
           description="Supervisores, células e pendências que pedem atenção."
           action={
             canCreateGroup ? (
-              <ButtonLink
-                href={ROUTES.newCell}
-                variant="actionPillPrimary"
-                size="sm"
-                density="actionPill"
-                className="shrink-0"
-              >
-                <Plus className="h-4 w-4" aria-hidden="true" />
-                Nova célula
-              </ButtonLink>
+              <div className="flex flex-wrap justify-end gap-2">
+                <ButtonLink
+                  href={ROUTES.users}
+                  variant="actionPillSecondary"
+                  size="sm"
+                  density="actionPill"
+                  className="shrink-0"
+                >
+                  <UserCog className="h-4 w-4" aria-hidden="true" />
+                  Usuários
+                </ButtonLink>
+                <ButtonLink
+                  href={ROUTES.newCell}
+                  variant="actionPillPrimary"
+                  size="sm"
+                  density="actionPill"
+                  className="shrink-0"
+                >
+                  <Plus className="h-4 w-4" aria-hidden="true" />
+                  Nova célula
+                </ButtonLink>
+              </div>
             ) : null
           }
         />

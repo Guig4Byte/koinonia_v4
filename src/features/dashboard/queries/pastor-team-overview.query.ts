@@ -29,7 +29,7 @@ export async function getPastorTeamOverview(user: PermissionUser) {
 
   const [supervisors, groupsWithoutSupervisor] = await Promise.all([
     prisma.user.findMany({
-      where: { churchId, role: UserRole.SUPERVISOR },
+      where: { churchId, role: UserRole.SUPERVISOR, isActive: true },
       include: {
         groupResponsibilities: {
           where: {

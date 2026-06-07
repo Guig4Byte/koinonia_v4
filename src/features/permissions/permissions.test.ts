@@ -39,6 +39,7 @@ function scopedGroupWhere(userId: string, role: GroupResponsibilityRole) {
         userId,
         role,
         activeUntil: null,
+        user: { is: { isActive: true } },
       },
     },
   };
