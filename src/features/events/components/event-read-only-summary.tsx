@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Heart } from "lucide-react";
 import { AttendanceStatus } from "@/generated/prisma/client";
 import {
   attendanceVisualTone,
@@ -149,7 +150,9 @@ export function EventReadOnlySummary({
       ) : null}
 
       <Card surface="pastoralCue" accentTone={pastoralCueAccentTone(attendanceView.pastoralCue.tone)} layout="media">
-        <span className={styles.pastoralCueIcon} aria-hidden="true">♡</span>
+        <span className={styles.pastoralCueIcon} aria-hidden="true">
+          <Heart className={styles.pastoralCueIconSvg} />
+        </span>
         <div>
           <p className={styles.pastoralCueTitle}>{attendanceView.pastoralCue.title}</p>
           <p className={styles.pastoralCueDescription}>{attendanceView.pastoralCue.description}</p>
@@ -159,7 +162,6 @@ export function EventReadOnlySummary({
       <Card surface="summaryGlow">
         <div className={styles.cardHeader}>
           <p className={styles.title}>Membros da célula</p>
-          <span className={styles.statusPill}>Registrada</span>
         </div>
 
         <div className={cn(styles.metricsGrid, justifiedCount > 0 && styles.metricsGridWithJustified)} aria-label={attendanceView.memberSummary}>
