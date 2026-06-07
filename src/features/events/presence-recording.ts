@@ -1,4 +1,5 @@
-import { EventStatus } from "@/generated/prisma/client";
+import type { EventStatus } from "@/generated/prisma/client";
+import { isCompletedEventStatus } from "@/features/events/event-status";
 
 export type PresenceRecordingCandidate = {
   status: string | EventStatus;
@@ -6,5 +7,5 @@ export type PresenceRecordingCandidate = {
 };
 
 export function hasPresenceRecording(event: PresenceRecordingCandidate) {
-  return event.status === EventStatus.COMPLETED || (event.attendances?.length ?? 0) > 0;
+  return isCompletedEventStatus(event.status) || (event.attendances?.length ?? 0) > 0;
 }

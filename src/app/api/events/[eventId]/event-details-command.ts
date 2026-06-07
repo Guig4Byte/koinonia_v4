@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { EVENT_LOCATION_MAX_LENGTH } from "@/features/events/event-fields";
+import { isCancelledEventStatus, isClosedWithoutPresenceStatus, isNoMeetingEventStatus } from "@/features/events/event-status";
 import { activeGroupResponsibilitiesScopeInclude } from "@/features/groups/group-query";
 import { canManageEventDetails, type PermissionUser } from "@/features/permissions/permissions";
 import { EventStatus } from "@/generated/prisma/client";
@@ -64,7 +65,7 @@ export async function updateEventDetails(
     }
   }
 
-  const closesMeeting = body.status === EventStatus.CANCELLED || body.status === EventStatus.NO_MEETING;
+  const closesMeeting = isClosedWithoutPresenceStatus(body.status);
 
   if (closesMeeting && event._count.attendances > 0) {
     return commandError("Este encontro já tem presença registrada e não está disponível para cancelamento", 400);
@@ -72,11 +73,11 @@ export async function updateEventDetails(
 
   const now = new Date();
 
-  if (body.status === EventStatus.CANCELLED && nextStartsAt <= now) {
+  if (isCancelledEventStatus(body.status) && nextStartsAt <= now) {
     return commandError("Encontro já iniciado deve ser marcado como não realizado", 400);
   }
 
-  if (body.status === EventStatus.NO_MEETING && nextStartsAt > now) {
+  if (isNoMeetingEventStatus(body.status) && nextStartsAt > now) {
     return commandError("Encontro futuro deve ser cancelado", 400);
   }
 

@@ -1,6 +1,6 @@
 import type { CalendarMonth } from "@/features/events/brasilia-date-time";
 import { parseBrasiliaDateValue } from "@/features/events/brasilia-date-time";
-import { isClosedWithoutPresenceStatus } from "@/features/events/event-display";
+import { isClosedWithoutPresenceStatus } from "@/features/events/event-status";
 
 export type EventActionStatus = "SCHEDULED" | "CHECKIN_OPEN" | "COMPLETED" | "CANCELLED" | "NO_MEETING";
 export type EventCloseStatus = "SCHEDULED" | "CANCELLED" | "NO_MEETING";

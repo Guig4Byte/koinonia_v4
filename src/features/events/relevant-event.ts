@@ -1,4 +1,4 @@
-import { EventStatus } from "@/generated/prisma/client";
+import { isClosedWithoutPresenceStatus } from "@/features/events/event-status";
 import { hasPresenceRecording, type PresenceRecordingCandidate } from "@/features/events/presence-recording";
 import { addBrasiliaDays, isSameBrasiliaDay, startOfBrasiliaDay } from "@/lib/brasilia-time";
 
@@ -15,7 +15,7 @@ export function hasRecordedPresence(event: RelevantEventCandidate) {
 }
 
 function isCancelledEvent(event: RelevantEventCandidate) {
-  return event.status === EventStatus.CANCELLED || event.status === EventStatus.NO_MEETING;
+  return isClosedWithoutPresenceStatus(event.status);
 }
 
 export function selectRelevantCheckInEvent<T extends RelevantEventCandidate>(events: T[], referenceDate = new Date()) {
