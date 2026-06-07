@@ -2,7 +2,6 @@ import { countLabel } from "@/lib/format";
 import { NO_RECENT_PRESENCE_LABEL } from "@/lib/filter-param";
 import {
   isPastoralCaseSignal,
-  isSignalAssignedToPastoralRole,
   isSupervisorSupportSignal,
   isUrgentSignal,
   type SignalClassificationLike,
@@ -75,8 +74,6 @@ export type GroupPastoralState = {
 function countSignals(signals: GroupPastoralSignalLike[] | undefined, predicate: (signal: GroupPastoralSignalLike) => boolean) {
   return (signals ?? []).filter(predicate).length;
 }
-
-export const isPastoralAssignedSignal = isSignalAssignedToPastoralRole;
 
 export function hasLowPresence(group: Pick<GroupPastoralPriorityInput, "hasPresenceData" | "presenceRate">) {
   return group.hasPresenceData && group.presenceRate < LOW_PRESENCE_THRESHOLD;

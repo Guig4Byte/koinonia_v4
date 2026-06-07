@@ -1,9 +1,17 @@
-import { SignalSeverity, UserRole } from "@/generated/prisma/client";
+export const SIGNAL_CLASSIFICATION_ROLE = {
+  ADMIN: "ADMIN",
+  PASTOR: "PASTOR",
+  SUPERVISOR: "SUPERVISOR",
+} as const;
+
+export const SIGNAL_CLASSIFICATION_SEVERITY = {
+  URGENT: "URGENT",
+} as const;
 
 export type SignalAssigneeLike = {
   id?: string | null;
   name?: string | null;
-  role?: UserRole | string | null;
+  role?: string | null;
 };
 
 export type SignalAssignmentLike = {
@@ -12,12 +20,12 @@ export type SignalAssignmentLike = {
 };
 
 export type SignalClassificationLike = SignalAssignmentLike & {
-  severity?: SignalSeverity | string | null;
+  severity?: string | null;
 };
 
 export type SignalViewerLike = {
   id?: string | null;
-  role?: UserRole | string | null;
+  role?: string | null;
 };
 
 export type SignalAssignmentKind = "pastoral" | "supervisor";
@@ -42,15 +50,15 @@ export function signalAssignmentKind(signal: SignalAssignmentLike): SignalAssign
 }
 
 export function isSignalAssignedToSupervisor(signal: SignalAssignmentLike): boolean {
-  return signal.assignedTo?.role === UserRole.SUPERVISOR;
+  return signal.assignedTo?.role === SIGNAL_CLASSIFICATION_ROLE.SUPERVISOR;
 }
 
 export function isSignalAssignedToPastoralRole(signal: SignalAssignmentLike): boolean {
-  return signal.assignedTo?.role === UserRole.PASTOR || signal.assignedTo?.role === UserRole.ADMIN;
+  return signal.assignedTo?.role === SIGNAL_CLASSIFICATION_ROLE.PASTOR || signal.assignedTo?.role === SIGNAL_CLASSIFICATION_ROLE.ADMIN;
 }
 
 export function isUrgentSignal(signal: Pick<SignalClassificationLike, "severity">): boolean {
-  return signal.severity === SignalSeverity.URGENT;
+  return signal.severity === SIGNAL_CLASSIFICATION_SEVERITY.URGENT;
 }
 
 export function isPastoralEscalationSignal(signal: SignalClassificationLike): boolean {
@@ -72,7 +80,7 @@ export function isUrgentOrPastoralCaseSignal(signal: SignalClassificationLike): 
 export function isSupportRequestSignal(signal: SignalClassificationLike, viewer: SignalViewerLike): boolean {
   if (isUrgentOrPastoralCaseSignal(signal)) return false;
 
-  if (viewer.role === UserRole.SUPERVISOR) {
+  if (viewer.role === SIGNAL_CLASSIFICATION_ROLE.SUPERVISOR) {
     return signal.assignedToId === viewer.id;
   }
 
