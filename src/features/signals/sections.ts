@@ -1,7 +1,7 @@
 import { PersonStatus, SignalSeverity, UserRole } from "@/generated/prisma/client";
 import { isInCarePerson as isPersonInCare } from "@/features/people/person-status";
 import { selectBestSignalByPerson } from "./signal-utils";
-import { isAssignedToPastoralRole, isAssignedToSupervisor } from "./escalation";
+import { isSupportRequestSignal, isUrgentOrPastoralCaseSignal, signalPastoralSectionKind } from "./signal-classification";
 import { compareSignalsBySeverityAndRecency } from "./ranking";
 import { comparePtBr } from "@/lib/text";
 
@@ -53,17 +53,11 @@ const sectionRank: Record<Exclude<PastoralSectionKey, "care">, number> = {
 };
 
 export function isUrgentOrPastoralCase(signal: SectionSignalLike): boolean {
-  return signal.severity === SignalSeverity.URGENT || isAssignedToPastoralRole(signal);
+  return isUrgentOrPastoralCaseSignal(signal);
 }
 
 export function isSupportRequest(signal: SectionSignalLike, viewer: SectionViewerLike): boolean {
-  if (isUrgentOrPastoralCase(signal)) return false;
-
-  if (viewer.role === UserRole.SUPERVISOR) {
-    return signal.assignedToId === viewer.id;
-  }
-
-  return isAssignedToSupervisor(signal);
+  return isSupportRequestSignal(signal, viewer);
 }
 
 export function isInCarePerson(person: SectionPersonLike): boolean {
@@ -71,9 +65,7 @@ export function isInCarePerson(person: SectionPersonLike): boolean {
 }
 
 function signalSectionKey(signal: SectionSignalLike, viewer: SectionViewerLike): Exclude<PastoralSectionKey, "care"> {
-  if (isUrgentOrPastoralCase(signal)) return "urgent";
-  if (isSupportRequest(signal, viewer)) return "support";
-  return "attention";
+  return signalPastoralSectionKind(signal, viewer);
 }
 
 function compareSignalsWithinSection(left: SectionSignalLike, right: SectionSignalLike): number {

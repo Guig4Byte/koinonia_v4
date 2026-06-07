@@ -1,6 +1,12 @@
-import { SignalSeverity, UserRole } from "@/generated/prisma/client";
 import { countLabel } from "@/lib/format";
 import { NO_RECENT_PRESENCE_LABEL } from "@/lib/filter-param";
+import {
+  isPastoralCaseSignal,
+  isSignalAssignedToPastoralRole,
+  isSupervisorSupportSignal,
+  isUrgentSignal,
+  type SignalClassificationLike,
+} from "@/features/signals/signal-classification";
 
 export const LOW_PRESENCE_THRESHOLD = 70;
 export const NO_RECENT_PRESENCE_PRIORITY = 25;
@@ -30,10 +36,7 @@ export type GroupPresenceStatusKey =
   | "lowPresence"
   | "recordedPresence";
 
-export type GroupPastoralSignalLike = {
-  severity?: SignalSeverity | string | null;
-  assignedTo?: { role?: UserRole | string | null } | null;
-};
+export type GroupPastoralSignalLike = SignalClassificationLike;
 
 export type GroupPastoralPriorityInput = {
   signals?: GroupPastoralSignalLike[];
@@ -73,21 +76,7 @@ function countSignals(signals: GroupPastoralSignalLike[] | undefined, predicate:
   return (signals ?? []).filter(predicate).length;
 }
 
-export function isPastoralAssignedSignal(signal: GroupPastoralSignalLike) {
-  return signal.assignedTo?.role === UserRole.PASTOR || signal.assignedTo?.role === UserRole.ADMIN;
-}
-
-export function isSupervisorSupportSignal(signal: GroupPastoralSignalLike) {
-  return signal.assignedTo?.role === UserRole.SUPERVISOR;
-}
-
-export function isUrgentSignal(signal: GroupPastoralSignalLike) {
-  return signal.severity === SignalSeverity.URGENT;
-}
-
-export function isPastoralCaseSignal(signal: GroupPastoralSignalLike) {
-  return !isUrgentSignal(signal) && isPastoralAssignedSignal(signal);
-}
+export const isPastoralAssignedSignal = isSignalAssignedToPastoralRole;
 
 export function hasLowPresence(group: Pick<GroupPastoralPriorityInput, "hasPresenceData" | "presenceRate">) {
   return group.hasPresenceData && group.presenceRate < LOW_PRESENCE_THRESHOLD;

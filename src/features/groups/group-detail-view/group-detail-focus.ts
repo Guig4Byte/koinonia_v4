@@ -1,7 +1,7 @@
 import { PersonStatus } from "@/generated/prisma/client";
 import { isInCareStatus } from "@/features/people/person-status";
 import { isSupportRequest } from "@/features/signals/sections";
-import { isPastoralCaseSignal, isUrgentSignal } from "@/features/groups/group-pastoral-priority";
+import { isPastoralCaseSignal, isUrgentSignal } from "@/features/signals/signal-classification";
 import { countLabel } from "@/lib/format";
 import {
   FILTER_ATTENTION,

@@ -1,4 +1,13 @@
 import { GroupResponsibilityRole, SignalSeverity, UserRole } from "@/generated/prisma/client";
+import {
+  isPastoralEscalationSignal,
+  isSignalAssignedToPastoralRole,
+  isSignalAssignedToSupervisor,
+  signalAssignmentKind,
+  type SignalAssigneeLike,
+  type SignalAssignmentKind,
+  type SignalAssignmentLike,
+} from "./signal-classification";
 import { SIGNAL_COPY, pastoralEscalationCopy, supervisorEscalationCopy } from "./signal-copy";
 import {
   hasAnyGroupResponsibilityScope,
@@ -6,16 +15,7 @@ import {
   type ResponsibleGroupLike,
 } from "@/lib/domain/group-responsibilities";
 
-export type SignalAssigneeLike = {
-  id?: string | null;
-  name?: string | null;
-  role: UserRole | string;
-};
-
-export type SignalAssignmentLike = {
-  assignedToId?: string | null;
-  assignedTo?: SignalAssigneeLike | null;
-};
+export type { SignalAssigneeLike, SignalAssignmentLike };
 
 export type EscalationSignalLike = SignalAssignmentLike & {
   severity: SignalSeverity;
@@ -32,7 +32,7 @@ export type EscalationScopedSignalLike = EscalationSignalLike & {
   group?: EscalationGroupLike | null;
 };
 
-export type EscalationAssignmentKind = "pastoral" | "supervisor";
+export type EscalationAssignmentKind = SignalAssignmentKind;
 
 export type EscalationDisplay = {
   label: string | null;
@@ -58,9 +58,7 @@ function isSupervisorSupportViewer(viewer: EscalationViewerLike): boolean {
 }
 
 function escalationAssignmentKind(signal: EscalationSignalLike): EscalationAssignmentKind | null {
-  if (isAssignedToPastoralRole(signal)) return "pastoral";
-  if (isAssignedToSupervisor(signal)) return "supervisor";
-  return null;
+  return signalAssignmentKind(signal);
 }
 
 function emptyEscalationDisplay(): EscalationDisplay {
@@ -87,15 +85,15 @@ function pastoralEscalationDisplay(viewer: EscalationViewerLike): EscalationDisp
 }
 
 export function isAssignedToSupervisor(signal: SignalAssignmentLike): boolean {
-  return signal.assignedTo?.role === UserRole.SUPERVISOR;
+  return isSignalAssignedToSupervisor(signal);
 }
 
 export function isAssignedToPastoralRole(signal: SignalAssignmentLike): boolean {
-  return signal.assignedTo?.role === UserRole.PASTOR || signal.assignedTo?.role === UserRole.ADMIN;
+  return isSignalAssignedToPastoralRole(signal);
 }
 
 export function isPastoralEscalation(signal: EscalationSignalLike): boolean {
-  return signal.severity === SignalSeverity.URGENT || isAssignedToPastoralRole(signal);
+  return isPastoralEscalationSignal(signal);
 }
 
 export function escalationStatusLabel(signal: EscalationSignalLike): string | null {

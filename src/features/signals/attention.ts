@@ -1,5 +1,5 @@
 import { SignalSeverity } from "@/generated/prisma/client";
-import { isPastoralEscalation, type SignalAssigneeLike } from "./escalation";
+import { isPastoralEscalationSignal, type SignalAssigneeLike } from "./signal-classification";
 import { compareSignalsBySeverityAndRecency } from "./ranking";
 import { selectBestSignalByPerson } from "./signal-utils";
 
@@ -17,6 +17,6 @@ export function getPrimarySignalsByPerson<T extends AttentionSignalLike>(signals
 }
 
 export function getPastoralSignalsByPerson<T extends AttentionSignalLike>(signals: T[]) {
-  const pastoralSignals = signals.filter((signal) => isPastoralEscalation(signal));
+  const pastoralSignals = signals.filter((signal) => isPastoralEscalationSignal(signal));
   return getPrimarySignalsByPerson<T>(pastoralSignals);
 }
