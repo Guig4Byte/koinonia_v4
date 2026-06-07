@@ -32,7 +32,7 @@ export function ContextSummary({
   presenceIndicatorMode = "ring",
   presenceValueClassName,
 }: {
-  items: Array<{ label: string; value: string; detail?: string; tone?: MetricTone; trend?: PresenceTrend | null }>;
+  items: Array<{ label: string; value: string; detail?: string; tone?: MetricTone; trend?: PresenceTrend | null; valueKind?: "presence" }>;
   detailTone?: "default" | "strong";
   trendLayout?: "inline" | "stacked";
   variant?: "default" | "compact" | "prominent" | "balanced";
@@ -49,8 +49,7 @@ export function ContextSummary({
     <SummaryCard variant={variant} surface={surface} className={className}>
       {items.map((item) => {
         const presenceRate = parsePresenceMetricValue(item.value);
-        const normalizedLabel = item.label.trim().toLowerCase();
-        const shouldUsePresenceIndicator = normalizedLabel === "presença" || normalizedLabel.startsWith("presença ");
+        const shouldUsePresenceIndicator = item.valueKind === "presence";
         const tone = item.tone ?? "neutral";
         const resolvedPresenceMetricSize = presenceMetricSize ?? (variant === "balanced" || variant === "prominent" ? "md" : "sm");
         const presenceValueIsPlaceholder = item.value.trim() === "—" || item.value.trim() === "-";

@@ -16,6 +16,7 @@ type Group = PersonDetailContext["visibleMemberships"][number]["group"] | undefi
 export function buildCareTouchHistoryItems(careTouches: PersonDetailContext["careTouches"]) {
   return careTouches.map((touch) => ({
     id: touch.id,
+    kind: touch.kind,
     title: careKindLabels[touch.kind],
     actorName: touch.actor?.name ?? "Koinonia",
     happenedAtLabel: `${formatShortDate(touch.happenedAt)}, ${formatTime(touch.happenedAt)}`,

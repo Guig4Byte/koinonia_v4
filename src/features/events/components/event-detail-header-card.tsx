@@ -82,6 +82,7 @@ export function EventDetailHeaderCard({
             items={[
               {
                 label: "Presença",
+                valueKind: "presence",
                 detail: hasPresenceData ? "Ritmo do encontro registrado." : "Ainda sem presença registrada.",
                 value: formatPresenceRate(hasPresenceData, presenceRate),
                 tone: presenceTone,

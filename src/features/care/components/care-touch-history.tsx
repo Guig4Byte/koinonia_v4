@@ -1,6 +1,7 @@
 "use client";
 
-import { ChevronDown, ChevronUp, FileText, Heart, History, MapPin, MessageCircle, Phone, Users, type LucideIcon } from "lucide-react";
+import { ChevronDown, ChevronUp, FileText, Heart, History, MapPin, MessageCircle, Phone, Sparkles, StickyNote, Users, type LucideIcon } from "lucide-react";
+import type { CareKind } from "@/generated/prisma/client";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/cn";
@@ -8,6 +9,7 @@ import styles from "./care-touch-history.module.css";
 
 export type CareTouchHistoryItem = {
   id: string;
+  kind: CareKind;
   title: string;
   actorName: string;
   happenedAtLabel: string;
@@ -20,31 +22,21 @@ type HistoryVisual = {
   tone: "care" | "support" | "risk" | "attention" | "neutral";
 };
 
-function historyVisual(title: string): HistoryVisual {
-  const normalizedTitle = title.toLowerCase();
-
-  if (normalizedTitle.includes("whatsapp") || normalizedTitle.includes("conversa")) {
-    return { icon: MessageCircle, tone: "care" };
-  }
-
-  if (normalizedTitle.includes("liga") || normalizedTitle.includes("telefon")) {
-    return { icon: Phone, tone: "care" };
-  }
-
-  if (normalizedTitle.includes("apoio")) {
-    return { icon: Heart, tone: "support" };
-  }
-
-  if (normalizedTitle.includes("pastoral") || normalizedTitle.includes("encaminhado")) {
-    return { icon: Heart, tone: "risk" };
-  }
+function historyVisual(kind: CareKind): HistoryVisual {
+  if (kind === "CALL") return { icon: Phone, tone: "care" };
+  if (kind === "WHATSAPP") return { icon: MessageCircle, tone: "care" };
+  if (kind === "REQUESTED_SUPPORT") return { icon: Heart, tone: "support" };
+  if (kind === "ESCALATED_TO_PASTOR") return { icon: Heart, tone: "risk" };
+  if (kind === "VISIT") return { icon: Users, tone: "care" };
+  if (kind === "PRAYER") return { icon: Sparkles, tone: "care" };
+  if (kind === "NOTE") return { icon: StickyNote, tone: "neutral" };
 
   return { icon: Heart, tone: "attention" };
 }
 
 function HistoryTimelineItem({ item }: { item: CareTouchHistoryItem }) {
   const note = item.note?.trim();
-  const { icon: EventIcon, tone } = historyVisual(item.title);
+  const { icon: EventIcon, tone } = historyVisual(item.kind);
 
   return (
     <article className={styles.item}>
@@ -79,7 +71,7 @@ export function CareTouchHistory({ items, className }: { items: CareTouchHistory
   const olderItems = items.slice(1);
   const hasOlderItems = olderItems.length > 0;
   const latestNote = latestItem.note?.trim();
-  const { icon: LatestIcon, tone: latestTone } = historyVisual(latestItem.title);
+  const { icon: LatestIcon, tone: latestTone } = historyVisual(latestItem.kind);
 
   return (
     <div className={cn(styles.history, className)}>
