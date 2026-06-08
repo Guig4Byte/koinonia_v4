@@ -139,6 +139,7 @@ export function ChoicePickerField({
 
   const updateOpen = useCallback(
     (nextOpen: boolean) => {
+      if (!nextOpen) setQuery("");
       if (isOpen === undefined) setInternalOpen(nextOpen);
       onOpenChange?.(nextOpen);
     },
@@ -146,10 +147,7 @@ export function ChoicePickerField({
   );
 
   useEffect(() => {
-    if (!open) {
-      setQuery("");
-      return;
-    }
+    if (!open) return;
 
     if (searchable) {
       window.setTimeout(() => searchRef.current?.focus(), 0);
