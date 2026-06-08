@@ -1,12 +1,16 @@
-import { hash } from "bcryptjs";
 import type { Prisma, UserRole } from "@/generated/prisma/client";
 import type { PermissionUser } from "@/features/permissions/permissions";
+import { hashPassword } from "@/lib/auth/password";
 import { prisma } from "@/lib/prisma";
 import type { UserFormValues } from "@/features/users/user-form";
 
 export type ManageUserResult =
   | { ok: true; userId: string }
   | { ok: false; error: "email-em-uso" | "pessoa-indisponivel" | "usuario-nao-encontrado" };
+
+export type ResetUserPasswordResult =
+  | { ok: true; userId: string }
+  | { ok: false; error: "senha-propria" | "usuario-nao-encontrado" };
 
 type PersistUserValues = Omit<UserFormValues, "password"> & {
   password?: string;
@@ -52,7 +56,7 @@ export async function createManagedUserForChurch(user: PermissionUser, values: U
     return { ok: false, error: "pessoa-indisponivel" };
   }
 
-  const passwordHash = await hash(values.password ?? "", 10);
+  const passwordHash = await hashPassword(values.password ?? "");
   const created = await prisma.user.create({
     data: {
       churchId: user.churchId,
@@ -100,4 +104,29 @@ export async function updateManagedUserForChurch(
   });
 
   return { ok: true, userId: current.id };
+}
+
+export async function resetManagedUserPasswordForChurch(
+  user: PermissionUser,
+  userId: string,
+  password: string,
+): Promise<ResetUserPasswordResult> {
+  if (user.id === userId) {
+    return { ok: false, error: "senha-propria" };
+  }
+
+  const target = await prisma.user.findFirst({
+    where: { id: userId, churchId: user.churchId },
+    select: { id: true },
+  });
+
+  if (!target) return { ok: false, error: "usuario-nao-encontrado" };
+
+  await prisma.user.update({
+    where: { id: target.id },
+    data: { passwordHash: await hashPassword(password) },
+    select: { id: true },
+  });
+
+  return { ok: true, userId: target.id };
 }

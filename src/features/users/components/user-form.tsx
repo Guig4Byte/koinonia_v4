@@ -148,7 +148,7 @@ export function UserForm({
                 required
                 minLength={USER_PASSWORD_MIN_LENGTH}
                 error={fieldErrors.password}
-                description="A pessoa usará esta senha no primeiro acesso. A troca de senha entra na próxima etapa."
+                description="A pessoa usará esta senha no primeiro acesso e poderá trocar depois em Minha conta."
                 type="password"
                 autoComplete="new-password"
                 surface="warm"

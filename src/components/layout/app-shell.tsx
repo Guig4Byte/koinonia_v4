@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { LogOut } from "lucide-react";
+import Link from "next/link";
+import { LogOut, UserCircle } from "lucide-react";
 import { BottomNav, type NavItem } from "@/components/layout/bottom-nav";
 import { TextSizeToggle } from "@/components/layout/text-size-toggle";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
@@ -46,6 +47,14 @@ export function AppShell({
             <div className="flex shrink-0 items-center gap-2">
               <TextSizeToggle className="header-action-button" />
               <ThemeToggle className="header-action-button" />
+              <Link
+                href={ROUTES.account}
+                aria-label="Minha conta"
+                title="Minha conta"
+                className="header-action-button"
+              >
+                <UserCircle className="h-4 w-4" aria-hidden="true" />
+              </Link>
               <form action={ROUTES.logout} method="post">
                 <button
                   type="submit"
@@ -69,6 +78,14 @@ export function AppShell({
               <div className="flex items-center gap-2">
                 <TextSizeToggle className="header-action-button" />
                 <ThemeToggle className="header-action-button" />
+                <Link
+                  href={ROUTES.account}
+                  aria-label="Minha conta"
+                  title="Minha conta"
+                  className="header-action-button"
+                >
+                  <UserCircle className="h-4 w-4" aria-hidden="true" />
+                </Link>
               </div>
             </div>
 

@@ -1,14 +1,27 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { createManagedUserForChurch, updateManagedUserForChurch } from "@/app/(app)/usuarios/actions.commands";
+import {
+  createManagedUserForChurch,
+  resetManagedUserPasswordForChurch,
+  updateManagedUserForChurch,
+} from "@/app/(app)/usuarios/actions.commands";
 import { canManageUsers } from "@/features/permissions/permissions";
 import { parseUserFormData, type UserFormError } from "@/features/users/user-form";
+import {
+  parseUserPasswordResetFormData,
+  type UserPasswordResetError,
+} from "@/features/users/user-password-reset";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { ROUTES, routeWithQuery } from "@/lib/routes";
 
 function redirectWithError(path: string, error: UserFormError | "permissao" | "usuario-nao-encontrado"): never {
   redirect(routeWithQuery(path, { erro: error }));
+}
+
+
+function redirectWithPasswordResetError(userId: string, error: UserPasswordResetError | "permissao"): never {
+  redirect(routeWithQuery(ROUTES.editUser(userId), { erroSenha: error }));
 }
 
 export async function createManagedUserAction(formData: FormData) {
@@ -50,4 +63,29 @@ export async function updateManagedUserAction(userId: string, formData: FormData
   }
 
   redirect(routeWithQuery(ROUTES.users, { salvo: "usuario-atualizado" }));
+}
+
+
+export async function resetManagedUserPasswordAction(userId: string, formData: FormData) {
+  const user = await getCurrentUser();
+
+  if (!canManageUsers(user)) {
+    redirectWithPasswordResetError(userId, "permissao");
+  }
+
+  if (user.id === userId) {
+    redirectWithPasswordResetError(userId, "senha-propria");
+  }
+
+  const parsed = parseUserPasswordResetFormData(formData);
+  if (!parsed.ok) {
+    redirectWithPasswordResetError(userId, parsed.error);
+  }
+
+  const result = await resetManagedUserPasswordForChurch(user, userId, parsed.values.password);
+  if (!result.ok) {
+    redirectWithPasswordResetError(userId, result.error);
+  }
+
+  redirect(routeWithQuery(ROUTES.editUser(userId), { salvo: "senha-redefinida" }));
 }

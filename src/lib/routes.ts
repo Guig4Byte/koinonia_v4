@@ -19,6 +19,7 @@ export const ROUTES = {
   root: "/",
   login: "/login",
   logout: "/logout",
+  account: "/minha-conta",
 
   pastor: "/pastor",
   supervisor: "/supervisor",

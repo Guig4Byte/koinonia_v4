@@ -1,7 +1,8 @@
 import { notFound, redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { UserForm } from "@/features/users/components/user-form";
-import { updateManagedUserAction } from "@/app/(app)/usuarios/actions";
+import { UserPasswordResetCard } from "@/features/users/components/user-password-reset-card";
+import { resetManagedUserPasswordAction, updateManagedUserAction } from "@/app/(app)/usuarios/actions";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { canManageUsers } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -44,6 +45,8 @@ export default async function EditUserPage({ params, searchParams }: EditUserPag
   });
 
   const updateAction = updateManagedUserAction.bind(null, managedUser.id);
+  const resetPasswordAction = resetManagedUserPasswordAction.bind(null, managedUser.id);
+  const selfEditing = managedUser.id === viewer.id;
 
   return (
     <AppShell
@@ -56,7 +59,7 @@ export default async function EditUserPage({ params, searchParams }: EditUserPag
       <div className={pageStyles.page}>
         <UserForm
           title="Editar usuário"
-          description="Atualize login, papel, vínculo com pessoa e status de acesso. Senha e troca de senha entram na próxima etapa."
+          description="Atualize login, papel, vínculo com pessoa e status de acesso."
           action={updateAction}
           submitLabel="Salvar usuário"
           backHref={ROUTES.users}
@@ -70,8 +73,16 @@ export default async function EditUserPage({ params, searchParams }: EditUserPag
           }}
           personOptions={people}
           errorCode={firstParam(query.erro)}
-          selfEditing={managedUser.id === viewer.id}
+          selfEditing={selfEditing}
         />
+
+        {!selfEditing ? (
+          <UserPasswordResetCard
+            action={resetPasswordAction}
+            errorCode={firstParam(query.erroSenha)}
+            success={firstParam(query.salvo) === "senha-redefinida"}
+          />
+        ) : null}
       </div>
     </AppShell>
   );

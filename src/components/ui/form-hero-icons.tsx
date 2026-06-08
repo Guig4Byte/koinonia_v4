@@ -19,6 +19,27 @@ export function UserAccessHeroIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function AccountAccessHeroIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <circle cx="8.9" cy="7.45" r="2.65" />
+      <path d="M4.35 18.3c0-3.08 2.05-5.15 4.55-5.15s4.55 2.07 4.55 5.15" />
+      <circle cx="16.65" cy="8.85" r="2.05" />
+      <path d="M18.7 8.85h2.95" />
+      <path d="M20.25 8.85v1.35" />
+      <path d="M21.65 8.85v1" />
+    </svg>
+  );
+}
+
 export function CellHeroIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg

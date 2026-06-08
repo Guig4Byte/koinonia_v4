@@ -1,8 +1,9 @@
 import { UserRole } from "@/generated/prisma/client";
+import { PASSWORD_MIN_LENGTH, validatePasswordPolicy } from "@/lib/auth/password-policy";
 
 export const USER_NAME_MAX_LENGTH = 120;
 export const USER_EMAIL_MAX_LENGTH = 160;
-export const USER_PASSWORD_MIN_LENGTH = 8;
+export const USER_PASSWORD_MIN_LENGTH = PASSWORD_MIN_LENGTH;
 
 const USER_ROLE_VALUES = new Set<string>([UserRole.ADMIN, UserRole.PASTOR, UserRole.SUPERVISOR, UserRole.LEADER]);
 
@@ -98,8 +99,12 @@ export function parseUserFormFields(
   if (!role) return { ok: false, error: "papel-invalido" };
 
   const password = typeof fields.password === "string" ? fields.password : "";
-  if (options.requirePassword && !password) return { ok: false, error: "senha-obrigatoria" };
-  if (password && password.length < USER_PASSWORD_MIN_LENGTH) return { ok: false, error: "senha-curta" };
+  const passwordError = options.requirePassword
+    ? validatePasswordPolicy(password)
+    : password
+      ? validatePasswordPolicy(password)
+      : null;
+  if (passwordError) return { ok: false, error: passwordError };
 
   return {
     ok: true,
