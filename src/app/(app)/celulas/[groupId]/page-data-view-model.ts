@@ -18,6 +18,7 @@ import {
   readGroupDetailFocus,
 } from "@/features/groups/group-detail-view";
 import { FALLBACK_LEADER_NAME } from "@/features/groups/group-display";
+import { buildGroupSetupChecklist } from "@/features/groups/group-setup-checklist";
 import { responsibilityNames } from "@/features/groups/responsibility-display";
 import { appNavForRole, homeHrefForRole, secondaryNavHrefForRole } from "@/features/navigation/app-nav";
 import { leaderCellHrefFromGroup } from "@/features/navigation/leader-cell-nav";
@@ -131,9 +132,18 @@ export function buildGroupDetailPageModel({
     hasPendingEvent: Boolean(pendingEvent),
   });
 
+  const canEditGroup = canManageGroups(user);
   const canRegisterPendingEvent = user.role === UserRole.LEADER && isGroupLeader(user, group);
   const pendingEventStatusLabel = canRegisterPendingEvent ? "Aguardando presença" : "Aguardando registro";
   const pendingEventActionLabel = canRegisterPendingEvent ? "Registrar presença" : "Abrir encontro";
+  const setupChecklist = completedEvents.length === 0
+    ? buildGroupSetupChecklist({
+        group: { ...group, recordedEventsCount: completedEvents.length },
+        currentEventId: pendingEvent?.id,
+        canEditGroup,
+        canRegisterCurrentEvent: canRegisterPendingEvent,
+      })
+    : null;
   const members = buildGroupMemberDisplays({
     memberships: group.memberships,
     attentionSignalsByPersonId,
@@ -146,7 +156,6 @@ export function buildGroupDetailPageModel({
   );
   const membersView = buildGroupMembersView(members, activeMembersFilter, activeFocus);
   const focusCard = groupDetailFocusCard(activeFocus, membersView.focusedMembersCount);
-  const canEditGroup = canManageGroups(user);
   const savedMessage = savedParam === "celula-criada"
     ? "Célula criada."
     : savedParam === "celula-atualizada"
@@ -203,6 +212,7 @@ export function buildGroupDetailPageModel({
     pendingEventStatusLabel,
     savedMessage,
     summaryCard,
+    setupChecklist,
     supervisionName,
   };
 }

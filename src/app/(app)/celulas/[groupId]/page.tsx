@@ -4,10 +4,12 @@ import { BackLink, InfoCard, PulseCard } from "@/components/shared/base-cards";
 import { SectionHeader } from "@/components/ui/section-header";
 import { GroupDetailSummaryCard } from "@/features/groups/components/group-detail-summary-card";
 import { GroupPendingEventCard } from "@/features/groups/components/group-pending-event-card";
+import { GroupSetupChecklistCard } from "@/features/groups/components/group-setup-checklist-card";
 import { GroupRegisteredEncountersList } from "@/features/groups/components/group-registered-encounters-list";
 import { MemberPriorityList } from "@/features/people/components/member-priority-list";
 import { ButtonLink } from "@/components/ui/button-link";
 import { getGroupDetailPageData } from "@/app/(app)/celulas/[groupId]/page-data";
+import { shouldShowGroupSetupChecklistAction } from "@/features/groups/group-setup-checklist";
 import {
   groupMeetingText,
   GROUP_REGULAR_MEMBER_INITIAL_COUNT,
@@ -47,8 +49,13 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
     pendingEventStatusLabel,
     savedMessage,
     summaryCard,
+    setupChecklist,
     supervisionName,
   } = await getGroupDetailPageData({ user, groupId, queryParams });
+  const setupChecklistCompetingHrefs = [
+    ROUTES.group(group.id),
+    pendingEvent ? ROUTES.event(pendingEvent.id) : null,
+  ];
 
   return (
     <AppShell
@@ -100,6 +107,13 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
             tone={pastoralPulse.tone}
           />
         </div>
+
+        {setupChecklist ? (
+          <GroupSetupChecklistCard
+            checklist={setupChecklist}
+            showAction={shouldShowGroupSetupChecklistAction(setupChecklist, setupChecklistCompetingHrefs)}
+          />
+        ) : null}
 
         <GroupDetailSummaryCard summary={summaryCard} />
 

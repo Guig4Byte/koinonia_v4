@@ -1,4 +1,4 @@
-import type { UserRole } from "@/generated/prisma/client";
+import type { GroupResponsibilityRole, UserRole } from "@/generated/prisma/client";
 import type { RelevantEventCandidate } from "@/features/events/relevant-event";
 import type { SignalDetailLike } from "@/features/signals/display";
 import type { SectionPersonWithIdentity, SectionSignalWithIdentity } from "@/features/signals/sections";
@@ -30,8 +30,19 @@ export type LeaderCurrentEvent = RelevantEventCandidate & {
   group?: { name?: string | null; locationName?: string | null } | null;
 };
 
+export type LeaderDashboardGroup = {
+  id: string;
+  name: string;
+  responsibilities: Array<{ role: GroupResponsibilityRole; user: { name: string } }>;
+  memberships: Array<{ id?: string; person?: { id: string; fullName: string } }>;
+  meetingDayOfWeek?: number | null;
+  meetingTime?: string | null;
+  recordedEventsCount?: number | null;
+};
+
 export type LeaderDashboard = {
   primaryGroupId: string | null;
+  primaryGroup: LeaderDashboardGroup | null;
   attentionPeople: LeaderPageSignal[];
   inCarePeople: LeaderPageInCarePerson[];
   currentEvent: LeaderCurrentEvent | null;

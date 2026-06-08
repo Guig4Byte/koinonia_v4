@@ -3,6 +3,8 @@ import { AppShell } from "@/components/layout/app-shell";
 import { EmptyState, PulseCard } from "@/components/shared/base-cards";
 import { NextActionCard } from "@/components/shared/next-action-card";
 import { PastoralSectionTitle } from "@/features/pastoral-home/components/pastoral-section";
+import { GroupSetupChecklistCard } from "@/features/groups/components/group-setup-checklist-card";
+import { shouldShowGroupSetupChecklistAction } from "@/features/groups/group-setup-checklist";
 import { FirstUseStateCard } from "@/features/pastoral-home/components/first-use-state-card";
 import { InCareSection, PastoralSignalSection } from "@/features/pastoral-home/components/pastoral-list-cards";
 import { buildLeaderPageView } from "@/features/leader/leader-page-view";
@@ -52,6 +54,7 @@ export default async function LeaderPage() {
   const supportSection = signalSectionHeading(view.supportSignals, user, "Pedidos de apoio");
   const attentionSection = signalSectionHeading(view.attentionSignals, user, "Membros em atenção");
   const showFirstUseRoutineWaiting = Boolean(view.firstUseState && !dashboard.currentEvent);
+  const setupChecklistCompetingActionHref = view.firstUseState?.href ?? view.nextAction?.href;
 
   return (
     <AppShell
@@ -71,6 +74,13 @@ export default async function LeaderPage() {
           <FirstUseStateCard state={view.firstUseState} />
         ) : view.nextAction ? (
           <NextActionCard action={view.nextAction} />
+        ) : null}
+
+        {view.setupChecklist ? (
+          <GroupSetupChecklistCard
+            checklist={view.setupChecklist}
+            showAction={shouldShowGroupSetupChecklistAction(view.setupChecklist, [setupChecklistCompetingActionHref])}
+          />
         ) : null}
 
         {!view.firstUseState && view.hasPeopleInRadar ? (
