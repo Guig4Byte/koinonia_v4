@@ -32,10 +32,10 @@ export function AccountAccessHeroIcon(props: SVGProps<SVGSVGElement>) {
     >
       <circle cx="8.9" cy="7.45" r="2.65" />
       <path d="M4.35 18.3c0-3.08 2.05-5.15 4.55-5.15s4.55 2.07 4.55 5.15" />
-      <circle cx="16.65" cy="8.85" r="2.05" />
-      <path d="M18.7 8.85h2.95" />
-      <path d="M20.25 8.85v1.35" />
-      <path d="M21.65 8.85v1" />
+      <circle cx="16.45" cy="8.75" r="2.2" />
+      <path d="M18.68 8.75h3.22" />
+      <path d="M20.25 8.75v1.55" />
+      <path d="M21.72 8.75v1.15" />
     </svg>
   );
 }
