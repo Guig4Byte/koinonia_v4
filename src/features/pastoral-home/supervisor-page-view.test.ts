@@ -208,6 +208,27 @@ describe("supervisor-page-view", () => {
     expect(view.nextAction?.href).toBe("/celulas?filtro=presenca#celulas-supervisionadas");
   });
 
+  it("mostra próxima ação estável quando não há foco aberto na supervisão", () => {
+    const view = buildSupervisorPageView({
+      dashboard: dashboard({
+        groups: [
+          group({ id: "group-stable", name: "Célula Semear", recordedEventsCount: 2 }),
+        ],
+      }),
+      user,
+    });
+
+    expect(view.firstUseState).toBeNull();
+    expect(view.focusItems).toEqual([]);
+    expect(view.nextAction).toMatchObject({
+      eyebrow: "Células supervisionadas",
+      title: "Sem pedidos de apoio no momento.",
+      href: "/celulas/group-stable",
+      label: "Ver Célula Semear",
+      tone: "ok",
+    });
+  });
+
   it("mantém célula nova fora do foco de presença", () => {
     const view = buildSupervisorPageView({
       dashboard: dashboard({

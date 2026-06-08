@@ -1,5 +1,8 @@
 import { hasRecordedPresence } from "@/features/events/relevant-event";
+import { formatShortDate, formatTime } from "@/lib/format";
+import { ROUTES } from "@/lib/routes";
 import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features/pastoral-pulse";
+import type { NextPastoralAction } from "@/features/pastoral-home/components/next-pastoral-action-card";
 import { buildLeaderFirstUseState, firstUsePulseForRole, type FirstUseState } from "@/features/pastoral-home/first-use-state";
 import { signalTitleForViewer } from "@/features/signals/display";
 import { splitPastoralSections } from "@/features/signals/sections";
@@ -26,16 +29,8 @@ export type LeaderPageView = LeaderPastoralSections & {
   navIndicator?: "risk" | "attention" | "care";
   hasPeopleInRadar: boolean;
   pastoralPulse: PastoralPulseMessage;
+  nextAction: NextPastoralAction | null;
   firstUseState: FirstUseState | null;
-};
-
-export type LeaderCurrentEventState = {
-  groupName: string;
-  locationName: string | null;
-  badgeLabel: string;
-  badgeTone: "ok" | "warn";
-  description: string;
-  ctaLabel: string;
 };
 
 export function buildLeaderPastoralSections({
@@ -114,6 +109,44 @@ export function buildLeaderPastoralPulse({
   });
 }
 
+function compactEventContext(event: LeaderCurrentEvent) {
+  return [
+    event.group?.name ?? "Célula",
+    event.locationName ?? event.group?.locationName ?? null,
+  ].filter(Boolean).join(" · ");
+}
+
+export function buildLeaderNextPastoralAction({
+  primaryGroupId,
+  currentEvent,
+}: Pick<LeaderDashboard, "primaryGroupId" | "currentEvent">): NextPastoralAction | null {
+  if (currentEvent) {
+    const completed = hasRecordedPresence(currentEvent);
+
+    return {
+      eyebrow: completed ? "Resumo do encontro" : "Próximo encontro",
+      title: `${formatShortDate(currentEvent.startsAt)}, ${formatTime(currentEvent.startsAt)}`,
+      detail: completed
+        ? `${compactEventContext(currentEvent)}. A presença já foi registrada; confira o resumo se precisar ajustar algo.`
+        : `${compactEventContext(currentEvent)}. Registre a presença quando o encontro acontecer.`,
+      href: ROUTES.event(currentEvent.id),
+      label: completed ? "Ver resumo" : "Registrar presença",
+      tone: completed ? "ok" : "presence",
+    };
+  }
+
+  if (!primaryGroupId) return null;
+
+  return {
+    eyebrow: "Rotina da célula",
+    title: "Nenhum encontro para registrar agora.",
+    detail: "Abra a célula para consultar membros, agenda e histórico quando precisar.",
+    href: ROUTES.group(primaryGroupId),
+    label: "Ver célula",
+    tone: "ok",
+  };
+}
+
 export function buildLeaderPageView({
   dashboard,
   viewer,
@@ -144,21 +177,7 @@ export function buildLeaderPageView({
       inCareCount: sections.inCarePeople.length,
     }),
     pastoralPulse: firstUseState ? firstUsePulseForRole(viewer.role) : buildLeaderPastoralPulse({ sections, viewer }),
+    nextAction: firstUseState ? null : buildLeaderNextPastoralAction(dashboard),
     firstUseState,
-  };
-}
-
-export function leaderCurrentEventState(event: LeaderCurrentEvent): LeaderCurrentEventState {
-  const completed = hasRecordedPresence(event);
-
-  return {
-    groupName: event.group?.name ?? "Célula",
-    locationName: event.locationName ?? event.group?.locationName ?? null,
-    badgeLabel: completed ? "Presença registrada" : "Aguardando presença",
-    badgeTone: completed ? "ok" : "warn",
-    description: completed
-      ? "A presença deste encontro já foi registrada. Ajuste somente se alguma marcação estiver errada."
-      : "Quando o encontro acontecer, marque a presença com calma. Isso ajuda a lembrar quem pode precisar de cuidado.",
-    ctaLabel: completed ? "Ver detalhes" : "Registrar presença",
   };
 }

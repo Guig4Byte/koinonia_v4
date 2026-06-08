@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { EmptyState, PulseCard } from "@/components/shared/base-cards";
+import { NextActionCard } from "@/components/shared/next-action-card";
 import { PastoralSectionTitle } from "@/features/pastoral-home/components/pastoral-section";
 import { FirstUseStateCard } from "@/features/pastoral-home/components/first-use-state-card";
-import { LeaderCurrentEventCard } from "@/features/leader/components/leader-current-event-card";
 import { InCareSection, PastoralSignalSection } from "@/features/pastoral-home/components/pastoral-list-cards";
 import { buildLeaderPageView } from "@/features/leader/leader-page-view";
 import { appNavForRole } from "@/features/navigation/app-nav";
@@ -51,6 +51,7 @@ export default async function LeaderPage() {
   const urgentSection = signalSectionHeading(view.urgentSignals, user, "Cuidado urgente");
   const supportSection = signalSectionHeading(view.supportSignals, user, "Pedidos de apoio");
   const attentionSection = signalSectionHeading(view.attentionSignals, user, "Membros em atenção");
+  const showFirstUseRoutineWaiting = Boolean(view.firstUseState && !dashboard.currentEvent);
 
   return (
     <AppShell
@@ -68,7 +69,11 @@ export default async function LeaderPage() {
 
         {view.firstUseState ? (
           <FirstUseStateCard state={view.firstUseState} />
-        ) : view.hasPeopleInRadar ? (
+        ) : view.nextAction ? (
+          <NextActionCard action={view.nextAction} />
+        ) : null}
+
+        {!view.firstUseState && view.hasPeopleInRadar ? (
           <>
             {view.urgentSignals.length > 0 ? (
               <PastoralSignalSection
@@ -119,28 +124,23 @@ export default async function LeaderPage() {
               />
             ) : null}
           </>
-        ) : (
+        ) : !view.firstUseState ? (
           <section className={styles.eventSection}>
             <PastoralSectionTitle detail="Sinais pastorais aparecem aqui; a lista completa fica em Célula.">Cuidado com membros</PastoralSectionTitle>
             <EmptyState>
               Nenhum membro da sua célula pede atenção agora. Para consultar a lista completa, abra Célula.
             </EmptyState>
           </section>
-        )}
+        ) : null}
 
-        <section className={styles.eventSection}>
-          <PastoralSectionTitle detail="Encontro, presença e informações da célula.">Rotina da célula</PastoralSectionTitle>
-          {dashboard.currentEvent ? (
-            <LeaderCurrentEventCard event={dashboard.currentEvent} />
-          ) : (
-            <EmptyState title={view.firstUseState ? "Aguardando primeiro encontro" : undefined}>
-              {view.firstUseState
-                ? "Quando houver encontro disponível para check-in, ele aparecerá aqui para registrar presença."
-                : "Nenhum encontro de célula precisa de presença agora. Consulte Encontros para ver próximos encontros e histórico."
-              }
+        {showFirstUseRoutineWaiting ? (
+          <section className={styles.eventSection}>
+            <PastoralSectionTitle detail="Encontro, presença e informações da célula.">Rotina da célula</PastoralSectionTitle>
+            <EmptyState title="Aguardando primeiro encontro">
+              Quando houver encontro disponível para check-in, ele aparecerá aqui para registrar presença.
             </EmptyState>
-          )}
-        </section>
+          </section>
+        ) : null}
       </div>
     </AppShell>
   );

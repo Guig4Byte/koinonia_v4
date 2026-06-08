@@ -76,7 +76,7 @@ export function buildSupervisorPageView({
     attentionSignals,
     inCarePeople,
     focusItems,
-    nextAction: firstUseState ? null : buildSupervisorNextPastoralAction(focusItems),
+    nextAction: firstUseState ? null : buildSupervisorNextPastoralAction(focusItems, dashboard.groups),
     firstUseState,
   };
 }

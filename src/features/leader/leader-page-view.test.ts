@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { AttendanceStatus, EventStatus, PersonStatus, SignalSeverity, SignalSource, UserRole } from "@/generated/prisma/client";
 import {
+  buildLeaderNextPastoralAction,
   buildLeaderPageView,
-  leaderCurrentEventState,
   leaderNavIndicator,
   type LeaderPageInCarePerson,
   type LeaderPageSignal,
@@ -88,6 +88,7 @@ describe("leader-page-view", () => {
       href: "/celulas/group-1",
       label: "Abrir célula",
     });
+    expect(view.nextAction).toBeNull();
     expect(view.pastoralPulse.title).toBe("Sua célula está pronta para começar.");
   });
 
@@ -113,40 +114,60 @@ describe("leader-page-view", () => {
       href: "/eventos/event-current",
       label: "Registrar presença",
     });
+    expect(view.nextAction).toBeNull();
   });
 
-  it("monta estado do encontro atual aguardando presença ou já registrado", () => {
-    const pending = leaderCurrentEventState({
-      id: "event-1",
-      startsAt: new Date("2026-05-08T12:00:00.000Z"),
-      status: EventStatus.CHECKIN_OPEN,
-      attendances: [],
-      group: { name: "Célula Central", locationName: "Casa da Ana" },
+  it("destaca o próximo check-in como ação principal do líder", () => {
+    const action = buildLeaderNextPastoralAction({
+      primaryGroupId: "group-1",
+      currentEvent: {
+        id: "event-current",
+        startsAt: new Date("2026-05-08T23:00:00.000Z"),
+        status: EventStatus.CHECKIN_OPEN,
+        attendances: [],
+        group: { name: "Célula Central", locationName: "Casa da Ana" },
+      },
     });
 
-    expect(pending).toMatchObject({
-      groupName: "Célula Central",
-      locationName: "Casa da Ana",
-      badgeLabel: "Aguardando presença",
-      badgeTone: "warn",
-      ctaLabel: "Registrar presença",
+    expect(action).toMatchObject({
+      eyebrow: "Próximo encontro",
+      title: "08 mai, 20:00",
+      detail: "Célula Central · Casa da Ana. Registre a presença quando o encontro acontecer.",
+      href: "/eventos/event-current",
+      label: "Registrar presença",
+      tone: "presence",
+    });
+  });
+
+  it("destaca o resumo quando a presença do encontro já foi registrada", () => {
+    const action = buildLeaderNextPastoralAction({
+      primaryGroupId: "group-1",
+      currentEvent: {
+        id: "event-current",
+        startsAt: new Date("2026-05-08T23:00:00.000Z"),
+        status: EventStatus.SCHEDULED,
+        attendances: [{ status: AttendanceStatus.PRESENT }],
+        group: { name: "Célula Central", locationName: "Casa da Ana" },
+      },
     });
 
-    const completed = leaderCurrentEventState({
-      id: "event-2",
-      startsAt: new Date("2026-05-08T12:00:00.000Z"),
-      status: EventStatus.SCHEDULED,
-      locationName: "Local deste encontro",
-      attendances: [{ status: AttendanceStatus.PRESENT }],
-      group: { name: null, locationName: "Local padrão" },
+    expect(action).toMatchObject({
+      eyebrow: "Resumo do encontro",
+      title: "08 mai, 20:00",
+      detail: "Célula Central · Casa da Ana. A presença já foi registrada; confira o resumo se precisar ajustar algo.",
+      href: "/eventos/event-current",
+      label: "Ver resumo",
+      tone: "ok",
     });
+  });
 
-    expect(completed).toMatchObject({
-      groupName: "Célula",
-      locationName: "Local deste encontro",
-      badgeLabel: "Presença registrada",
-      badgeTone: "ok",
-      ctaLabel: "Ver detalhes",
+  it("leva o líder para a célula quando não há encontro atual", () => {
+    expect(buildLeaderNextPastoralAction({ primaryGroupId: "group-1", currentEvent: null })).toMatchObject({
+      eyebrow: "Rotina da célula",
+      title: "Nenhum encontro para registrar agora.",
+      href: "/celulas/group-1",
+      label: "Ver célula",
+      tone: "ok",
     });
   });
 });

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { EmptyState, PulseCard } from "@/components/shared/base-cards";
+import { NextActionCard } from "@/components/shared/next-action-card";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { SupervisorFocusPanel } from "@/features/pastoral-home/components/supervisor-focus-panel";
@@ -36,6 +37,8 @@ export default async function SupervisorPage() {
         <FirstUseStateCard state={view.firstUseState} />
       ) : view.focusItems.length > 0 ? (
         <SupervisorFocusPanel items={view.focusItems} />
+      ) : view.nextAction ? (
+        <NextActionCard action={view.nextAction} />
       ) : (
         <EmptyState>
           Tudo tranquilo agora. Nenhum ponto de acompanhamento pastoral aberto no seu escopo.
