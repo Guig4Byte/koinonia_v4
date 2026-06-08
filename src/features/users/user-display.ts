@@ -29,10 +29,6 @@ export const userRoleBadgeTone: Record<UserRole, BadgeTone> = {
   LEADER: "info",
 };
 
-export function isTemporaryLogin(email: string) {
-  return email.trim().toLowerCase().endsWith("@koinonia.local");
-}
-
 export function userStatusLabel(isActive: boolean) {
   return isActive ? "Ativo" : "Inativo";
 }

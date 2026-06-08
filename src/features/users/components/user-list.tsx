@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Card } from "@/components/ui/card";
 import {
-  isTemporaryLogin,
   userRoleBadgeTone,
   userRoleLabels,
   userStatusLabel,
@@ -41,11 +40,6 @@ export function UserList({ users, className }: { users: ManagedUserListItem[]; c
                 <Badge tone={userStatusTone(user.isActive)} size="sm" shape="rounded" maxWidth="none">
                   {userStatusLabel(user.isActive)}
                 </Badge>
-                {isTemporaryLogin(user.email) ? (
-                  <Badge tone="neutral" size="xs" shape="rounded" maxWidth="none">
-                    Login temporário
-                  </Badge>
-                ) : null}
               </div>
             </div>
             <ButtonLink href={ROUTES.editUser(user.id)} variant="secondary" size="sm" density="inlineCompact">
