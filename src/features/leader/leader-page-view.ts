@@ -1,7 +1,6 @@
 import { hasRecordedPresence } from "@/features/events/relevant-event";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { ROUTES } from "@/lib/routes";
-import { buildGroupSetupChecklist, type GroupSetupChecklist } from "@/features/groups/group-setup-checklist";
 import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features/pastoral-pulse";
 import type { NextPastoralAction } from "@/features/pastoral-home/components/next-pastoral-action-card";
 import { buildLeaderFirstUseState, firstUsePulseForRole, type FirstUseState } from "@/features/pastoral-home/first-use-state";
@@ -32,7 +31,6 @@ export type LeaderPageView = LeaderPastoralSections & {
   pastoralPulse: PastoralPulseMessage;
   nextAction: NextPastoralAction | null;
   firstUseState: FirstUseState | null;
-  setupChecklist: GroupSetupChecklist | null;
 };
 
 export function buildLeaderPastoralSections({
@@ -169,13 +167,6 @@ export function buildLeaderPageView({
     hasRecordedMeetings: dashboard.hasRecordedMeetings,
     hasPeopleInRadar,
   });
-  const setupChecklist = dashboard.primaryGroup && !dashboard.hasRecordedMeetings
-    ? buildGroupSetupChecklist({
-        group: dashboard.primaryGroup,
-        currentEventId: dashboard.currentEvent?.id,
-      })
-    : null;
-
   return {
     ...sections,
     hasPeopleInRadar,
@@ -187,6 +178,5 @@ export function buildLeaderPageView({
     pastoralPulse: firstUseState ? firstUsePulseForRole(viewer.role) : buildLeaderPastoralPulse({ sections, viewer }),
     nextAction: firstUseState ? null : buildLeaderNextPastoralAction(dashboard),
     firstUseState,
-    setupChecklist,
   };
 }

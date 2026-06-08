@@ -93,6 +93,10 @@
   line-height: 1.25;
 }
 
+.setupChecklist {
+  margin-bottom: 0.85rem;
+}
+
 @media (max-width: 420px) {
   .heroHeader {
     gap: 0.65rem;

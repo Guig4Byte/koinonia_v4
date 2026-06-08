@@ -6,7 +6,6 @@ export {
 export type {
   LeaderCurrentEvent,
   LeaderDashboard,
-  LeaderDashboardGroup,
   LeaderPageInCarePerson,
   LeaderPageSignal,
   LeaderPageViewer,

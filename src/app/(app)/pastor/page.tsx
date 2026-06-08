@@ -6,8 +6,10 @@ import { PastorRadarCard } from "@/features/pastoral-home/components/pastor-rada
 import { PastorTeamSummaryCard } from "@/features/pastoral-home/components/pastor-team-summary-card";
 import { NextPastoralActionCard } from "@/features/pastoral-home/components/next-pastoral-action-card";
 import { FirstUseStateCard } from "@/features/pastoral-home/components/first-use-state-card";
+import { RegistrationQualityCard } from "@/features/registration-quality/components/registration-quality-card";
 import { SearchBox } from "@/features/search/components/search-box";
 import { getPastorDashboard } from "@/features/dashboard/queries";
+import { getRegistrationQualitySummary } from "@/features/registration-quality/registration-quality.query";
 import { canUsePastorDashboard } from "@/features/permissions/permissions";
 import { buildPastorPageView } from "@/features/pastoral-home/pastor-page-view";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -21,7 +23,10 @@ export default async function PastorPage() {
     redirect(ROUTES.root);
   }
 
-  const dashboard = await getPastorDashboard(user);
+  const [dashboard, registrationQuality] = await Promise.all([
+    getPastorDashboard(user),
+    getRegistrationQualitySummary(user),
+  ]);
   const view = buildPastorPageView({ dashboard, user });
 
   return (
@@ -48,6 +53,8 @@ export default async function PastorPage() {
       <PastorPresenceCard weeklyPresence={view.weeklyPresence} className="mt-4" />
 
       <PastorTeamSummaryCard items={view.teamSummaryItems} />
+
+      <RegistrationQualityCard summary={registrationQuality} className="mt-4" />
     </AppShell>
   );
 }

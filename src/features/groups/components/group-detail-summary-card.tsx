@@ -40,6 +40,7 @@ function SummaryMetricRow({
   detail,
   value,
   valueTone = "neutral",
+  valueEmphasis = "strong",
   trend,
 }: {
   icon: ReactNode;
@@ -47,6 +48,7 @@ function SummaryMetricRow({
   detail: string;
   value: ReactNode;
   valueTone?: MetricTone;
+  valueEmphasis?: "strong" | "muted";
   trend?: PresenceTrend | null;
 }) {
   return (
@@ -59,7 +61,12 @@ function SummaryMetricRow({
         <p className={styles.metricDetail}>{detail}</p>
       </div>
       <div className={styles.valueWrap}>
-        <p className={cn(styles.metricValue, summaryValueTextClass(valueTone))}>
+        <p
+          className={cn(
+            styles.metricValue,
+            valueEmphasis === "muted" ? styles.metricValueMuted : summaryValueTextClass(valueTone),
+          )}
+        >
           {value}
         </p>
         {trend ? (
@@ -95,6 +102,7 @@ export function GroupDetailSummaryCard({ summary }: { summary: GroupDetailSummar
             detail={summary.presence.detail}
             value={presenceValue}
             valueTone={presenceTone}
+            valueEmphasis={summary.presence.hasPresenceData ? "strong" : "muted"}
             trend={summary.presence.trend}
           />
 

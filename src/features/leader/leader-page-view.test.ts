@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AttendanceStatus, EventStatus, GroupResponsibilityRole, PersonStatus, SignalSeverity, SignalSource, UserRole } from "@/generated/prisma/client";
+import { AttendanceStatus, EventStatus, PersonStatus, SignalSeverity, SignalSource, UserRole } from "@/generated/prisma/client";
 import {
   buildLeaderNextPastoralAction,
   buildLeaderPageView,
@@ -8,7 +8,6 @@ import {
   type LeaderPageSignal,
   type LeaderPageViewer,
 } from "./leader-page-view";
-import type { LeaderDashboardGroup } from "./leader-dashboard-types";
 
 const viewer: LeaderPageViewer = { id: "leader-1", role: UserRole.LEADER };
 
@@ -34,22 +33,6 @@ function signal(overrides: Partial<LeaderPageSignal> = {}): LeaderPageSignal {
   };
 }
 
-function dashboardGroup(overrides: Partial<LeaderDashboardGroup> = {}): LeaderDashboardGroup {
-  return {
-    id: "group-1",
-    name: "Célula Central",
-    responsibilities: [
-      { role: GroupResponsibilityRole.LEADER, user: { name: "Bruno" } },
-      { role: GroupResponsibilityRole.SUPERVISOR, user: { name: "Fernando" } },
-    ],
-    memberships: [{ id: "membership-1" }, { id: "membership-2" }],
-    meetingDayOfWeek: 3,
-    meetingTime: "20:00",
-    recordedEventsCount: 0,
-    ...overrides,
-  };
-}
-
 describe("leader-page-view", () => {
   it("resolve indicador da navegação por prioridade pastoral", () => {
     expect(leaderNavIndicator({ urgentCount: 1, attentionCount: 5, inCareCount: 2 })).toBe("risk");
@@ -72,7 +55,6 @@ describe("leader-page-view", () => {
 
     const dashboard = {
       primaryGroupId: "group-1",
-      primaryGroup: dashboardGroup({ recordedEventsCount: 1 }),
       attentionPeople: [attention, support, urgent],
       inCarePeople: [inCare, hiddenInCare],
       currentEvent: null,
@@ -92,7 +74,6 @@ describe("leader-page-view", () => {
     const view = buildLeaderPageView({
       dashboard: {
         primaryGroupId: "group-1",
-        primaryGroup: dashboardGroup(),
         attentionPeople: [],
         inCarePeople: [],
         currentEvent: null,
@@ -108,17 +89,6 @@ describe("leader-page-view", () => {
       label: "Abrir célula",
     });
     expect(view.nextAction).toBeNull();
-    expect(view.setupChecklist).toMatchObject({
-      groupName: "Célula Central",
-      action: { href: "/celulas/group-1", label: "Ver célula" },
-    });
-    expect(view.setupChecklist?.items.map((item) => [item.key, item.complete])).toEqual([
-      ["leaders", true],
-      ["supervisors", true],
-      ["members", true],
-      ["schedule", true],
-      ["firstMeeting", false],
-    ]);
     expect(view.pastoralPulse.title).toBe("Sua célula está pronta para começar.");
   });
 
@@ -126,7 +96,6 @@ describe("leader-page-view", () => {
     const view = buildLeaderPageView({
       dashboard: {
         primaryGroupId: "group-1",
-        primaryGroup: dashboardGroup(),
         attentionPeople: [],
         inCarePeople: [],
         currentEvent: {
@@ -146,10 +115,6 @@ describe("leader-page-view", () => {
       label: "Registrar presença",
     });
     expect(view.nextAction).toBeNull();
-    expect(view.setupChecklist?.action).toEqual({
-      href: "/eventos/event-current",
-      label: "Registrar primeiro encontro",
-    });
   });
 
   it("destaca o próximo check-in como ação principal do líder", () => {

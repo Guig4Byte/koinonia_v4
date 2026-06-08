@@ -111,6 +111,7 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
         {setupChecklist ? (
           <GroupSetupChecklistCard
             checklist={setupChecklist}
+            className={styles.setupChecklist}
             showAction={shouldShowGroupSetupChecklistAction(setupChecklist, setupChecklistCompetingHrefs)}
           />
         ) : null}

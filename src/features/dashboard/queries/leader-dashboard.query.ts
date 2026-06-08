@@ -41,7 +41,6 @@ export async function getLeaderDashboard(user: PermissionUser): Promise<LeaderDa
     : [];
 
   const currentEvent = selectRelevantCheckInEvent(visibleEvents, now);
-  const primaryGroup = groupScoped.groups[0] ?? null;
   const hasRecordedMeetings = groupScoped.groups.some((group) => (group.recordedEventsCount ?? 0) > 0);
   const inCarePeople = groupScoped.groups.flatMap((group) =>
     group.memberships.map((membership) => ({ ...membership.person, groupName: group.name })),
@@ -61,8 +60,7 @@ export async function getLeaderDashboard(user: PermissionUser): Promise<LeaderDa
   }));
 
   return {
-    primaryGroupId: primaryGroup?.id ?? null,
-    primaryGroup,
+    primaryGroupId: groupScoped.groups[0]?.id ?? null,
     attentionPeople,
     inCarePeople,
     currentEvent,
