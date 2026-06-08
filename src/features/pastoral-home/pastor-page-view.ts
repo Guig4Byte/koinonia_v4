@@ -84,7 +84,7 @@ function buildPastorMacroPulse(summary: PastorPageTeamSummary, firstUseState: Fi
   }
 
   return {
-    title: "A equipe pastoral está estável agora.",
+    title: "A equipe pastoral está estável no momento.",
     subtitle: "Atenções locais seguem com líderes e supervisores; a busca ajuda quando for preciso consultar alguém.",
     tone: "ok",
   };

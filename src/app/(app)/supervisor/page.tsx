@@ -6,6 +6,7 @@ import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { SupervisorFocusPanel } from "@/features/pastoral-home/components/supervisor-focus-panel";
 import { FirstUseStateCard } from "@/features/pastoral-home/components/first-use-state-card";
+import { EMPTY_STATE_COPY } from "@/features/empty-states/empty-state-copy";
 import { buildSupervisorPageView } from "@/features/pastoral-home/supervisor-page-view";
 import { canUseSupervisorDashboard } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -41,7 +42,7 @@ export default async function SupervisorPage() {
         <NextActionCard action={view.nextAction} />
       ) : (
         <EmptyState>
-          Tudo tranquilo agora. Nenhum ponto de acompanhamento pastoral aberto no seu escopo.
+          Tudo tranquilo no seu escopo. {EMPTY_STATE_COPY.care.noOpenSignalTitle}
         </EmptyState>
       )}
     </AppShell>

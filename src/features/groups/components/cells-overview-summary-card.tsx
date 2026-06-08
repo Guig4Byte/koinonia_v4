@@ -15,6 +15,7 @@ import {
 import { formatPresenceRate } from "@/features/events/presence-display";
 import { cn } from "@/lib/cn";
 import { NO_RECENT_PRESENCE_LABEL } from "@/lib/filter-param";
+import { EMPTY_STATE_COPY } from "@/features/empty-states/empty-state-copy";
 
 function summaryValueTextClass(tone: MetricTone): string {
   return tone === "neutral" ? "text-[color:var(--color-text-primary)]" : metricTextClass(tone);
@@ -190,7 +191,7 @@ export function CellsOverviewSummaryCard({
         <FooterMetric
           icon={<Heart className="h-4 w-4" strokeWidth={2.35} absoluteStrokeWidth />}
           label="Cuidado em destaque"
-          detail={groupsNeedingAttentionCount > 0 ? "Prioridade para acompanhar." : "Sem alerta aberto agora."}
+          detail={groupsNeedingAttentionCount > 0 ? "Prioridade para acompanhar." : EMPTY_STATE_COPY.care.noOpenSignalTitle}
           value={groupsNeedingAttentionCount}
           tone={groupsNeedingAttentionCount > 0 ? "risk" : "ok"}
         />

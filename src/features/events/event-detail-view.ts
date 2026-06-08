@@ -85,7 +85,7 @@ export function buildEventPastoralCue({
 
   return {
     title: "Encontro sem sinais imediatos",
-    description: "Todos os membros marcados estiveram presentes. Nenhuma ausência ou justificativa pede atenção agora.",
+    description: "Todos os membros marcados estiveram presentes. Nenhuma ausência ou justificativa pede atenção no momento.",
     tone: "ok",
   };
 }

@@ -139,7 +139,7 @@ export function buildLeaderNextPastoralAction({
 
   return {
     eyebrow: "Rotina da célula",
-    title: "Nenhum encontro para registrar agora.",
+    title: "Nenhum encontro disponível para registro.",
     detail: "Abra a célula para consultar membros, agenda e histórico quando precisar.",
     href: ROUTES.group(primaryGroupId),
     label: "Ver célula",

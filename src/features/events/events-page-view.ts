@@ -6,6 +6,7 @@ import { canCheckInEvent, type PermissionUser } from "@/features/permissions/per
 import { countLabel, formatShortDate, formatTime } from "@/lib/format";
 import { normalizeSearchText } from "@/lib/text";
 import { addBrasiliaDays, endOfBrasiliaWeek, isTodayInBrasilia, startOfBrasiliaDay, startOfBrasiliaWeek } from "@/lib/brasilia-time";
+import { EMPTY_STATE_COPY } from "@/features/empty-states/empty-state-copy";
 
 export const EVENT_LIST_LIMIT = 4;
 export const EVENTS_PAGE_HISTORY_LOOKBACK_DAYS = 60;
@@ -196,8 +197,8 @@ export function buildEventsConsultationView({
       ? `${eventCountLabel} com presença registrada`
       : `${eventCountLabel} aguardando registro`,
     emptyMessage: mode === "historico"
-      ? "Nenhuma presença registrada neste período. Troque o filtro para conferir outros recortes."
-      : "Nenhum encontro aguardando registro neste período. Os encontros deste recorte estão em dia.",
+      ? EMPTY_STATE_COPY.events.noHistoryInPeriodDetail
+      : EMPTY_STATE_COPY.events.noPendingInPeriodDetail,
     periodLabel: eventPeriodLabel(period),
   };
 }

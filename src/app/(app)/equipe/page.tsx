@@ -8,6 +8,7 @@ import { PageHero } from "@/components/shared/page-hero";
 import { ProgressiveList } from "@/components/shared/progressive-list";
 import { TeamStructureSearch } from "@/features/team/components/team-structure-search";
 import { TeamSectionAnchorScroll } from "@/features/team/components/team-section-anchor-scroll";
+import { EMPTY_STATE_COPY } from "@/features/empty-states/empty-state-copy";
 import {
   TeamFilterContextCard,
   TeamStructureAdjustments,
@@ -178,7 +179,7 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
             <EmptyState
               title={
                 isFiltered
-                  ? "Nenhum resultado nesse recorte"
+                  ? EMPTY_STATE_COPY.filtered.result
                   : "Nenhum supervisor cadastrado"
               }
             >

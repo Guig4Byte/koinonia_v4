@@ -1,4 +1,5 @@
 import type { GroupSectionKey } from "@/features/groups/cells-page-view/cells-page-view.types";
+import { EMPTY_STATE_COPY } from "@/features/empty-states/empty-state-copy";
 
 export const CELLS_PAGE_SECTION_LIMIT = 4;
 export const NO_RECENT_PRESENCE_BADGE_LABEL = "Sem presença";
@@ -17,6 +18,6 @@ export const GROUP_SECTIONS: Array<{ key: GroupSectionKey; title: string; detail
   {
     key: "stable",
     title: "Acompanhamento estável",
-    detail: "Sem sinal aberto pedindo cuidado agora.",
+    detail: EMPTY_STATE_COPY.care.noOpenSignalTitle,
   },
 ];

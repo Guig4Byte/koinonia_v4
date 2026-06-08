@@ -1,5 +1,6 @@
 import { GroupResponsibilityRole, UserRole } from "@/generated/prisma/client";
 import { formatPresenceRate, presenceTone } from "@/features/events/presence-display";
+import { EMPTY_STATE_COPY } from "@/features/empty-states/empty-state-copy";
 import {
   isPresenceRecordedEvent,
   splitPresenceTrendSamples,
@@ -188,7 +189,7 @@ export function buildGroupDetailPageModel({
       count: attentionPeople.length,
       detail: attentionPeople.length > 0
         ? "Membros que merecem acompanhamento próximo."
-        : "Nenhum sinal aberto pedindo cuidado agora.",
+        : EMPTY_STATE_COPY.care.noOpenSignalTitle,
       tone: attentionPeople.length > 0 ? hasRiskSignal ? "risk" : "warn" : "ok",
     },
   };

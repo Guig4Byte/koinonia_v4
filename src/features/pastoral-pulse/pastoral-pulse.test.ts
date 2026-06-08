@@ -43,6 +43,6 @@ describe("pastoral pulse", () => {
       counts: { urgentOrPastoral: 0, support: 3 },
     });
 
-    expect(message.title).toBe("Nenhum caso pastoral urgente ou encaminhado agora.");
+    expect(message.title).toBe("Nenhum caso pastoral urgente ou encaminhado no momento.");
   });
 });

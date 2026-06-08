@@ -3,6 +3,7 @@ import { EmptyState } from "@/components/shared/base-cards";
 import { PageHero } from "@/components/shared/page-hero";
 import { ButtonLink } from "@/components/ui/button-link";
 import { buildEventsConsultationView, type EventConsultationMode, type EventListEvent, type EventPeriod } from "@/features/events/events-page-view";
+import { EMPTY_STATE_COPY } from "@/features/empty-states/empty-state-copy";
 import type { PermissionUser } from "@/features/permissions/permissions";
 import { ROUTES } from "@/lib/routes";
 import { EVENTS_CONSULTATION_SECTION_ID, eventsConsultationSectionHref } from "./event-consultation-routes";
@@ -97,7 +98,7 @@ export function EventsConsultationView({
           />
         ) : (
           <EmptyState
-            title={mode === "historico" ? "Nenhum histórico neste período" : "Tudo em dia neste período"}
+            title={mode === "historico" ? EMPTY_STATE_COPY.events.noHistoryInPeriodTitle : EMPTY_STATE_COPY.events.noPendingInPeriodTitle}
             action={(
               <ButtonLink href={ROUTES.events} variant="quiet" size="sm" shape="pill">
                 Voltar para encontros

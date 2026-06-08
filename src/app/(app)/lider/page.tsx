@@ -4,6 +4,7 @@ import { EmptyState, PulseCard } from "@/components/shared/base-cards";
 import { NextActionCard } from "@/components/shared/next-action-card";
 import { PastoralSectionTitle } from "@/features/pastoral-home/components/pastoral-section";
 import { FirstUseStateCard } from "@/features/pastoral-home/components/first-use-state-card";
+import { EMPTY_STATE_COPY } from "@/features/empty-states/empty-state-copy";
 import { InCareSection, PastoralSignalSection } from "@/features/pastoral-home/components/pastoral-list-cards";
 import { buildLeaderPageView } from "@/features/leader/leader-page-view";
 import { appNavForRole } from "@/features/navigation/app-nav";
@@ -79,7 +80,7 @@ export default async function LeaderPage() {
               <PastoralSignalSection
                 title={urgentSection.title}
                 detail="Há um sinal sensível que vale acompanhar com calma e proximidade."
-                emptyMessage="Nenhum cuidado urgente aberto agora."
+                emptyMessage={EMPTY_STATE_COPY.care.noUrgentCare}
                 signals={view.urgentSignals}
                 viewer={user}
                 contextForSignal={urgentSection.showCardContext ? (signal, viewer) => signalTitleForViewer(signal, viewer) : hideSignalCardDescription}
@@ -92,7 +93,7 @@ export default async function LeaderPage() {
               <PastoralSignalSection
                 title={supportSection.title}
                 detail="Você continua perto do membro, com a supervisão caminhando junto."
-                emptyMessage="Nenhum pedido de apoio aberto agora."
+                emptyMessage={EMPTY_STATE_COPY.care.noSupportRequest}
                 signals={view.supportSignals}
                 viewer={user}
                 contextForSignal={supportSection.showCardContext ? (signal, viewer) => signalTitleForViewer(signal, viewer) : hideSignalCardDescription}
@@ -105,7 +106,7 @@ export default async function LeaderPage() {
               <PastoralSignalSection
                 title={attentionSection.title}
                 detail="Um gesto simples de proximidade pode evitar que o vínculo esfrie."
-                emptyMessage="Nenhum membro da sua célula está em atenção agora."
+                emptyMessage={EMPTY_STATE_COPY.care.noMemberAttention}
                 signals={view.attentionSignals}
                 viewer={user}
                 contextForSignal={attentionSection.showCardContext ? (signal, viewer) => signalTitleForViewer(signal, viewer) : hideSignalCardDescription}
@@ -118,7 +119,7 @@ export default async function LeaderPage() {
               <InCareSection
                 title="Membros em cuidado"
                 detail="O cuidado já começou; agora importa manter constância e presença."
-                emptyMessage="Nenhum membro em cuidado agora."
+                emptyMessage={EMPTY_STATE_COPY.care.noMemberInCare}
                 people={view.inCarePeople}
                 tone="quiet"
               />
@@ -128,7 +129,7 @@ export default async function LeaderPage() {
           <section className={styles.eventSection}>
             <PastoralSectionTitle detail="Sinais pastorais aparecem aqui; a lista completa fica em Célula.">Cuidado com membros</PastoralSectionTitle>
             <EmptyState>
-              Nenhum membro da sua célula pede atenção agora. Para consultar a lista completa, abra Célula.
+              {EMPTY_STATE_COPY.care.noMemberNeedsAttention}
             </EmptyState>
           </section>
         ) : null}

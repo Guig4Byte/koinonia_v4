@@ -4,6 +4,7 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { metricTextClass } from "@/components/shared/presence-metric";
 import { AttendanceStatus } from "@/generated/prisma/client";
 import { ProgressiveList } from "@/components/shared/progressive-list";
+import { EMPTY_STATE_COPY } from "@/features/empty-states/empty-state-copy";
 import { CardActionCue } from "@/components/ui/card-action-cue";
 import { CardLink } from "@/components/ui/card-link";
 import { formatPresenceRate, presenceTone } from "@/features/events/presence-display";
@@ -72,7 +73,7 @@ export function GroupRegisteredEncountersList({ events }: { events: GroupRegiste
           })}
         </ProgressiveList>
         {events.length === 0 ? (
-          <EmptyState compact>Ainda não há encontros registrados para resumir presença.</EmptyState>
+          <EmptyState compact title={EMPTY_STATE_COPY.events.noRegisteredYetTitle}>{EMPTY_STATE_COPY.events.noRegisteredYetDetail}</EmptyState>
         ) : null}
       </div>
     </section>

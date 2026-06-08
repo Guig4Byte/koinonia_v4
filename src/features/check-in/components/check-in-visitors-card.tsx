@@ -76,7 +76,7 @@ export function CheckInVisitorsCard({
           {countLabel(fallbackSavedVisitorCount, "visitante já salvo", "visitantes já salvos")}.
         </Card>
       ) : (
-        <p className="mt-2 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">Nenhum visitante marcado neste encontro até agora.</p>
+        <p className="mt-2 text-[length:var(--text-sm)] text-[color:var(--color-text-secondary)]">Nenhum visitante marcado neste encontro.</p>
       )}
 
       <div className="mt-4 flex gap-2">

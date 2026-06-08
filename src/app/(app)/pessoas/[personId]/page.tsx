@@ -10,6 +10,7 @@ import { CareOverviewCard } from "@/features/care/components/care-overview-card"
 import { CareTouchHistory } from "@/features/care/components/care-touch-history";
 import { PersonStatusActions } from "@/features/care/components/person-status-actions";
 import { CARE_COPY } from "@/features/care/care-copy";
+import { EMPTY_STATE_COPY } from "@/features/empty-states/empty-state-copy";
 import { PersonPresenceCard } from "@/features/people/components/person-presence-card";
 import { SignalSupportActions } from "@/features/signals/components/signal-support-actions";
 import { cn } from "@/lib/cn";
@@ -72,10 +73,10 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
           ))}
 
           {data.signals.openCount === 0 ? (
-            <EmptyState className={styles.emptyState} title="Nada pede cuidado agora.">
+            <EmptyState className={styles.emptyState} title={EMPTY_STATE_COPY.care.noOpenSignalTitle}>
               {data.care.hasCareTouch
                 ? "O cuidado mais recente aparece abaixo, e o irmão segue no radar pastoral."
-                : "Este irmão segue disponível para consulta quando houver um contato real de cuidado."}
+                : EMPTY_STATE_COPY.care.noOpenSignalDetail}
             </EmptyState>
           ) : null}
         </div>

@@ -1,4 +1,5 @@
 import { memberMatchesFilter, type MembersFilter } from "@/features/people/member-filters";
+import { isInCareStatus } from "@/features/people/person-status";
 import { countLabel } from "@/lib/format";
 import {
   FILTER_ACTIVE,
@@ -40,10 +41,11 @@ export function groupMembersSectionDetail({
 
 function groupMemberBuckets(members: MemberDisplay[]) {
   const signalMembers = members.filter((member) => member.priorityRank <= GROUP_MEMBER_SIGNAL_MAX_PRIORITY);
+  const allInCareMembers = members.filter((member) => isInCareStatus(member.status));
   const inCareMembers = members.filter((member) => member.priorityRank === GROUP_MEMBER_IN_CARE_PRIORITY);
   const activeMembers = members.filter((member) => member.priorityRank > GROUP_MEMBER_IN_CARE_PRIORITY);
 
-  return { signalMembers, inCareMembers, activeMembers };
+  return { signalMembers, allInCareMembers, inCareMembers, activeMembers };
 }
 
 export function resolveGroupMembersInitialFilter(
@@ -53,12 +55,12 @@ export function resolveGroupMembersInitialFilter(
 ): MembersFilter {
   if (isExplicitFilter) return preferredFilter;
 
-  const { signalMembers, inCareMembers, activeMembers } = groupMemberBuckets(members);
+  const { signalMembers, allInCareMembers, activeMembers } = groupMemberBuckets(members);
   if (preferredFilter === FILTER_ATTENTION && signalMembers.length === 0) {
-    if (inCareMembers.length > 0) return FILTER_IN_CARE;
+    if (allInCareMembers.length > 0) return FILTER_IN_CARE;
     if (activeMembers.length > 0) return FILTER_ACTIVE;
   }
-  if (preferredFilter === FILTER_IN_CARE && inCareMembers.length === 0 && activeMembers.length > 0) return FILTER_ACTIVE;
+  if (preferredFilter === FILTER_IN_CARE && allInCareMembers.length === 0 && activeMembers.length > 0) return FILTER_ACTIVE;
 
   return preferredFilter;
 }
@@ -70,10 +72,9 @@ export function buildGroupMembersView(
 ): GroupMembersView {
   const visibleMembers = members.filter((member) => memberMatchesFilter(member, activeFilter, {
     attentionMaxPriorityRank: GROUP_MEMBER_SIGNAL_MAX_PRIORITY,
-    inCarePriorityRank: GROUP_MEMBER_IN_CARE_PRIORITY,
     activeMinPriorityRank: GROUP_MEMBER_IN_CARE_PRIORITY + 1,
   }));
-  const { signalMembers, inCareMembers, activeMembers } = groupMemberBuckets(members);
+  const { signalMembers, allInCareMembers, inCareMembers, activeMembers } = groupMemberBuckets(members);
   const focusedMembers = activeFocus
     ? members.filter((member) => groupMemberMatchesFocus(member, activeFocus))
     : [];
@@ -88,13 +89,13 @@ export function buildGroupMembersView(
     regularMembers,
     filterCounts: {
       [FILTER_ATTENTION]: signalMembers.length,
-      [FILTER_IN_CARE]: inCareMembers.length,
+      [FILTER_IN_CARE]: allInCareMembers.length,
       [FILTER_ACTIVE]: activeMembers.length,
     },
     sectionDetail: groupMembersSectionDetail({
       totalCount: members.length,
       priorityCount: signalMembers.length,
-      inCareCount: inCareMembers.length,
+      inCareCount: allInCareMembers.length,
       visibleCount: visibleMembers.length,
       activeFilter,
     }),

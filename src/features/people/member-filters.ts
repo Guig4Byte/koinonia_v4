@@ -23,7 +23,6 @@ type MemberFilterable = {
 
 type MemberFilterOptions = {
   attentionMaxPriorityRank: number;
-  inCarePriorityRank?: number;
   activeMinPriorityRank?: number;
 };
 
@@ -52,10 +51,7 @@ export function memberMatchesFilter(
   if (filter === FILTER_ATTENTION) return member.priorityRank <= options.attentionMaxPriorityRank;
 
   if (filter === FILTER_IN_CARE) {
-    const isInCare = isInCareStatus(member.status);
-    return options.inCarePriorityRank === undefined
-      ? isInCare
-      : isInCare && member.priorityRank === options.inCarePriorityRank;
+    return isInCareStatus(member.status);
   }
 
   if (filter === FILTER_ACTIVE) {

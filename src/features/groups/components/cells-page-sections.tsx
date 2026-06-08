@@ -41,7 +41,7 @@ function sectionDetailLabel(section: CellsPageView["groupedSections"][number]) {
 
   if (section.key === "care") return `${count} ${isSingular ? "pede" : "pedem"} prioridade no acompanhamento.`;
   if (section.key === "presence") return `${count} ${isSingular ? "precisa" : "precisam"} de leitura sobre presença.`;
-  return `${count} sem sinal aberto agora.`;
+  return `${count} sem sinal aberto no momento.`;
 }
 
 export function CellsPageSections({ sections, activeFilter }: { sections: CellsPageView["groupedSections"]; activeFilter: CellsFilter }) {

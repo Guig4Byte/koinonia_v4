@@ -7,6 +7,7 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { Card } from "@/components/ui/card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { UserList } from "@/features/users/components/user-list";
+import { EMPTY_STATE_COPY } from "@/features/empty-states/empty-state-copy";
 import { UsersStructureSearch } from "@/features/users/components/users-structure-search";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { canManageUsers } from "@/features/permissions/permissions";
@@ -93,7 +94,7 @@ function resultRangeLabel({
   total: number;
   currentPage: number;
 }) {
-  if (total === 0) return "Nenhum usuário encontrado nesse recorte.";
+  if (total === 0) return EMPTY_STATE_COPY.filtered.user;
 
   const start = (currentPage - 1) * USERS_PAGE_SIZE + 1;
   const end = Math.min(currentPage * USERS_PAGE_SIZE, total);
@@ -271,7 +272,7 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
             </>
           ) : (
             <EmptyState
-              title={isFiltered ? "Nenhum usuário nesse recorte" : "Nenhum usuário cadastrado"}
+              title={isFiltered ? EMPTY_STATE_COPY.filtered.user : EMPTY_STATE_COPY.users.noneTitle}
               action={(
                 isFiltered ? (
                   <ButtonLink href={clearFiltersHref} variant="quiet" size="sm">
@@ -286,7 +287,7 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
             >
               {isFiltered
                 ? "A busca ou os filtros podem ser limpos para voltar à lista completa."
-                : "Quando pastor, supervisores e líderes tiverem acesso, eles aparecerão aqui."
+                : EMPTY_STATE_COPY.users.noneDetail
               }
             </EmptyState>
           )}

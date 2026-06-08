@@ -164,7 +164,7 @@ describe("leader-page-view", () => {
   it("leva o líder para a célula quando não há encontro atual", () => {
     expect(buildLeaderNextPastoralAction({ primaryGroupId: "group-1", currentEvent: null })).toMatchObject({
       eyebrow: "Rotina da célula",
-      title: "Nenhum encontro para registrar agora.",
+      title: "Nenhum encontro disponível para registro.",
       href: "/celulas/group-1",
       label: "Ver célula",
       tone: "ok",

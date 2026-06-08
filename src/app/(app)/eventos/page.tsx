@@ -3,6 +3,7 @@ import { EmptyState } from "@/components/shared/base-cards";
 import { SectionHeader } from "@/components/ui/section-header";
 import { PageHero } from "@/components/shared/page-hero";
 import { EventConsultationCards, EventList, EventsConsultationView } from "@/features/events/components/events-page-sections";
+import { EMPTY_STATE_COPY } from "@/features/empty-states/empty-state-copy";
 import {
   EVENTS_PAGE_HISTORY_LOOKBACK_DAYS,
   EVENTS_PAGE_QUERY_LIMIT,
@@ -86,7 +87,7 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
               {todayEvents.length > 0 ? (
                 <EventList events={todayEvents} user={user} now={now} />
               ) : (
-                <EmptyState title="Agenda livre hoje">Nenhum encontro previsto para hoje. Próximos encontros ajuda a acompanhar a semana.</EmptyState>
+                <EmptyState title={EMPTY_STATE_COPY.events.noTodayTitle}>{EMPTY_STATE_COPY.events.noTodayDetail}</EmptyState>
               )}
             </section>
 
@@ -95,7 +96,7 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
               {weekEvents.length > 0 ? (
                 <EventList events={weekEvents} user={user} now={now} />
               ) : (
-                <EmptyState title="Semana sem novos encontros">Nenhum outro encontro agendado para esta semana. Quando uma célula tiver agenda fixa, ela aparecerá aqui.</EmptyState>
+                <EmptyState title={EMPTY_STATE_COPY.events.noUpcomingTitle}>{EMPTY_STATE_COPY.events.noUpcomingDetail}</EmptyState>
               )}
             </section>
 

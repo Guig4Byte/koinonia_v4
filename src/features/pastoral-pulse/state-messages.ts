@@ -49,7 +49,7 @@ export function inCareMessage(
 export function stableMessage(scope: PastoralPulseScope): PastoralPulseMessage {
   if (scope === "pastorDashboard") {
     return {
-      title: "Nenhum caso pastoral urgente ou encaminhado agora.",
+      title: "Nenhum caso pastoral urgente ou encaminhado no momento.",
       subtitle: "A atenção local segue com líderes e supervisores.",
       tone: "ok",
     };
@@ -57,7 +57,7 @@ export function stableMessage(scope: PastoralPulseScope): PastoralPulseMessage {
 
   if (scope === "supervisorDashboard") {
     return {
-      title: "Suas células estão estáveis agora.",
+      title: "Suas células estão estáveis no momento.",
       subtitle: "A proximidade com líderes e células pode seguir sem transformar acompanhamento em cobrança.",
       tone: "ok",
     };
@@ -65,7 +65,7 @@ export function stableMessage(scope: PastoralPulseScope): PastoralPulseMessage {
 
   if (scope === "leaderDashboard") {
     return {
-      title: "Sua célula está tranquila agora.",
+      title: "Sua célula está tranquila no momento.",
       subtitle: "A visão mostra primeiro quem pede cuidado. A lista completa fica em Célula.",
       tone: "ok",
     };

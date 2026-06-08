@@ -4,6 +4,7 @@ import { GroupKind, UserRole } from "@/generated/prisma/client";
 import { AppShell } from "@/components/layout/app-shell";
 import { CellsFilterContextCard } from "@/features/groups/components/cells-filter-context-card";
 import { CellsPageSections } from "@/features/groups/components/cells-page-sections";
+import { EMPTY_STATE_COPY } from "@/features/empty-states/empty-state-copy";
 import { CellsStructureSearch } from "@/features/groups/components/cells-structure-search";
 import { ButtonLink } from "@/components/ui/button-link";
 import { PageHero } from "@/components/shared/page-hero";
@@ -107,7 +108,7 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
             {view.groups.length > 0 ? (
               <CellsPageSections sections={view.groupedSections} activeFilter={activeFilter} />
             ) : (
-              <EmptyState title={view.isFiltered ? "Nenhuma célula nesse recorte" : "Nenhuma célula ativa neste escopo"}>
+              <EmptyState title={view.isFiltered ? EMPTY_STATE_COPY.filtered.cell : "Nenhuma célula ativa neste escopo"}>
                 {view.isFiltered
                   ? "A busca ou os filtros podem ser limpos para ver as demais células supervisionadas."
                   : "Quando uma célula ativa estiver vinculada à sua supervisão, ela aparecerá aqui."

@@ -4,6 +4,7 @@ import type { BadgeTone } from "@/components/ui/badge";
 import { FilterChip } from "@/components/ui/filter-chip";
 import { ProgressiveList } from "@/components/shared/progressive-list";
 import { MEMBERS_FILTERS, membersFilterHref, type MembersFilter } from "@/features/people/member-filters";
+import { EMPTY_STATE_COPY } from "@/features/empty-states/empty-state-copy";
 import { cn } from "@/lib/cn";
 import { countLabel } from "@/lib/format";
 import { FILTER_ACTIVE, FILTER_ALL, FILTER_IN_CARE } from "@/lib/filter-param";
@@ -149,7 +150,7 @@ export function MemberPriorityList<TMember extends MemberPriorityListItem>({
   regularStep = 6,
   regularMoreLabel = "Ver mais membros",
   regularLessLabel = "Mostrar menos membros",
-  emptyText = "Nenhum irmão nesse recorte.",
+  emptyText = EMPTY_STATE_COPY.filtered.brother,
 }: MemberPriorityListProps<TMember>) {
   const filteredMeta = filteredSectionMeta(activeFilter, regularMembers.length);
 

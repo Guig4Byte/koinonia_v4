@@ -12,8 +12,8 @@ function stableSupervisionAction(groups: SupervisorGroup[]): NextPastoralAction 
     eyebrow: "Células supervisionadas",
     title: "Sem pedidos de apoio no momento.",
     detail: singleGroup
-      ? `A ${singleGroup.name} está sem pedido aberto agora. Abra a célula quando quiser revisar presença, membros e cuidado.`
-      : "Seu escopo está sem pedido aberto agora. Abra a lista para revisar presença, membros e cuidado quando precisar.",
+      ? `A ${singleGroup.name} está sem pedido aberto no momento. Abra a célula quando quiser revisar presença, membros e cuidado.`
+      : "Seu escopo está sem pedido aberto no momento. Abra a lista para revisar presença, membros e cuidado quando precisar.",
     href: singleGroup ? ROUTES.group(singleGroup.id) : ROUTES.cells,
     label: singleGroup ? `Ver ${singleGroup.name}` : "Ver células",
     tone: "ok",

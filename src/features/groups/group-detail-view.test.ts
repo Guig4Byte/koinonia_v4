@@ -183,9 +183,11 @@ describe("buildGroupMembersView", () => {
 
     const view = buildGroupMembersView(members, "em-cuidado");
 
-    expect(view.regularMembers.map((member) => member.name)).toEqual(["Ana"]);
+    expect(view.regularMembers.map((member) => member.name)).toEqual(["Ana", "Bruno"]);
     expect(view.priorityMembers.map((member) => member.name)).toEqual(["Bruno"]);
     expect(view.inCareMembers.map((member) => member.name)).toEqual(["Ana"]);
+    expect(view.filterCounts).toMatchObject({ "em-cuidado": 2 });
+    expect(view.sectionDetail).toBe("2 irmãos neste recorte");
   });
 
   it("abre em sem sinal aberto quando o filtro inicial padrao nao tem sinais", () => {
