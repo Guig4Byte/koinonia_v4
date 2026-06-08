@@ -1,6 +1,7 @@
 import type { PersonStatus, SignalSeverity, UserRole } from "@/generated/prisma/client";
 import type { SupervisorGroup } from "@/features/groups/cells-page-view";
 import type { NextPastoralAction, NextPastoralActionTone } from "@/features/pastoral-home/components/next-pastoral-action-card";
+import type { FirstUseState } from "@/features/pastoral-home/first-use-state";
 import type { PastoralPulseMessage } from "@/features/pastoral-pulse";
 
 export type SupervisorPageViewer = {
@@ -53,4 +54,5 @@ export type SupervisorPageView = {
   inCarePeople: SupervisorPageInCarePerson[];
   focusItems: SupervisorFocusItem[];
   nextAction: NextPastoralAction | null;
+  firstUseState: FirstUseState | null;
 };

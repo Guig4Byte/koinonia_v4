@@ -58,6 +58,7 @@ describe("leader-page-view", () => {
       attentionPeople: [attention, support, urgent],
       inCarePeople: [inCare, hiddenInCare],
       currentEvent: null,
+      hasRecordedMeetings: true,
     };
     const view = buildLeaderPageView({ dashboard, viewer });
 
@@ -67,6 +68,51 @@ describe("leader-page-view", () => {
     expect(view.inCarePeople.map((item) => item.id)).toEqual(["care-person"]);
     expect(view.hasPeopleInRadar).toBe(true);
     expect(view.navIndicator).toBe("risk");
+  });
+
+  it("mostra estado de primeiro uso quando a célula ainda não tem encontros registrados", () => {
+    const view = buildLeaderPageView({
+      dashboard: {
+        primaryGroupId: "group-1",
+        attentionPeople: [],
+        inCarePeople: [],
+        currentEvent: null,
+        hasRecordedMeetings: false,
+      },
+      viewer,
+    });
+
+    expect(view.firstUseState).toMatchObject({
+      title: "Sua célula está pronta.",
+      detail: "Registre o primeiro encontro para começar o acompanhamento.",
+      href: "/celulas/group-1",
+      label: "Abrir célula",
+    });
+    expect(view.pastoralPulse.title).toBe("Sua célula está pronta para começar.");
+  });
+
+  it("leva o primeiro uso do líder para o encontro atual quando ele existe", () => {
+    const view = buildLeaderPageView({
+      dashboard: {
+        primaryGroupId: "group-1",
+        attentionPeople: [],
+        inCarePeople: [],
+        currentEvent: {
+          id: "event-current",
+          startsAt: new Date("2026-05-08T12:00:00.000Z"),
+          status: EventStatus.CHECKIN_OPEN,
+          attendances: [],
+          group: { name: "Célula Central", locationName: "Casa da Ana" },
+        },
+        hasRecordedMeetings: false,
+      },
+      viewer,
+    });
+
+    expect(view.firstUseState).toMatchObject({
+      href: "/eventos/event-current",
+      label: "Registrar presença",
+    });
   });
 
   it("monta estado do encontro atual aguardando presença ou já registrado", () => {

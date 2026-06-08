@@ -108,6 +108,7 @@ export async function getPastorDashboard(user: PermissionUser) {
   const previousMonthPresence = summarizeEventsPresence(previousCompletedEvents);
   const groups = activeGroups.map(buildPastorTeamGroup);
   const groupsNeedingAttention = groups.filter((group) => groupPastoralState(group).needsTeamAttention);
+  const hasRecordedCellMeetings = groups.some((group) => group.recordedEventsCount > 0);
 
   return {
     weeklyPresence: {
@@ -131,6 +132,7 @@ export async function getPastorDashboard(user: PermissionUser) {
       groupsNeedingAttentionCount: groupsNeedingAttention.length,
       groupsWithoutSupervisorCount,
       inactiveGroupsCount,
+      hasRecordedCellMeetings,
     },
   };
 }

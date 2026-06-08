@@ -3,6 +3,7 @@ import type { WeeklyPresenceSummary } from "@/features/dashboard/presence-health
 import type { PastoralHealthOverview } from "@/features/dashboard/pastoral-health";
 import type { PastoralPulseMessage } from "@/features/pastoral-pulse";
 import type { NextPastoralAction } from "@/features/pastoral-home/components/next-pastoral-action-card";
+import { buildPastorFirstUseState, firstUsePulseForRole, type FirstUseState } from "@/features/pastoral-home/first-use-state";
 import { FILTER_ATTENTION, FILTER_PASTORAL, FILTER_SUPPORT, FILTER_URGENT } from "@/lib/filter-param";
 import { countLabel } from "@/lib/format";
 import { ROUTES } from "@/lib/routes";
@@ -21,6 +22,7 @@ export type PastorPageTeamSummary = {
   pastoralCasesCount: number;
   supportRequestsCount: number;
   groupsNeedingAttentionCount: number;
+  hasRecordedCellMeetings: boolean;
 };
 
 export type PastorPageDashboard = {
@@ -42,9 +44,21 @@ export type PastorPageView = {
   healthOverview: PastoralHealthOverview;
   weeklyPresence: WeeklyPresenceSummary;
   nextAction: NextPastoralAction | null;
+  firstUseState: FirstUseState | null;
 };
 
-function buildPastorMacroPulse(summary: PastorPageTeamSummary): PastoralPulseMessage {
+function hasPastorPastoralAttention(summary: PastorPageTeamSummary) {
+  return summary.urgentCount > 0
+    || summary.pastoralCasesCount > 0
+    || summary.supportRequestsCount > 0
+    || summary.groupsNeedingAttentionCount > 0;
+}
+
+function buildPastorMacroPulse(summary: PastorPageTeamSummary, firstUseState: FirstUseState | null, user: PastorPageViewer): PastoralPulseMessage {
+  if (firstUseState) {
+    return firstUsePulseForRole(user.role);
+  }
+
   if (summary.urgentCount > 0) {
     return {
       title: "Há sinais que pedem um olhar mais próximo.",
@@ -162,11 +176,17 @@ export function buildPastorNextPastoralAction(summary: PastorPageTeamSummary): N
 
 export function buildPastorPageView({
   dashboard,
+  user,
 }: {
   dashboard: PastorPageDashboard;
   user: PastorPageViewer;
 }): PastorPageView {
   const { teamSummary } = dashboard;
+  const firstUseState = buildPastorFirstUseState({
+    groupsCount: teamSummary.groupsCount,
+    hasRecordedMeetings: teamSummary.hasRecordedCellMeetings,
+    hasPastoralAttention: hasPastorPastoralAttention(teamSummary),
+  });
 
   return {
     navIndicator: teamSummary.urgentCount > 0 || teamSummary.pastoralCasesCount > 0
@@ -174,10 +194,11 @@ export function buildPastorPageView({
       : teamSummary.groupsNeedingAttentionCount > 0
         ? "attention"
         : undefined,
-    pastoralPulse: buildPastorMacroPulse(teamSummary),
+    pastoralPulse: buildPastorMacroPulse(teamSummary, firstUseState, user),
     teamSummaryItems: buildTeamSummaryItems(teamSummary),
     healthOverview: dashboard.healthOverview,
     weeklyPresence: dashboard.weeklyPresence,
-    nextAction: buildPastorNextPastoralAction(teamSummary),
+    nextAction: firstUseState ? null : buildPastorNextPastoralAction(teamSummary),
+    firstUseState,
   };
 }

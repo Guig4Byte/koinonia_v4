@@ -5,6 +5,7 @@ import { splitPastoralSections } from "@/features/signals/sections";
 import { buildSupervisorFocusItems } from "@/features/pastoral-home/supervisor-page-view/supervisor-focus-items";
 import { supervisorInCarePeople } from "@/features/pastoral-home/supervisor-page-view/supervisor-in-care";
 import { buildSupervisorNextPastoralAction } from "@/features/pastoral-home/supervisor-page-view/supervisor-next-action";
+import { buildSupervisorFirstUseState, firstUsePulseForRole } from "@/features/pastoral-home/first-use-state";
 import type { SupervisorPageDashboard, SupervisorPageView, SupervisorPageViewer } from "@/features/pastoral-home/supervisor-page-view/supervisor-page-view.types";
 
 export function buildSupervisorPageView({
@@ -45,10 +46,16 @@ export function buildSupervisorPageView({
       || state.hasLowPresence
     ));
   const hasCare = inCarePeople.length > 0 || groupStates.some((state) => state.inCareCount > 0);
+  const hasRecordedMeetings = dashboard.groups.some((group) => (group.recordedEventsCount ?? 0) > 0);
+  const firstUseState = buildSupervisorFirstUseState({
+    groups: dashboard.groups,
+    hasRecordedMeetings,
+    hasPastoralAttention: hasRisk || hasAttention || hasCare || focusItems.length > 0,
+  });
 
   return {
     navIndicator: hasRisk ? "risk" : hasAttention ? "attention" : hasCare ? "care" : undefined,
-    pastoralPulse: buildPastoralPulseMessage({
+    pastoralPulse: firstUseState ? firstUsePulseForRole(user.role) : buildPastoralPulseMessage({
       viewerRole: user.role,
       scope: "supervisorDashboard",
       counts: {
@@ -69,6 +76,7 @@ export function buildSupervisorPageView({
     attentionSignals,
     inCarePeople,
     focusItems,
-    nextAction: buildSupervisorNextPastoralAction(focusItems),
+    nextAction: firstUseState ? null : buildSupervisorNextPastoralAction(focusItems),
+    firstUseState,
   };
 }

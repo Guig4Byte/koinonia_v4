@@ -35,4 +35,5 @@ export type LeaderDashboard = {
   attentionPeople: LeaderPageSignal[];
   inCarePeople: LeaderPageInCarePerson[];
   currentEvent: LeaderCurrentEvent | null;
+  hasRecordedMeetings: boolean;
 };

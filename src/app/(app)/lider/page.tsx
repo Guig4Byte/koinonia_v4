@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { EmptyState, PulseCard } from "@/components/shared/base-cards";
 import { PastoralSectionTitle } from "@/features/pastoral-home/components/pastoral-section";
+import { FirstUseStateCard } from "@/features/pastoral-home/components/first-use-state-card";
 import { LeaderCurrentEventCard } from "@/features/leader/components/leader-current-event-card";
 import { InCareSection, PastoralSignalSection } from "@/features/pastoral-home/components/pastoral-list-cards";
 import { buildLeaderPageView } from "@/features/leader/leader-page-view";
@@ -65,7 +66,9 @@ export default async function LeaderPage() {
           className="mb-0"
         />
 
-        {view.hasPeopleInRadar ? (
+        {view.firstUseState ? (
+          <FirstUseStateCard state={view.firstUseState} />
+        ) : view.hasPeopleInRadar ? (
           <>
             {view.urgentSignals.length > 0 ? (
               <PastoralSignalSection
@@ -130,8 +133,11 @@ export default async function LeaderPage() {
           {dashboard.currentEvent ? (
             <LeaderCurrentEventCard event={dashboard.currentEvent} />
           ) : (
-            <EmptyState>
-              Nenhum encontro de célula precisa de presença agora. Consulte Encontros para ver próximos encontros e histórico.
+            <EmptyState title={view.firstUseState ? "Aguardando primeiro encontro" : undefined}>
+              {view.firstUseState
+                ? "Quando houver encontro disponível para check-in, ele aparecerá aqui para registrar presença."
+                : "Nenhum encontro de célula precisa de presença agora. Consulte Encontros para ver próximos encontros e histórico."
+              }
             </EmptyState>
           )}
         </section>

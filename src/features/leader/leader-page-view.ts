@@ -1,5 +1,6 @@
 import { hasRecordedPresence } from "@/features/events/relevant-event";
 import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features/pastoral-pulse";
+import { buildLeaderFirstUseState, firstUsePulseForRole, type FirstUseState } from "@/features/pastoral-home/first-use-state";
 import { signalTitleForViewer } from "@/features/signals/display";
 import { splitPastoralSections } from "@/features/signals/sections";
 import type {
@@ -25,6 +26,7 @@ export type LeaderPageView = LeaderPastoralSections & {
   navIndicator?: "risk" | "attention" | "care";
   hasPeopleInRadar: boolean;
   pastoralPulse: PastoralPulseMessage;
+  firstUseState: FirstUseState | null;
 };
 
 export type LeaderCurrentEventState = {
@@ -125,15 +127,24 @@ export function buildLeaderPageView({
     viewer,
   });
 
+  const hasPeopleInRadar = sections.prioritySignals.length > 0 || sections.inCarePeople.length > 0;
+  const firstUseState = buildLeaderFirstUseState({
+    primaryGroupId: dashboard.primaryGroupId,
+    currentEventId: dashboard.currentEvent?.id,
+    hasRecordedMeetings: dashboard.hasRecordedMeetings,
+    hasPeopleInRadar,
+  });
+
   return {
     ...sections,
-    hasPeopleInRadar: sections.prioritySignals.length > 0 || sections.inCarePeople.length > 0,
+    hasPeopleInRadar,
     navIndicator: leaderNavIndicator({
       urgentCount: sections.urgentSignals.length,
       attentionCount: dashboard.attentionPeople.length,
       inCareCount: sections.inCarePeople.length,
     }),
-    pastoralPulse: buildLeaderPastoralPulse({ sections, viewer }),
+    pastoralPulse: firstUseState ? firstUsePulseForRole(viewer.role) : buildLeaderPastoralPulse({ sections, viewer }),
+    firstUseState,
   };
 }
 

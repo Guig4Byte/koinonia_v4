@@ -5,6 +5,7 @@ import { PastorPresenceCard } from "@/features/pastoral-home/components/pastor-p
 import { PastorRadarCard } from "@/features/pastoral-home/components/pastor-radar-card";
 import { PastorTeamSummaryCard } from "@/features/pastoral-home/components/pastor-team-summary-card";
 import { NextPastoralActionCard } from "@/features/pastoral-home/components/next-pastoral-action-card";
+import { FirstUseStateCard } from "@/features/pastoral-home/components/first-use-state-card";
 import { SearchBox } from "@/features/search/components/search-box";
 import { getPastorDashboard } from "@/features/dashboard/queries";
 import { canUsePastorDashboard } from "@/features/permissions/permissions";
@@ -30,6 +31,8 @@ export default async function PastorPage() {
       nav={appNavForRole(user, { active: "home", indicator: view.navIndicator })}
     >
       <PastorRadarCard pulse={view.pastoralPulse} />
+
+      {view.firstUseState ? <FirstUseStateCard state={view.firstUseState} className="mb-4" /> : null}
 
       {view.nextAction ? <NextPastoralActionCard action={view.nextAction} /> : null}
 

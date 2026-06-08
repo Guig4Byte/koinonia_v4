@@ -221,6 +221,33 @@ describe("supervisor-page-view", () => {
     expect(view.navIndicator).toBeUndefined();
     expect(view.focusItems).toEqual([]);
     expect(view.nextAction).toBeNull();
+    expect(view.firstUseState).toMatchObject({
+      title: "A Célula Central ainda não tem histórico de encontros.",
+      detail: "Após os primeiros registros, você verá estabilidade, presença e pedidos de apoio.",
+      href: "/celulas/group-new",
+      label: "Ver Célula Central",
+    });
+  });
+
+  it("leva primeiro uso de múltiplas células para a lista de células", () => {
+    const view = buildSupervisorPageView({
+      dashboard: dashboard({
+        groups: [
+          group({ id: "group-a", name: "Célula Alfa", hasPresenceData: false, recordedEventsCount: 0 }),
+          group({ id: "group-b", name: "Célula Beta", hasPresenceData: false, recordedEventsCount: 0 }),
+        ],
+      }),
+      user,
+    });
+
+    expect(view.focusItems).toEqual([]);
+    expect(view.nextAction).toBeNull();
+    expect(view.firstUseState).toMatchObject({
+      title: "As células supervisionadas ainda não têm histórico de encontros.",
+      detail: "Após os primeiros registros, você verá estabilidade, presença e pedidos de apoio.",
+      href: "/celulas",
+      label: "Ver células",
+    });
   });
 
 });

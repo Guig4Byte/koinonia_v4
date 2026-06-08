@@ -15,6 +15,7 @@ function teamSummary(overrides: Partial<PastorPageTeamSummary> = {}): PastorPage
     pastoralCasesCount: 0,
     supportRequestsCount: 0,
     groupsNeedingAttentionCount: 0,
+    hasRecordedCellMeetings: true,
     ...overrides,
   };
 }
@@ -41,6 +42,22 @@ describe("pastor-page-view", () => {
     expect(view.navIndicator).toBe("risk");
     expect(view.pastoralPulse.title).toBe("Há sinais que pedem um olhar mais próximo.");
     expect(view.healthOverview.totalGroups).toBe(0);
+  });
+
+  it("orienta primeiro uso quando ainda não há encontros registrados", () => {
+    const view = buildPastorPageView({
+      dashboard: dashboard({ teamSummary: teamSummary({ groupsCount: 1, hasRecordedCellMeetings: false }) }),
+      user,
+    });
+
+    expect(view.firstUseState).toMatchObject({
+      title: "Ainda não há encontros registrados.",
+      detail: "Quando os líderes fizerem o primeiro check-in, os sinais pastorais aparecerão aqui.",
+      href: "/equipe",
+      label: "Ver equipe",
+    });
+    expect(view.nextAction).toBeNull();
+    expect(view.pastoralPulse.title).toBe("A estrutura está pronta para receber os primeiros registros.");
   });
 
   it("monta resumo de equipe sem listar pessoas na visão", () => {
