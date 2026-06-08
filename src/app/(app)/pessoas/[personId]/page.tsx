@@ -49,7 +49,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
 
         <SectionHeader title="Próximo cuidado" detail="O próximo gesto, sem repetir o histórico." />
         <CareOverviewCard id="registrar-cuidado" view={data.care.overview} className={styles.primaryCareCard}>
-          <CareActions personId={data.person.id} phone={data.person.phone} className={styles.careActions} />
+          <CareActions personId={data.person.id} personName={data.person.fullName} phone={data.person.phone} className={styles.careActions} />
           {data.care.canMarkActive ? <PersonStatusActions personId={data.person.id} /> : null}
         </CareOverviewCard>
 

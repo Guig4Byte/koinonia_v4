@@ -42,8 +42,10 @@ export const CARE_COPY = {
   },
 
   contactActions: {
+    phoneLabel: "Telefone",
     callLabel: "Ligar",
     whatsappLabel: "WhatsApp",
+    whatsappHint: "Abre com uma mensagem pastoral pronta. Depois do contato real, confirme para guardar no histórico.",
     existingContactLabel: "Guardar cuidado",
     noPhoneTitle: "Sem telefone cadastrado",
     noPhoneDescription: "Quando um telefone for cadastrado, ligação e WhatsApp ficam disponíveis. Por enquanto, um cuidado já realizado ainda pode ser guardado.",

@@ -23,7 +23,17 @@ import { useApiAction } from "@/hooks/use-api-action";
 import { API_ROUTES } from "@/lib/api-routes";
 import { cn } from "@/lib/cn";
 
-export function CareActions({ personId, phone, className }: { personId?: string; phone?: string | null; className?: string }) {
+export function CareActions({
+  personId,
+  personName,
+  phone,
+  className,
+}: {
+  personId?: string;
+  personName?: string | null;
+  phone?: string | null;
+  className?: string;
+}) {
   const router = useRouter();
   const [stage, setStage] = useState<CareFlowStage>("idle");
   const [note, setNote] = useState("");
@@ -31,7 +41,7 @@ export function CareActions({ personId, phone, className }: { personId?: string;
   const [savedMessage, setSavedMessage] = useState("");
   const [resolvedMessage, setResolvedMessage] = useState("");
   const { isPending, errorMessage, clearError, runApiAction } = useApiAction();
-  const contactInfo = useMemo(() => careContactInfo(phone), [phone]);
+  const contactInfo = useMemo(() => careContactInfo(phone, { personName }), [personName, phone]);
   const canRegisterCare = Boolean(personId);
 
   function resetFlow() {
@@ -82,6 +92,7 @@ export function CareActions({ personId, phone, className }: { personId?: string;
         <CareContactStart
           links={contactInfo.links}
           hasPhone={contactInfo.hasPhone}
+          displayPhone={contactInfo.displayPhone}
           canRegisterCare={canRegisterCare}
           isPending={isPending}
           onContactAttempt={(method) => {

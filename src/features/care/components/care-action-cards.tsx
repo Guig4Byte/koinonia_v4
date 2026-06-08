@@ -29,6 +29,7 @@ export function CareErrorMessage({ message }: { message: string }) {
 export function CareContactStart({
   links,
   hasPhone,
+  displayPhone,
   canRegisterCare,
   isPending,
   onContactAttempt,
@@ -36,6 +37,7 @@ export function CareContactStart({
 }: {
   links: CareContactLinks;
   hasPhone: boolean;
+  displayPhone?: string;
   canRegisterCare: boolean;
   isPending: boolean;
   onContactAttempt: (method: CareContactMethod) => void;
@@ -53,38 +55,58 @@ export function CareContactStart({
   return (
     <>
       {hasPhone ? (
-        <div className="grid grid-cols-2 gap-2">
-          <a
-            href={links.tel}
-            aria-disabled={!hasPhone}
-            className={cn(buttonClassName({ fullWidth: true }), "border", !hasPhone && disabledLinkClass)}
-            style={{
-              backgroundColor: "var(--color-action-call-bg)",
-              borderColor: "var(--color-action-call-border)",
-              color: "var(--color-action-call-text)",
-            }}
-            onClick={(event) => handleContactClick(event, "call")}
-          >
-            <Phone className="h-4 w-4" strokeWidth={2.3} />
-            {CARE_COPY.contactActions.callLabel}
-          </a>
+        <div className="space-y-2.5">
+          {displayPhone ? (
+            <p
+              className="flex min-w-0 items-center gap-2 rounded-xl border px-3 py-2 text-[length:var(--text-sm)] font-semibold text-[color:var(--color-text-secondary)]"
+              style={{
+                backgroundColor: "color-mix(in srgb, var(--brown-400) 6%, transparent)",
+                borderColor: "color-mix(in srgb, var(--brown-400) 18%, var(--color-border-card))",
+              }}
+            >
+              <Phone className="h-4 w-4 shrink-0" aria-hidden="true" strokeWidth={2.2} />
+              <span className="shrink-0">{CARE_COPY.contactActions.phoneLabel}</span>
+              <span className="min-w-0 truncate text-[color:var(--color-text-primary)]">{displayPhone}</span>
+            </p>
+          ) : null}
 
-          <a
-            href={links.whatsapp}
-            target="_blank"
-            rel="noreferrer"
-            aria-disabled={!hasPhone}
-            className={cn(buttonClassName({ fullWidth: true }), "border", !hasPhone && disabledLinkClass)}
-            style={{
-              backgroundColor: "var(--color-action-whatsapp-bg)",
-              borderColor: "var(--color-action-whatsapp-border)",
-              color: "var(--color-action-whatsapp-text)",
-            }}
-            onClick={(event) => handleContactClick(event, "whatsapp")}
-          >
-            <MessageCircleMore className="h-4 w-4" strokeWidth={2.3} />
-            {CARE_COPY.contactActions.whatsappLabel}
-          </a>
+          <div className="grid grid-cols-2 gap-2">
+            <a
+              href={links.whatsapp}
+              target="_blank"
+              rel="noreferrer"
+              aria-disabled={!hasPhone}
+              className={cn(buttonClassName({ fullWidth: true }), "border", !hasPhone && disabledLinkClass)}
+              style={{
+                backgroundColor: "var(--color-action-whatsapp-bg)",
+                borderColor: "var(--color-action-whatsapp-border)",
+                color: "var(--color-action-whatsapp-text)",
+              }}
+              onClick={(event) => handleContactClick(event, "whatsapp")}
+            >
+              <MessageCircleMore className="h-4 w-4" strokeWidth={2.3} />
+              {CARE_COPY.contactActions.whatsappLabel}
+            </a>
+
+            <a
+              href={links.tel}
+              aria-disabled={!hasPhone}
+              className={cn(buttonClassName({ fullWidth: true }), "border", !hasPhone && disabledLinkClass)}
+              style={{
+                backgroundColor: "var(--color-action-call-bg)",
+                borderColor: "var(--color-action-call-border)",
+                color: "var(--color-action-call-text)",
+              }}
+              onClick={(event) => handleContactClick(event, "call")}
+            >
+              <Phone className="h-4 w-4" strokeWidth={2.3} />
+              {CARE_COPY.contactActions.callLabel}
+            </a>
+          </div>
+
+          <p className="text-[length:var(--text-xs)] font-medium leading-relaxed text-[color:var(--color-text-secondary)]">
+            {CARE_COPY.contactActions.whatsappHint}
+          </p>
         </div>
       ) : (
         <Feedback tone="info" title={CARE_COPY.contactActions.noPhoneTitle} compact>
