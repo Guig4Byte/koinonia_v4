@@ -45,6 +45,10 @@ export function personEffectiveBadgeForViewer(
   primarySignal?: SignalDisplayLike | null,
   viewer?: SignalDisplayViewerLike | null,
 ): SignalBadge | PersonStatusBadge {
+  if (isInCareStatus(person.status)) {
+    return personStatusDisplay(person.status);
+  }
+
   if (primarySignal) {
     return signalBadgeForViewer(primarySignal, viewer);
   }

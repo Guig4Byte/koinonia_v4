@@ -1,4 +1,4 @@
-import { EventType, SignalStatus } from "@/generated/prisma/client";
+import { EventType, PersonStatus, SignalStatus } from "@/generated/prisma/client";
 import { presenceHistoryEventWhere } from "@/features/events/presence-query";
 import { GROUP_DETAIL_EVENT_HISTORY_LIMIT } from "@/features/groups/group-detail-view";
 import { activeGroupResponsibilitiesInclude, activeNonVisitorMembershipWhere } from "@/features/groups/group-query";
@@ -15,7 +15,7 @@ export async function getGroupDetailRecord(groupId: string) {
         orderBy: { person: { fullName: "asc" } },
       },
       signals: {
-        where: { status: SignalStatus.OPEN },
+        where: { status: SignalStatus.OPEN, person: { status: { not: PersonStatus.COOLING_AWAY } } },
         include: { person: true, assignedTo: true },
         orderBy: [{ severity: "desc" }, { detectedAt: "desc" }],
       },

@@ -15,10 +15,10 @@ import {
 } from "@/features/groups/group-detail-view/group-detail-view.types";
 
 export function groupMemberPriorityRank(signal: GroupDetailSignal | undefined, personStatus: PersonStatus, viewer: GroupDetailViewer) {
+  if (isInCareStatus(personStatus)) return 4;
   if (signal && isUrgentOrPastoralCase(signal)) return 1;
   if (signal && isSupportRequest(signal, viewer)) return 2;
   if (signal) return 3;
-  if (isInCareStatus(personStatus)) return 4;
   if (isActiveStatus(personStatus)) return 5;
   return 6;
 }
@@ -34,14 +34,12 @@ export function buildGroupMemberDisplays({
 }): MemberDisplay[] {
   return memberships
     .map((membership): MemberDisplay => {
-      const attentionSignal = attentionSignalsByPersonId.get(membership.personId);
       const isInCare = isInCarePerson(membership.person);
+      const attentionSignal = isInCare ? undefined : attentionSignalsByPersonId.get(membership.personId);
       const memberBadge = personEffectiveBadgeForViewer(membership.person, attentionSignal, viewer);
       const escalationSubtitle = attentionSignal ? escalationStatusDetailForViewer(attentionSignal, viewer) : null;
       const signalSubtitle = attentionSignal ? escalationSubtitle ?? signalTitleForViewer(attentionSignal, viewer) : undefined;
-      const subtitle = signalSubtitle
-        ? isInCare ? `${signalSubtitle} · Em cuidado` : signalSubtitle
-        : isInCare ? "Em cuidado" : undefined;
+      const subtitle = signalSubtitle ?? (isInCare ? "Em cuidado" : undefined);
 
       return {
         membershipId: membership.id,

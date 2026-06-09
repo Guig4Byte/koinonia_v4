@@ -596,9 +596,22 @@ async function markMemberInCare({
   days: number;
   hour: number;
 }) {
+  const personId = group.members[personIndex].id;
+  const happenedAt = daysFromNow(days, hour);
+
   await prisma.person.update({
-    where: { id: group.members[personIndex].id },
+    where: { id: personId },
     data: { status: PersonStatus.COOLING_AWAY },
+  });
+
+  await prisma.careSignal.updateMany({
+    where: {
+      churchId,
+      personId,
+      groupId: group.id,
+      status: SignalStatus.OPEN,
+    },
+    data: { status: SignalStatus.RESOLVED, resolvedAt: happenedAt },
   });
 
   return createCareTouch({
@@ -1053,7 +1066,7 @@ async function main() {
     group: esperanca,
     personIndex: 0,
     actorId: bruno.id,
-    note: "Contato iniciado. Este cenário valida atenção por presença e cuidado em andamento na mesma pessoa.",
+    note: "Contato iniciado. O sinal aberto foi cuidado e a pessoa segue em acompanhamento.",
     days: -1,
     hour: 18,
   });

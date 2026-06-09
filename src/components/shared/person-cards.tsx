@@ -3,6 +3,7 @@ import type { BadgeTone } from "@/components/ui/badge";
 import { SignalHeartIndicator } from "@/components/ui/signal-heart-indicator";
 import { ListLinkCard } from "@/components/ui/list-link-card";
 import type { CardPriorityTone } from "@/lib/card-priority";
+import styles from "./person-cards.module.css";
 
 function comparableCopy(value: string) {
   return value
@@ -67,6 +68,8 @@ export function PersonMiniCard(props: {
       priorityTone={cardTone ?? badgeTone}
       prioritySurface={prioritySurface}
       compact={compact}
+      stackTrailingOnMobile
+      subtitleClassName={styles.personMiniSubtitle}
       className={className}
     />
   );

@@ -57,7 +57,8 @@ describe("groupMemberPriorityRank", () => {
     expect(groupMemberPriorityRank(signal({ severity: SignalSeverity.URGENT }), PersonStatus.ACTIVE, viewer)).toBe(1);
   });
 
-  it("keeps in-care people before active people when there is no open signal", () => {
+  it("keeps in-care people out of signal priority", () => {
+    expect(groupMemberPriorityRank(signal({ severity: SignalSeverity.URGENT }), PersonStatus.COOLING_AWAY, viewer)).toBe(4);
     expect(groupMemberPriorityRank(undefined, PersonStatus.COOLING_AWAY, viewer)).toBe(4);
     expect(groupMemberPriorityRank(undefined, PersonStatus.ACTIVE, viewer)).toBe(5);
   });
@@ -79,7 +80,7 @@ describe("buildGroupMemberDisplays", () => {
     expect(members.map((member) => member.name)).toEqual(["Ana", "Camila", "Bruno"]);
   });
 
-  it("mantém o motivo do sinal e também expõe o status em cuidado", () => {
+  it("keeps in-care people out of stale signal display", () => {
     const supportSignal = signal({ personId: "person-1", assignedTo: { role: UserRole.SUPERVISOR } });
     const [member] = buildGroupMemberDisplays({
       memberships: [membership("1", "Ana", PersonStatus.COOLING_AWAY)],
@@ -87,8 +88,10 @@ describe("buildGroupMemberDisplays", () => {
       viewer,
     });
 
-    expect(member.badgeLabel).toBe("Apoio solicitado");
-    expect(member.subtitle).toContain("Em cuidado");
+    expect(member.badgeLabel).toBe("Em cuidado");
+    expect(member.subtitle).toBe("Em cuidado");
+    expect(member.priorityRank).toBe(4);
+    expect(member.focusKeys).toEqual(["em-cuidado"]);
     expect(memberBadgeLabelForCareContext(member)).toBe("Em cuidado");
     expect(memberBadgeToneForCareContext(member)).toBe("care");
   });
@@ -110,7 +113,7 @@ describe("group detail focus", () => {
     expect(groupMemberFocusKeys(signal({ assignedTo: { role: UserRole.PASTOR } }), PersonStatus.ACTIVE, viewer)).toEqual(["encaminhadas"]);
     expect(groupMemberFocusKeys(signal({ assignedTo: { role: UserRole.SUPERVISOR } }), PersonStatus.ACTIVE, { ...viewer, role: UserRole.PASTOR })).toEqual(["apoio"]);
     expect(groupMemberFocusKeys(undefined, PersonStatus.COOLING_AWAY, viewer)).toEqual(["em-cuidado"]);
-    expect(groupMemberFocusKeys(signal(), PersonStatus.COOLING_AWAY, viewer)).toEqual(["atencao", "em-cuidado"]);
+    expect(groupMemberFocusKeys(signal(), PersonStatus.COOLING_AWAY, viewer)).toEqual(["em-cuidado"]);
   });
 
   it("monta o card de foco do detalhe da célula", () => {
@@ -177,15 +180,15 @@ describe("buildGroupMembersView", () => {
   it("mostra em cuidado como recorte proprio quando o filtro esta selecionado", () => {
     const members = [
       { membershipId: "1", personId: "1", name: "Ana", badgeLabel: "Em cuidado", badgeTone: "care" as const, priorityRank: 4, status: PersonStatus.COOLING_AWAY, focusKeys: ["em-cuidado" as const] },
-      { membershipId: "2", personId: "2", name: "Bruno", badgeLabel: "Em atenção", badgeTone: "warn" as const, priorityRank: 3, status: PersonStatus.COOLING_AWAY, focusKeys: ["atencao" as const, "em-cuidado" as const] },
+      { membershipId: "2", personId: "2", name: "Bruno", badgeLabel: "Em cuidado", badgeTone: "care" as const, priorityRank: 4, status: PersonStatus.COOLING_AWAY, focusKeys: ["em-cuidado" as const] },
       { membershipId: "3", personId: "3", name: "Caio", badgeLabel: "Sem sinal aberto", badgeTone: "ok" as const, priorityRank: 5, status: PersonStatus.ACTIVE, focusKeys: [] },
     ];
 
     const view = buildGroupMembersView(members, "em-cuidado");
 
     expect(view.regularMembers.map((member) => member.name)).toEqual(["Ana", "Bruno"]);
-    expect(view.priorityMembers.map((member) => member.name)).toEqual(["Bruno"]);
-    expect(view.inCareMembers.map((member) => member.name)).toEqual(["Ana"]);
+    expect(view.priorityMembers).toHaveLength(0);
+    expect(view.inCareMembers.map((member) => member.name)).toEqual(["Ana", "Bruno"]);
     expect(view.filterCounts).toMatchObject({ "em-cuidado": 2 });
     expect(view.sectionDetail).toBe("2 irmãos neste recorte");
   });

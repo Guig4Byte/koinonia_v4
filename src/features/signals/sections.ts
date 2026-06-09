@@ -135,13 +135,11 @@ export function splitPastoralSignals<TSignal extends SectionSignalWithIdentity>(
 
 export function filterInCarePeople<TPerson extends SectionPersonWithIdentity>(
   people: TPerson[],
-  activeAttentionPersonIds: Set<string>,
 ): TPerson[] {
   const seenPersonIds = new Set<string>();
 
   return people.filter((person) => {
     if (!isInCarePerson(person)) return false;
-    if (activeAttentionPersonIds.has(person.id)) return false;
     if (seenPersonIds.has(person.id)) return false;
 
     seenPersonIds.add(person.id);
@@ -161,10 +159,12 @@ export function splitPastoralSections<
   inCarePeople: TPerson[];
   viewer: SectionViewerLike;
 }): PastoralSections<TSignal, TPerson> {
-  const signalSections = splitPastoralSignals(signals, viewer);
+  const inCarePersonIds = new Set(inCarePeople.filter((person) => isInCarePerson(person)).map((person) => person.id));
+  const visibleSignals = signals.filter((signal) => !inCarePersonIds.has(signal.personId));
+  const signalSections = splitPastoralSignals(visibleSignals, viewer);
 
   return {
     ...signalSections,
-    inCarePeople: filterInCarePeople(inCarePeople, signalSections.activeAttentionPersonIds),
+    inCarePeople: filterInCarePeople(inCarePeople),
   };
 }

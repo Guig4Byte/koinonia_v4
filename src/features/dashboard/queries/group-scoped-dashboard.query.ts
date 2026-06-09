@@ -1,4 +1,4 @@
-import { EventType, SignalStatus } from "@/generated/prisma/client";
+import { EventType, PersonStatus, SignalStatus } from "@/generated/prisma/client";
 import { buildScopedGroupDashboardItem } from "@/features/dashboard/dashboard-view";
 import { presenceHistoryEventWhere } from "@/features/events/presence-query";
 import { isPresenceRecordedEvent, PRESENCE_TREND_TOTAL_SAMPLE_COUNT, summarizeEventsPresence } from "@/features/events/presence-summary";
@@ -21,7 +21,10 @@ export async function getGroupScopedDashboard(user: PermissionUser) {
       include: {
         responsibilities: activeGroupResponsibilitiesInclude,
         memberships: { where: activeNonVisitorMembershipWhere, include: { person: true } },
-        signals: { where: { status: SignalStatus.OPEN }, include: { person: true, assignedTo: true } },
+        signals: {
+          where: { status: SignalStatus.OPEN, person: { status: { not: PersonStatus.COOLING_AWAY } } },
+          include: { person: true, assignedTo: true },
+        },
         events: {
           where: presenceHistoryWhere,
           orderBy: { startsAt: "desc" },

@@ -30,6 +30,8 @@ export function groupMemberFocusKeys(
   personStatus: PersonStatus,
   viewer: GroupDetailViewer,
 ): GroupDetailFocus[] {
+  if (isInCareStatus(personStatus)) return [FILTER_IN_CARE];
+
   const focusKeys: GroupDetailFocus[] = [];
 
   if (signal) {
@@ -38,8 +40,6 @@ export function groupMemberFocusKeys(
     else if (isSupportRequest(signal, viewer)) focusKeys.push(FILTER_SUPPORT);
     else focusKeys.push(FILTER_ATTENTION);
   }
-
-  if (isInCareStatus(personStatus)) focusKeys.push(FILTER_IN_CARE);
 
   return focusKeys;
 }

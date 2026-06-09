@@ -1,0 +1,9 @@
+@media (max-width: 430px) {
+  .personMiniSubtitle {
+    display: block;
+    overflow: visible;
+    line-height: 1.32;
+    text-overflow: clip;
+    white-space: normal;
+  }
+}

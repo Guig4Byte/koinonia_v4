@@ -67,7 +67,7 @@ export function ListLinkCard({
       className={cn(
         surface === "card" && [
           "card-hover-lift group relative isolate flex w-full max-w-full min-w-0 items-center justify-between gap-3 overflow-hidden rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] shadow-card transition active:scale-[0.99]",
-          stackTrailingOnMobile && "flex-wrap items-start sm:flex-nowrap sm:items-center",
+          stackTrailingOnMobile && "max-[430px]:flex-wrap max-[430px]:items-start",
           compact ? "min-h-[3.75rem] px-3 py-2.5" : "min-h-[4.25rem] px-3 py-3",
           priorityCardClass(priorityTone ?? badgeTone),
           prioritySurface === "accentStrip" && styles.accentStrip,
@@ -76,7 +76,7 @@ export function ListLinkCard({
       )}
       {...props}
     >
-      <span className={cn("flex min-w-0 flex-1 items-center gap-3", stackTrailingOnMobile && "basis-full sm:basis-auto", leadingClassName)}>
+      <span className={cn("flex min-w-0 flex-1 items-center gap-3", stackTrailingOnMobile && "max-[430px]:basis-full", leadingClassName)}>
         {leading}
         <span className={cn("min-w-0 flex-1", textClassName)}>
           <span className={cn("k-item-title-sm block truncate", titleClassName)}>{title}</span>
@@ -86,7 +86,7 @@ export function ListLinkCard({
       <span
         className={cn(
           "flex min-w-0 max-w-[48%] shrink-0 items-center justify-end gap-2",
-          stackTrailingOnMobile && "mt-2 basis-full max-w-full justify-between border-t border-[color:var(--color-border-divider)] pt-2 sm:mt-0 sm:basis-auto sm:max-w-[48%] sm:justify-end sm:border-t-0 sm:pt-0",
+          stackTrailingOnMobile && "max-[430px]:ml-[2.75rem] max-[430px]:mt-1 max-[430px]:basis-[calc(100%-2.75rem)] max-[430px]:max-w-[calc(100%-2.75rem)] max-[430px]:justify-between",
           trailingClassName,
         )}
       >

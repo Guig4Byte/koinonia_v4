@@ -30,6 +30,16 @@ describe("person effective badge", () => {
     ).toEqual({ label: "Urgente", tone: "risk" });
   });
 
+  it("keeps in-care status over a stale open signal", () => {
+    expect(
+      personEffectiveBadgeForViewer(
+        { status: PersonStatus.COOLING_AWAY },
+        { severity: SignalSeverity.URGENT },
+        { role: UserRole.LEADER },
+      ),
+    ).toEqual({ label: "Em cuidado", tone: "care" });
+  });
+
   it("keeps viewer-specific signal wording for supervisor support", () => {
     const signal = {
       severity: SignalSeverity.ATTENTION,

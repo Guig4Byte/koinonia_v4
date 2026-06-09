@@ -7,7 +7,6 @@ export const ATTENTION_ELIGIBLE_PERSON_STATUSES: PersonStatus[] = [
   PersonStatus.ACTIVE,
   PersonStatus.NEW,
   PersonStatus.NEEDS_ATTENTION,
-  PersonStatus.COOLING_AWAY,
 ];
 
 export function isActiveStatus(status: PersonStatus | string | null | undefined): boolean {

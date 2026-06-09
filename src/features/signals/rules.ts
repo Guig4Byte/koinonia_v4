@@ -1,6 +1,6 @@
 import { PersonStatus, SignalSeverity, SignalSource, SignalStatus } from "@/generated/prisma/client";
 import { presenceHistoryEventWhere } from "@/features/events/presence-query";
-import { ATTENTION_ELIGIBLE_PERSON_STATUSES } from "@/features/people/person-status";
+import { ATTENTION_ELIGIBLE_PERSON_STATUSES, isInCareStatus } from "@/features/people/person-status";
 import { activeNonVisitorMembershipWhere } from "@/features/groups/group-query";
 import { prisma } from "@/lib/prisma";
 import {
@@ -70,7 +70,7 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string, db: 
       churchId: true,
       memberships: {
         where: activeNonVisitorMembershipWhere,
-        select: { personId: true },
+        select: { personId: true, person: { select: { status: true } } },
       },
       events: {
         where: presenceHistoryEventWhere(now),
@@ -88,7 +88,10 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string, db: 
 
   if (!group || group.memberships.length === 0) return;
 
-  const personIds = group.memberships.map((membership) => membership.personId);
+  const signalEligibleMemberships = group.memberships.filter((membership) => !isInCareStatus(membership.person.status));
+  if (signalEligibleMemberships.length === 0) return;
+
+  const personIds = signalEligibleMemberships.map((membership) => membership.personId);
   const existingOpenSignals = await db.careSignal.findMany({
     where: {
       churchId: group.churchId,
@@ -101,7 +104,7 @@ export async function recalculateAttendanceSignalsForGroup(groupId: string, db: 
   });
   const openSignalsByPerson = mapFirstOpenSignalByPerson(existingOpenSignals);
 
-  const plannedInputs = group.memberships.map((membership) => {
+  const plannedInputs = signalEligibleMemberships.map((membership) => {
     const statuses = getRecordedStatusesNewestFirst(group.events, membership.personId);
     const absences = countConsecutiveAbsences(statuses);
     const absenceDates = getConsecutiveAbsenceDatesNewestFirst(group.events, membership.personId);

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
 import { PERSON_DETAIL_ATTENDANCE_HISTORY_LIMIT, PERSON_DETAIL_CARE_TOUCH_HISTORY_LIMIT } from "@/features/people/person-detail-view";
+import { isInCarePerson } from "@/features/people/person-status";
 import { activeGroupResponsibilitiesInclude } from "@/features/groups/group-query";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
@@ -31,11 +32,13 @@ export async function loadPersonDetailContext(personId: string) {
   };
 
   const [signals, attendances, careTouches] = await Promise.all([
-    prisma.careSignal.findMany({
-      where: { ...visibleOpenSignalWhere, personId: person.id },
-      include: { assignedTo: true, group: { include: { responsibilities: activeGroupResponsibilitiesInclude } } },
-      orderBy: [{ severity: "desc" }, { detectedAt: "desc" }],
-    }),
+    isInCarePerson(person)
+      ? []
+      : prisma.careSignal.findMany({
+          where: { ...visibleOpenSignalWhere, personId: person.id },
+          include: { assignedTo: true, group: { include: { responsibilities: activeGroupResponsibilitiesInclude } } },
+          orderBy: [{ severity: "desc" }, { detectedAt: "desc" }],
+        }),
     prisma.attendance.findMany({
       where: { personId: person.id, event: recordedEventWhere },
       include: { event: { include: { group: { include: { responsibilities: activeGroupResponsibilitiesInclude } } } } },
