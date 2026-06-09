@@ -7,14 +7,14 @@ import {
 } from "@/features/registration-quality/registration-quality";
 
 const people = [
-  { fullName: "Cibeli", phone: "+5521999999999" },
-  { fullName: "Derbe Aguiar", phone: null },
-  { fullName: "Adriana Cidade", phone: "+5521888888888" },
+  { id: "person-1", fullName: "Cibeli", phone: "+5521999999999", primaryGroup: { id: "group-1", name: "Célula Semear" } },
+  { id: "person-2", fullName: "Derbe Aguiar", phone: null, primaryGroup: { id: "group-2", name: "Célula Esperança" } },
+  { id: "person-3", fullName: "Adriana Cidade", phone: "+5521888888888", primaryGroup: null },
 ];
 
 const users = [
-  { email: "cibeli@koinonia.local", personId: "person-1" },
-  { email: "derbe@example.com", personId: null },
+  { id: "user-1", name: "Cibeli", email: "cibeli@koinonia.local", role: "Líder", personId: "person-1", person: { id: "person-1", fullName: "Cibeli" } },
+  { id: "user-2", name: "Derbe", email: "derbe@example.com", role: "Supervisor", personId: null, person: null },
 ];
 
 describe("registration quality", () => {
@@ -39,6 +39,22 @@ describe("registration quality", () => {
       expect.objectContaining({ key: "missingPhone", count: 1 }),
       expect.objectContaining({ key: "internalLogin", count: 1 }),
       expect.objectContaining({ key: "unlinkedUser", count: 1 }),
+    ]);
+    expect(summary.issues.find((issue) => issue.key === "missingPhone")?.items).toEqual([
+      expect.objectContaining({
+        title: "Derbe Aguiar",
+        detail: "Célula Esperança",
+        href: "/pessoas/person-2",
+        actionLabel: "Abrir pessoa",
+      }),
+    ]);
+    expect(summary.issues.find((issue) => issue.key === "internalLogin")?.items).toEqual([
+      expect.objectContaining({
+        title: "Cibeli",
+        detail: "cibeli@koinonia.local · Líder",
+        href: "/usuarios/user-1/editar",
+        actionLabel: "Editar usuário",
+      }),
     ]);
   });
 

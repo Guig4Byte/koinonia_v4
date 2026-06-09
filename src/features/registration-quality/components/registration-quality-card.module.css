@@ -18,14 +18,166 @@
   background: var(--surface-alt);
 }
 
-.issueRow {
+.issueRow + .issueRow {
+  border-top: 1px solid var(--color-border-divider);
+}
+
+.issueButton {
   display: flex;
+  width: 100%;
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.75rem;
+  border: 0;
+  background: transparent;
+  padding: 0.75rem;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 160ms ease;
+}
+
+.issueButton:hover {
+  background: color-mix(in srgb, var(--color-brand-accent) 8%, transparent);
+}
+
+.issueButton:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: -2px;
+}
+
+.issueContent {
+  min-width: 0;
+  flex: 1;
+}
+
+.issueMeta {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.issueChevron {
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-text-muted);
+}
+
+.sheetPanel {
   padding: 0.75rem;
 }
 
-.issueRow + .issueRow {
-  border-top: 1px solid var(--color-border-divider);
+.sheet {
+  display: grid;
+  gap: 1rem;
+}
+
+.sheetHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.sheetIcon {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  place-items: center;
+  border: 1px solid var(--color-border-card);
+  border-radius: 0.95rem;
+  background: var(--surface-alt);
+  color: var(--color-brand-accent);
+}
+
+.sheetIconSvg {
+  width: 1.2rem;
+  height: 1.2rem;
+  stroke-width: 2.1;
+}
+
+.sheetTitleBlock {
+  min-width: 0;
+  flex: 1;
+}
+
+.sheetTitle {
+  color: var(--color-text-primary);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  line-height: 1.12;
+}
+
+.sheetDescription {
+  margin-top: 0.35rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.45;
+}
+
+.sheetClose {
+  display: grid;
+  width: 2.2rem;
+  height: 2.2rem;
+  flex-shrink: 0;
+  place-items: center;
+  border: 1px solid var(--color-border-divider);
+  border-radius: 999px;
+  background: var(--surface-alt);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+}
+
+.sheetClose:hover {
+  border-color: var(--color-border-card);
+  background: color-mix(in srgb, var(--color-brand-accent) 8%, var(--surface-alt));
+  color: var(--color-text-primary);
+}
+
+.sheetClose:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.sheetList {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.sheetItem {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.78rem;
+  border: 1px solid var(--color-border-divider);
+  border-radius: 1rem;
+  background: var(--surface-alt);
+}
+
+.sheetItemCopy {
+  min-width: 0;
+}
+
+.sheetItemTitle {
+  overflow-wrap: anywhere;
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.sheetItemDetail {
+  margin-top: 0.25rem;
+  overflow-wrap: anywhere;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  line-height: 1.35;
+}
+
+@media (min-width: 430px) {
+  .sheetItem {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
 }
