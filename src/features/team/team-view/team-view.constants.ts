@@ -10,7 +10,7 @@ import {
 import type { TeamFilter } from "@/features/team/team-filters";
 
 export const SUPERVISOR_SECTION_LIMIT = 4;
-export const TEAM_SUPERVISOR_PREVIEW_LIMIT = 2;
+export const TEAM_SUPERVISOR_PREVIEW_LIMIT = 3;
 
 export const teamFilterCopy: Record<
   TeamFilter,

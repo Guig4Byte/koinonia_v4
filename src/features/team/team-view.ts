@@ -25,6 +25,7 @@ export {
   groupSignalLabel,
   groupSignalTone,
   inactiveGroupScheduleText,
+  supervisorAveragePresence,
   supervisorSummary,
 } from "@/features/team/team-view/team-group-display";
 export {

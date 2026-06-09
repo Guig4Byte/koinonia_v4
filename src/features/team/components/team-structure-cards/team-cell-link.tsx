@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
 import {
-  compactGroupSubtitle,
   groupSignalLabel,
   groupSignalTone,
   teamGroupHref,
@@ -18,9 +16,21 @@ function pastoralSignalLabel(
   name: string,
   subtitle: string,
   signalLabel?: string,
+  presenceLabel?: string,
 ) {
-  return `${name}. ${subtitle}${signalLabel ? `. Sinal pastoral: ${signalLabel}` : ""}`;
+  const signalText = signalLabel ? `. Sinal pastoral: ${signalLabel}` : "";
+  const presenceText = presenceLabel ? `. ${presenceLabel}` : "";
+
+  return `${name}. ${subtitle}${signalText}${presenceText}`;
 }
+
+function compactSignalLabel(label: string) {
+  if (label === "Apoio pedido") return "Apoio";
+  if (label === "Em atenção") return "Atenção";
+  if (label === "Em cuidado") return "Cuidado";
+  return label;
+}
+
 
 export function cellToneClass(tone?: TeamSignalTone) {
   return tone ? cellLinkToneClass[tone] : undefined;
@@ -32,6 +42,8 @@ export function TeamCellLink({
   subtitle,
   signalLabel,
   visibleSignalLabel,
+  presenceRate,
+  hasPresenceData,
   className,
 }: {
   href: string;
@@ -39,23 +51,43 @@ export function TeamCellLink({
   subtitle: string;
   signalLabel?: string;
   visibleSignalLabel?: string;
+  presenceRate?: number;
+  hasPresenceData?: boolean;
   className?: string;
 }) {
+  const itemPresenceLabel =
+    hasPresenceData && presenceRate !== undefined
+      ? `${presenceRate}% presença`
+      : "Sem presença";
+
   return (
     <Link
       href={href}
       className={cn(styles.cellLink, className)}
-      aria-label={pastoralSignalLabel(name, subtitle, signalLabel)}
+      aria-label={pastoralSignalLabel(
+        name,
+        subtitle,
+        signalLabel,
+        itemPresenceLabel,
+      )}
     >
       <span className={styles.cellText}>
         <span className={styles.cellTitle}>{name}</span>
         <span className={styles.cellSubtitle}>{subtitle}</span>
-        {visibleSignalLabel ? (
-          <span className={styles.cellSignalLabel}>{visibleSignalLabel}</span>
-        ) : null}
       </span>
-      <span className={styles.cellAction}>
-        <ChevronRight className={styles.cellChevron} aria-hidden="true" />
+      {visibleSignalLabel ? (
+        <span className={styles.cellSignalLabel}>{visibleSignalLabel}</span>
+      ) : null}
+      <span className={styles.cellPresence}>
+        <span className={styles.cellPresenceLabel}>{itemPresenceLabel}</span>
+        {hasPresenceData && presenceRate !== undefined ? (
+          <span className={styles.cellPresenceTrack} aria-hidden="true">
+            <span
+              className={styles.cellPresenceFill}
+              style={{ width: `${presenceRate}%` }}
+            />
+          </span>
+        ) : null}
       </span>
     </Link>
   );
@@ -70,16 +102,22 @@ export function TeamGroupLink({
 }) {
   const tone = groupSignalTone(group);
   const signalLabel = groupSignalLabel(group);
-  const shouldShowSignalLabel = !activeFilter || activeFilter === FILTER_ALL;
+  const shouldShowSignalLabel =
+    tone !== "ok" && (!activeFilter || activeFilter === FILTER_ALL);
 
   return (
     <TeamCellLink
       href={teamGroupHref(group.id, activeFilter)}
       name={group.name}
-      subtitle={compactGroupSubtitle(group)}
+      subtitle={group.leadershipName}
       signalLabel={signalLabel}
-      visibleSignalLabel={shouldShowSignalLabel ? signalLabel : undefined}
+      visibleSignalLabel={
+        shouldShowSignalLabel ? compactSignalLabel(signalLabel) : undefined
+      }
+      presenceRate={group.presenceRate}
+      hasPresenceData={group.hasPresenceData}
       className={cellToneClass(tone)}
     />
   );
 }
+

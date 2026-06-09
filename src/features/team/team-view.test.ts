@@ -11,6 +11,7 @@ import {
   teamFilterBackHref,
   teamFilterContent,
   teamGroupHref,
+  supervisorAveragePresence,
   supervisorSummary,
   teamNavIndicator,
   teamSavedMessage,
@@ -207,6 +208,32 @@ describe("team-view", () => {
         supervisor({ groups: [teamGroup()], supportRequestsCount: 1 }),
       ),
     ).toBe("1 célula acompanhada");
+  });
+
+  it("calcula a presença média do supervisor pelas células com presença", () => {
+    expect(
+      supervisorAveragePresence(
+        supervisor({
+          groups: [
+            teamGroup({ id: "group-1", presenceRate: 75 }),
+            teamGroup({ id: "group-2", presenceRate: 82 }),
+            teamGroup({
+              id: "group-3",
+              hasPresenceData: false,
+              presenceRate: 0,
+            }),
+          ],
+        }),
+      ),
+    ).toBe(79);
+
+    expect(
+      supervisorAveragePresence(
+        supervisor({
+          groups: [teamGroup({ hasPresenceData: false, presenceRate: 0 })],
+        }),
+      ),
+    ).toBeNull();
   });
 
   it("resolve o sinal visual do grupo por prioridade pastoral", () => {

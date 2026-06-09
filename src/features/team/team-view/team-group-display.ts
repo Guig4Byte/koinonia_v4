@@ -38,6 +38,19 @@ export function groupSignalLabel(group: TeamGroup) {
   return "Estável";
 }
 
+
+export function supervisorAveragePresence(supervisor: SupervisorTeam) {
+  const groupsWithPresence = supervisor.groups.filter((group) => group.hasPresenceData);
+  if (groupsWithPresence.length === 0) return null;
+
+  const totalPresence = groupsWithPresence.reduce(
+    (total, group) => total + group.presenceRate,
+    0,
+  );
+
+  return Math.round(totalPresence / groupsWithPresence.length);
+}
+
 export function supervisorSummary(supervisor: SupervisorTeam) {
   return countLabel(
     supervisor.groups.length,
