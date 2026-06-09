@@ -1,0 +1,115 @@
+/* Design primitives and shared token aliases. */
+
+:root {
+  /* Paleta Koinonia — base visual oficial */
+  --brown-950: #1a1008;
+  --brown-900: #2c1a0a;
+  --brown-800: #4a2e12;
+  --brown-700: #6b3f1a;
+  --brown-600: #8b5a2b;
+  --brown-400: #b8844f;
+  --brown-200: #d4b896;
+  --brown-100: #e8d5bc;
+  --brown-50: #f5ede0;
+  --cream-100: #faf6f0;
+  --cream-50: #fdfaf6;
+
+  /* Estados semânticos — feedback e presença */
+  --status-danger-bg: #fef2f2;
+  --status-danger-text: #991b1b;
+  --status-danger-border: #fca5a5;
+  --status-warning-bg: #fffbeb;
+  --status-warning-text: #92400e;
+  --status-warning-border: #fcd34d;
+  --status-success-bg: #f0fdf4;
+  --status-success-text: #166534;
+  --status-success-border: #86efac;
+  --status-info-bg: #eff6ff;
+  --status-info-text: #1e40af;
+  --status-info-border: #bfdbfe;
+
+  /* Tipografia */
+  --font-display: var(--font-lora), "Lora", Georgia, "Times New Roman", serif;
+  --font-body: var(--font-dm-sans), "DM Sans", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.625rem;
+  --text-3xl: 2rem;
+  --text-display: 2.1rem;
+  --text-hero: 2.375rem;
+
+  --weight-regular: 400;
+  --weight-medium: 600;
+  --weight-bold: 700;
+
+  /* Raios */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+  --radius-circle: 50%;
+
+  /* Aliases usados pelos componentes atuais */
+  --background: var(--color-bg-page);
+  --surface: var(--color-bg-card);
+  --surface-alt: var(--color-bg-subtle-card, color-mix(in srgb, var(--color-bg-card) 72%, var(--color-bg-page)));
+  --metric-card-bg: var(--color-bg-metric-card);
+  --metric-card-border: var(--color-border-metric-card);
+  --metric-card-shadow: var(--color-shadow-metric-card);
+  --border: var(--color-border-card);
+  --text: var(--color-text-primary);
+  --muted: var(--color-text-secondary);
+  --accent: var(--color-brand);
+  --on-accent: var(--color-btn-primary-text);
+  --accent-muted: var(--color-text-on-banner);
+  --accent-soft: color-mix(in srgb, var(--color-brand-accent) 28%, transparent);
+  --color-brand-soft: var(--accent-soft);
+  --risk: var(--color-metric-atencoes);
+  --risk-soft: var(--color-badge-risco-bg);
+  --ok: var(--color-metric-presenca);
+  --ok-soft: var(--color-badge-estavel-bg);
+  --warn: var(--color-badge-atencao-text);
+  --warn-soft: var(--color-badge-atencao-bg);
+  --info: var(--status-info-text);
+  --info-soft: var(--status-info-bg);
+  --care: var(--color-badge-cuidado-text);
+  --care-soft: var(--color-badge-cuidado-bg);
+  --support: var(--color-badge-apoio-text);
+  --support-soft: var(--color-badge-apoio-bg);
+  --color-signal-risk: var(--color-metric-atencoes);
+  --color-signal-pastoral: color-mix(in srgb, var(--color-badge-risco-text) 76%, var(--color-badge-apoio-text));
+  --color-signal-support: var(--color-badge-apoio-text);
+  --color-signal-attention: var(--color-badge-atencao-text);
+  --color-signal-care: var(--color-badge-cuidado-text);
+  --color-signal-retomar: var(--color-text-muted);
+  --color-signal-stable: var(--color-metric-presenca);
+  --nav-bg: var(--color-bg-tab);
+  --page-glow: color-mix(in srgb, var(--color-brand-accent) 14%, transparent);
+  --color-card-decoration: var(--color-brand-accent);
+  --color-focus-ring: var(--color-brand);
+  --color-focus-ring-soft: color-mix(in srgb, var(--color-focus-ring) 22%, transparent);
+
+  /* Aliases de cor derivados da paleta ativa */
+  --color-bg-banner: var(--color-bg-header);
+  --color-btn-secondary-bg: transparent;
+  --color-action-call-bg: transparent;
+  --color-action-call-border: var(--color-brand);
+  --color-action-whatsapp-bg: var(--color-btn-primary-bg);
+  --color-action-whatsapp-border: var(--color-action-whatsapp-bg);
+  --color-segmented-bg: rgba(0, 0, 0, 0.18);
+  --color-segmented-active-bg: var(--color-brand-accent);
+  --color-tab-active: var(--color-brand);
+  --color-shadow-popover: var(--color-shadow-elevated);
+  --color-shadow-icon: var(--color-shadow-hover);
+
+  --action-primary-bg: var(--color-btn-primary-bg);
+  --action-primary-text: var(--color-btn-primary-text);
+  --action-secondary-bg: var(--color-btn-secondary-bg);
+  --action-secondary-text: var(--color-btn-secondary-text);
+  --action-secondary-border: var(--color-btn-secondary-border);
+}

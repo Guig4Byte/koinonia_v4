@@ -121,19 +121,19 @@ model User {
   email        String   @unique
   passwordHash String
   role         UserRole
+  isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   church       Church  @relation(fields: [churchId], references: [id], onDelete: Cascade)
   person       Person? @relation(fields: [personId], references: [id], onDelete: SetNull)
-  groupsLed    SmallGroup[] @relation("GroupLeader")
-  groupsSupervised SmallGroup[] @relation("GroupSupervisor")
   groupResponsibilities GroupResponsibility[]
   eventsCreated Event[] @relation("EventCreator")
   careTouches  CareTouch[] @relation("CareActor")
   signalsAssigned CareSignal[] @relation("SignalAssignee")
 
   @@index([churchId, role])
+  @@index([churchId, isActive, role])
   @@map("users")
 }
 
@@ -165,8 +165,6 @@ model SmallGroup {
   churchId         String    @db.Uuid
   name             String
   kind             GroupKind @default(CELL)
-  leaderUserId     String?   @db.Uuid
-  supervisorUserId String?   @db.Uuid
   meetingDayOfWeek    Int?
   meetingTime         String?
   locationName        String?
@@ -176,8 +174,6 @@ model SmallGroup {
   updatedAt        DateTime  @updatedAt
 
   church      Church @relation(fields: [churchId], references: [id], onDelete: Cascade)
-  leader      User?  @relation("GroupLeader", fields: [leaderUserId], references: [id], onDelete: SetNull)
-  supervisor  User?  @relation("GroupSupervisor", fields: [supervisorUserId], references: [id], onDelete: SetNull)
   responsibilities GroupResponsibility[]
   memberships GroupMembership[]
   events      Event[]
@@ -186,8 +182,6 @@ model SmallGroup {
 
   @@index([churchId, isActive])
   @@index([churchId, isActive, meetingDayOfWeek])
-  @@index([leaderUserId])
-  @@index([supervisorUserId])
   @@map("groups")
 }
 
@@ -254,8 +248,11 @@ model Event {
   @@unique([groupId, startsAt, type])
   @@unique([groupId, scheduleStartsAt, type])
   @@index([churchId, startsAt])
+  @@index([churchId, type, startsAt])
   @@index([groupId, startsAt])
+  @@index([groupId, type, startsAt])
   @@index([groupId, scheduleStartsAt])
+  @@index([groupId, type, scheduleStartsAt])
   @@map("events")
 }
 
@@ -298,6 +295,7 @@ model CareSignal {
   @@index([churchId, status, severity])
   @@index([personId, status])
   @@index([groupId, status])
+  @@index([groupId, source, status, personId, resolvedAt])
   @@map("care_signals")
 }
 

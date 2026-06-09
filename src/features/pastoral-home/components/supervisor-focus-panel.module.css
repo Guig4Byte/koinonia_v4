@@ -1,0 +1,180 @@
+.panel {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.primaryCard {
+  margin-bottom: 0;
+}
+
+.secondaryArea {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.18rem;
+}
+
+.secondaryHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding-inline: 2px;
+}
+
+.secondaryHeadingCopy {
+  min-width: 0;
+}
+
+.secondaryHeadingCopy strong {
+  display: block;
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 650;
+  letter-spacing: -0.018em;
+  line-height: 1.08;
+}
+
+.secondaryHeadingCopy span {
+  display: block;
+  margin-top: 0.18rem;
+  color: color-mix(in srgb, var(--color-text-secondary) 82%, var(--color-text-muted));
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.28;
+}
+
+.secondaryCount {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.55rem;
+  flex: 0 0 auto;
+  border: 1px solid color-mix(in srgb, var(--color-border-card) 72%, transparent);
+  border-radius: var(--radius-pill);
+  padding: 0.22rem 0.56rem;
+  background: color-mix(in srgb, var(--color-bg-card) 70%, transparent);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.secondaryList {
+  display: grid;
+  gap: 0.66rem;
+}
+
+
+.secondaryContent {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) 1.62rem;
+  gap: 0.74rem;
+  align-items: center;
+  min-height: inherit;
+  padding: 0.92rem 0.82rem 0.92rem 0.72rem;
+}
+
+.secondaryIcon {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--priority-accent) 30%, var(--color-border-card));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--priority-accent) 10%, var(--surface-alt));
+  color: color-mix(in srgb, var(--priority-accent) 86%, var(--color-text-primary));
+}
+
+.secondaryCopy {
+  min-width: 0;
+  font-family: var(--font-body);
+}
+
+.secondaryEyebrow {
+  display: block;
+  color: color-mix(in srgb, var(--priority-accent) 76%, var(--color-text-secondary));
+  font-size: 0.72rem;
+  font-weight: 760;
+  letter-spacing: 0.065em;
+  line-height: 1.14;
+  text-transform: uppercase;
+}
+
+.secondaryValue {
+  display: block;
+  margin-top: 0.22rem;
+  color: var(--color-text-primary);
+  font-size: 0.98rem;
+  font-weight: 640;
+  letter-spacing: -0.004em;
+  line-height: 1.18;
+  text-wrap: balance;
+}
+
+.secondaryDetail {
+  display: block;
+  margin-top: 0.32rem;
+  color: color-mix(in srgb, var(--color-text-secondary) 90%, var(--color-text-primary));
+  font-size: var(--text-sm);
+  font-weight: 400;
+  letter-spacing: -0.002em;
+  line-height: 1.42;
+}
+
+.secondaryAction {
+  display: grid;
+  width: 1.62rem;
+  height: 1.62rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--priority-accent) 18%, var(--color-border-card));
+  border-radius: 999px;
+  color: color-mix(in srgb, var(--priority-accent) 70%, var(--color-text-muted));
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+:global(.group:hover) .secondaryAction {
+  background: color-mix(in srgb, var(--priority-accent) 10%, transparent);
+  color: color-mix(in srgb, var(--priority-accent) 86%, var(--color-text-primary));
+  transform: translateX(1px);
+}
+
+:global(.group:active) .secondaryAction {
+  transform: translateX(0);
+}
+
+@media (max-width: 360px) {
+  .secondaryHeader {
+    align-items: flex-start;
+  }
+
+  .secondaryHeadingCopy strong {
+    font-size: 0.98rem;
+  }
+
+  .secondaryHeadingCopy span {
+    max-width: 13.5rem;
+  }
+
+  .secondaryContent {
+    grid-template-columns: 1.9rem minmax(0, 1fr) 1.5rem;
+    gap: 0.6rem;
+    padding-inline: 0.62rem 0.66rem;
+  }
+
+  .secondaryIcon {
+    width: 1.9rem;
+    height: 1.9rem;
+  }
+
+  .secondaryAction {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}

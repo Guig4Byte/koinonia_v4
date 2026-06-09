@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { readAuthSession } from "@/lib/auth/session";
+import { ROUTES } from "@/lib/routes";
 
 export async function getAuthenticatedUser() {
   const session = await readAuthSession();
@@ -12,8 +13,16 @@ export async function getAuthenticatedUser() {
       id: session.id,
       churchId: session.churchId,
       role: session.role,
+      isActive: true,
     },
-    include: { church: true, person: true },
+    select: {
+      id: true,
+      churchId: true,
+      personId: true,
+      name: true,
+      email: true,
+      role: true,
+    },
   });
 }
 
@@ -21,7 +30,7 @@ export async function getCurrentUser() {
   const authenticatedUser = await getAuthenticatedUser();
 
   if (!authenticatedUser) {
-    redirect("/login");
+    redirect(ROUTES.login);
   }
 
   return authenticatedUser;

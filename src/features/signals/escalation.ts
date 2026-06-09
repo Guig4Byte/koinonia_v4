@@ -1,21 +1,21 @@
 import { GroupResponsibilityRole, SignalSeverity, UserRole } from "@/generated/prisma/client";
 import {
+  isPastoralEscalationSignal,
+  isSignalAssignedToPastoralRole,
+  isSignalAssignedToSupervisor,
+  signalAssignmentKind,
+  type SignalAssigneeLike,
+  type SignalAssignmentKind,
+  type SignalAssignmentLike,
+} from "./signal-classification";
+import { SIGNAL_COPY, pastoralEscalationCopy, supervisorEscalationCopy } from "./signal-copy";
+import {
   hasAnyGroupResponsibilityScope,
   hasGroupResponsibilityScope,
-  type GroupResponsibilityLike,
   type ResponsibleGroupLike,
-} from "@/features/groups/responsibility-scope";
+} from "@/lib/domain/group-responsibilities";
 
-export type SignalAssigneeLike = {
-  id?: string | null;
-  name?: string | null;
-  role: UserRole | string;
-};
-
-export type SignalAssignmentLike = {
-  assignedToId?: string | null;
-  assignedTo?: SignalAssigneeLike | null;
-};
+export type { SignalAssigneeLike, SignalAssignmentLike };
 
 export type EscalationSignalLike = SignalAssignmentLike & {
   severity: SignalSeverity;
@@ -26,15 +26,13 @@ export type EscalationViewerLike = {
   role: UserRole;
 };
 
-export type EscalationGroupResponsibilityLike = GroupResponsibilityLike;
-
 export type EscalationGroupLike = ResponsibleGroupLike;
 
 export type EscalationScopedSignalLike = EscalationSignalLike & {
   group?: EscalationGroupLike | null;
 };
 
-export type EscalationAssignmentKind = "pastoral" | "supervisor";
+export type EscalationAssignmentKind = SignalAssignmentKind;
 
 export type EscalationDisplay = {
   label: string | null;
@@ -55,18 +53,12 @@ function hasSupervisorAvailable(group: EscalationGroupLike | null | undefined) {
   return hasAnyGroupResponsibilityScope(group, GroupResponsibilityRole.SUPERVISOR);
 }
 
-function isPastoralViewer(viewer: EscalationViewerLike): boolean {
-  return viewer.role === UserRole.PASTOR || viewer.role === UserRole.ADMIN;
-}
-
 function isSupervisorSupportViewer(viewer: EscalationViewerLike): boolean {
   return viewer.role === UserRole.LEADER || viewer.role === UserRole.SUPERVISOR;
 }
 
 function escalationAssignmentKind(signal: EscalationSignalLike): EscalationAssignmentKind | null {
-  if (isAssignedToPastoralRole(signal)) return "pastoral";
-  if (isAssignedToSupervisor(signal)) return "supervisor";
-  return null;
+  return signalAssignmentKind(signal);
 }
 
 function emptyEscalationDisplay(): EscalationDisplay {
@@ -79,48 +71,36 @@ function emptyEscalationDisplay(): EscalationDisplay {
 }
 
 function supervisorEscalationDisplay(viewer: EscalationViewerLike): EscalationDisplay {
-  const isSupervisorViewer = viewer.role === UserRole.SUPERVISOR;
-
   return {
-    label: isSupervisorViewer ? "Pedido de apoio" : "Apoio solicitado",
-    detail: isSupervisorViewer
-      ? "Essa célula pediu apoio da supervisão."
-      : "Apoio solicitado à supervisão.",
-    chip: isSupervisorViewer ? "Pedido de apoio" : "Apoio solicitado",
+    ...supervisorEscalationCopy(viewer),
     visible: true,
   };
 }
 
 function pastoralEscalationDisplay(viewer: EscalationViewerLike): EscalationDisplay {
-  const isPastoralRoleViewer = isPastoralViewer(viewer);
-
   return {
-    label: "Encaminhado ao pastor",
-    detail: isPastoralRoleViewer
-      ? "Encaminhado ao cuidado pastoral."
-      : "Encaminhado ao pastor.",
-    chip: isPastoralRoleViewer ? "Cuidado pastoral" : "Encaminhado",
+    ...pastoralEscalationCopy(viewer),
     visible: true,
   };
 }
 
 export function isAssignedToSupervisor(signal: SignalAssignmentLike): boolean {
-  return signal.assignedTo?.role === UserRole.SUPERVISOR;
+  return isSignalAssignedToSupervisor(signal);
 }
 
 export function isAssignedToPastoralRole(signal: SignalAssignmentLike): boolean {
-  return signal.assignedTo?.role === UserRole.PASTOR || signal.assignedTo?.role === UserRole.ADMIN;
+  return isSignalAssignedToPastoralRole(signal);
 }
 
 export function isPastoralEscalation(signal: EscalationSignalLike): boolean {
-  return signal.severity === SignalSeverity.URGENT || isAssignedToPastoralRole(signal);
+  return isPastoralEscalationSignal(signal);
 }
 
 export function escalationStatusLabel(signal: EscalationSignalLike): string | null {
   const assignmentKind = escalationAssignmentKind(signal);
 
-  if (assignmentKind === "pastoral") return "Encaminhado ao pastor";
-  if (assignmentKind === "supervisor") return "Apoio solicitado";
+  if (assignmentKind === "pastoral") return SIGNAL_COPY.pastoralEscalation.label;
+  if (assignmentKind === "supervisor") return SIGNAL_COPY.support.requested.label;
   return null;
 }
 

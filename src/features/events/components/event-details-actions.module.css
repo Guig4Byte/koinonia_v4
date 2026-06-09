@@ -1,0 +1,45 @@
+.actionsHeader {
+  display: grid;
+  grid-template-columns: 1.35rem minmax(0, 1fr);
+  gap: 0.82rem;
+  align-items: center;
+}
+
+.actionsIcon {
+  display: inline-grid;
+  width: 1.35rem;
+  height: 1.35rem;
+  place-items: center;
+  color: var(--color-brand-accent);
+}
+
+.actionsIconSvg {
+  width: 1.05rem;
+  height: 1.05rem;
+  stroke-width: 2.15;
+}
+
+.title {
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-size: clamp(1.08rem, 4.8vw, 1.35rem);
+  font-weight: 720;
+  letter-spacing: -0.016em;
+  line-height: 1.16;
+}
+
+.secondaryActions {
+  margin-top: 1rem;
+}
+
+@media (max-width: 360px) {
+  .actionsHeader {
+    grid-template-columns: 1.18rem minmax(0, 1fr);
+    gap: 0.72rem;
+  }
+
+  .actionsIcon {
+    width: 1.18rem;
+    height: 1.18rem;
+  }
+}

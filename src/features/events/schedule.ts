@@ -1,9 +1,10 @@
-import { EventStatus, EventType, GroupKind } from "@/generated/prisma/client";
-import { DAYS_PER_WEEK, isValidWeekday } from "@/features/groups/weekdays";
+import { EventStatus, EventType, GroupKind, GroupResponsibilityRole } from "@/generated/prisma/client";
+import { activeGroupResponsibilityUserSelect } from "@/lib/domain/group-responsibility-query";
+import { DAYS_PER_WEEK, isValidWeekday } from "@/lib/domain/weekdays";
 import { getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { addBrasiliaDays, dateFromBrasiliaParts, getBrasiliaDateParts, startOfBrasiliaDay } from "@/lib/brasilia-time";
 import { prisma } from "@/lib/prisma";
-import { parseClockTime } from "./time-validation";
+import { parseClockTime } from "@/lib/clock-time";
 
 export const DEFAULT_CELL_MEETING_GENERATION_WEEKS = 12;
 
@@ -16,6 +17,7 @@ export type EnsureUpcomingCellMeetingsOptions = {
   referenceDate?: Date;
   weeksAhead?: number;
   groupIds?: string[];
+  force?: boolean;
 };
 
 export type EnsureUpcomingCellMeetingsResult = {
@@ -73,6 +75,7 @@ export async function ensureUpcomingCellMeetingsForUser(
   const generationStart = startOfBrasiliaDay(referenceDate);
   const weeksAhead = options.weeksAhead ?? DEFAULT_CELL_MEETING_GENERATION_WEEKS;
   const generatedUntil = addBrasiliaDays(generationStart, weeksAhead * DAYS_PER_WEEK);
+  const shouldForceGeneration = options.force ?? false;
 
   const groups = await prisma.smallGroup.findMany({
     where: {
@@ -84,6 +87,14 @@ export async function ensureUpcomingCellMeetingsForUser(
           meetingDayOfWeek: { not: null },
           meetingTime: { not: null },
           ...(options.groupIds && options.groupIds.length > 0 ? { id: { in: options.groupIds } } : {}),
+          ...(shouldForceGeneration
+            ? {}
+            : {
+                OR: [
+                  { eventsGeneratedUntil: null },
+                  { eventsGeneratedUntil: { lt: generatedUntil } },
+                ],
+              }),
         },
       ],
     },
@@ -91,7 +102,7 @@ export async function ensureUpcomingCellMeetingsForUser(
       id: true,
       churchId: true,
       name: true,
-      leaderUserId: true,
+      responsibilities: activeGroupResponsibilityUserSelect(GroupResponsibilityRole.LEADER),
       meetingDayOfWeek: true,
       meetingTime: true,
       locationName: true,
@@ -131,7 +142,7 @@ export async function ensureUpcomingCellMeetingsForUser(
         data: startsToCreate.map((startsAt) => ({
           churchId: group.churchId,
           groupId: group.id,
-          createdById: group.leaderUserId,
+          createdById: group.responsibilities[0]?.userId ?? null,
           type: EventType.CELL_MEETING,
           title: group.name,
           startsAt,

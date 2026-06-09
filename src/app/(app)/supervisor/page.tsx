@@ -1,19 +1,22 @@
-import { AppShell } from "@/components/app-shell";
-import { appNavForRole } from "@/features/navigation/app-nav";
-import { PulseCard } from "@/components/base-cards";
-import { InCareSection, PastoralSignalSection } from "@/components/pastoral-list-cards";
-import { SearchBox } from "@/components/search-box";
-import { getSupervisorDashboard } from "@/features/dashboard/queries";
-import { canUseSupervisorDashboard } from "@/features/permissions/permissions";
-import { buildSupervisorPageView } from "@/features/pastoral-home/supervisor-page-view";
-import { getCurrentUser } from "@/lib/auth/current-user";
 import { redirect } from "next/navigation";
+import { AppShell } from "@/components/layout/app-shell";
+import { EmptyState, PulseCard } from "@/components/shared/base-cards";
+import { NextActionCard } from "@/components/shared/next-action-card";
+import { getSupervisorDashboard } from "@/features/dashboard/queries";
+import { appNavForRole } from "@/features/navigation/app-nav";
+import { SupervisorFocusPanel } from "@/features/pastoral-home/components/supervisor-focus-panel";
+import { FirstUseStateCard } from "@/features/pastoral-home/components/first-use-state-card";
+import { EMPTY_STATE_COPY } from "@/features/empty-states/empty-state-copy";
+import { buildSupervisorPageView } from "@/features/pastoral-home/supervisor-page-view";
+import { canUseSupervisorDashboard } from "@/features/permissions/permissions";
+import { getCurrentUser } from "@/lib/auth/current-user";
+import { ROUTES } from "@/lib/routes";
 
 export default async function SupervisorPage() {
   const user = await getCurrentUser();
 
   if (!canUseSupervisorDashboard(user)) {
-    redirect("/");
+    redirect(ROUTES.root);
   }
 
   const dashboard = await getSupervisorDashboard(user);
@@ -25,47 +28,23 @@ export default async function SupervisorPage() {
       role={user.role}
       nav={appNavForRole(user, { active: "home", indicator: view.navIndicator })}
     >
-      <SearchBox placeholder="Buscar pessoa..." />
       <PulseCard
         title={view.pastoralPulse.title}
         subtitle={view.pastoralPulse.subtitle}
         tone={view.pastoralPulse.tone}
       />
 
-      <PastoralSignalSection
-        title="Irmãos que precisam de um olhar especial"
-        detail="Urgentes ou encaminhados ao pastor aparecem com mais destaque."
-        emptyMessage="Nenhum caso urgente ou encaminhado agora."
-        signals={view.urgentSignals}
-        viewer={user}
-        contextForSignal={(signal) => signal.group?.name ?? "Sem célula"}
-      />
-
-      <PastoralSignalSection
-        title="Pedidos de apoio"
-        detail="Pedidos trazidos pelos líderes aparecem separados, para apoiar sem virar operador da célula."
-        emptyMessage="Nenhum líder pediu apoio agora."
-        signals={view.supportSignals}
-        viewer={user}
-        contextForSignal={(signal) => signal.group?.name ?? "Sem célula"}
-        ctaLabelForSignal={() => "Abrir apoio"}
-      />
-
-      <PastoralSignalSection
-        title="Acompanhar de perto"
-        detail="Atenções locais das células supervisionadas."
-        emptyMessage="Nenhum outro caso em atenção agora."
-        signals={view.attentionSignals}
-        viewer={user}
-        contextForSignal={(signal) => signal.group?.name ?? "Sem célula"}
-      />
-
-      <InCareSection
-        title="Acolhidos em cuidado"
-        detail="Pessoas que já receberam cuidado e seguem no radar."
-        emptyMessage="Nenhuma pessoa em cuidado agora."
-        people={view.inCarePeople}
-      />
+      {view.firstUseState ? (
+        <FirstUseStateCard state={view.firstUseState} />
+      ) : view.focusItems.length > 0 ? (
+        <SupervisorFocusPanel items={view.focusItems} />
+      ) : view.nextAction ? (
+        <NextActionCard action={view.nextAction} />
+      ) : (
+        <EmptyState>
+          Tudo tranquilo no seu escopo. {EMPTY_STATE_COPY.care.noOpenSignalTitle}
+        </EmptyState>
+      )}
     </AppShell>
   );
 }

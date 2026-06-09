@@ -1,0 +1,108 @@
+.page {
+  display: flex;
+  flex-direction: column;
+}
+
+.hero {
+  --detail-decor-color: var(--color-card-decoration);
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin-bottom: 10px;
+  border: 1px solid color-mix(in srgb, var(--detail-decor-color) 22%, var(--color-border-card));
+  border-radius: 1.35rem;
+  background:
+    radial-gradient(ellipse 84% 64% at 50% -18%, color-mix(in srgb, var(--detail-decor-color) 16%, transparent), transparent 72%),
+    var(--color-bg-card);
+  padding: 14px;
+  box-shadow: var(--color-shadow-card);
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: auto -46px -78px auto;
+  z-index: -1;
+  width: 144px;
+  height: 144px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--detail-decor-color) 16%, transparent);
+  pointer-events: none;
+}
+
+.heroHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.85rem;
+}
+
+.heroTitleBlock {
+  min-width: 0;
+  max-width: 32rem;
+  margin-top: 0.4rem;
+}
+
+.heroAction {
+  flex-shrink: 0;
+}
+
+.heroDetails {
+  display: grid;
+  gap: 0.15rem;
+  margin-top: 0.5rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+@media (min-width: 375px) {
+  .heroHeader {
+    display: block;
+  }
+
+  .heroAction {
+    position: absolute;
+    inset-block-start: 14px;
+    inset-inline-end: 14px;
+  }
+
+  .heroTitleBlock {
+    margin-top: 0.3rem;
+  }
+
+  .heroTitle {
+    padding-inline-end: 7.15rem;
+  }
+}
+
+.heroChip {
+  display: inline-flex;
+  max-width: 100%;
+  min-height: 34px;
+  align-items: center;
+  margin-top: 0.6rem;
+  border: 1px solid color-mix(in srgb, var(--detail-decor-color) 20%, var(--color-border-card));
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--detail-decor-color) 10%, var(--metric-card-bg));
+  padding: 6px 10px;
+  color: var(--color-text-secondary);
+  font-size: calc(var(--text-xs) * 1.02);
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.setupChecklist {
+  margin-bottom: 0.85rem;
+}
+
+@media (max-width: 420px) {
+  .heroHeader {
+    gap: 0.65rem;
+  }
+
+  .heroTitleBlock {
+    margin-top: 0.35rem;
+  }
+}

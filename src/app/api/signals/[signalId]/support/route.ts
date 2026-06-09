@@ -1,19 +1,10 @@
 import { NextRequest } from "next/server";
-import { CareKind, GroupResponsibilityRole, SignalStatus, UserRole } from "@/generated/prisma/client";
-import { canViewGroup } from "@/features/permissions/permissions";
-import { canEscalateSignalToPastor, canRequestSupervisorSupport } from "@/features/signals/escalation";
-import { getCurrentUser } from "@/lib/auth/current-user";
+import { SIGNAL_COPY } from "@/features/signals/signal-copy";
+import { requestSignalSupport } from "@/features/signals/support-command";
 import { parseSignalSupportPayload } from "@/features/signals/support-payload";
+import { getCurrentUser } from "@/lib/auth/current-user";
 import { apiError, apiOk } from "@/lib/api-response";
 import { readJsonBody } from "@/lib/json";
-import { prisma } from "@/lib/prisma";
-
-async function findPastoralAssignee(churchId: string) {
-  return prisma.user.findFirst({
-    where: { churchId, role: { in: [UserRole.PASTOR, UserRole.ADMIN] } },
-    orderBy: { createdAt: "asc" },
-  });
-}
 
 export async function PATCH(request: NextRequest, context: { params: Promise<{ signalId: string }> }) {
   const user = await getCurrentUser();
@@ -21,110 +12,14 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ s
   const payload = parseSignalSupportPayload(await readJsonBody(request));
 
   if (!payload) {
-    return apiError("Pedido de apoio inválido", 400);
+    return apiError(SIGNAL_COPY.errors.invalidSupportRequest, 400);
   }
 
-  const { action, note } = payload;
+  const result = await requestSignalSupport({ user, signalId, payload });
 
-  const signal = await prisma.careSignal.findUnique({
-    where: { id: signalId },
-    include: {
-      group: {
-        include: {
-          responsibilities: {
-            where: { activeUntil: null },
-            include: { user: true },
-            orderBy: { createdAt: "asc" },
-          },
-        },
-      },
-      assignedTo: true,
-    },
-  });
-
-  if (!signal || signal.churchId !== user.churchId || signal.status !== SignalStatus.OPEN) {
-    return apiError("Sinal não encontrado", 404);
+  if (!result.ok) {
+    return apiError(result.message, result.status);
   }
 
-  if (!canViewGroup(user, signal.group)) {
-    return apiError("Sem permissão para este cuidado", 403);
-  }
-
-  if (action === "REQUEST_SUPERVISOR") {
-    if (!canRequestSupervisorSupport(user, signal)) {
-      return apiError("Apenas o líder da célula pode pedir apoio à supervisão", 403);
-    }
-
-    const supervisorUserId =
-      signal.group?.responsibilities.find((responsibility) => responsibility.role === GroupResponsibilityRole.SUPERVISOR)?.userId
-      ?? signal.group?.supervisorUserId;
-
-    if (!supervisorUserId) {
-      return apiError("Esta célula ainda não tem supervisor definido", 400);
-    }
-
-    const updated = await prisma.$transaction(async (tx) => {
-      const updatedSignal = await tx.careSignal.update({
-        where: { id: signal.id },
-        data: { assignedToId: supervisorUserId },
-        include: { assignedTo: true },
-      });
-
-      await tx.careTouch.create({
-        data: {
-          churchId: user.churchId,
-          personId: signal.personId,
-          groupId: signal.groupId,
-          actorId: user.id,
-          kind: CareKind.REQUESTED_SUPPORT,
-          note,
-        },
-      });
-
-      return updatedSignal;
-    });
-
-    return apiOk({
-      assignedToId: updated.assignedToId,
-      assignedToName: updated.assignedTo?.name,
-      message: "Apoio solicitado à supervisão.",
-    });
-  }
-
-  if (!canEscalateSignalToPastor(user, signal)) {
-    return apiError("Apenas liderança ou supervisão da célula pode encaminhar este caso ao pastor", 403);
-  }
-
-  const pastoralAssignee = await findPastoralAssignee(user.churchId);
-
-  if (!pastoralAssignee) {
-    return apiError("Nenhum pastor/admin disponível para encaminhamento pastoral", 400);
-  }
-
-  const updated = await prisma.$transaction(async (tx) => {
-    const updatedSignal = await tx.careSignal.update({
-      where: { id: signal.id },
-      data: { assignedToId: pastoralAssignee.id },
-      include: { assignedTo: true },
-    });
-
-    await tx.careTouch.create({
-      data: {
-        churchId: user.churchId,
-        personId: signal.personId,
-        groupId: signal.groupId,
-        actorId: user.id,
-        kind: CareKind.ESCALATED_TO_PASTOR,
-        note,
-      },
-    });
-
-    return updatedSignal;
-  });
-
-  return apiOk({
-    assignedToId: updated.assignedToId,
-    assignedToName: updated.assignedTo?.name,
-    message: "Encaminhado ao pastor.",
-  });
+  return apiOk(result.data);
 }

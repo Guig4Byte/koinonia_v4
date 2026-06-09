@@ -1,0 +1,238 @@
+.root {
+  --health-card-accent: var(--color-brand-accent);
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--health-card-accent) 18%, var(--color-border-card));
+  border-radius: 1.35rem;
+  background:
+    radial-gradient(circle at 13% 13%, color-mix(in srgb, var(--health-card-accent) 13%, transparent), transparent 34%),
+    linear-gradient(150deg, color-mix(in srgb, var(--health-card-accent) 5%, var(--color-bg-card)), var(--color-bg-card));
+  box-shadow: var(--color-shadow-card);
+}
+
+.root::before {
+  content: "";
+  position: absolute;
+  inset-block-start: -52px;
+  inset-inline-end: -40px;
+  z-index: -1;
+  width: 146px;
+  height: 146px;
+  border-radius: 999px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--health-card-accent) 12%, transparent), transparent 68%);
+  pointer-events: none;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1.05rem 1rem 0;
+}
+
+.iconWrap {
+  position: relative;
+  display: grid;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--health-card-accent) 32%, var(--color-border-card));
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, color-mix(in srgb, var(--health-card-accent) 18%, transparent), transparent 66%),
+    var(--surface-alt);
+  color: var(--health-card-accent);
+  box-shadow:
+    0 0 28px color-mix(in srgb, var(--health-card-accent) 18%, transparent),
+    inset 0 0 20px color-mix(in srgb, var(--health-card-accent) 10%, transparent);
+}
+
+.iconWrap::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border: 1px solid color-mix(in srgb, var(--health-card-accent) 10%, transparent);
+  border-radius: inherit;
+}
+
+html[data-theme="light"] .root,
+html[data-theme="parchment"] .root {
+  --health-card-accent: var(--color-brand);
+}
+
+.bar {
+  display: flex;
+  height: 0.72rem;
+  margin: 1.15rem 1rem 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--color-border-card) 54%, transparent);
+  border-radius: 999px;
+  background: var(--surface-alt);
+  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--color-bg-page) 46%, transparent);
+}
+
+.segment {
+  height: 100%;
+  background: var(--segment-color);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-bg-card) 44%, transparent);
+}
+
+.rows {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+.row {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--segment-color) 22%, var(--color-border-card));
+  border-radius: 1rem;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--segment-color) 7%, transparent), transparent 68%),
+    color-mix(in srgb, var(--segment-color) 7%, var(--surface-alt));
+  padding: 0.78rem 0.82rem;
+  color: color-mix(in srgb, var(--color-text-primary) 78%, var(--color-text-secondary));
+  font-size: var(--text-sm);
+  line-height: 1.2;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.row:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--segment-color) 38%, var(--color-border-card));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--segment-color) 10%, transparent), transparent 68%),
+    color-mix(in srgb, var(--segment-color) 10%, var(--surface-alt));
+}
+
+.row:active {
+  transform: translateY(0);
+}
+
+.dot {
+  width: 0.78rem;
+  height: 0.78rem;
+  flex-shrink: 0;
+  border: 1px solid color-mix(in srgb, var(--color-bg-card) 68%, transparent);
+  border-radius: 999px;
+  background: var(--segment-color);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--segment-color) 10%, transparent),
+    0 0 13px color-mix(in srgb, var(--segment-color) 36%, transparent);
+}
+
+.count {
+  color: color-mix(in srgb, var(--segment-color) 88%, var(--color-text-primary));
+  font-size: var(--text-base);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.chevron {
+  display: grid;
+  width: 1.55rem;
+  height: 1.55rem;
+  flex-shrink: 0;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--segment-color) 24%, var(--color-border-card));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--segment-color) 4%, transparent);
+  color: color-mix(in srgb, var(--segment-color) 48%, var(--color-text-muted));
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.row:hover .chevron {
+  background: color-mix(in srgb, var(--segment-color) 8%, transparent);
+  color: var(--segment-color);
+  transform: translateX(1px);
+}
+
+html[data-theme="dark"] .bar {
+  border-color: color-mix(in srgb, var(--color-border-card) 72%, transparent);
+  background: color-mix(in srgb, var(--color-bg-card) 78%, black);
+}
+
+html[data-theme="dark"] .segment {
+  background: color-mix(in srgb, var(--segment-color) 84%, var(--color-bg-card));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 18%, transparent),
+    0 0 8px color-mix(in srgb, var(--segment-color) 8%, transparent);
+}
+
+html[data-theme="dark"] .segment + .segment {
+  border-left: 1px solid color-mix(in srgb, var(--color-bg-card) 76%, black);
+}
+
+html[data-theme="dark"] .row {
+  border-color: color-mix(in srgb, var(--segment-color) 40%, var(--color-border-card));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--segment-color) 15%, transparent), transparent 70%),
+    color-mix(in srgb, var(--segment-color) 8%, var(--color-bg-card));
+  color: color-mix(in srgb, var(--color-text-primary) 88%, var(--segment-color));
+}
+
+html[data-theme="dark"] .row:hover {
+  border-color: color-mix(in srgb, var(--segment-color) 56%, var(--color-border-card));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--segment-color) 19%, transparent), transparent 70%),
+    color-mix(in srgb, var(--segment-color) 11%, var(--color-bg-card));
+}
+
+html[data-theme="dark"] .dot {
+  border-color: color-mix(in srgb, var(--color-bg-card) 76%, black);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--segment-color) 18%, transparent),
+    0 0 18px color-mix(in srgb, var(--segment-color) 46%, transparent);
+}
+
+html[data-theme="dark"] .count {
+  color: color-mix(in srgb, var(--segment-color) 82%, var(--color-text-primary));
+  text-shadow: 0 0 12px color-mix(in srgb, var(--segment-color) 16%, transparent);
+}
+
+html[data-theme="dark"] .chevron {
+  border-color: color-mix(in srgb, var(--segment-color) 32%, var(--color-border-card));
+  background: color-mix(in srgb, var(--segment-color) 6%, transparent);
+  color: color-mix(in srgb, var(--segment-color) 62%, var(--color-text-secondary));
+}
+
+@media (min-width: 430px) {
+  .header {
+    grid-template-columns: 82px minmax(0, 1fr);
+    padding-inline: 1.2rem;
+    padding-top: 1.2rem;
+  }
+
+  .iconWrap {
+    width: 72px;
+    height: 72px;
+  }
+
+  .bar {
+    margin-inline: 1.2rem;
+  }
+
+  .rows {
+    padding: 1.1rem 1.2rem 1.2rem;
+  }
+}
+
+.emptySegment {
+  width: 100%;
+  height: 100%;
+  background: var(--color-border-divider);
+}

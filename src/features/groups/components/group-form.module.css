@@ -1,0 +1,26 @@
+.fieldLabel {
+  display: block;
+  margin-bottom: 0.52rem;
+  color: var(--color-text-primary);
+  font-size: var(--text-base);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.scheduleFields {
+  display: grid;
+  gap: 1rem;
+}
+
+.timeFieldShell {
+  display: block;
+  min-width: 0;
+}
+
+.hint {
+  display: block;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.55;
+}

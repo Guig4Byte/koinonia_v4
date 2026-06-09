@@ -1,64 +1,113 @@
 import { describe, expect, it } from "vitest";
-import { PersonStatus, SignalSeverity, UserRole } from "@/generated/prisma/client";
-import { buildPastorPageView, type PastorPageDashboard, type PastorPageSignal } from "./pastor-page-view";
+import { UserRole } from "@/generated/prisma/client";
+import { buildPastoralHealthOverview } from "@/features/dashboard/pastoral-health";
+import { buildPastorPageView, type PastorPageDashboard, type PastorPageTeamSummary } from "./pastor-page-view";
 
 const user = { id: "pastor-1", role: UserRole.PASTOR };
 
-function signal(overrides: Partial<PastorPageSignal> = {}): PastorPageSignal {
+function teamSummary(overrides: Partial<PastorPageTeamSummary> = {}): PastorPageTeamSummary {
   return {
-    id: overrides.id ?? "signal-1",
-    personId: overrides.personId ?? "person-1",
-    reason: overrides.reason ?? "Ausência recente",
-    severity: overrides.severity ?? SignalSeverity.ATTENTION,
-    assignedToId: overrides.assignedToId,
-    assignedTo: overrides.assignedTo,
-    person: overrides.person ?? { id: "person-1", fullName: "Maria" },
-    group: overrides.group ?? { name: "Célula Central" },
-    detectedAt: overrides.detectedAt,
+    supervisorsCount: 4,
+    groupsCount: 9,
+    groupsWithoutSupervisorCount: 0,
+    inactiveGroupsCount: 1,
+    urgentCount: 0,
+    pastoralCasesCount: 0,
+    supportRequestsCount: 0,
+    groupsNeedingAttentionCount: 0,
+    hasRecordedCellMeetings: true,
+    ...overrides,
   };
 }
 
 function dashboard(overrides: Partial<PastorPageDashboard> = {}): PastorPageDashboard {
   return {
-    attentionPeople: overrides.attentionPeople ?? [],
-    inCarePeople: overrides.inCarePeople ?? [],
-    hasPresenceData: overrides.hasPresenceData ?? false,
-    presenceRate: overrides.presenceRate ?? 0,
+    teamSummary: overrides.teamSummary ?? teamSummary(),
+    healthOverview: overrides.healthOverview ?? buildPastoralHealthOverview([]),
+    weeklyPresence: overrides.weeklyPresence ?? {
+      hasPresenceData: false,
+      presenceRate: 0,
+      recordedEventsCount: 0,
+    },
   };
 }
 
 describe("pastor-page-view", () => {
-  it("prioriza casos pastorais e monta indicador de risco", () => {
+  it("prioriza urgentes na leitura macro do pastor", () => {
     const view = buildPastorPageView({
-      dashboard: dashboard({
-        attentionPeople: [signal({ severity: SignalSeverity.URGENT })],
-        inCarePeople: [{ id: "person-2", fullName: "Ana", status: PersonStatus.COOLING_AWAY }],
-      }),
+      dashboard: dashboard({ teamSummary: teamSummary({ urgentCount: 2, pastoralCasesCount: 3, groupsNeedingAttentionCount: 4 }) }),
       user,
     });
 
     expect(view.navIndicator).toBe("risk");
-    expect(view.urgentOrPastoralCases).toHaveLength(1);
-    expect(view.inCarePeople).toHaveLength(1);
-    expect(view.pastoralPulse.tone).toBe("attention");
+    expect(view.pastoralPulse.title).toBe("Há sinais que pedem um olhar mais próximo.");
+    expect(view.healthOverview.totalGroups).toBe(0);
   });
 
-  it("monta resumo neutro quando ainda não há presença semanal", () => {
-    const view = buildPastorPageView({ dashboard: dashboard(), user });
+  it("orienta primeiro uso quando ainda não há encontros registrados", () => {
+    const view = buildPastorPageView({
+      dashboard: dashboard({ teamSummary: teamSummary({ groupsCount: 1, hasRecordedCellMeetings: false }) }),
+      user,
+    });
 
-    expect(view.presenceSummary).toEqual([
+    expect(view.firstUseState).toMatchObject({
+      title: "Ainda não há encontros registrados.",
+      detail: "Quando os líderes fizerem o primeiro check-in, os sinais pastorais aparecerão aqui.",
+      href: "/equipe",
+      label: "Ver equipe",
+    });
+    expect(view.nextAction).toBeNull();
+    expect(view.pastoralPulse.title).toBe("A estrutura está pronta para receber os primeiros registros.");
+  });
+
+  it("monta resumo de equipe sem listar pessoas na visão", () => {
+    const view = buildPastorPageView({
+      dashboard: dashboard({ teamSummary: teamSummary({ groupsWithoutSupervisorCount: 1, inactiveGroupsCount: 2 }) }),
+      user,
+    });
+
+    expect(view.teamSummaryItems).toEqual([
       {
-        label: "Presença da semana",
-        value: "—",
-        detail: "Nenhum encontro registrado nesta semana.",
+        label: "Supervisores",
+        value: "4",
+        tone: "neutral",
+      },
+      {
+        label: "Células ativas",
+        value: "9",
+        tone: "neutral",
+      },
+      {
+        label: "Supervisão a definir",
+        value: "1",
+        tone: "warn",
+      },
+      {
+        label: "Inativas",
+        value: "2",
         tone: "neutral",
       },
     ]);
   });
 
-  it("usa tom pastoral da presença registrada", () => {
-    expect(buildPastorPageView({ dashboard: dashboard({ hasPresenceData: true, presenceRate: 60 }), user }).presenceSummary[0].tone).toBe("risk");
-    expect(buildPastorPageView({ dashboard: dashboard({ hasPresenceData: true, presenceRate: 70 }), user }).presenceSummary[0].tone).toBe("warn");
-    expect(buildPastorPageView({ dashboard: dashboard({ hasPresenceData: true, presenceRate: 85 }), user }).presenceSummary[0].tone).toBe("ok");
+  it("preserva o resumo semanal para o card de presença", () => {
+    const view = buildPastorPageView({
+      dashboard: dashboard({
+        weeklyPresence: {
+          hasPresenceData: true,
+          presenceRate: 79,
+          recordedEventsCount: 4,
+          monthTrend: { direction: "up", delta: 5, currentRate: 79, previousRate: 74 },
+        },
+      }),
+      user,
+    });
+
+    expect(view.weeklyPresence).toEqual({
+      hasPresenceData: true,
+      presenceRate: 79,
+      recordedEventsCount: 4,
+      monthTrend: { direction: "up", delta: 5, currentRate: 79, previousRate: 74 },
+    });
   });
 });

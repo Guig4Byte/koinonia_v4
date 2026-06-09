@@ -1,0 +1,247 @@
+.page {
+  --person-decor-color: var(--color-card-decoration);
+
+  display: flex;
+  flex-direction: column;
+}
+
+.backLink.backLink {
+  margin-bottom: 0.75rem;
+}
+
+.personHero {
+  --priority-card-decor-color: var(--person-decor-color);
+  animation: personHeroPulse 3.2s ease-in-out infinite;
+}
+
+.personHeroContent {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.avatar.avatar {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brown-400) 10%, transparent);
+}
+
+.personMain,
+.personTitleBlock {
+  min-width: 0;
+}
+
+.personMain {
+  flex: 1 1 auto;
+}
+
+.personHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.eyebrow {
+  color: color-mix(in srgb, var(--brown-400) 82%, var(--color-text-secondary));
+  font-size: var(--text-xs);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.personTitle {
+  margin-top: 0.22rem;
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.12;
+}
+
+.personMeta {
+  margin-top: 0.35rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.personBadge.personBadge {
+  flex: 0 0 auto;
+  margin-top: 0.12rem;
+  max-width: 8.6rem;
+  animation: personBadgePulse 2.4s ease-in-out infinite;
+  transform-origin: center;
+  will-change: transform, filter;
+}
+
+@keyframes personHeroPulse {
+  0%,
+  100% {
+    border-color: color-mix(in srgb, var(--person-decor-color) 34%, var(--color-border-card));
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--person-decor-color) 8%, transparent),
+      var(--color-shadow-card);
+  }
+
+  50% {
+    border-color: color-mix(in srgb, var(--person-decor-color) 52%, var(--color-border-card));
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--person-decor-color) 16%, transparent),
+      0 0 22px color-mix(in srgb, var(--person-decor-color) 14%, transparent),
+      var(--color-shadow-card);
+  }
+}
+
+@keyframes personBadgePulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 transparent);
+    transform: scale(1);
+  }
+
+  50% {
+    filter: drop-shadow(0 0 10px color-mix(in srgb, var(--person-decor-color) 34%, transparent));
+    transform: scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .personHero,
+  .personBadge.personBadge {
+    animation: none;
+  }
+}
+
+.sectionStack {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.anchorSection {
+  scroll-margin-top: 1rem;
+}
+
+.signalHeader {
+  min-width: 0;
+}
+
+.signalTitle {
+  color: var(--color-text-primary);
+  font-size: var(--text-base);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.signalMeta {
+  margin-top: 0.3rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.signalDescription {
+  margin-top: 0.75rem;
+  white-space: pre-line;
+  border-top: 1px solid color-mix(in srgb, var(--brown-400) 16%, var(--color-border-divider));
+  padding-top: 0.75rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.emptyState.emptyState {
+  border-color: color-mix(in srgb, var(--person-decor-color) 26%, var(--color-border-card));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--person-decor-color) 6%, transparent), transparent 60%),
+    color-mix(in srgb, var(--surface-alt) 82%, var(--color-bg-card));
+}
+
+.primaryCareCard.primaryCareCard {
+  scroll-margin-top: 1rem;
+}
+
+.careActions {
+  margin-top: 0;
+}
+
+.contextList {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.contextHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+}
+
+.contextCopy {
+  min-width: 0;
+}
+
+.contextTitle {
+  color: var(--color-text-primary);
+  font-size: var(--text-base);
+  font-weight: 700;
+  line-height: 1.22;
+}
+
+.contextMeta {
+  margin-top: 0.28rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.personMeta > p,
+.contextMeta > p {
+  margin: 0;
+}
+
+.contextAction {
+  display: inline-flex;
+  min-height: 2rem;
+  flex: 0 0 auto;
+  align-items: center;
+  border: 1px solid color-mix(in srgb, var(--person-decor-color) 26%, var(--color-border-card));
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--person-decor-color) 8%, transparent);
+  padding: 0 0.65rem;
+  color: color-mix(in srgb, var(--person-decor-color) 76%, var(--color-text-primary));
+  font-size: var(--text-xs);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@media (max-width: 430px) {
+  .personHeroContent {
+    gap: 0.7rem;
+  }
+
+  .personHeader,
+  .contextHeader {
+    align-items: flex-start;
+  }
+
+  .personTitle {
+    font-size: calc(var(--text-2xl) * 0.92);
+  }
+}
+
+@media (max-width: 390px) {
+  .personHeader {
+    flex-wrap: nowrap;
+  }
+
+  .personTitleBlock {
+    flex: 1 1 auto;
+  }
+
+  .personBadge.personBadge {
+    margin-left: 0.2rem;
+  }
+}

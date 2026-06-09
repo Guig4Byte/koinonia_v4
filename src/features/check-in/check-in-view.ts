@@ -1,7 +1,22 @@
-export type MemberAttendanceStatus = "PRESENT" | "ABSENT" | "JUSTIFIED";
-export type AttendanceStatus = MemberAttendanceStatus | "VISITOR";
-export type AttendanceSelection = MemberAttendanceStatus | null;
+import {
+  ATTENDANCE,
+  MEMBER_ATTENDANCE_OPTIONS,
+  memberAttendanceLabels as ATTENDANCE_LABELS,
+  attendanceStatusDescription,
+  isMemberAttendanceStatus,
+  isPresentAttendanceStatus,
+  isAbsentAttendanceStatus,
+  isJustifiedAttendanceStatus,
+  type AttendanceSelection,
+  type AttendanceStatusValue as AttendanceStatus,
+  type MemberAttendanceStatus,
+} from "@/features/events/attendance-display";
+
+export { ATTENDANCE, ATTENDANCE_LABELS, MEMBER_ATTENDANCE_OPTIONS };
+export type { AttendanceSelection, AttendanceStatus, MemberAttendanceStatus };
+
 export type CheckInMode = "register" | "adjust";
+export type CheckInMemberFilter = "all" | "pending" | "present" | "absent" | "justified";
 
 export type CheckInItem = {
   personId: string;
@@ -20,32 +35,26 @@ export type CheckInSummary = {
   hasPresenceData: boolean;
 };
 
-export const ATTENDANCE = {
-  PRESENT: "PRESENT",
-  ABSENT: "ABSENT",
-  JUSTIFIED: "JUSTIFIED",
-  VISITOR: "VISITOR",
-} as const satisfies Record<AttendanceStatus, AttendanceStatus>;
+export const CHECK_IN_MEMBER_FILTERS = ["all", "pending", "present", "absent", "justified"] as const satisfies readonly CheckInMemberFilter[];
 
-export const MEMBER_ATTENDANCE_OPTIONS = [ATTENDANCE.PRESENT, ATTENDANCE.ABSENT, ATTENDANCE.JUSTIFIED] as const;
-
-export const ATTENDANCE_LABELS: Record<MemberAttendanceStatus, string> = {
-  PRESENT: "Presente",
-  ABSENT: "Ausente",
-  JUSTIFIED: "Justificou",
+const checkInFilterLabels: Record<CheckInMemberFilter, string> = {
+  all: "Todos",
+  pending: "Sem marcação",
+  present: "Presentes",
+  absent: "Ausentes",
+  justified: "Justificaram",
 };
 
 export function getInitialMemberStatus(status?: AttendanceStatus | null): AttendanceSelection {
-  if (!status || status === ATTENDANCE.VISITOR) return null;
-  return status;
+  return isMemberAttendanceStatus(status) ? status : null;
 }
 
 export function summarizeCheckInItems(items: CheckInItem[], visitorTotal: number): CheckInSummary {
   const counts = items.reduce(
     (acc, item) => {
-      if (item.status === ATTENDANCE.PRESENT) acc.present += 1;
-      else if (item.status === ATTENDANCE.JUSTIFIED) acc.justified += 1;
-      else if (item.status === ATTENDANCE.ABSENT) acc.absent += 1;
+      if (isPresentAttendanceStatus(item.status)) acc.present += 1;
+      else if (isJustifiedAttendanceStatus(item.status)) acc.justified += 1;
+      else if (isAbsentAttendanceStatus(item.status)) acc.absent += 1;
       else acc.pending += 1;
 
       return acc;
@@ -70,10 +79,57 @@ export function summarizeCheckInItems(items: CheckInItem[], visitorTotal: number
   };
 }
 
-export function checkInHelperText(mode: CheckInMode) {
-  return mode === "adjust"
-    ? "Corrija apenas o que mudou neste encontro."
-    : "Marque quem veio. Só isso já ajuda a lembrar quem pode precisar de cuidado.";
+export function markedMembersCount(summary: CheckInSummary) {
+  return Math.max(0, summary.totalMembers - summary.pending);
+}
+
+export function checkInMarkedLabel(summary: CheckInSummary) {
+  if (summary.totalMembers === 0) return "Nenhum membro";
+
+  return `${markedMembersCount(summary)} de ${summary.totalMembers} marcados`;
+}
+
+export function checkInFilterLabel(filter: CheckInMemberFilter) {
+  return checkInFilterLabels[filter];
+}
+
+export function checkInFilterCount(summary: CheckInSummary, filter: CheckInMemberFilter) {
+  if (filter === "all") return summary.totalMembers;
+  if (filter === "pending") return summary.pending;
+  if (filter === "present") return summary.present;
+  if (filter === "absent") return summary.absent;
+  return summary.justified;
+}
+
+export function sortCheckInItemsForDisplay(items: CheckInItem[]) {
+  return items
+    .map((item, index) => ({ item, index }))
+    .sort((a, b) => {
+      if (a.item.status === null && b.item.status !== null) return -1;
+      if (a.item.status !== null && b.item.status === null) return 1;
+      return a.index - b.index;
+    })
+    .map(({ item }) => item);
+}
+
+export function filterCheckInItems(items: CheckInItem[], filter: CheckInMemberFilter) {
+  if (filter === "all") return items;
+  if (filter === "pending") return items.filter((item) => item.status === null);
+  if (filter === "present") return items.filter((item) => isPresentAttendanceStatus(item.status));
+  if (filter === "absent") return items.filter((item) => isAbsentAttendanceStatus(item.status));
+  return items.filter((item) => isJustifiedAttendanceStatus(item.status));
+}
+
+export function checkInFilteredEmptyMessage(filter: CheckInMemberFilter) {
+  if (filter === "pending") return "Nenhum irmão sem marcação neste encontro.";
+  if (filter === "present") return "Nenhum irmão marcado como presente ainda.";
+  if (filter === "absent") return "Nenhuma ausência marcada neste encontro.";
+  if (filter === "justified") return "Nenhuma justificativa marcada neste encontro.";
+  return "Nenhum membro encontrado neste encontro.";
+}
+
+export function checkInStatusOptionDescription(status: MemberAttendanceStatus) {
+  return attendanceStatusDescription(status);
 }
 
 export function checkInConfirmationParam(mode: CheckInMode) {

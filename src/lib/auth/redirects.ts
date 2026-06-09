@@ -1,10 +1,11 @@
 import type { UserRole } from "@/generated/prisma/client";
+import { ROUTES } from "@/lib/routes";
 
 const roleHome: Record<UserRole, string> = {
-  ADMIN: "/pastor",
-  PASTOR: "/pastor",
-  SUPERVISOR: "/supervisor",
-  LEADER: "/lider",
+  ADMIN: ROUTES.pastor,
+  PASTOR: ROUTES.pastor,
+  SUPERVISOR: ROUTES.supervisor,
+  LEADER: ROUTES.leader,
 };
 
 export function homeForRole(role: UserRole) {

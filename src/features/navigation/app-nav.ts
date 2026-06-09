@@ -1,27 +1,28 @@
-import type { NavIndicatorTone, NavItem } from "@/components/bottom-nav";
+import type { NavIndicatorTone, NavItem } from "@/components/layout/bottom-nav";
 import { UserRole } from "@/generated/prisma/client";
+import { ROUTES } from "@/lib/routes";
 
 type UserWithRole = { role: UserRole };
 
 export type AppNavActive = "home" | "secondary" | "events" | "none";
 
 export function homeHrefForRole(role: UserRole) {
-  if (role === UserRole.LEADER) return "/lider";
-  if (role === UserRole.SUPERVISOR) return "/supervisor";
+  if (role === UserRole.LEADER) return ROUTES.leader;
+  if (role === UserRole.SUPERVISOR) return ROUTES.supervisor;
 
-  return "/pastor";
+  return ROUTES.pastor;
 }
 
 export function secondaryNavForRole(role: UserRole): NavItem {
   if (role === UserRole.LEADER) {
-    return { href: "/pessoas", label: "Membros", icon: "people" };
+    return { href: ROUTES.cells, label: "Célula", icon: "people" };
   }
 
   if (role === UserRole.SUPERVISOR) {
-    return { href: "/celulas", label: "Células", icon: "people" };
+    return { href: ROUTES.cells, label: "Células", icon: "people" };
   }
 
-  return { href: "/equipe", label: "Equipe", icon: "people" };
+  return { href: ROUTES.team, label: "Equipe", icon: "people" };
 }
 
 export function secondaryNavHrefForRole(role: UserRole) {
@@ -34,11 +35,16 @@ export function secondaryNavLabelForRole(role: UserRole) {
 
 export function appNavForRole(
   userOrRole: UserWithRole | UserRole,
-  options: { active?: AppNavActive; indicator?: NavIndicatorTone } = {},
+  options: { active?: AppNavActive; indicator?: NavIndicatorTone; secondaryHref?: string } = {},
 ): NavItem[] {
   const role = typeof userOrRole === "string" ? userOrRole : userOrRole.role;
   const active = options.active ?? "none";
-  const secondaryNav = secondaryNavForRole(role);
+  const defaultSecondaryNav = secondaryNavForRole(role);
+  const secondaryNav = {
+    ...defaultSecondaryNav,
+    href: options.secondaryHref ?? defaultSecondaryNav.href,
+  };
+  const indicatorTarget = active === "none" ? "home" : active;
 
   return [
     {
@@ -46,19 +52,19 @@ export function appNavForRole(
       label: "Visão",
       icon: "home",
       active: active === "home",
-      indicator: active === "home" ? options.indicator : undefined,
+      indicator: indicatorTarget === "home" ? options.indicator : undefined,
     },
     {
       ...secondaryNav,
       active: active === "secondary",
-      indicator: active === "secondary" ? options.indicator : undefined,
+      indicator: indicatorTarget === "secondary" ? options.indicator : undefined,
     },
     {
-      href: "/eventos",
+      href: ROUTES.events,
       label: "Encontros",
       icon: "calendar",
       active: active === "events",
-      indicator: active === "events" ? options.indicator : undefined,
+      indicator: indicatorTarget === "events" ? options.indicator : undefined,
     },
   ];
 }

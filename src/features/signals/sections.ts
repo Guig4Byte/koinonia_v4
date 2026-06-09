@@ -1,6 +1,9 @@
 import { PersonStatus, SignalSeverity, UserRole } from "@/generated/prisma/client";
-import { isAssignedToPastoralRole, isAssignedToSupervisor } from "./escalation";
+import { isInCarePerson as isPersonInCare } from "@/features/people/person-status";
+import { selectBestSignalByPerson } from "./signal-utils";
+import { isSupportRequestSignal, isUrgentOrPastoralCaseSignal, signalPastoralSectionKind } from "./signal-classification";
 import { compareSignalsBySeverityAndRecency } from "./ranking";
+import { comparePtBr } from "@/lib/text";
 
 export type PastoralSectionKey = "urgent" | "support" | "attention" | "care";
 
@@ -50,27 +53,19 @@ const sectionRank: Record<Exclude<PastoralSectionKey, "care">, number> = {
 };
 
 export function isUrgentOrPastoralCase(signal: SectionSignalLike): boolean {
-  return signal.severity === SignalSeverity.URGENT || isAssignedToPastoralRole(signal);
+  return isUrgentOrPastoralCaseSignal(signal);
 }
 
 export function isSupportRequest(signal: SectionSignalLike, viewer: SectionViewerLike): boolean {
-  if (isUrgentOrPastoralCase(signal)) return false;
-
-  if (viewer.role === UserRole.SUPERVISOR) {
-    return signal.assignedToId === viewer.id;
-  }
-
-  return isAssignedToSupervisor(signal);
+  return isSupportRequestSignal(signal, viewer);
 }
 
 export function isInCarePerson(person: SectionPersonLike): boolean {
-  return person.status === PersonStatus.COOLING_AWAY;
+  return isPersonInCare(person);
 }
 
 function signalSectionKey(signal: SectionSignalLike, viewer: SectionViewerLike): Exclude<PastoralSectionKey, "care"> {
-  if (isUrgentOrPastoralCase(signal)) return "urgent";
-  if (isSupportRequest(signal, viewer)) return "support";
-  return "attention";
+  return signalPastoralSectionKind(signal, viewer);
 }
 
 function compareSignalsWithinSection(left: SectionSignalLike, right: SectionSignalLike): number {
@@ -88,7 +83,7 @@ function compareSignalsForPastoralSection(
   const sectionOrderDifference = compareSignalsWithinSection(left, right);
   if (sectionOrderDifference !== 0) return sectionOrderDifference;
 
-  return left.id.localeCompare(right.id, "pt-BR");
+  return comparePtBr(left.id, right.id);
 }
 
 export function sortSignalsForPastoralViewer<TSignal extends SectionSignalWithIdentity>(
@@ -102,17 +97,8 @@ export function getPastoralSectionSignalsByPerson<TSignal extends SectionSignalW
   signals: TSignal[],
   viewer: SectionViewerLike,
 ): TSignal[] {
-  const selectedByPerson = new Map<string, TSignal>();
-
-  for (const signal of signals) {
-    const current = selectedByPerson.get(signal.personId);
-
-    if (!current || compareSignalsForPastoralSection(signal, current, viewer) < 0) {
-      selectedByPerson.set(signal.personId, signal);
-    }
-  }
-
-  return sortSignalsForPastoralViewer(Array.from(selectedByPerson.values()), viewer);
+  const selected = selectBestSignalByPerson(signals, (a, b) => compareSignalsForPastoralSection(a, b, viewer));
+  return sortSignalsForPastoralViewer(selected, viewer);
 }
 
 export function splitPastoralSignals<TSignal extends SectionSignalWithIdentity>(
@@ -149,13 +135,11 @@ export function splitPastoralSignals<TSignal extends SectionSignalWithIdentity>(
 
 export function filterInCarePeople<TPerson extends SectionPersonWithIdentity>(
   people: TPerson[],
-  activeAttentionPersonIds: Set<string>,
 ): TPerson[] {
   const seenPersonIds = new Set<string>();
 
   return people.filter((person) => {
     if (!isInCarePerson(person)) return false;
-    if (activeAttentionPersonIds.has(person.id)) return false;
     if (seenPersonIds.has(person.id)) return false;
 
     seenPersonIds.add(person.id);
@@ -175,10 +159,12 @@ export function splitPastoralSections<
   inCarePeople: TPerson[];
   viewer: SectionViewerLike;
 }): PastoralSections<TSignal, TPerson> {
-  const signalSections = splitPastoralSignals(signals, viewer);
+  const inCarePersonIds = new Set(inCarePeople.filter((person) => isInCarePerson(person)).map((person) => person.id));
+  const visibleSignals = signals.filter((signal) => !inCarePersonIds.has(signal.personId));
+  const signalSections = splitPastoralSignals(visibleSignals, viewer);
 
   return {
     ...signalSections,
-    inCarePeople: filterInCarePeople(inCarePeople, signalSections.activeAttentionPersonIds),
+    inCarePeople: filterInCarePeople(inCarePeople),
   };
 }

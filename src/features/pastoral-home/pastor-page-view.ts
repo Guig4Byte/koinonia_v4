@@ -1,53 +1,178 @@
-import { UserRole, type SignalSeverity, type PersonStatus } from "@/generated/prisma/client";
-import { weeklyPresenceTone } from "@/features/dashboard/presence-health";
-import { buildPastoralPulseMessage, type PastoralPulseMessage } from "@/features/pastoral-pulse";
-import { splitPastoralSections } from "@/features/signals/sections";
+import type { UserRole } from "@/generated/prisma/client";
+import type { WeeklyPresenceSummary } from "@/features/dashboard/presence-health";
+import type { PastoralHealthOverview } from "@/features/dashboard/pastoral-health";
+import type { PastoralPulseMessage } from "@/features/pastoral-pulse";
+import type { NextPastoralAction } from "@/features/pastoral-home/components/next-pastoral-action-card";
+import { buildPastorFirstUseState, firstUsePulseForRole, type FirstUseState } from "@/features/pastoral-home/first-use-state";
+import { FILTER_ATTENTION, FILTER_PASTORAL, FILTER_SUPPORT, FILTER_URGENT } from "@/lib/filter-param";
+import { countLabel } from "@/lib/format";
+import { ROUTES } from "@/lib/routes";
 
 export type PastorPageViewer = {
   id: string;
   role: UserRole;
 };
 
-export type PastorPageSignal = {
-  id: string;
-  personId: string;
-  reason: string;
-  severity: SignalSeverity;
-  detectedAt?: Date;
-  assignedToId?: string | null;
-  assignedTo?: { role: UserRole } | null;
-  person: { id: string; fullName: string };
-  group?: { name?: string | null; leader?: { name?: string | null } | null } | null;
-};
-
-export type PastorPageInCarePerson = {
-  id: string;
-  fullName: string;
-  status: PersonStatus;
-  memberships?: Array<{ group?: { name?: string | null } | null }>;
+export type PastorPageTeamSummary = {
+  supervisorsCount: number;
+  groupsCount: number;
+  groupsWithoutSupervisorCount: number;
+  inactiveGroupsCount: number;
+  urgentCount: number;
+  pastoralCasesCount: number;
+  supportRequestsCount: number;
+  groupsNeedingAttentionCount: number;
+  hasRecordedCellMeetings: boolean;
 };
 
 export type PastorPageDashboard = {
-  attentionPeople: PastorPageSignal[];
-  inCarePeople: PastorPageInCarePerson[];
-  hasPresenceData: boolean;
-  presenceRate: number;
+  teamSummary: PastorPageTeamSummary;
+  healthOverview: PastoralHealthOverview;
+  weeklyPresence: WeeklyPresenceSummary;
 };
 
-type PresenceSummaryItem = {
+export type PastorPageSummaryItem = {
   label: string;
   value: string;
-  detail: string;
-  tone: "ok" | "warn" | "risk" | "neutral";
+  tone?: "ok" | "warn" | "risk" | "neutral";
 };
 
 export type PastorPageView = {
-  navIndicator?: "risk" | "care";
+  navIndicator?: "risk" | "attention";
   pastoralPulse: PastoralPulseMessage;
-  urgentOrPastoralCases: PastorPageSignal[];
-  inCarePeople: PastorPageInCarePerson[];
-  presenceSummary: PresenceSummaryItem[];
+  teamSummaryItems: PastorPageSummaryItem[];
+  healthOverview: PastoralHealthOverview;
+  weeklyPresence: WeeklyPresenceSummary;
+  nextAction: NextPastoralAction | null;
+  firstUseState: FirstUseState | null;
 };
+
+function hasPastorPastoralAttention(summary: PastorPageTeamSummary) {
+  return summary.urgentCount > 0
+    || summary.pastoralCasesCount > 0
+    || summary.supportRequestsCount > 0
+    || summary.groupsNeedingAttentionCount > 0;
+}
+
+function buildPastorMacroPulse(summary: PastorPageTeamSummary, firstUseState: FirstUseState | null, user: PastorPageViewer): PastoralPulseMessage {
+  if (firstUseState) {
+    return firstUsePulseForRole(user.role);
+  }
+
+  if (summary.urgentCount > 0) {
+    return {
+      title: "Há sinais que pedem um olhar mais próximo.",
+      subtitle: "Uma leitura com calma mostra onde a equipe precisa de mais proximidade.",
+      tone: "attention",
+    };
+  }
+
+  if (summary.pastoralCasesCount > 0 || summary.supportRequestsCount > 0) {
+    return {
+      title: "Seu radar de cuidado está ativo.",
+      subtitle: "Há células que merecem leitura pastoral antes de orientar a equipe.",
+      tone: "attention",
+    };
+  }
+
+  if (summary.groupsNeedingAttentionCount > 0) {
+    return {
+      title: "Há células que pedem acompanhamento próximo.",
+      subtitle: "A visão mostra a saúde geral; os detalhes ficam no contexto da célula.",
+      tone: "calm",
+    };
+  }
+
+  return {
+    title: "A equipe pastoral está estável no momento.",
+    subtitle: "Atenções locais seguem com líderes e supervisores; a busca ajuda quando for preciso consultar alguém.",
+    tone: "ok",
+  };
+}
+
+function buildTeamSummaryItems(summary: PastorPageTeamSummary): PastorPageSummaryItem[] {
+  return [
+    {
+      label: "Supervisores",
+      value: String(summary.supervisorsCount),
+      tone: "neutral",
+    },
+    {
+      label: "Células ativas",
+      value: String(summary.groupsCount),
+      tone: "neutral",
+    },
+    {
+      label: "Supervisão a definir",
+      value: String(summary.groupsWithoutSupervisorCount),
+      tone: summary.groupsWithoutSupervisorCount > 0 ? "warn" : "ok",
+    },
+    {
+      label: "Inativas",
+      value: String(summary.inactiveGroupsCount),
+      tone: "neutral",
+    },
+  ];
+}
+
+function teamFilterHref(filter: string) {
+  return `${ROUTES.teamFilter(filter)}#supervisores`;
+}
+
+export function buildPastorNextPastoralAction(summary: PastorPageTeamSummary): NextPastoralAction | null {
+  if (summary.urgentCount > 0) {
+    return {
+      eyebrow: "Primeiro cuidado",
+      title: `${countLabel(summary.urgentCount, "sinal urgente", "sinais urgentes")} na equipe`,
+      detail: "As células com cuidado mais sensível podem vir antes da revisão de estabilidade e presença.",
+      href: teamFilterHref(FILTER_URGENT),
+      label: "Ver cuidados",
+      tone: "risk",
+    };
+  }
+
+  if (summary.pastoralCasesCount > 0) {
+    return {
+      eyebrow: "Encaminhadas ao pastor",
+      title: `${countLabel(summary.pastoralCasesCount, "caso encaminhado", "casos encaminhados")} para discernir`,
+      detail: "Os casos trazidos pela liderança ajudam a definir o próximo passo pastoral.",
+      href: teamFilterHref(FILTER_PASTORAL),
+      label: "Ver encaminhadas",
+      tone: "risk",
+    };
+  }
+
+  if (summary.supportRequestsCount > 0) {
+    return {
+      eyebrow: "Pedido de apoio",
+      title: `${countLabel(summary.supportRequestsCount, "pedido de apoio", "pedidos de apoio")} na equipe`,
+      detail: "Os pedidos de apoio de líderes e supervisores aparecem antes dos demais indicadores.",
+      href: teamFilterHref(FILTER_SUPPORT),
+      label: "Ver apoios",
+      tone: "support",
+    };
+  }
+
+  if (summary.groupsNeedingAttentionCount > 0) {
+    return {
+      eyebrow: "Células em atenção",
+      title: `${countLabel(summary.groupsNeedingAttentionCount, "célula pede", "células pedem")} acompanhamento`,
+      detail: "Presença, cuidado e estabilidade ajudam a orientar supervisores com mais clareza.",
+      href: teamFilterHref(FILTER_ATTENTION),
+      label: "Ver células em atenção",
+      tone: "warn",
+    };
+  }
+
+  return {
+    eyebrow: "Leitura rápida",
+    title: "Equipe pastoral estável",
+    detail: "A visão de equipe ajuda a manter vínculos e agenda das células organizados.",
+    href: `${ROUTES.team}#supervisores`,
+    label: "Ver equipe",
+    tone: "ok",
+  };
+}
 
 export function buildPastorPageView({
   dashboard,
@@ -56,39 +181,24 @@ export function buildPastorPageView({
   dashboard: PastorPageDashboard;
   user: PastorPageViewer;
 }): PastorPageView {
-  const pastoralSections = splitPastoralSections({
-    signals: dashboard.attentionPeople,
-    inCarePeople: dashboard.inCarePeople,
-    viewer: user,
+  const { teamSummary } = dashboard;
+  const firstUseState = buildPastorFirstUseState({
+    groupsCount: teamSummary.groupsCount,
+    hasRecordedMeetings: teamSummary.hasRecordedCellMeetings,
+    hasPastoralAttention: hasPastorPastoralAttention(teamSummary),
   });
-  const urgentOrPastoralCases = pastoralSections.urgentOrPastoralCases;
-  const inCarePeople = pastoralSections.inCarePeople;
-  const primaryPastoralCase = urgentOrPastoralCases[0];
-  const primaryInCarePerson = inCarePeople[0];
 
   return {
-    navIndicator: urgentOrPastoralCases.length > 0 ? "risk" : inCarePeople.length > 0 ? "care" : undefined,
-    pastoralPulse: buildPastoralPulseMessage({
-      viewerRole: user.role,
-      scope: "pastorDashboard",
-      counts: {
-        urgentOrPastoral: urgentOrPastoralCases.length,
-        inCare: urgentOrPastoralCases.length > 0 ? 0 : inCarePeople.length,
-      },
-      subjects: {
-        urgentOrPastoral: primaryPastoralCase ? { personName: primaryPastoralCase.person.fullName, groupName: primaryPastoralCase.group?.name ?? undefined } : null,
-        inCare: primaryInCarePerson ? { personName: primaryInCarePerson.fullName } : null,
-      },
-    }),
-    urgentOrPastoralCases,
-    inCarePeople,
-    presenceSummary: [
-      {
-        label: "Presença da semana",
-        value: dashboard.hasPresenceData ? `${dashboard.presenceRate}%` : "—",
-        detail: dashboard.hasPresenceData ? "Média dos encontros registrados nesta semana." : "Nenhum encontro registrado nesta semana.",
-        tone: weeklyPresenceTone(dashboard.hasPresenceData, dashboard.presenceRate),
-      },
-    ],
+    navIndicator: teamSummary.urgentCount > 0 || teamSummary.pastoralCasesCount > 0
+      ? "risk"
+      : teamSummary.groupsNeedingAttentionCount > 0
+        ? "attention"
+        : undefined,
+    pastoralPulse: buildPastorMacroPulse(teamSummary, firstUseState, user),
+    teamSummaryItems: buildTeamSummaryItems(teamSummary),
+    healthOverview: dashboard.healthOverview,
+    weeklyPresence: dashboard.weeklyPresence,
+    nextAction: firstUseState ? null : buildPastorNextPastoralAction(teamSummary),
+    firstUseState,
   };
 }

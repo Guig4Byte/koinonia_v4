@@ -1,0 +1,23 @@
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.55rem;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.72rem;
+}
+
+.heading {
+  padding-inline: 0.05rem;
+}
+
+.headingTitle {
+  margin: 0;
+}
+
+.headingDetail {
+  margin-top: 0.18rem;
+}

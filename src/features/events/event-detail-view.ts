@@ -1,7 +1,16 @@
 import { AttendanceStatus } from "@/generated/prisma/client";
+import {
+  attendanceTone,
+  isAbsentAttendanceStatus,
+  isJustifiedAttendanceStatus,
+  isPresentAttendanceStatus,
+  type AttendanceTone,
+} from "@/features/events/attendance-display";
 import { closedWithoutPresenceLabel, isClosedWithoutPresenceStatus } from "@/features/events/event-display";
+import { countLabel } from "@/lib/format";
+import { compareByFullName } from "@/lib/text";
 
-export type EventDetailBadgeTone = "neutral" | "ok" | "warn" | "risk" | "info";
+export type EventDetailBadgeTone = AttendanceTone | "neutral";
 
 export type EventReadOnlyMember = {
   personId: string;
@@ -17,34 +26,68 @@ export type EventReadOnlyVisitor = {
 
 export type EventAttendanceGroup = {
   title: string;
-  description: string;
+  description?: string;
   members: EventReadOnlyMember[];
 };
 
-export const eventAttendanceLabels: Record<AttendanceStatus, string> = {
-  PRESENT: "Presente",
-  ABSENT: "Ausente",
-  JUSTIFIED: "Justificou",
-  VISITOR: "Visitante",
+export type EventPastoralCue = {
+  title: string;
+  description: string;
+  tone: EventDetailBadgeTone;
 };
 
 export function eventAttendanceStatusTone(status?: AttendanceStatus | null): EventDetailBadgeTone {
-  if (status === AttendanceStatus.PRESENT) return "ok";
-  if (status === AttendanceStatus.JUSTIFIED) return "warn";
-  if (status === AttendanceStatus.ABSENT) return "risk";
-  return "info";
+  return attendanceTone(status);
 }
 
 export function sortPeopleByName<T extends { fullName: string }>(people: T[]) {
-  return [...people].sort((left, right) => left.fullName.localeCompare(right.fullName, "pt-BR"));
-}
-
-export function countLabel(count: number, singular: string, plural = `${singular}s`) {
-  return `${count} ${count === 1 ? singular : plural}`;
+  return [...people].sort(compareByFullName);
 }
 
 export function justifiedCountLabel(count: number) {
   return count === 1 ? "1 justificou" : `${count} justificaram`;
+}
+
+function joinAttentionParts(parts: string[]) {
+  if (parts.length <= 1) return parts[0] ?? "";
+  return `${parts.slice(0, -1).join(", ")} e ${parts[parts.length - 1]}`;
+}
+
+export function buildEventPastoralCue({
+  absent,
+  justified,
+  pending,
+}: {
+  absent: number;
+  justified: number;
+  pending: number;
+}): EventPastoralCue {
+  if (pending > 0) {
+    return {
+      title: "Presença ainda incompleta",
+      description: `${countLabel(pending, "irmão sem marcação", "irmãos sem marcação")} ainda sem marcação. O registro completo deixa a leitura do encontro mais fiel.`,
+      tone: "warn",
+    };
+  }
+
+  const attentionParts = [
+    absent > 0 ? countLabel(absent, "ausente") : null,
+    justified > 0 ? justifiedCountLabel(justified) : null,
+  ].filter((part): part is string => Boolean(part));
+
+  if (attentionParts.length > 0) {
+    return {
+      title: "Olhar com calma",
+      description: `${joinAttentionParts(attentionParts)}. Ausência ou justificativa isolada nem sempre indica problema; vale observar o contexto antes de decidir qualquer cuidado.`,
+      tone: absent > 0 ? "risk" : "warn",
+    };
+  }
+
+  return {
+    title: "Encontro sem sinais imediatos",
+    description: "Todos os membros marcados estiveram presentes. Nenhuma ausência ou justificativa pede atenção no momento.",
+    tone: "ok",
+  };
 }
 
 export function savedPresenceMessage(value?: string | null) {
@@ -54,40 +97,46 @@ export function savedPresenceMessage(value?: string | null) {
 }
 
 export function buildEventReadOnlyAttendanceView(members: EventReadOnlyMember[]) {
-  const absentMembers = sortPeopleByName(members.filter((member) => member.currentStatus === AttendanceStatus.ABSENT));
-  const justifiedMembers = sortPeopleByName(members.filter((member) => member.currentStatus === AttendanceStatus.JUSTIFIED));
+  const absentMembers = sortPeopleByName(members.filter((member) => isAbsentAttendanceStatus(member.currentStatus)));
+  const justifiedMembers = sortPeopleByName(members.filter((member) => isJustifiedAttendanceStatus(member.currentStatus)));
   const pendingMembers = sortPeopleByName(members.filter((member) => !member.currentStatus));
-  const presentMembers = sortPeopleByName(members.filter((member) => member.currentStatus === AttendanceStatus.PRESENT));
+  const presentMembers = sortPeopleByName(members.filter((member) => isPresentAttendanceStatus(member.currentStatus)));
 
-  const memberSummary = [
-    countLabel(members.length, "membro"),
+  const memberTotalLabel = countLabel(members.length, "membro");
+  const memberBreakdownLabel = [
     countLabel(presentMembers.length, "presente"),
     countLabel(absentMembers.length, "ausente"),
     justifiedMembers.length > 0 ? justifiedCountLabel(justifiedMembers.length) : null,
-    pendingMembers.length > 0 ? countLabel(pendingMembers.length, "pendente") : null,
+    pendingMembers.length > 0 ? countLabel(pendingMembers.length, "sem marcação", "sem marcação") : null,
   ]
     .filter(Boolean)
     .join(" · ");
+  const memberSummary = [memberTotalLabel, memberBreakdownLabel].filter(Boolean).join(" · ");
 
   return {
+    memberTotalLabel,
+    memberBreakdownLabel,
     memberSummary,
+    pastoralCue: buildEventPastoralCue({
+      absent: absentMembers.length,
+      justified: justifiedMembers.length,
+      pending: pendingMembers.length,
+    }),
     presentMembers,
     visitorsTitle: "Visitantes",
     hasPriorityAttention: absentMembers.length > 0 || justifiedMembers.length > 0 || pendingMembers.length > 0,
     groups: [
       {
         title: `Ausentes (${absentMembers.length})`,
-        description: "Quem faltou neste encontro.",
         members: absentMembers,
       },
       {
         title: `Justificaram (${justifiedMembers.length})`,
-        description: "Quem avisou e justificou a ausência.",
         members: justifiedMembers,
       },
       {
-        title: `Pendentes (${pendingMembers.length})`,
-        description: "Membros ainda sem marcação explícita.",
+        title: `Sem marcação (${pendingMembers.length})`,
+        description: "Ainda sem marcação explícita; complete o registro para ter uma leitura fiel.",
         members: pendingMembers,
       },
     ] satisfies EventAttendanceGroup[],
@@ -107,14 +156,14 @@ export function eventReadOnlyEmptyMessage({
 }) {
   if (isCancelled) {
     return closedLabel === "Cancelado"
-      ? "Este encontro foi cancelado. Ele não aparece como presença pendente."
-      : "Este encontro foi marcado como não realizado. Ele não entra como presença atrasada.";
+      ? "Este encontro foi cancelado. Ele não aparece como presença aguardando registro."
+      : "Este encontro foi marcado como não realizado. Ele não fica como presença aguardando registro.";
   }
 
   if (!completed) {
     return isFutureEvent
       ? "Este encontro ainda não começou. A presença poderá ser registrada depois que começar."
-      : "A presença ainda não foi registrada. O líder da célula registra o encontro; pastor e supervisor acompanham o resumo quando ele estiver pronto.";
+      : "A presença ainda não foi registrada. A liderança da célula registra o encontro; pastor e supervisor acompanham o resumo quando ele estiver pronto.";
   }
 
   return null;
@@ -153,7 +202,7 @@ export function buildEventDetailState({
       ? "Sobre o encontro"
       : isFutureEvent
         ? "Sobre o encontro"
-        : "Resumo da presença";
+        : "Detalhes da presença";
 
   const eventStatusLabel = isCancelledEvent
     ? closedWithoutPresenceLabel(status)
@@ -162,7 +211,7 @@ export function buildEventDetailState({
       : isFutureEvent
         ? "Agendado"
         : canEditCheckIn
-          ? "Presença pendente"
+          ? "Aguardando presença"
           : "Aguardando registro";
 
   const eventStatusTone: EventDetailBadgeTone = isCancelledEvent ? "neutral" : completed ? "ok" : isFutureEvent ? "info" : "warn";

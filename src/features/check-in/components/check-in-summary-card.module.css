@@ -1,0 +1,213 @@
+.summaryTopRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.85rem;
+  align-items: start;
+}
+
+.summaryRateBlock {
+  min-width: 0;
+}
+
+.summaryMetricWrap {
+  margin-top: 0.72rem;
+}
+
+.summaryEyebrow {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 560;
+  line-height: 1.25;
+}
+
+.summaryMeta {
+  margin-top: 0.78rem;
+  color: var(--color-text-secondary);
+  font-size: clamp(var(--text-xs), 3.35vw, var(--text-sm));
+  font-weight: 560;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+.markAllIcon {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+  stroke-width: 2.25;
+}
+
+.summaryPillGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin-top: 0.95rem;
+}
+
+.summaryPill {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  min-width: 0;
+  align-items: center;
+  gap: 0.62rem;
+  border: 1px solid var(--summary-pill-border, var(--color-border-card));
+  border-radius: 0.92rem;
+  background: var(--summary-pill-bg, var(--surface-alt));
+  padding: 0.72rem 0.78rem;
+  color: var(--summary-pill-color, var(--color-text-secondary));
+  font-family: ui-rounded, "SF Pro Rounded", "Nunito", var(--font-body);
+}
+
+.summaryPillIcon {
+  display: inline-grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, currentcolor 13%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, currentcolor 10%, transparent);
+}
+
+.summaryPillIconSvg {
+  width: 1rem;
+  height: 1rem;
+  stroke-width: 2.25;
+}
+
+.summaryPillCopy {
+  display: grid;
+  min-width: 0;
+  gap: 0.16rem;
+}
+
+.summaryPillValue {
+  font-size: var(--text-xl);
+  font-weight: 760;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.summaryPillLabel {
+  font-size: var(--text-sm);
+  font-weight: 680;
+  line-height: 1.15;
+}
+
+.summaryPillPresent {
+  --summary-pill-border: color-mix(in srgb, var(--color-badge-estavel-border) 80%, var(--color-border-card));
+  --summary-pill-bg: color-mix(in srgb, var(--color-badge-estavel-bg) 86%, var(--color-bg-card));
+  --summary-pill-color: var(--color-badge-estavel-text);
+}
+
+.summaryPillJustified {
+  --summary-pill-border: color-mix(in srgb, var(--color-badge-atencao-border) 78%, var(--color-border-card));
+  --summary-pill-bg: color-mix(in srgb, var(--color-badge-atencao-bg) 86%, var(--color-bg-card));
+  --summary-pill-color: var(--color-badge-atencao-text);
+}
+
+.summaryPillAbsent {
+  --summary-pill-border: color-mix(in srgb, var(--color-badge-risco-border) 76%, var(--color-border-card));
+  --summary-pill-bg: color-mix(in srgb, var(--color-badge-risco-bg) 86%, var(--color-bg-card));
+  --summary-pill-color: var(--color-badge-risco-text);
+}
+
+.summaryPillPending {
+  --summary-pill-border: color-mix(in srgb, var(--brown-400) 22%, var(--color-border-card));
+  --summary-pill-bg: color-mix(in srgb, var(--surface-alt) 82%, var(--color-bg-card));
+  --summary-pill-color: var(--color-text-secondary);
+}
+
+.markAllSheet {
+  display: grid;
+  gap: 1rem;
+}
+
+.markAllSheetHeader {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.76rem;
+  align-items: flex-start;
+}
+
+.markAllSheetIcon {
+  display: inline-grid;
+  width: 2.55rem;
+  height: 2.55rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 34%, var(--color-border-card));
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--color-brand-accent) 10%, var(--surface-alt));
+  color: color-mix(in srgb, var(--status-warning-text) 88%, var(--color-brand-accent));
+}
+
+.markAllSheetIconSvg {
+  width: 1.18rem;
+  height: 1.18rem;
+  stroke-width: 2.2;
+}
+
+.markAllSheetTitle {
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-xl), 5.4vw, var(--text-2xl));
+  font-weight: 680;
+  letter-spacing: -0.015em;
+  line-height: 1.12;
+}
+
+.markAllSheetDescription {
+  margin-top: 0.42rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 540;
+  line-height: 1.48;
+}
+
+.markAllSheetActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.72rem;
+}
+
+@media (max-width: 390px) {
+  .summaryTopRow {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+@media (max-width: 360px) {
+  .summaryTopRow {
+    gap: 0.64rem;
+  }
+
+  .markAllIcon {
+    width: 0.92rem;
+    height: 0.92rem;
+  }
+
+  .summaryPill {
+    gap: 0.46rem;
+    padding: 0.62rem 0.56rem;
+  }
+
+  .summaryPillIcon {
+    width: 1.62rem;
+    height: 1.62rem;
+  }
+
+  .summaryPillIconSvg {
+    width: 0.82rem;
+    height: 0.82rem;
+  }
+
+  .summaryPillValue {
+    font-size: var(--text-lg);
+  }
+
+  .summaryPillLabel {
+    font-size: var(--text-xs);
+  }
+
+  .markAllSheetActions {
+    grid-template-columns: 1fr;
+  }
+}

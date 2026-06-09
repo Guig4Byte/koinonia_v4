@@ -1,31 +1,26 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { EventType, GroupResponsibilityRole, MembershipRole, PersonStatus, SignalStatus, UserRole } from "@/generated/prisma/client";
-import { AppShell } from "@/components/app-shell";
-import { BackLink, ContextSummary, InfoCard, PulseCard, SectionTitle } from "@/components/base-cards";
-import { GroupPendingEventCard } from "@/components/group-pending-event-card";
-import { GroupRegisteredEncountersList } from "@/components/group-registered-encounters-list";
-import { MemberPriorityList } from "@/components/member-priority-list";
-import { presenceTone } from "@/features/events/presence-display";
-import { isPresenceRecordedEvent, splitPresenceTrendSamples, summarizeEventsPresence, summarizePresenceTrend } from "@/features/events/presence-summary";
-import { hasRecordedPresence, selectRelevantCheckInEvent } from "@/features/events/relevant-event";
+import { PencilLine } from "lucide-react";
+import { AppShell } from "@/components/layout/app-shell";
+import { BackLink, InfoCard, PulseCard } from "@/components/shared/base-cards";
+import { SectionHeader } from "@/components/ui/section-header";
+import { GroupDetailSummaryCard } from "@/features/groups/components/group-detail-summary-card";
+import { GroupPendingEventCard } from "@/features/groups/components/group-pending-event-card";
+import { GroupSetupChecklistCard } from "@/features/groups/components/group-setup-checklist-card";
+import { GroupRegisteredEncountersList } from "@/features/groups/components/group-registered-encounters-list";
+import { MemberPriorityList } from "@/features/people/components/member-priority-list";
+import { ButtonLink } from "@/components/ui/button-link";
+import { getGroupDetailPageData } from "@/app/(app)/celulas/[groupId]/page-data";
+import { shouldShowGroupSetupChecklistAction } from "@/features/groups/group-setup-checklist";
 import {
-  buildGroupMemberDisplays,
-  buildGroupMembersView,
   groupMeetingText,
-  groupPastoralPulse,
-  GROUP_DETAIL_EVENT_HISTORY_LIMIT,
   GROUP_REGULAR_MEMBER_INITIAL_COUNT,
   GROUP_REGULAR_MEMBER_STEP,
+  memberBadgeLabelForCareContext,
+  memberBadgeToneForCareContext,
 } from "@/features/groups/group-detail-view";
-import { responsibilityNames } from "@/features/groups/responsibility-display";
-import { appNavForRole, homeHrefForRole, secondaryNavHrefForRole } from "@/features/navigation/app-nav";
-import { readMembersFilter } from "@/features/people/member-filters";
-import { canManageGroups, canViewGroup, isGroupLeader } from "@/features/permissions/permissions";
-import { getPastoralSectionSignalsByPerson, isSupportRequest, isUrgentOrPastoralCase } from "@/features/signals/sections";
 import { getCurrentUser } from "@/lib/auth/current-user";
-import { prisma } from "@/lib/prisma";
-import { firstParam } from "@/lib/search-params";
+import { ROUTES } from "@/lib/routes";
+import { FILTER_IN_CARE } from "@/lib/filter-param";
+import styles from "./group-detail-page.module.css";
 
 type GroupDetailPageProps = {
   params: Promise<{ groupId: string }>;
@@ -36,131 +31,76 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
   const user = await getCurrentUser();
   const { groupId } = await params;
   const queryParams = searchParams ? await searchParams : {};
-  const activeMembersFilter = readMembersFilter(firstParam(queryParams.membros));
-  const savedParam = firstParam(queryParams.salvo);
-
-  const group = await prisma.smallGroup.findUnique({
-    where: { id: groupId },
-    include: {
-      leader: true,
-      supervisor: true,
-      responsibilities: {
-        where: { activeUntil: null },
-        include: { user: true },
-        orderBy: { createdAt: "asc" },
-      },
-      memberships: {
-        where: { leftAt: null, role: { not: MembershipRole.VISITOR } },
-        include: { person: true },
-        orderBy: { person: { fullName: "asc" } },
-      },
-      signals: {
-        where: { status: SignalStatus.OPEN },
-        include: { person: true, assignedTo: true },
-        orderBy: [{ severity: "desc" }, { detectedAt: "desc" }],
-      },
-      events: {
-        where: { type: EventType.CELL_MEETING },
-        include: { attendances: true },
-        orderBy: { startsAt: "desc" },
-        take: GROUP_DETAIL_EVENT_HISTORY_LIMIT,
-      },
-    },
-  });
-
-  if (!group || !canViewGroup(user, group)) notFound();
-
-  const leadershipName = responsibilityNames(group.responsibilities, GroupResponsibilityRole.LEADER, group.leader?.name ?? "não informada");
-  const supervisionName = responsibilityNames(group.responsibilities, GroupResponsibilityRole.SUPERVISOR, group.supervisor?.name ?? "");
-
-  const referenceDate = new Date();
-  const homeHref = homeHrefForRole(user.role);
-  const isPastorView = user.role === UserRole.PASTOR || user.role === UserRole.ADMIN;
-  const isSupervisorView = user.role === UserRole.SUPERVISOR;
-  const secondaryNavHref = secondaryNavHrefForRole(user.role);
-  const backHref = isPastorView || isSupervisorView ? secondaryNavHref : homeHref;
-  const backLabel = isPastorView ? "Voltar para equipe" : isSupervisorView ? "Voltar para células" : "Voltar para visão";
-  const attentionPeople = getPastoralSectionSignalsByPerson(group.signals, user);
-  const attentionSignalByPersonId = new Map(attentionPeople.map((signal) => [signal.personId, signal]));
-  const supportRequests = attentionPeople.filter((signal) => isSupportRequest(signal, user));
-  const urgentOrPastoralSignals = attentionPeople.filter(isUrgentOrPastoralCase);
-  const localAttentionCount = attentionPeople.length - urgentOrPastoralSignals.length - supportRequests.length;
-  const inCareCount = group.memberships.filter((membership) => membership.person.status === PersonStatus.COOLING_AWAY).length;
-  const hasRiskSignal = urgentOrPastoralSignals.length > 0;
-  const navIndicator = hasRiskSignal ? "risk" : attentionPeople.length > 0 ? "attention" : inCareCount > 0 ? "care" : undefined;
-  const recordedPresenceEvents = group.events.filter((event) => event.startsAt <= referenceDate && isPresenceRecordedEvent(event));
-  const { recentItems: recentPresenceEvents, previousItems: previousPresenceEvents } = splitPresenceTrendSamples(recordedPresenceEvents);
-  const completedEvents = recordedPresenceEvents;
-  const presence = summarizeEventsPresence(recentPresenceEvents);
-  const previousPresence = summarizeEventsPresence(previousPresenceEvents);
-  const presenceTrend = summarizePresenceTrend(presence, previousPresence);
-  const hasRecentPresence = presence.hasPresenceData;
-  const relevantEvent = selectRelevantCheckInEvent(group.events, referenceDate);
-  const pendingEvent = relevantEvent && !hasRecordedPresence(relevantEvent) ? relevantEvent : null;
-  const pastoralPulse = groupPastoralPulse({
-    role: user.role,
-    urgentOrPastoralCount: urgentOrPastoralSignals.length,
-    supportCount: supportRequests.length,
-    localAttentionCount,
-    inCareCount,
-    hasRecentPresence,
-    presenceRate: presence.presenceRate,
-    hasPendingEvent: Boolean(pendingEvent),
-  });
-  const canRegisterPendingEvent = user.role === UserRole.LEADER && isGroupLeader(user, group);
-  const pendingEventStatusLabel = canRegisterPendingEvent ? "Presença pendente" : "Aguardando registro";
-  const pendingEventActionLabel = canRegisterPendingEvent ? "Registrar presença" : "Abrir encontro";
-  const members = buildGroupMemberDisplays({
-    memberships: group.memberships,
-    attentionSignalsByPersonId: attentionSignalByPersonId,
-    viewer: user,
-  });
-  const membersView = buildGroupMembersView(members, activeMembersFilter);
-  const canEditGroup = canManageGroups(user);
-  const savedMessage = savedParam === "celula-criada"
-    ? "Célula criada."
-    : savedParam === "celula-atualizada"
-      ? "Célula atualizada."
-      : null;
+  const {
+    activeFocus,
+    activeMembersFilter,
+    backHref,
+    backLabel,
+    canEditGroup,
+    completedEvents,
+    focusCard,
+    group,
+    leadershipName,
+    membersView,
+    nav,
+    pastoralPulse,
+    pendingEvent,
+    pendingEventActionLabel,
+    pendingEventStatusLabel,
+    savedMessage,
+    summaryCard,
+    setupChecklist,
+    supervisionName,
+  } = await getGroupDetailPageData({ user, groupId, queryParams });
+  const setupChecklistCompetingHrefs = [
+    ROUTES.group(group.id),
+    pendingEvent ? ROUTES.event(pendingEvent.id) : null,
+  ];
 
   return (
     <AppShell
       userName={user.name}
       role={user.role}
-      nav={appNavForRole(user, { active: "secondary", indicator: navIndicator })}
+      nav={nav}
+      headerVariant="compact"
     >
-      <div className="group-detail-page">
+      <div className={styles.page}>
         <BackLink href={backHref}>{backLabel}</BackLink>
 
         {savedMessage ? <InfoCard tone="success">{savedMessage}</InfoCard> : null}
 
-        {canEditGroup ? (
-          <div className="mb-4 flex justify-end">
-            <Link
-              href={`/celulas/${group.id}/editar`}
-              className="inline-flex min-h-10 items-center justify-center rounded-2xl border border-[var(--color-btn-secondary-border)] bg-[var(--color-btn-secondary-bg)] px-3 text-sm font-semibold text-[var(--color-btn-secondary-text)] transition active:scale-[0.98]"
-            >
-              Editar célula
-            </Link>
+        <section className={styles.hero}>
+          <div className={styles.heroHeader}>
+            <p className="k-eyebrow">Célula</p>
+            {canEditGroup ? (
+              <div className={styles.heroAction}>
+                <ButtonLink
+                  href={ROUTES.editGroup(group.id)}
+                  variant="actionPillSecondary"
+                  size="sm"
+                  density="actionPillCompact"
+                  className="shrink-0 whitespace-nowrap"
+                >
+                  <PencilLine className="h-3.5 w-3.5" aria-hidden="true" />
+                  Editar célula
+                </ButtonLink>
+              </div>
+            ) : null}
           </div>
-        ) : null}
-
-        <section className="group-detail-hero">
-          <div className="min-w-0">
-            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">Célula</p>
-            <h2 className="mt-1 text-[1.45rem] font-extrabold leading-tight tracking-[-0.02em] text-[var(--color-text-primary)]">{group.name}</h2>
-            <p className="mt-2 text-[13px] leading-relaxed text-[var(--color-text-secondary)]">
-              Liderança: {leadershipName}
-              {supervisionName ? ` · Supervisão: ${supervisionName}` : ""}
-            </p>
+          <div className={styles.heroTitleBlock}>
+            <h2 className={`k-detail-title ${styles.heroTitle}`}>{group.name}</h2>
+            <div className={styles.heroDetails}>
+              <p>Liderança: {leadershipName}</p>
+              {supervisionName ? <p>Supervisão: {supervisionName}</p> : null}
+            </div>
           </div>
-          <p className="group-detail-hero-chip mt-3">
+          <p className={styles.heroChip}>
             {groupMeetingText(group.meetingDayOfWeek, group.meetingTime)}
             {group.locationName ? ` · ${group.locationName}` : ""}
           </p>
         </section>
 
-        <div className="group-detail-pulse">
+        <div>
           <PulseCard
             title={pastoralPulse.title}
             subtitle={pastoralPulse.subtitle}
@@ -168,38 +108,22 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
           />
         </div>
 
-        <div className="group-detail-summary">
-          <ContextSummary
-            variant="balanced"
-            detailTone="strong"
-            trendLayout="stacked"
-            items={[
-              {
-                label: "Membros acompanhados",
-                value: String(group.memberships.length),
-                detail: "Pessoas sob cuidado e convivência desta célula.",
-                tone: "neutral",
-              },
-              {
-                label: "Presença recente",
-                value: hasRecentPresence ? `${presence.presenceRate}%` : "—",
-                detail: hasRecentPresence
-                  ? "Média dos últimos encontros registrados."
-                  : "Ainda sem presença recente registrada.",
-                tone: presenceTone(hasRecentPresence, presence.presenceRate),
-                trend: presenceTrend,
-              },
-              {
-                label: isPastorView ? "Pedem cuidado" : "Pedem proximidade",
-                value: String(attentionPeople.length),
-                detail: attentionPeople.length > 0
-                  ? "Pessoas que merecem acompanhamento próximo."
-                  : "Nenhum sinal aberto pedindo cuidado agora.",
-                tone: attentionPeople.length > 0 ? hasRiskSignal ? "risk" : "warn" : "ok",
-              },
-            ]}
+        {setupChecklist ? (
+          <GroupSetupChecklistCard
+            checklist={setupChecklist}
+            className={styles.setupChecklist}
+            showAction={shouldShowGroupSetupChecklistAction(setupChecklist, setupChecklistCompetingHrefs)}
           />
-        </div>
+        ) : null}
+
+        <GroupDetailSummaryCard summary={summaryCard} />
+
+        {focusCard ? (
+          <InfoCard tone={focusCard.tone}>
+            <span className="font-semibold">{focusCard.title}</span>
+            <span className="block">{focusCard.detail}</span>
+          </InfoCard>
+        ) : null}
 
         {pendingEvent ? (
           <GroupPendingEventCard
@@ -210,18 +134,24 @@ export default async function GroupDetailPage({ params, searchParams }: GroupDet
         ) : null}
 
         <section id="membros" className="scroll-mt-6">
-          <SectionTitle detail={membersView.sectionDetail}>Membros</SectionTitle>
+          <SectionHeader title="Membros" detail={membersView.sectionDetail} className="mt-0" />
           <MemberPriorityList
-            basePath={`/celulas/${group.id}`}
+            basePath={ROUTES.group(group.id)}
             activeFilter={activeMembersFilter}
             priorityMembers={membersView.priorityMembers}
+            inCareMembers={membersView.inCareMembers}
             regularMembers={membersView.regularMembers}
+            filterCounts={membersView.filterCounts}
             keyForMember={(member) => member.membershipId}
-            hrefForMember={(member) => `/pessoas/${member.personId}`}
+            hrefForMember={(member) => ROUTES.person(member.personId)}
             priorityContextForMember={(member) => member.subtitle}
             filteredContextForMember={(member) => member.subtitle}
-            priorityMoreLabel="Ver mais pessoas em atenção"
-            priorityLessLabel="Mostrar menos pessoas em atenção"
+            priorityBadgeLabelForMember={activeFocus === FILTER_IN_CARE ? memberBadgeLabelForCareContext : undefined}
+            priorityBadgeToneForMember={activeFocus === FILTER_IN_CARE ? memberBadgeToneForCareContext : undefined}
+            filteredBadgeLabelForMember={activeMembersFilter === FILTER_IN_CARE ? memberBadgeLabelForCareContext : undefined}
+            filteredBadgeToneForMember={activeMembersFilter === FILTER_IN_CARE ? memberBadgeToneForCareContext : undefined}
+            priorityMoreLabel="Ver mais irmãos em atenção"
+            priorityLessLabel="Mostrar menos irmãos em atenção"
             regularInitialCount={GROUP_REGULAR_MEMBER_INITIAL_COUNT}
             regularStep={GROUP_REGULAR_MEMBER_STEP}
           />

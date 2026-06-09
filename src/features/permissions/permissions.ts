@@ -1,5 +1,6 @@
 import { EventStatus, GroupResponsibilityRole, UserRole } from "@/generated/prisma/client";
-import { hasGroupResponsibilityScope, type ResponsibleGroupLike } from "@/features/groups/responsibility-scope";
+import { canReceiveCheckInStatus } from "@/features/events/event-status";
+import { hasGroupResponsibilityScope, type ResponsibleGroupLike } from "@/lib/domain/group-responsibilities";
 import { hasWholeChurchScope } from "./permission-query";
 import type { PermissionUser } from "./permission-query";
 
@@ -72,6 +73,10 @@ export function canManageGroups(user: PermissionUser) {
   return hasWholeChurchScope(user);
 }
 
+export function canManageUsers(user: PermissionUser) {
+  return hasWholeChurchScope(user);
+}
+
 export function canViewGroup(user: PermissionUser, group: ScopedGroup | null | undefined) {
   if (!group || group.churchId !== user.churchId || group.isActive === false) return false;
   if (hasWholeChurchScope(user)) return true;
@@ -89,7 +94,7 @@ export function canViewEvent(user: PermissionUser, event: ScopedEvent | null | u
 
 export function canCheckInEvent(user: PermissionUser, event: ScopedEvent | null | undefined) {
   if (!event || event.churchId !== user.churchId || !event.group || !isPastOrCurrentInstant(event.startsAt)) return false;
-  if (event.status === EventStatus.CANCELLED || event.status === EventStatus.NO_MEETING) return false;
+  if (!canReceiveCheckInStatus(event.status)) return false;
   return user.role === UserRole.LEADER && canViewGroup(user, event.group) && isGroupLeader(user, event.group);
 }
 
@@ -129,4 +134,11 @@ export function getVisibleGroupIdsForPerson(user: PermissionUser, person: Scoped
 
 export function getPrimaryVisibleGroupIdForPerson(user: PermissionUser, person: ScopedPerson | null | undefined) {
   return getVisibleGroupIdsForPerson(user, person)[0];
+}
+
+export function isPastoralRole(
+  viewer: UserRole | { role: UserRole } | null | undefined,
+): boolean {
+  const role = typeof viewer === "string" ? viewer : viewer?.role;
+  return role === UserRole.PASTOR || role === UserRole.ADMIN;
 }

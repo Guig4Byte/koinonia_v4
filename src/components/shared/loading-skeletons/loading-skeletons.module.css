@@ -1,0 +1,71 @@
+.filterRow {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+
+.filterRow::-webkit-scrollbar {
+  display: none;
+}
+
+.eventCard {
+  border: 1px solid color-mix(in srgb, var(--color-border-card) 70%, transparent);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--color-bg-card) 94%, transparent);
+  padding: 12px 14px;
+  box-shadow: var(--color-shadow-metric-card);
+}
+
+.eventStats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+  border-top: 1px solid var(--color-border-divider);
+  padding-top: 8px;
+}
+
+.supervisorCard {
+  border: 1px solid color-mix(in srgb, var(--color-border-card) 70%, transparent);
+  border-radius: 1.15rem;
+  background: color-mix(in srgb, var(--color-bg-card) 94%, transparent);
+  padding: 12px;
+  box-shadow: var(--color-shadow-metric-card);
+}
+
+.groupPage {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 18px;
+}
+
+.groupHero {
+  margin-bottom: 10px;
+  border: 1px solid var(--color-border-card);
+  border-radius: 1.15rem;
+  background: var(--color-bg-card);
+  padding: 16px;
+  box-shadow: var(--color-shadow-card);
+}
+
+.groupSummary > section {
+  margin-bottom: 0;
+}
+
+.cellsSections {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.cellsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cellsHeading {
+  padding: 0 2px;
+}

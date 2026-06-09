@@ -1,0 +1,40 @@
+.pendingEventSection {
+  margin-top: 18px;
+}
+
+.pendingEventTop {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--color-border-divider);
+  padding: 14px 18px;
+  color: var(--color-brand);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.pendingEventBody {
+  display: flex;
+  width: 100%;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+}
+
+@media (max-width: 380px) {
+  .pendingEventTop,
+  .pendingEventBody {
+    align-items: flex-start;
+  }
+
+  .pendingEventBody {
+    flex-direction: column;
+    gap: 12px;
+  }
+}

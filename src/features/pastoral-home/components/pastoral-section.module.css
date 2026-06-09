@@ -1,0 +1,84 @@
+.titleWrap {
+  position: relative;
+  padding-left: 10px;
+}
+
+.titleWrap::before {
+  content: "";
+  position: absolute;
+  inset-block: 2px 2px;
+  inset-inline-start: 0;
+  width: 3px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--color-brand-accent) 72%, var(--color-brand));
+  opacity: 0.72;
+}
+
+.titleWrapRisk::before {
+  width: 4px;
+  background: color-mix(in srgb, var(--color-metric-atencoes) 86%, var(--color-brand-accent));
+  opacity: 0.95;
+}
+
+.titleWrapQuiet::before {
+  opacity: 0.48;
+}
+
+.title {
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  text-transform: none;
+  text-wrap: balance;
+}
+
+.titleWrapQuiet .title {
+  font-size: var(--text-lg);
+}
+
+.detail {
+  margin-top: 4px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.45;
+}
+
+.titleWrapQuiet .detail {
+  color: color-mix(in srgb, var(--color-text-secondary) 88%, var(--color-text-muted));
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.sectionRisk {
+  gap: 0.72rem;
+}
+
+.sectionQuiet {
+  gap: 0.55rem;
+}
+
+.section + .section {
+  margin-top: 1.05rem;
+}
+
+.sectionRisk + .section,
+.section + .sectionRisk {
+  margin-top: 1.2rem;
+}
+
+.sectionQuiet + .sectionQuiet {
+  margin-top: 0.95rem;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}

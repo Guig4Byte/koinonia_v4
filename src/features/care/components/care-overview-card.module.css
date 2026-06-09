@@ -1,0 +1,93 @@
+.overview {
+  --care-overview-decor-color: var(--priority-card-decor-color, var(--priority-accent, var(--color-card-decoration)));
+}
+
+.header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.signalIcon {
+  display: inline-grid;
+  width: 2.65rem;
+  height: 2.65rem;
+  place-items: center;
+  flex: 0 0 auto;
+  border: 1px solid color-mix(in srgb, var(--care-overview-decor-color) 34%, var(--color-border-card));
+  border-radius: 999px;
+  color: color-mix(in srgb, var(--care-overview-decor-color) 88%, var(--color-text-primary));
+  background:
+    radial-gradient(circle at 42% 28%, color-mix(in srgb, var(--care-overview-decor-color) 18%, transparent), transparent 64%),
+    color-mix(in srgb, var(--care-overview-decor-color) 10%, var(--surface-alt));
+}
+
+.signalIconSvg {
+  width: 1.28rem;
+  height: 1.28rem;
+  stroke-width: 2.35;
+}
+
+.copy {
+  min-width: 0;
+}
+
+.title {
+  overflow: hidden;
+  color: var(--color-text-primary);
+  font-size: clamp(var(--text-base), 4.4vw, var(--text-lg));
+  font-weight: 760;
+  line-height: 1.18;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.description {
+  margin-top: 0.45rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.contextLine {
+  margin-top: 0.95rem;
+  border-top: 1px solid color-mix(in srgb, var(--brown-400) 16%, var(--color-border-divider));
+  padding-top: 0.85rem;
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.actionRow {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
+.embeddedActions {
+  margin-top: 0.95rem;
+  border-top: 1px solid color-mix(in srgb, var(--brown-400) 16%, var(--color-border-divider));
+  padding-top: 0.85rem;
+}
+
+@media (max-width: 380px) {
+  .overview {
+    padding-inline: 0.9rem;
+  }
+
+  .header {
+    gap: 0.65rem;
+  }
+
+  .signalIcon {
+    width: 2.35rem;
+    height: 2.35rem;
+  }
+
+  .description {
+    font-size: var(--text-xs);
+  }
+}

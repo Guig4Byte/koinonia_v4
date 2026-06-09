@@ -2,6 +2,8 @@
 
 Este arquivo orienta sensação de uso, densidade visual e tom. Ele não define escopo técnico nem substitui `PRODUCT.md`, `GLOSSARY.md` ou `ARCHITECTURE.md`.
 
+Leia este arquivo depois dos documentos oficiais. Ele ajuda a avaliar se a experiência está coerente; não autoriza novas features por conta própria.
+
 ## Persona emocional
 
 Imagine Roberto, pastor, 52 anos, usando o celular à noite, cansado, sem querer “operar um sistema”. Ele quer saber rapidamente se alguém está escapando do cuidado e onde precisa prestar atenção.
@@ -36,9 +38,11 @@ A tela atual deve permanecer curta:
 - e-mail;
 - senha com opção discreta de mostrar/ocultar;
 - erro curto de credenciais que não reaparece depois de atualizar;
-- botão `Entrar`.
+- erro que desaparece quando o usuário volta a digitar;
+- botão `Entrar` com estado `Entrando...` durante envio;
+- orientação discreta para procurar a liderança responsável quando esquecer a senha, sem abrir fluxo público de recuperação.
 
-Não mostrar credenciais de desenvolvimento, seletor de perfil, onboarding, cadastro público ou configurações extensas.
+Não mostrar credenciais de desenvolvimento, seletor de perfil, onboarding, cadastro público, recuperação pública de senha ou configurações extensas.
 
 ## Primeira leitura após login
 
@@ -50,6 +54,7 @@ A primeira tela deve responder em poucos segundos:
 - existe alguém já acolhido em cuidado?
 - alguma célula está sem presença ou com presença baixa?
 - há encontro que pede ação do líder?
+- há presença pendente ou histórico relevante para consulta?
 
 Evite telas iniciais com muitos cards, gráficos, tabelas ou linguagem executiva.
 
@@ -81,7 +86,7 @@ Cada seção deve mostrar poucos itens e oferecer `Ver mais` quando necessário.
 
 ### Líder
 
-A `Visão` do líder é radar, não diretório. Mostra pessoas no radar e o encontro relevante. A lista completa fica em `Membros`.
+A `Visão` do líder é radar, não diretório. Mostra sinais, membros em cuidado e o encontro relevante. A lista completa fica em `Membros`.
 
 ### Supervisor
 
@@ -110,6 +115,9 @@ Resumo vem antes da operação.
 - Ajustar presença é escolha explícita.
 - Pastor/supervisor ficam em consulta.
 - Líder entra no modo operacional só quando precisa registrar ou ajustar.
+- A tela de encontros oferece consultas curtas: `Pendências` e `Histórico`.
+- Pendências devem destacar encontros passados sem presença registrada sem soar como cobrança.
+- Histórico deve mostrar presença registrada com leitura rápida do percentual, membros e visitantes.
 
 No modo de registro/ajuste:
 
@@ -119,7 +127,11 @@ No modo de registro/ajuste:
 - preserve botões grandes para evitar toque errado;
 - use cores suaves por status para orientar, não pressionar;
 - mantenha a barra de salvar clara e sem competir com a navegação;
+- proteja saída quando houver presença alterada ou visitante ainda não salvo;
+- permita revisar rapidamente pendentes, presentes, ausentes e justificativas;
 - `Marcar todos como presentes` é atalho, não substituto da revisão pastoral.
+
+Em formulários de criação/edição dentro do app, como nova/editar célula, a navegação inferior fica oculta. Esses fluxos usam cabeçalho compacto, confirmação de saída quando há alterações não salvas e barra fixa de ação para reduzir saída acidental e competição com o botão de salvar.
 
 ## Local, cancelamento e remarcação
 
@@ -144,6 +156,14 @@ Alguém menciona uma pessoa no corredor -> usuário busca o nome -> abre pessoa 
 
 Busca deve ser rápida, simples e contextual. No MVP atual, é busca de pessoa.
 
+## Leitura antes da exploração
+
+Quando a home tiver muitos sinais, o usuário deve ver primeiro uma orientação simples: onde vale olhar com mais calma. Essa leitura deve reduzir ansiedade, não aumentar cobrança.
+
+A prioridade deve ser calculada pelo contexto, não por uma nova fila de tarefas: urgente, apoio, atenção, cuidado ativo e estabilidade.
+
+A forma visual pode mudar por papel: líder pode ver seções curtas de pessoas, supervisor pode ver um primeiro cuidado da supervisão e pastor pode ver radar com uma ação destacada quando houver prioridade clara.
+
 ## Feed pastoral, não planilha
 
 Listas devem parecer feed de cuidado, não tabela operacional.
@@ -154,7 +174,7 @@ Cada card deve mostrar:
 - contexto curto;
 - motivo de atenção;
 - status claro;
-- CTA simples, normalmente `Abrir pessoa`.
+- CTA específico à intenção do card, como `Acompanhar pessoa`, `Ver pedido` ou `Continuar cuidado`.
 
 Ações sensíveis pertencem ao detalhe da pessoa ou ao modo operacional adequado.
 
@@ -166,7 +186,7 @@ Bons exemplos:
 
 - não há pessoas pedindo atenção agora;
 - ainda não há presença registrada;
-- nenhum cuidado recente anotado;
+- nenhum cuidado anotado ainda;
 - nenhuma célula ativa vinculada a este supervisor.
 
 Evite estados vazios técnicos, como “nenhum registro encontrado no banco”.
@@ -191,6 +211,8 @@ Encaminhado ao cuidado pastoral.
 ## Tema e tamanho do texto
 
 Tema e tamanho do texto são escolhas visuais leves. Tema deve funcionar no login e continuar no app. Tamanho do texto deve ajudar a leitura no app sem virar configuração administrativa.
+
+Os três temas devem preservar legibilidade, contraste e separação entre superfícies. Pergaminho pode ter personalidade, mas não pode reduzir leitura em cards, campos, filtros ou badges. Escuro deve manter textos secundários, bordas, ícones pequenos e indicadores de estado claramente visíveis.
 
 Use os rótulos de tema:
 
@@ -235,3 +257,16 @@ Frase guia:
 ```txt
 Mostre só o que ajuda alguém a cuidar melhor de alguém.
 ```
+
+
+## Detalhe da pessoa como acompanhamento
+
+A tela de pessoa deve responder rapidamente:
+
+- qual é o status pastoral efetivo;
+- qual contexto precisa ser considerado;
+- qual é o próximo gesto seguro.
+
+Use `Guardar contato pastoral` ou `Guardar cuidado` para o registro manual de cuidado já realizado. Evite rótulos ambíguos em formato de pergunta quando o usuário precisa entender a ação. O histórico deve parecer uma linha do tempo pastoral curta, com expansão apenas quando necessário.
+
+Detalhes consultivos, como célula ou encontro registrado, devem orientar sem criar CTA redundante quando a própria tela já oferece filtros, listas ou ações naturais.

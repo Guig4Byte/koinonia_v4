@@ -15,15 +15,15 @@ describe("support-actions-view", () => {
     });
   });
 
-  it("descreve encaminhamento ao pastor com contexto do caminho comum", () => {
+  it("descreve encaminhamento ao pastor com contexto de apoio disponível", () => {
     const copy = signalSupportActionCopyForStage("escalate-pastor", { canRequestSupervisor: true });
 
     expect(copy.action).toBe("ESCALATE_PASTOR");
-    expect(copy.detail).toContain("O caminho comum continua sendo pedir apoio à supervisão");
+    expect(copy.detail).toContain("A supervisão também está disponível como apoio");
   });
 
   it("mostra orientação conforme ações disponíveis", () => {
-    expect(signalSupportGuidance(true, true)).toContain("Pedir apoio à supervisão é o caminho comum");
+    expect(signalSupportGuidance(true, true)).toContain("O pastor pode ser envolvido");
     expect(signalSupportGuidance(true, false)).toContain("apoio à supervisão");
     expect(signalSupportGuidance(false, true)).toContain("encaminhamento ao pastor");
     expect(signalSupportGuidance(false, false)).toBeNull();

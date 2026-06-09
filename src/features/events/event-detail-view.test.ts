@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { AttendanceStatus } from "@/generated/prisma/client";
 import {
   buildEventDetailState,
+  buildEventPastoralCue,
   buildEventReadOnlyAttendanceView,
   eventAttendanceStatusTone,
   eventReadOnlyEmptyMessage,
@@ -17,8 +18,14 @@ describe("event-detail-view", () => {
       { personId: "4", fullName: "Daniel", currentStatus: null },
     ]);
 
-    expect(view.memberSummary).toBe("4 membros · 1 presente · 1 ausente · 1 justificou · 1 pendente");
+    expect(view.memberTotalLabel).toBe("4 membros");
+    expect(view.memberBreakdownLabel).toBe("1 presente · 1 ausente · 1 justificou · 1 sem marcação");
+    expect(view.memberSummary).toBe("4 membros · 1 presente · 1 ausente · 1 justificou · 1 sem marcação");
     expect(view.hasPriorityAttention).toBe(true);
+    expect(view.pastoralCue).toMatchObject({
+      title: "Presença ainda incompleta",
+      tone: "warn",
+    });
     expect(view.groups.map((group) => group.members.map((member) => member.fullName))).toEqual([
       ["Ana"],
       ["Bruno"],
@@ -27,17 +34,33 @@ describe("event-detail-view", () => {
     expect(view.presentMembers.map((member) => member.fullName)).toEqual(["Carlos"]);
   });
 
+  it("builds a pastoral cue from attendance exceptions", () => {
+    expect(buildEventPastoralCue({ absent: 1, justified: 1, pending: 0 })).toMatchObject({
+      title: "Olhar com calma",
+      description: expect.stringContaining("nem sempre indica problema"),
+      tone: "risk",
+    });
+    expect(buildEventPastoralCue({ absent: 0, justified: 1, pending: 0 })).toMatchObject({
+      title: "Olhar com calma",
+      tone: "warn",
+    });
+    expect(buildEventPastoralCue({ absent: 0, justified: 0, pending: 0 })).toMatchObject({
+      title: "Encontro sem sinais imediatos",
+      tone: "ok",
+    });
+  });
+
   it("keeps neutral read-only messages for cancelled, future and pending encounters", () => {
     expect(eventReadOnlyEmptyMessage({ completed: false, isFutureEvent: true, isCancelled: false, closedLabel: "Sobre o encontro" })).toContain("ainda não começou");
-    expect(eventReadOnlyEmptyMessage({ completed: false, isFutureEvent: false, isCancelled: false, closedLabel: "Sobre o encontro" })).toContain("líder da célula registra");
+    expect(eventReadOnlyEmptyMessage({ completed: false, isFutureEvent: false, isCancelled: false, closedLabel: "Sobre o encontro" })).toContain("liderança da célula registra");
     expect(eventReadOnlyEmptyMessage({ completed: false, isFutureEvent: false, isCancelled: true, closedLabel: "Não houve encontro" })).toContain("não realizado");
   });
 
   it("derives event detail labels without duplicating page branching", () => {
     expect(buildEventDetailState({ status: "SCHEDULED", completed: false, isFutureEvent: false, canEditCheckIn: true, showCheckInForm: false })).toMatchObject({
       checkInLabel: "Resumo de presença",
-      checkInSectionTitle: "Resumo da presença",
-      eventStatusLabel: "Presença pendente",
+      checkInSectionTitle: "Detalhes da presença",
+      eventStatusLabel: "Aguardando presença",
       eventStatusTone: "warn",
     });
 

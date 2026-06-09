@@ -1,0 +1,119 @@
+.form {
+  display: flex;
+  min-height: 3rem;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid var(--color-border-card);
+  border-radius: 1rem;
+  background: var(--color-bg-card);
+  padding-inline: 1rem;
+  box-shadow: var(--color-shadow-metric-card);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.form:focus-within {
+  border-color: var(--color-focus-ring);
+  box-shadow: 0 0 0 2px var(--color-focus-ring-soft), var(--color-shadow-metric-card);
+}
+
+.icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+}
+
+.control {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  outline: 0;
+}
+
+.control::placeholder {
+  color: var(--color-text-muted);
+}
+
+.clear {
+  display: inline-flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  margin-right: -0.5rem;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-text-secondary);
+  transition:
+    background-color 150ms ease,
+    transform 150ms ease;
+}
+
+.clear:hover {
+  background: var(--surface-alt);
+}
+
+.clear:active {
+  transform: scale(0.96);
+}
+
+.clear:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.results {
+  position: absolute;
+  inset-inline: 0;
+  top: 3.5rem;
+  z-index: 30;
+  overflow-y: auto;
+  border: 1px solid var(--color-border-card);
+  border-radius: 1rem;
+  background: var(--color-bg-card);
+  box-shadow: var(--color-shadow-card);
+}
+
+.message {
+  padding: 0.75rem 1rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}
+
+.messageError {
+  color: var(--color-badge-risco-text);
+  font-weight: 500;
+}
+
+.option {
+  display: block;
+  border-bottom: 1px solid var(--color-border-divider);
+  padding: 0.75rem 1rem;
+  outline: 0;
+}
+
+.option:last-child {
+  border-bottom: 0;
+}
+
+.option:focus,
+.optionActive {
+  background: var(--surface-alt);
+}
+
+.optionSubtitle {
+  display: block;
+  margin-top: 0.125rem;
+  overflow: hidden;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

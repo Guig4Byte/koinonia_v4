@@ -1,53 +1,95 @@
 "use client";
 
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, LoaderCircle, Lock, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useFormStatus } from "react-dom";
+import styles from "./login.module.css";
 
-export function LoginErrorMessage({ show }: { show: boolean }) {
-  useEffect(() => {
-    if (!show) return;
+const LOGIN_ERROR_ID = "login-error";
 
-    const url = new URL(window.location.href);
-    if (!url.searchParams.has("erro")) return;
+function clearLoginErrorFromUrl() {
+  const url = new URL(window.location.href);
+  if (!url.searchParams.has("erro")) return;
 
-    url.searchParams.delete("erro");
-    window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
-  }, [show]);
+  url.searchParams.delete("erro");
+  window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
+}
 
+function LoginErrorMessage({ show }: { show: boolean }) {
   if (!show) return null;
 
   return (
-    <p
-      className="rounded-[16px] border border-[var(--color-badge-risco-border)] bg-[var(--color-badge-risco-bg)] px-4 py-3 text-sm font-medium text-[var(--color-badge-risco-text)]"
-      role="alert"
-    >
+    <p id={LOGIN_ERROR_ID} className={styles.errorMessage} role="alert" aria-live="assertive">
       E-mail ou senha não conferem.
     </p>
   );
 }
 
-export function PasswordField() {
+function EmailField({
+  hasError,
+  onValueChange,
+}: {
+  hasError: boolean;
+  onValueChange: () => void;
+}) {
+  return (
+    <div className={styles.field}>
+      <label className={styles.label} htmlFor="login-email">
+        E-mail
+      </label>
+      <div className={styles.inputShell} data-invalid={hasError ? "true" : undefined}>
+        <Mail className={styles.inputIcon} aria-hidden="true" />
+        <input
+          id="login-email"
+          name="email"
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          required
+          aria-invalid={hasError}
+          aria-describedby={hasError ? LOGIN_ERROR_ID : undefined}
+          className={styles.input}
+          placeholder="Seu e-mail"
+          onChange={onValueChange}
+        />
+      </div>
+    </div>
+  );
+}
+
+function PasswordField({
+  hasError,
+  onValueChange,
+}: {
+  hasError: boolean;
+  onValueChange: () => void;
+}) {
   const [isVisible, setIsVisible] = useState(false);
   const Icon = isVisible ? EyeOff : Eye;
   const label = isVisible ? "Ocultar senha" : "Mostrar senha";
 
   return (
-    <label className="block">
-      <span className="mb-2 block text-[11px] font-extrabold uppercase tracking-[0.16em] text-[var(--login-muted)]">
+    <div className={styles.field}>
+      <label className={styles.label} htmlFor="login-password">
         Senha
-      </span>
-      <div className="relative">
+      </label>
+      <div className={styles.inputShell} data-invalid={hasError ? "true" : undefined}>
+        <Lock className={styles.inputIcon} aria-hidden="true" />
         <input
+          id="login-password"
           name="password"
           type={isVisible ? "text" : "password"}
           autoComplete="current-password"
           required
-          className="login-input min-h-[48px] w-full rounded-[16px] border px-4 pr-14 text-[15px] font-medium outline-none transition"
+          aria-invalid={hasError}
+          aria-describedby={hasError ? LOGIN_ERROR_ID : undefined}
+          className={styles.input}
           placeholder="Sua senha"
+          onChange={onValueChange}
         />
         <button
           type="button"
-          className="login-password-toggle"
+          className={styles.passwordToggle}
           aria-label={label}
           aria-pressed={isVisible}
           title={label}
@@ -56,6 +98,55 @@ export function PasswordField() {
           <Icon className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
-    </label>
+    </div>
+  );
+}
+
+function LoginSubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <button type="submit" className={styles.submit} disabled={pending} aria-busy={pending}>
+      <span className={styles.submitContent}>
+        {pending ? <LoaderCircle className={styles.submitSpinner} aria-hidden="true" /> : null}
+        {pending ? "Entrando..." : "Entrar"}
+      </span>
+    </button>
+  );
+}
+
+export function LoginFormControls({ hasError }: { hasError: boolean }) {
+  const [isErrorVisible, setIsErrorVisible] = useState(hasError);
+  const [lastHasError, setLastHasError] = useState(hasError);
+
+  if (lastHasError !== hasError) {
+    setLastHasError(hasError);
+    setIsErrorVisible(hasError);
+  }
+
+  useEffect(() => {
+    if (hasError) {
+      clearLoginErrorFromUrl();
+    }
+  }, [hasError]);
+
+  function clearVisibleError() {
+    if (!isErrorVisible) return;
+    setIsErrorVisible(false);
+  }
+
+  return (
+    <>
+      <EmailField hasError={isErrorVisible} onValueChange={clearVisibleError} />
+      <PasswordField hasError={isErrorVisible} onValueChange={clearVisibleError} />
+
+      <LoginErrorMessage show={isErrorVisible} />
+
+      <p className={styles.supportNote}>
+        Esqueceu a senha? Procure a liderança responsável pelo seu acesso.
+      </p>
+
+      <LoginSubmitButton />
+    </>
   );
 }

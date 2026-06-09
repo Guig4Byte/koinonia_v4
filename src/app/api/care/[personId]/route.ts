@@ -1,16 +1,12 @@
 import { NextRequest } from "next/server";
-import { PersonStatus, SignalStatus } from "@/generated/prisma/client";
-import { parseCarePayload, resolvedAttentionMessage } from "@/features/care/care-validation";
-import {
-  canRegisterCare,
-  getOpenSignalInActiveGroupWhere,
-  getVisibleGroupIdsForPerson,
-  hasWholeChurchScope,
-} from "@/features/permissions/permissions";
+import { CARE_COPY } from "@/features/care/care-copy";
+import { registerCareAndResolveAttention } from "@/features/care/care-registration";
+import { requireCareVisiblePerson } from "@/features/care/person-care-access";
+import { parseCarePayload } from "@/features/care/care-validation";
+import { hasWholeChurchScope } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { apiError, apiOk } from "@/lib/api-response";
 import { readJsonBody } from "@/lib/json";
-import { prisma } from "@/lib/prisma";
 
 export async function POST(request: NextRequest, context: { params: Promise<{ personId: string }> }) {
   const user = await getCurrentUser();
@@ -18,83 +14,33 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pe
   const parsedBody = parseCarePayload(await readJsonBody(request));
 
   if (!parsedBody.success) {
-    return apiError("Dados de cuidado inválidos", 400);
+    return apiError(CARE_COPY.errors.invalidPayload, 400);
   }
 
   const body = parsedBody.data;
+  const personAccess = await requireCareVisiblePerson(user, personId);
 
-  const person = await prisma.person.findUnique({
-    where: { id: personId },
-    include: { memberships: { where: { leftAt: null }, include: { group: { include: { responsibilities: { where: { activeUntil: null } } } } } } },
-  });
-
-  if (!person || person.churchId !== user.churchId) {
-    return apiError("Pessoa não encontrada", 404);
+  if (!personAccess.ok) {
+    return apiError(personAccess.message, personAccess.status);
   }
 
-  if (!canRegisterCare(user, person)) {
-    return apiError("Sem permissão para registrar cuidado", 403);
+  if (!hasWholeChurchScope(user) && personAccess.visibleGroupIds.length === 0) {
+    return apiError(CARE_COPY.errors.noVisibleGroup, 403);
   }
 
-  const visibleGroupIds = getVisibleGroupIdsForPerson(user, person);
-  const visibleGroupId = visibleGroupIds[0];
-
-  if (!hasWholeChurchScope(user) && visibleGroupIds.length === 0) {
-    return apiError("Sem célula visível para registrar este cuidado", 403);
-  }
-
-  const result = await prisma.$transaction(async (tx) => {
-    const careTouch = await tx.careTouch.create({
-      data: {
-        churchId: user.churchId,
-        personId,
-        actorId: user.id,
-        kind: body.kind,
-        note: body.note,
-        groupId: visibleGroupId,
-      },
-    });
-
-    let resolvedSignalsCount = 0;
-    let personStatusChangedToCare = false;
-
-    if (body.resolveOpenSignals) {
-      const resolvableOpenSignalWhere = hasWholeChurchScope(user)
-        ? { ...getOpenSignalInActiveGroupWhere(user.churchId), personId }
-        : { churchId: user.churchId, personId, status: SignalStatus.OPEN, groupId: { in: visibleGroupIds } };
-
-      const updateResult = await tx.careSignal.updateMany({
-        where: resolvableOpenSignalWhere,
-        data: { status: SignalStatus.RESOLVED, resolvedAt: new Date() },
-      });
-
-      resolvedSignalsCount = updateResult.count;
-
-      const remainingOpenSignals = await tx.careSignal.count({
-        where: { ...getOpenSignalInActiveGroupWhere(user.churchId), personId },
-      });
-
-      if (remainingOpenSignals === 0) {
-        const personUpdate = await tx.person.updateMany({
-          where: {
-            id: personId,
-            churchId: user.churchId,
-            status: { in: [PersonStatus.ACTIVE, PersonStatus.NEW, PersonStatus.NEEDS_ATTENTION, PersonStatus.COOLING_AWAY] },
-          },
-          data: { status: PersonStatus.COOLING_AWAY },
-        });
-
-        personStatusChangedToCare = personUpdate.count > 0;
-      }
-    }
-
-    return { careTouchId: careTouch.id, resolvedSignalsCount, personStatusChangedToCare };
+  const result = await registerCareAndResolveAttention({
+    user,
+    personId,
+    kind: body.kind,
+    note: body.note,
+    resolveOpenSignals: body.resolveOpenSignals,
+    visibleGroupIds: personAccess.visibleGroupIds,
   });
 
   return apiOk({
     careTouchId: result.careTouchId,
     resolvedSignalsCount: result.resolvedSignalsCount,
     personStatusChangedToCare: result.personStatusChangedToCare,
-    message: resolvedAttentionMessage(result.resolvedSignalsCount, result.personStatusChangedToCare),
+    message: result.message,
   });
 }

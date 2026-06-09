@@ -1,20 +1,28 @@
-import { AppShell } from "@/components/app-shell";
-import { EmptyState, SectionTitle } from "@/components/base-cards";
-import { EventConsultationCards, EventList, EventsConsultationView } from "@/components/events-page-sections";
+import { AppShell } from "@/components/layout/app-shell";
+import { EmptyState } from "@/components/shared/base-cards";
+import { SectionHeader } from "@/components/ui/section-header";
+import { PageHero } from "@/components/shared/page-hero";
+import { EventConsultationCards, EventList, EventsConsultationView } from "@/features/events/components/events-page-sections";
+import { EMPTY_STATE_COPY } from "@/features/empty-states/empty-state-copy";
 import {
   EVENTS_PAGE_HISTORY_LOOKBACK_DAYS,
   EVENTS_PAGE_QUERY_LIMIT,
+  buildEventsConsultationSummary,
   buildEventsHomeSections,
   readEventConsultationMode,
   readEventPeriod,
 } from "@/features/events/events-page-view";
 import { ensureUpcomingCellMeetingsForUser } from "@/features/events/schedule";
+import { activeGroupResponsibilitiesScopeInclude } from "@/features/groups/group-query";
 import { appNavForRole } from "@/features/navigation/app-nav";
+import { leaderCellHrefForUser } from "@/features/navigation/leader-cell-nav";
 import { getVisibleEventWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { addBrasiliaDays, endOfBrasiliaWeek, startOfBrasiliaDay } from "@/lib/brasilia-time";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/search-params";
+import { cn } from "@/lib/cn";
+import pageStyles from "@/components/shared/consultation-page.module.css";
 
 type EventsSearchParams = Promise<{
   consulta?: string | string[];
@@ -33,8 +41,8 @@ async function getEventsForUser(user: PermissionUser, referenceDate: Date) {
         { startsAt: { gte: historyStart, lte: weekEnd } },
       ],
     },
-    include: { group: { include: { responsibilities: { where: { activeUntil: null } } } }, attendances: true },
-    orderBy: { startsAt: "asc" },
+    include: { group: { include: { responsibilities: activeGroupResponsibilitiesScopeInclude } }, attendances: true },
+    orderBy: { startsAt: "desc" },
     take: EVENTS_PAGE_QUERY_LIMIT,
   });
 }
@@ -44,36 +52,54 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
   const now = new Date();
   await ensureUpcomingCellMeetingsForUser(user, { referenceDate: now });
 
-  const events = await getEventsForUser(user, now);
+  const [events, leaderCellHref] = await Promise.all([
+    getEventsForUser(user, now),
+    leaderCellHrefForUser(user),
+  ]);
   const resolvedSearchParams: Awaited<EventsSearchParams> = searchParams ? await searchParams : {};
   const mode = readEventConsultationMode(firstParam(resolvedSearchParams.consulta));
   const period = readEventPeriod(firstParam(resolvedSearchParams.periodo));
   const { todayEvents, weekEvents } = buildEventsHomeSections(events, now);
+  const consultationSummary = buildEventsConsultationSummary(events, now);
 
   return (
     <AppShell
       userName={user.name}
       role={user.role}
-      nav={appNavForRole(user, { active: "events" })}
+      nav={appNavForRole(user, { active: "events", secondaryHref: leaderCellHref })}
+      headerVariant="compact"
     >
-      <div className="events-page">
+      <div className={cn(pageStyles.page, pageStyles.eventsPage)}>
         {mode ? (
           <EventsConsultationView mode={mode} period={period} events={events} user={user} now={now} />
         ) : (
           <>
-            <h2 className="events-title">Encontros</h2>
-            <p className="events-description">
-              Acompanhe os encontros das células nesta semana e os registros de presença.
-            </p>
+            <PageHero
+              compact
+              eyebrow="Presença"
+              title="Encontros"
+              description="Encontros da semana e presença em um só lugar."
+            />
+            <EventConsultationCards summary={consultationSummary} />
 
-            <SectionTitle>Hoje</SectionTitle>
-            {todayEvents.length > 0 ? <EventList events={todayEvents} user={user} now={now} /> : <EmptyState>Nenhum encontro previsto para hoje.</EmptyState>}
+            <section className={pageStyles.eventsHomeSection}>
+              <SectionHeader title="Hoje" className={pageStyles.eventsHomeSectionTitle} />
+              {todayEvents.length > 0 ? (
+                <EventList events={todayEvents} user={user} now={now} />
+              ) : (
+                <EmptyState title={EMPTY_STATE_COPY.events.noTodayTitle}>{EMPTY_STATE_COPY.events.noTodayDetail}</EmptyState>
+              )}
+            </section>
 
-            <SectionTitle>Próximos encontros</SectionTitle>
-            {weekEvents.length > 0 ? <EventList events={weekEvents} user={user} now={now} /> : <EmptyState>Nenhum outro encontro agendado para esta semana.</EmptyState>}
+            <section className={pageStyles.eventsHomeSection}>
+              <SectionHeader title="Próximos encontros" className={pageStyles.eventsHomeSectionTitle} />
+              {weekEvents.length > 0 ? (
+                <EventList events={weekEvents} user={user} now={now} />
+              ) : (
+                <EmptyState title={EMPTY_STATE_COPY.events.noUpcomingTitle}>{EMPTY_STATE_COPY.events.noUpcomingDetail}</EmptyState>
+              )}
+            </section>
 
-            <SectionTitle detail="Veja encontros sem presença registrada ou registros anteriores quando precisar.">Consultar outros encontros</SectionTitle>
-            <EventConsultationCards />
           </>
         )}
       </div>

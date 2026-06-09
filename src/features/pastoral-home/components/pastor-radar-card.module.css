@@ -1,0 +1,124 @@
+.root {
+  --radar-symbol-color: var(--color-brand-accent);
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  border: 1px solid color-mix(in srgb, var(--radar-symbol-color) 26%, var(--color-border-card));
+  border-radius: 1.45rem;
+  background:
+    radial-gradient(circle at 18% 28%, color-mix(in srgb, var(--radar-symbol-color) 18%, transparent), transparent 34%),
+    linear-gradient(135deg, color-mix(in srgb, var(--radar-symbol-color) 8%, var(--color-bg-card)), var(--color-bg-card) 58%, color-mix(in srgb, var(--radar-symbol-color) 7%, var(--color-bg-card)));
+  box-shadow:
+    0 18px 42px color-mix(in srgb, var(--radar-symbol-color) 10%, transparent),
+    var(--color-shadow-card);
+}
+
+.root::before,
+.root::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.root::before {
+  inset-block-start: -68px;
+  inset-inline-end: -68px;
+  width: 180px;
+  height: 180px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--radar-symbol-color) 20%, transparent);
+  background: radial-gradient(circle, color-mix(in srgb, var(--radar-symbol-color) 15%, transparent), transparent 66%);
+}
+
+.root::after {
+  inset-block-start: 18px;
+  inset-inline-start: 18px;
+  width: 72px;
+  height: 72px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--radar-symbol-color) 12%, transparent);
+  filter: blur(26px);
+}
+
+.content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.iconScene {
+  position: relative;
+  display: none;
+  min-height: 132px;
+}
+
+.iconHalo,
+.iconCore,
+.iconSweep {
+  position: absolute;
+  border-radius: 999px;
+}
+
+.iconHalo {
+  inset: 0;
+  margin: auto;
+  width: 128px;
+  height: 128px;
+  border: 1px solid color-mix(in srgb, var(--radar-symbol-color) 30%, transparent);
+  background:
+    radial-gradient(circle, color-mix(in srgb, var(--radar-symbol-color) 24%, transparent) 0 2px, transparent 3px),
+    repeating-radial-gradient(circle, transparent 0 24px, color-mix(in srgb, var(--radar-symbol-color) 23%, transparent) 25px 26px),
+    radial-gradient(circle, color-mix(in srgb, var(--radar-symbol-color) 15%, transparent), transparent 70%);
+  box-shadow:
+    0 0 36px color-mix(in srgb, var(--radar-symbol-color) 18%, transparent),
+    inset 0 0 32px color-mix(in srgb, var(--radar-symbol-color) 9%, transparent);
+}
+
+.iconCore {
+  inset: 0;
+  margin: auto;
+  display: grid;
+  width: 66px;
+  height: 66px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--radar-symbol-color) 46%, transparent);
+  background: color-mix(in srgb, var(--color-bg-card) 72%, transparent);
+  color: var(--radar-symbol-color);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--radar-symbol-color) 18%, transparent);
+}
+
+.iconSweep {
+  inset-block-start: 14px;
+  inset-inline-end: 23px;
+  width: 68px;
+  height: 12px;
+  transform: rotate(-38deg);
+  transform-origin: left center;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--radar-symbol-color) 68%, transparent), transparent);
+  filter: blur(0.6px);
+}
+
+html[data-theme="light"] .root,
+html[data-theme="parchment"] .root {
+  --radar-symbol-color: var(--color-brand);
+}
+
+.copy {
+  min-width: 0;
+}
+
+@media (min-width: 430px) {
+  .content {
+    grid-template-columns: minmax(0, 1fr) 138px;
+    align-items: center;
+    padding: 1.15rem 1.15rem 1.15rem 1.35rem;
+  }
+
+  .iconScene {
+    display: block;
+  }
+}

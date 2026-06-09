@@ -1,20 +1,28 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Plus } from "lucide-react";
-import { AppShell } from "@/components/app-shell";
-import { CellsPageSections } from "@/components/cells-page-sections";
-import { CellsStructureSearch } from "@/components/cells-structure-search";
-import { ContextSummary, EmptyState, InfoCard, SectionTitle } from "@/components/base-cards";
-import { weeklyPresenceTone } from "@/features/dashboard/presence-health";
+import { GroupKind, UserRole } from "@/generated/prisma/client";
+import { AppShell } from "@/components/layout/app-shell";
+import { CellsFilterContextCard } from "@/features/groups/components/cells-filter-context-card";
+import { CellsPageSections } from "@/features/groups/components/cells-page-sections";
+import { EMPTY_STATE_COPY } from "@/features/empty-states/empty-state-copy";
+import { CellsStructureSearch } from "@/features/groups/components/cells-structure-search";
+import { ButtonLink } from "@/components/ui/button-link";
+import { PageHero } from "@/components/shared/page-hero";
+import { EmptyState } from "@/components/shared/base-cards";
+import { SectionHeader } from "@/components/ui/section-header";
+import { CellsOverviewSummaryCard } from "@/features/groups/components/cells-overview-summary-card";
 import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { CELLS_SECTION_ID, readCellsFilter } from "@/features/groups/cells-page-filters";
 import { buildCellsPageView } from "@/features/groups/cells-page-view";
 import { appNavForRole } from "@/features/navigation/app-nav";
-import { canManageGroups, canUseSupervisorDashboard } from "@/features/permissions/permissions";
+import { canManageGroups, canUseSupervisorDashboard, getVisibleGroupWhere } from "@/features/permissions/permissions";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { membersFilterHref, readMembersFilter } from "@/features/people/member-filters";
 import { firstParam } from "@/lib/search-params";
 import { normalizeSearchText } from "@/lib/text";
-import { UserRole } from "@/generated/prisma/client";
+import { prisma } from "@/lib/prisma";
+import { ROUTES } from "@/lib/routes";
+import pageStyles from "@/components/shared/consultation-page.module.css";
 
 type CellsPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -22,12 +30,34 @@ type CellsPageProps = {
 
 export default async function CellsPage({ searchParams }: CellsPageProps) {
   const user = await getCurrentUser();
+  const params = searchParams ? await searchParams : {};
 
-  if (!canUseSupervisorDashboard(user)) {
-    redirect(user.role === UserRole.PASTOR || user.role === UserRole.ADMIN ? "/equipe" : user.role === UserRole.LEADER ? "/pessoas" : "/");
+  if (user.role === UserRole.LEADER) {
+    const primaryGroup = await prisma.smallGroup.findFirst({
+      where: {
+        ...getVisibleGroupWhere(user),
+        kind: GroupKind.CELL,
+      },
+      select: { id: true },
+      orderBy: { name: "asc" },
+    });
+
+    if (!primaryGroup) {
+      redirect(ROUTES.leader);
+    }
+
+    const requestedMembersFilter = firstParam(params.membros);
+    const leaderGroupHref = requestedMembersFilter
+      ? membersFilterHref(ROUTES.group(primaryGroup.id), readMembersFilter(requestedMembersFilter))
+      : ROUTES.group(primaryGroup.id);
+
+    redirect(leaderGroupHref);
   }
 
-  const params = searchParams ? await searchParams : {};
+  if (!canUseSupervisorDashboard(user)) {
+    redirect(user.role === UserRole.PASTOR || user.role === UserRole.ADMIN ? ROUTES.team : ROUTES.root);
+  }
+
   const query = firstParam(params.q).trim();
   const activeFilter = readCellsFilter(firstParam(params.filtro));
   const dashboard = await getSupervisorDashboard(user);
@@ -44,82 +74,50 @@ export default async function CellsPage({ searchParams }: CellsPageProps) {
       userName={user.name}
       role={user.role}
       nav={appNavForRole(user, { active: "secondary", indicator: view.navIndicator })}
+      headerVariant="compact"
     >
-      <div className="team-page">
-        <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <h2 className="team-title">Células</h2>
-            <p className="team-description">
-              Acompanhe as células sob sua supervisão sem duplicar os sinais de pessoas da Visão.
-            </p>
-          </div>
-          {canCreateGroup ? (
-            <Link
-              href="/celulas/nova"
-              className="k-primary-action inline-flex min-h-10 shrink-0 items-center gap-2 rounded-2xl px-3 text-sm font-bold transition active:scale-[0.98]"
-            >
+      <div className={pageStyles.page}>
+        <PageHero
+          compact
+          eyebrow="Supervisão"
+          title="Células"
+          description="Células sob sua supervisão, organizadas por leitura pastoral."
+          action={canCreateGroup ? (
+            <ButtonLink href={ROUTES.newCell} variant="actionPillPrimary" size="sm" density="actionPill" className="shrink-0">
               <Plus className="h-4 w-4" aria-hidden="true" />
               Nova célula
-            </Link>
+            </ButtonLink>
           ) : null}
-        </div>
+        />
 
-        <div className="team-summary-block">
-          <ContextSummary
-            items={[
-              {
-                label: "Células acompanhadas",
-                value: String(dashboard.groups.length),
-                detail: "Comunidades que você acompanha de perto.",
-                tone: "neutral",
-              },
-              {
-                label: "Presença da semana",
-                value: dashboard.hasPresenceData ? `${dashboard.presenceRate}%` : "—",
-                detail: dashboard.hasPresenceData
-                  ? "Média dos encontros registrados nesta semana."
-                  : "Ainda sem presença registrada nesta semana.",
-                tone: weeklyPresenceTone(dashboard.hasPresenceData, dashboard.presenceRate),
-              },
-              {
-                label: "Pedem cuidado mais próximo",
-                value: String(view.groupsNeedingAttentionCount),
-                detail: view.groupsNeedingAttentionCount > 0
-                  ? "Células que pedem proximidade, apoio ou discernimento."
-                  : "Nenhuma célula pedindo cuidado próximo agora.",
-                tone: view.groupsNeedingAttentionCount > 0 ? "warn" : "ok",
-              },
-              {
-                label: "Sem presença recente",
-                value: String(view.groupsWithoutPresenceCount),
-                detail: view.groupsWithoutPresenceCount > 0
-                  ? "Pode haver encontro realizado sem marcação ainda."
-                  : "Todas têm presença recente registrada.",
-                tone: view.groupsWithoutPresenceCount > 0 ? "neutral" : "ok",
-              },
-            ]}
+        <div className={pageStyles.summaryBlock}>
+          <CellsOverviewSummaryCard
+            cellsCount={dashboard.groups.length}
+            weeklyPresence={dashboard.weeklyPresence}
+            groupsNeedingAttentionCount={view.groupsNeedingAttentionCount}
+            groupsWithoutPresenceCount={view.groupsWithoutPresenceCount}
           />
         </div>
 
         <section id={CELLS_SECTION_ID} className="scroll-mt-4">
-          <SectionTitle detail="Busque e filtre as células listadas abaixo.">Células supervisionadas</SectionTitle>
+          <SectionHeader title="Células supervisionadas" detail="Busca e filtros ajudam a encontrar a célula certa sem perder o contexto." />
           <CellsStructureSearch query={query} filter={activeFilter} sectionId={CELLS_SECTION_ID} />
+          <CellsFilterContextCard filter={activeFilter} />
 
           <div className="mt-6">
             {view.groups.length > 0 ? (
-              <CellsPageSections sections={view.groupedSections} />
+              <CellsPageSections sections={view.groupedSections} activeFilter={activeFilter} />
             ) : (
-              <EmptyState>
-                {view.isFiltered ? "Nenhuma célula encontrada nesse recorte." : "Nenhuma célula ativa vinculada à sua supervisão."}
+              <EmptyState title={view.isFiltered ? EMPTY_STATE_COPY.filtered.cell : "Nenhuma célula ativa neste escopo"}>
+                {view.isFiltered
+                  ? "A busca ou os filtros podem ser limpos para ver as demais células supervisionadas."
+                  : "Quando uma célula ativa estiver vinculada à sua supervisão, ela aparecerá aqui."
+                }
               </EmptyState>
             )}
           </div>
         </section>
 
-        <SectionTitle>Consulta</SectionTitle>
-        <InfoCard>
-          Abra uma célula para ver liderança, membros e histórico de presença. Os pedidos de apoio e pessoas em atenção continuam priorizados na Visão.
-        </InfoCard>
       </div>
     </AppShell>
   );

@@ -1,0 +1,5 @@
+import { LeaderPageSkeleton } from "@/components/shared/page-loading-skeletons";
+
+export default function Loading() {
+  return <LeaderPageSkeleton />;
+}

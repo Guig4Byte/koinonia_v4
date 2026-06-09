@@ -1,0 +1,25 @@
+/* Text-size scale overrides. */
+
+html[data-text-size="large"] {
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-base: 1.0625rem;
+  --text-lg: 1.1875rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.125rem;
+  --text-display: 2.3rem;
+  --text-hero: 2.625rem;
+}
+
+html[data-text-size="extra-large"] {
+  --text-xs: 0.875rem;
+  --text-sm: 1rem;
+  --text-base: 1.125rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.625rem;
+  --text-2xl: 1.875rem;
+  --text-3xl: 2.25rem;
+  --text-display: 2.5rem;
+  --text-hero: 2.875rem;
+}

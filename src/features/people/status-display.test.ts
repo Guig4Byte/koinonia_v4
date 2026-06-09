@@ -8,14 +8,14 @@ describe("person status display", () => {
   });
 
   it("keeps active people green", () => {
-    expect(personStatusDisplay(PersonStatus.ACTIVE)).toEqual({ label: "Ativo", tone: "ok" });
+    expect(personStatusDisplay(PersonStatus.ACTIVE)).toEqual({ label: "Sem sinal aberto", tone: "ok" });
   });
 });
 
 describe("person effective badge", () => {
   it("uses the person status when there is no visible open signal", () => {
     expect(personEffectiveBadgeForViewer({ status: PersonStatus.ACTIVE }, null, { role: UserRole.LEADER })).toEqual({
-      label: "Ativo",
+      label: "Sem sinal aberto",
       tone: "ok",
     });
   });
@@ -28,6 +28,16 @@ describe("person effective badge", () => {
         { role: UserRole.LEADER },
       ),
     ).toEqual({ label: "Urgente", tone: "risk" });
+  });
+
+  it("keeps in-care status over a stale open signal", () => {
+    expect(
+      personEffectiveBadgeForViewer(
+        { status: PersonStatus.COOLING_AWAY },
+        { severity: SignalSeverity.URGENT },
+        { role: UserRole.LEADER },
+      ),
+    ).toEqual({ label: "Em cuidado", tone: "care" });
   });
 
   it("keeps viewer-specific signal wording for supervisor support", () => {
@@ -45,15 +55,20 @@ describe("person effective badge", () => {
       label: "Pedido de apoio",
       tone: "support",
     });
+
+    expect(personEffectiveBadgeForViewer({ status: PersonStatus.NEEDS_ATTENTION }, signal, { role: UserRole.PASTOR })).toEqual({
+      label: "Pedido de apoio",
+      tone: "support",
+    });
   });
 
-  it("keeps pastoral wording for pastor/admin when a signal is assigned pastorally", () => {
+  it("shows encaminhado for pastor/admin when a signal is assigned pastorally", () => {
     expect(
       personEffectiveBadgeForViewer(
         { status: PersonStatus.NEEDS_ATTENTION },
         { severity: SignalSeverity.ATTENTION, assignedTo: { role: UserRole.PASTOR } },
         { role: UserRole.PASTOR },
       ),
-    ).toEqual({ label: "Caso pastoral", tone: "risk" });
+    ).toEqual({ label: "Encaminhado", tone: "risk" });
   });
 });

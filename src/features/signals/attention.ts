@@ -1,6 +1,7 @@
 import { SignalSeverity } from "@/generated/prisma/client";
-import { isPastoralEscalation, type SignalAssigneeLike } from "./escalation";
+import { isPastoralEscalationSignal, type SignalAssigneeLike } from "./signal-classification";
 import { compareSignalsBySeverityAndRecency } from "./ranking";
+import { selectBestSignalByPerson } from "./signal-utils";
 
 export type AttentionSignalLike = {
   personId: string;
@@ -10,29 +11,12 @@ export type AttentionSignalLike = {
   assignedTo?: SignalAssigneeLike | null;
 };
 
-export function compareAttentionSignals(left: AttentionSignalLike, right: AttentionSignalLike) {
-  return compareSignalsBySeverityAndRecency(left, right);
-}
-
-export function isPastoralSignal(signal: AttentionSignalLike) {
-  return isPastoralEscalation(signal);
-}
-
 export function getPrimarySignalsByPerson<T extends AttentionSignalLike>(signals: T[]) {
-  const selectedByPerson = new Map<string, T>();
-
-  for (const signal of signals) {
-    const current = selectedByPerson.get(signal.personId);
-
-    if (!current || compareAttentionSignals(signal, current) < 0) {
-      selectedByPerson.set(signal.personId, signal);
-    }
-  }
-
-  return Array.from(selectedByPerson.values()).sort(compareAttentionSignals);
+  const selected = selectBestSignalByPerson(signals, compareSignalsBySeverityAndRecency);
+  return selected.sort(compareSignalsBySeverityAndRecency);
 }
 
 export function getPastoralSignalsByPerson<T extends AttentionSignalLike>(signals: T[]) {
-  const pastoralSignals = signals.filter((signal) => isPastoralSignal(signal));
+  const pastoralSignals = signals.filter((signal) => isPastoralEscalationSignal(signal));
   return getPrimarySignalsByPerson<T>(pastoralSignals);
 }

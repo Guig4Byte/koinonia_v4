@@ -10,6 +10,14 @@ export const DEFAULT_PRESENCE_TONE_THRESHOLDS: PresenceToneThresholds = {
   warn: 70,
 } as const;
 
+export function formatPresenceRate(
+  hasPresenceData: boolean,
+  presenceRate: number,
+  emptyLabel = "—",
+): string {
+  return hasPresenceData ? `${presenceRate}%` : emptyLabel;
+}
+
 export function presenceTone(
   hasPresenceData: boolean,
   presenceRate: number,

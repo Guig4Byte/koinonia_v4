@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { AttendanceStatus, EventStatus, GroupResponsibilityRole, UserRole } from "@/generated/prisma/client";
 import {
   buildEventListCardState,
+  buildEventsConsultationSummary,
   buildEventsConsultationView,
   buildEventsHomeSections,
   eventMeta,
@@ -60,12 +61,14 @@ describe("events-page-view", () => {
     const view = buildEventsConsultationView({ mode: "historico", period: "semana", events, now: referenceDate });
 
     expect(view.title).toBe("Histórico de presença");
+    expect(view.description).toBe("1 encontro com presença registrada");
     expect(view.filteredEvents.map((item) => item.id)).toEqual(["registered"]);
   });
 
   it("filtra encontros passados sem presença registrada", () => {
     const events = [
       event({ id: "past-pending", startsAt: new Date("2026-05-08T12:00:00.000Z") }),
+      event({ id: "older-pending", startsAt: new Date("2026-05-06T22:00:00.000Z") }),
       event({ id: "future", startsAt: new Date("2026-05-08T18:00:00.000Z") }),
       event({ id: "cancelled", status: EventStatus.CANCELLED }),
       event({ id: "registered", status: EventStatus.COMPLETED, attendances: [{ status: AttendanceStatus.PRESENT }] }),
@@ -73,7 +76,37 @@ describe("events-page-view", () => {
 
     const view = buildEventsConsultationView({ mode: "sem-presenca", period: "semana", events, now: referenceDate });
 
-    expect(view.filteredEvents.map((item) => item.id)).toEqual(["past-pending"]);
+    expect(view.title).toBe("Encontros aguardando presença");
+    expect(view.description).toBe("2 encontros aguardando registro");
+    expect(view.filteredEvents.map((item) => item.id)).toEqual(["older-pending", "past-pending"]);
+  });
+
+  it("resume encontros aguardando registro e histórico dos últimos 30 dias para os atalhos", () => {
+    const summary = buildEventsConsultationSummary([
+      event({ id: "pending", startsAt: new Date("2026-05-06T22:00:00.000Z") }),
+      event({ id: "registered", status: EventStatus.COMPLETED, attendances: [{ status: AttendanceStatus.PRESENT }] }),
+      event({ id: "future", startsAt: new Date("2026-05-09T18:00:00.000Z") }),
+    ], referenceDate);
+
+    expect(summary).toEqual({
+      pendingCount: 1,
+      pendingDescription: "aguardando registro",
+      historyCount: 1,
+      historyDescription: "registrados",
+    });
+  });
+
+  it("mantém uma leitura tranquila quando não há encontros aguardando registro nem histórico", () => {
+    const summary = buildEventsConsultationSummary([
+      event({ id: "future", startsAt: new Date("2026-05-09T18:00:00.000Z") }),
+    ], referenceDate);
+
+    expect(summary).toMatchObject({
+      pendingCount: 0,
+      pendingDescription: "tudo em dia",
+      historyCount: 0,
+      historyDescription: "sem histórico",
+    });
   });
 
   it("separa encontros de hoje dos próximos encontros da semana", () => {
@@ -89,16 +122,27 @@ describe("events-page-view", () => {
     expect(sections.weekEvents.map((item) => item.id)).toEqual(["week"]);
   });
 
-  it("descreve o card de presença pendente para líder da célula", () => {
+  it("descreve o card de presença aguardando registro para líder da célula", () => {
     const state = buildEventListCardState(
       event(),
       { id: "leader-1", churchId: "church-1", role: UserRole.LEADER },
       referenceDate,
     );
 
-    expect(state.label).toBe("Presença pendente");
+    expect(state.label).toBe("Aguardando presença");
     expect(state.actionLabel).toBe("Registrar presença");
     expect(state.badgeTone).toBe("warn");
+    expect(state.pendingAgeLabel).toBe("hoje");
+  });
+
+  it("informa há quantos dias um encontro aguarda registro", () => {
+    const state = buildEventListCardState(
+      event({ startsAt: new Date("2026-05-06T22:00:00.000Z") }),
+      { id: "leader-1", churchId: "church-1", role: UserRole.LEADER },
+      referenceDate,
+    );
+
+    expect(state.pendingAgeLabel).toBe("há 2 dias");
   });
 
   it("mantém labels de período oficiais", () => {

@@ -1,0 +1,12 @@
+@media (max-width: 480px) {
+  .personMiniSubtitle {
+    display: -webkit-box;
+    overflow: hidden;
+    line-height: 1.32;
+    text-overflow: clip;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+}

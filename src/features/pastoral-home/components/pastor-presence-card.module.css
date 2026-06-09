@@ -1,0 +1,205 @@
+.root {
+  --presence-title-color: var(--color-brand-accent);
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  border: 1px solid color-mix(in srgb, var(--color-metric-presenca) 18%, var(--color-border-card));
+  border-radius: 1.25rem;
+  background:
+    radial-gradient(circle at 12% 28%, color-mix(in srgb, var(--color-metric-presenca) 10%, transparent), transparent 34%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-metric-presenca) 4%, var(--color-bg-card)), var(--color-bg-card));
+  box-shadow:
+    0 16px 34px color-mix(in srgb, var(--color-metric-presenca) 6%, transparent),
+    var(--color-shadow-card);
+}
+
+.root::before {
+  content: "";
+  position: absolute;
+  inset-block-end: -64px;
+  inset-inline-end: -50px;
+  z-index: -1;
+  width: 150px;
+  height: 150px;
+  border-radius: 999px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-metric-presenca) 11%, transparent), transparent 68%);
+  pointer-events: none;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.72rem;
+  padding: 0.95rem;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.85rem;
+  align-items: start;
+}
+
+.iconWrap {
+  display: grid;
+  width: 50px;
+  height: 50px;
+  justify-self: end;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--color-metric-presenca) 24%, var(--color-border-card));
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, color-mix(in srgb, var(--color-metric-presenca) 14%, transparent), transparent 66%),
+    var(--surface-alt);
+  color: var(--color-metric-presenca);
+  box-shadow:
+    0 0 24px color-mix(in srgb, var(--color-metric-presenca) 18%, transparent),
+    inset 0 0 18px color-mix(in srgb, var(--color-metric-presenca) 8%, transparent);
+}
+
+.metricBlock {
+  min-width: 0;
+  display: grid;
+  justify-items: start;
+  gap: 0.2rem;
+}
+
+.metricTitle {
+  color: var(--presence-title-color);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+html[data-theme="light"] .root {
+  --presence-title-color: color-mix(in srgb, var(--color-brand-accent) 62%, var(--color-brand));
+}
+
+html[data-theme="parchment"] .root {
+  --presence-title-color: var(--color-brand);
+}
+
+.value {
+  display: inline-flex;
+  align-items: baseline;
+  color: var(--color-metric-presenca);
+  margin-top: 0;
+  font-size: clamp(2rem, 9.1vw, 2.72rem);
+  font-weight: 750;
+  letter-spacing: -0.035em;
+  line-height: 0.9;
+  text-shadow: 0 0 14px color-mix(in srgb, var(--color-metric-presenca) 9%, transparent);
+}
+
+.valueUnit {
+  margin-left: 0.18rem;
+  color: color-mix(in srgb, var(--color-text-secondary) 82%, var(--color-metric-presenca));
+  font-size: 0.45em;
+  font-weight: 760;
+  letter-spacing: 0;
+}
+
+.valueMuted {
+  color: var(--color-text-muted);
+  letter-spacing: -0.03em;
+}
+
+.trendMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.6rem;
+}
+
+.trendSignal {
+  display: inline-flex;
+  min-height: 1.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.34rem;
+  border: 1px solid color-mix(in srgb, var(--trend-color) 24%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--trend-color) 8%, transparent);
+  color: var(--trend-color);
+  padding: 0.22rem 0.52rem;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.trendSignalContext {
+  color: color-mix(in srgb, var(--trend-color) 84%, var(--color-text-secondary));
+  font-weight: 640;
+}
+
+.detailBlock {
+  min-width: 0;
+  display: grid;
+  gap: 0.62rem;
+}
+
+.trendCopy {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.35;
+}
+
+.chartBlock {
+  border-top: 1px solid color-mix(in srgb, var(--color-border-divider) 78%, transparent);
+  padding-top: 0.52rem;
+}
+
+.chart {
+  display: block;
+  overflow: visible;
+  width: 100%;
+  height: 92px;
+  min-height: 0;
+  color: var(--color-metric-presenca);
+}
+
+.chartTrack {
+  stroke: color-mix(in srgb, var(--color-border-divider) 72%, transparent);
+  stroke-dasharray: 3 4;
+}
+
+.chartLine {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.6;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--color-metric-presenca) 28%, transparent));
+}
+
+.chartArea {
+  fill: color-mix(in srgb, var(--color-metric-presenca) 11%, transparent);
+}
+
+.chartPoint {
+  fill: var(--color-bg-card);
+  stroke: currentColor;
+  stroke-width: 2.6;
+}
+
+.chartLabel {
+  fill: var(--color-text-muted);
+  font-size: 0.6rem;
+}
+
+@media (min-width: 430px) {
+  .content {
+    gap: 0.78rem;
+    padding: 0.95rem 1rem;
+  }
+
+  .iconWrap {
+    width: 52px;
+    height: 52px;
+  }
+}

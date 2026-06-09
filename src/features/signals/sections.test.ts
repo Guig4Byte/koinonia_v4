@@ -95,10 +95,13 @@ describe("pastoral sections", () => {
     expect(ordered.map((item) => item.id)).toEqual(["pastoral-older", "support-older", "local-newest"]);
   });
 
-  it("shows people in care only when they have no active attention signal", () => {
+  it("keeps people in care out of signal sections", () => {
     const sections = splitPastoralSections({
       viewer: { id: "leader-1", role: UserRole.LEADER },
-      signals: [signal({ id: "attention", personId: "person-1" })],
+      signals: [
+        signal({ id: "legacy-attention", personId: "person-1" }),
+        signal({ id: "current-attention", personId: "person-4" }),
+      ],
       inCarePeople: [
         { id: "person-1", status: PersonStatus.COOLING_AWAY },
         { id: "person-2", status: PersonStatus.COOLING_AWAY },
@@ -107,6 +110,8 @@ describe("pastoral sections", () => {
       ],
     });
 
-    expect(sections.inCarePeople.map((person) => person.id)).toEqual(["person-2"]);
+    expect(sections.localAttention.map((item) => item.id)).toEqual(["current-attention"]);
+    expect([...sections.activeAttentionPersonIds]).toEqual(["person-4"]);
+    expect(sections.inCarePeople.map((person) => person.id)).toEqual(["person-1", "person-2"]);
   });
 });

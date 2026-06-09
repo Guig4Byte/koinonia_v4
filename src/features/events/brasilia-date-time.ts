@@ -1,5 +1,5 @@
-import { BRASILIA_UTC_OFFSET_HOURS, BRASILIA_UTC_OFFSET_MS } from "@/lib/brasilia-time";
-import { parseClockTime } from "./time-validation";
+import { BRASILIA_UTC_OFFSET_HOURS, BRASILIA_UTC_OFFSET_MS, padZero } from "@/lib/brasilia-time";
+import { parseClockTime } from "@/lib/clock-time";
 
 export type DateParts = { year: number; month: number; day: number };
 export type CalendarMonth = { year: number; monthIndex: number };
@@ -21,12 +21,8 @@ export const MONTH_NAMES_PT_BR = [
 
 export const WEEKDAY_LABELS_PT_BR = ["D", "S", "T", "Q", "Q", "S", "S"];
 
-function padDatePart(part: number) {
-  return String(part).padStart(2, "0");
-}
-
 export function formatBrasiliaDate({ year, month, day }: DateParts) {
-  return `${padDatePart(day)}/${padDatePart(month)}/${year}`;
+  return `${padZero(day)}/${padZero(month)}/${year}`;
 }
 
 export function parseBrasiliaDateValue(dateValue: string): DateParts | null {
@@ -81,7 +77,7 @@ export function toBrasiliaDateTimeParts(value: string) {
       month: brasiliaTime.getUTCMonth() + 1,
       day: brasiliaTime.getUTCDate(),
     }),
-    time: [padDatePart(brasiliaTime.getUTCHours()), padDatePart(brasiliaTime.getUTCMinutes())].join(":"),
+    time: [padZero(brasiliaTime.getUTCHours()), padZero(brasiliaTime.getUTCMinutes())].join(":"),
   };
 }
 

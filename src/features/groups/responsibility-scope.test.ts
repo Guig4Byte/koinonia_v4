@@ -23,11 +23,11 @@ describe("group responsibility scope", () => {
     expect(hasGroupResponsibilityScope(group, supervisor, GroupResponsibilityRole.SUPERVISOR)).toBe(false);
   });
 
-  it("keeps legacy leader and supervisor fields as fallback scope", () => {
-    const group = { leaderUserId: leader.id, supervisorUserId: supervisor.id, responsibilities: [] };
+  it("does not grant scope without active responsibilities", () => {
+    const group = { responsibilities: [] };
 
-    expect(hasGroupResponsibilityScope(group, leader, GroupResponsibilityRole.LEADER)).toBe(true);
-    expect(hasGroupResponsibilityScope(group, supervisor, GroupResponsibilityRole.SUPERVISOR)).toBe(true);
-    expect(hasAnyGroupResponsibilityScope(group, GroupResponsibilityRole.SUPERVISOR)).toBe(true);
+    expect(hasGroupResponsibilityScope(group, leader, GroupResponsibilityRole.LEADER)).toBe(false);
+    expect(hasGroupResponsibilityScope(group, supervisor, GroupResponsibilityRole.SUPERVISOR)).toBe(false);
+    expect(hasAnyGroupResponsibilityScope(group, GroupResponsibilityRole.SUPERVISOR)).toBe(false);
   });
 });

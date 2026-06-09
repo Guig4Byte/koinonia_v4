@@ -1,6 +1,6 @@
 # Arquitetura — Koinonia Lite
 
-Este documento é a fonte técnica do MVP: organização do código, entidades, autenticação, permissões, rotas e limites de implementação. Para comportamento de produto, use `PRODUCT.md`. Para linguagem de UI, use `GLOSSARY.md`.
+Este documento é a fonte técnica do MVP: organização do código, entidades, autenticação, permissões, rotas e limites de implementação. Para comportamento de produto, use `PRODUCT.md`. Para linguagem de UI, use `GLOSSARY.md`. Para regras visuais de front-end, use `FRONTEND.md`.
 
 ## Âncoras que a arquitetura deve proteger
 
@@ -26,23 +26,79 @@ A pessoa é o centro. Presença é fonte de leitura pastoral. A arquitetura deve
 
 ```txt
 src/app
-  Rotas, páginas, login/logout, server actions e API handlers.
+  Rotas, páginas, layouts, loading.tsx, login/logout, server actions e API handlers.
 
-src/components
-  Componentes reutilizáveis de UI. Devem ser majoritariamente burros. Componentes client-side ficam aqui quando dependem de estado, navegação ou interação.
+src/components/ui
+  Primitives visuais reutilizáveis, sem regra de domínio.
+
+src/components/layout
+  Shell, navegação, tema e tamanho de texto.
+
+src/components/shared
+  Componentes compartilhados entre features, sem pertencer a uma única rota.
 
 src/features
-  Regras de domínio por feature. Helpers de apresentação que protegem linguagem/status pastoral também ficam aqui quando são específicos do domínio.
+  Regras, helpers de apresentação e componentes de domínio por feature.
+
+src/styles
+  Fundação visual global: tokens, base, layout, motion e utilitários.
 
 src/lib
-  Infraestrutura: Prisma, autenticação, sessão, respostas de API, helpers genéricos de texto/query e utilitários compartilhados.
+  Infraestrutura e domínio compartilhado: Prisma, autenticação, sessão, respostas de API, helpers genéricos, `src/lib/domain` e utilitários.
 
 prisma
-  Schema, client gerado, seed e scripts de manutenção.
+  Schema, migrations, seeds e scripts de manutenção.
 
 docs
-  Produto, vocabulário, arquitetura e briefing para agentes.
+  Produto, vocabulário, arquitetura, front-end, desenvolvimento, validação e briefing para agentes.
 ```
+
+## Organização modular atual
+
+A base usa `features` para domínio e telas, mas regras puras compartilhadas não devem morar em uma feature concreta só porque nasceram ali.
+
+Regra de direção:
+
+```txt
+feature concreta -> pode importar helper neutro
+helper neutro -> não importa feature concreta
+```
+
+Use `src/lib/domain` para helpers compartilhados entre features, como:
+
+```txt
+src/lib/domain/group-responsibilities.ts
+src/lib/domain/group-responsibility-query.ts
+src/lib/domain/weekdays.ts
+```
+
+Arquivos que foram divididos podem continuar como fachadas públicas curtas para preservar imports existentes. Esse padrão é intencional quando reduz risco de regressão:
+
+```txt
+src/features/dashboard/queries.ts
+src/components/shared/base-cards.tsx
+src/components/shared/presence-metric.tsx
+src/features/groups/cells-page-view.ts
+src/features/groups/group-detail-view.ts
+```
+
+Não crie fachada ou wrapper novo se ele apenas renomeia outro componente sem semântica, regra visual ou compatibilidade real.
+
+## Regra de UI/CSS
+
+A regra visual detalhada fica em `docs/FRONTEND.md`. Este arquivo mantém apenas os limites arquiteturais que afetam implementação.
+
+Regras de fronteira:
+
+- `src/styles` contém somente CSS global de fundação;
+- não recriar `components.css` ou `legacy-components.css`;
+- estilos locais devem ficar como `.module.css` ao lado do componente;
+- `src/components/ui` não deve importar regra de domínio;
+- componentes específicos devem morar em `src/features/*/components`;
+- páginas devem compor dados e componentes, não concentrar markup visual repetido;
+- componente `use client` não deve importar Prisma Client nem helper server-only.
+
+Consulte `docs/FRONTEND.md` para primitives, CSS Modules, loading states, tokens e checklist visual.
 
 ## Entidades principais
 
@@ -73,7 +129,7 @@ eventsGeneratedUntil
 isActive
 ```
 
-`leaderUserId` e `supervisorUserId` continuam no schema como compatibilidade temporária. Novas regras devem priorizar `GroupResponsibility`.
+`GroupResponsibility` é a única fonte de verdade para liderança e supervisão. O schema não mantém campos legados de líder/supervisor em `SmallGroup`.
 
 ### `GroupResponsibility`
 
@@ -136,13 +192,14 @@ Regras:
 - segredo via `KOINONIA_SESSION_SECRET`, `AUTH_SECRET` ou `NEXTAUTH_SECRET`;
 - em produção, segredo de sessão é obrigatório;
 - `/login` redireciona usuário autenticado para a visão do papel;
+- o formulário de login usa server action e componente cliente apenas para estados visuais, loading, erro e mostrar/ocultar senha;
 - `/logout` limpa a sessão;
 - middleware redireciona páginas privadas sem sessão para `/login`;
 - middleware responde `401` para API privada sem sessão;
 - `getAuthenticatedUser()` retorna usuário ou `null`;
 - `getCurrentUser()` redireciona para `/login` quando não há usuário autenticado.
 
-Não existe fallback demo nem troca manual de perfil.
+Não existe fallback demo, troca manual de perfil nem recuperação pública de senha.
 
 ## Redirecionamento e navegação
 
@@ -201,7 +258,6 @@ Regras:
 - Pastor/Admin: escopo amplo para busca/leitura autorizada, mas listas padrão filtram relevância pastoral.
 - Supervisor: grupos ativos onde tem responsabilidade `SUPERVISOR`.
 - Líder: grupos ativos onde tem responsabilidade `LEADER`.
-- Campos legados `leaderUserId` e `supervisorUserId` são fallback temporário.
 - Check-in: somente líder ativo da célula, encontro já iniciado e não fechado.
 - Ações operacionais do encontro: somente líder ativo da célula.
 - Pastor/supervisor podem ver encontro dentro do escopo, mas não ajustar/cancelar/remarcar.
@@ -210,7 +266,7 @@ Regras:
 - Grupo inativo não deve liberar visibilidade, encontro, check-in ou histórico padrão.
 - Sinais sem grupo podem continuar visíveis quando estiverem dentro do escopo institucional.
 
-## Exibição e backfill de responsabilidades
+## Exibição de responsabilidades
 
 A exibição de liderança/supervisão compartilhada usa:
 
@@ -218,26 +274,7 @@ A exibição de liderança/supervisão compartilhada usa:
 src/features/groups/responsibility-display.ts
 ```
 
-O backfill de vínculos legados usa:
-
-```txt
-src/features/groups/responsibilities-backfill.ts
-prisma/backfill-group-responsibilities.ts
-```
-
-Comando:
-
-```txt
-npm run db:backfill:responsibilities
-```
-
-Uso:
-
-- migrar bancos antigos de `leaderUserId`/`supervisorUserId` para `GroupResponsibility`;
-- evitar duplicatas de responsabilidades ativas;
-- recriar responsabilidade quando a anterior está encerrada.
-
-Rode antes de remover dependência dos campos legados.
+Como não há campos legados em `SmallGroup`, criação, escopo e exibição devem consultar responsabilidades ativas em `GroupResponsibility`.
 
 ## Geração automática de encontros
 
@@ -262,10 +299,35 @@ Regras:
 - respeita o escopo visível do usuário;
 - copia `SmallGroup.locationName` para `Event.locationName`;
 - grava `scheduleStartsAt` com a ocorrência original;
-- verifica eventos existentes por `startsAt` e `scheduleStartsAt`;
+- usa `SmallGroup.eventsGeneratedUntil` para pular células já cobertas em page load;
+- quando precisa gerar, verifica eventos existentes por `startsAt` e `scheduleStartsAt`;
 - atualiza `SmallGroup.eventsGeneratedUntil`.
 
-Chamadas atuais ocorrem nas telas que dependem de encontros, como `/eventos` e `/lider`.
+Chamadas atuais ocorrem nas telas que dependem de encontros, como `/eventos` e `/lider`. A criação/edição de célula deve chamar a geração com `force: true` quando agenda, local padrão ou status puder exigir regeneração de encontros futuros.
+
+## Listagem e consultas de encontros
+
+Fontes:
+
+```txt
+src/app/(app)/eventos/page.tsx
+src/features/events/events-page-view.ts
+src/features/events/components/events-page-sections.tsx
+src/features/events/components/events-page-sections.module.css
+```
+
+Regras:
+
+- `EVENTS_PAGE_HISTORY_LOOKBACK_DAYS` define a janela consultada pelo servidor;
+- `buildEventsHomeSections()` separa encontros de hoje e próximos encontros da semana;
+- encontros futuros sem presença aparecem em próximos encontros;
+- encontros passados sem presença válida aparecem na consulta `sem-presenca`;
+- encontros com presença válida aparecem na consulta `historico`;
+- `readEventConsultationMode()` aceita apenas `sem-presenca` e `historico`;
+- `readEventPeriod()` aceita `semana`, `semana-passada` e `30d`, conforme o modo;
+- cards de consulta têm variantes próprias para pendência e histórico, sem alterar a regra de permissão;
+- a query da página carrega eventos recentes primeiro para que `take` não corte a semana atual quando houver histórico grande;
+- `eventMeta()` evita repetir o nome da célula quando o título já identifica o grupo.
 
 ## Ações do encontro
 
@@ -273,7 +335,7 @@ Fontes:
 
 ```txt
 src/app/api/events/[eventId]/route.ts
-src/components/event-details-actions.tsx
+src/features/events/components/event-details-actions.tsx
 src/features/events/event-display.ts
 src/features/events/brasilia-date-time.ts
 src/features/events/time-options.ts
@@ -310,6 +372,9 @@ Fontes principais:
 ```txt
 src/features/events/presence-summary.ts
 src/features/events/presence-display.ts
+src/features/events/weekly-presence-health.ts
+src/components/shared/presence-metric.tsx
+src/features/dashboard/presence-health.ts
 ```
 
 Helpers de resumo:
@@ -325,6 +390,10 @@ Helper de apresentação:
 
 ```ts
 presenceTone()
+formatPresenceRate()
+PresenceMetricDisplay
+PresenceIndicator
+PresenceProgressDisplay
 ```
 
 Regras:
@@ -334,7 +403,9 @@ Regras:
 - UI deve mostrar `—` ou `Sem registro` quando `hasPresenceData` for falso;
 - percentual não deve indicar risco sem dado real;
 - eventos concluídos sem marcação válida continuam sendo ausência de dado, não `0%`;
-- use `presenceTone()` para tom visual de presença, mantendo limiares explícitos quando a superfície usa thresholds diferentes.
+- use `presenceTone()` para tom visual de presença, mantendo limiares explícitos quando a superfície usa thresholds diferentes;
+- `PresenceMetricDisplay` e derivados centralizam indicador visual, progresso, `aria-label` e tratamento de ausência de dado;
+- saúde semanal usa `src/features/events/weekly-presence-health.ts` para labels e thresholds; `src/features/dashboard/presence-health.ts` é fachada de compatibilidade.
 
 ## Check-in
 
@@ -347,7 +418,7 @@ src/app/api/events/[eventId]/check-in/route.ts
 Componentes:
 
 ```txt
-src/components/check-in-list.tsx
+src/features/check-in/components/check-in-list.tsx
 ```
 
 Regras:
@@ -417,11 +488,11 @@ Regras:
 - líder/supervisor resolvem sinais dos grupos ativos visíveis da pessoa;
 - se resolver todos os sinais ativos, muda `Person.status` para `COOLING_AWAY`.
 
-`Ligar` e `WhatsApp` são atalhos externos de aproximação. O registro persistido de contato confirmado usa `MARKED_CARED` e aparece como `Contato feito`, sem classificar o canal.
+`Ligar` e `WhatsApp` são atalhos externos de aproximação. O registro persistido usa `CareTouch` com o tipo adequado (`CALL`, `WHATSAPP`, `MARKED_CARED`, apoio ou encaminhamento) e aparece no histórico como cuidado registrado, sem criar acompanhamento formal.
 
-`Já houve contato?` só chama a rota depois de confirmação explícita. O detalhe da pessoa mostra poucos itens em `Cuidado recente` e revela o restante com `Ver histórico`.
+`Guardar contato pastoral`, `Guardar cuidado` e `Atualizar cuidado` só chamam a rota depois de confirmação explícita. O detalhe da pessoa começa por `Próximo cuidado`, mostra o motivo da atenção quando houver e mantém `Histórico de cuidado` como linha do tempo curta.
 
-Componentes client-side que chamam APIs devem preferir `src/lib/use-api-action.ts` para manter o padrão de `useTransition`, leitura de erro e `router.refresh()`. Rotas de API devem preferir `src/lib/api-response.ts` para respostas JSON simples sem mudar o contrato de payload.
+Componentes client-side que chamam APIs devem preferir `src/hooks/use-api-action.ts` para manter o padrão de `useTransition`, leitura de erro e `router.refresh()`. Rotas de API devem preferir `src/lib/api-response.ts` para respostas JSON simples sem mudar o contrato de payload.
 
 ### Apoio e encaminhamento
 
@@ -439,53 +510,73 @@ Regras:
 - a ação atualiza `CareSignal.assignedToId`;
 - a ação cria um `CareTouch` com `REQUESTED_SUPPORT` ou `ESCALATED_TO_PASTOR`;
 - a anotação é opcional, limitada e não resolve o sinal automaticamente;
-- o histórico da pessoa mostra esse registro como cuidado recente, sem virar tarefa ou prontuário;
-- o detalhe da pessoa mostra poucos registros inicialmente e usa `Ver histórico` para revelar os demais.
+- o histórico da pessoa mostra o apoio ou encaminhamento como registro pastoral, sem virar tarefa ou prontuário;
+- o detalhe da pessoa mostra poucos registros inicialmente e usa `Mostrar histórico completo` para revelar os demais.
 
-## Queries de dashboard
+## Queries de visão
 
-Fonte:
+Fontes:
 
 ```txt
 src/features/dashboard/queries.ts
+src/features/dashboard/queries/pastor-dashboard.query.ts
+src/features/dashboard/queries/pastor-team-overview.query.ts
+src/features/dashboard/queries/group-scoped-dashboard.query.ts
+src/features/dashboard/queries/supervisor-dashboard.query.ts
+src/features/dashboard/queries/leader-dashboard.query.ts
 ```
+
+`queries.ts` é fachada pública. As queries específicas ficam em módulos menores por papel/escopo.
 
 Regras:
 
 - visão do pastor: saúde geral + casos pastorais;
 - visão do supervisor: grupos supervisionados + pedidos de apoio + exceções;
-- visão do líder: célula liderada + encontro relevante + pessoas no radar;
+- visão do líder: célula liderada + encontro relevante + seções de sinais e membros em cuidado;
 - evitar duplicar pessoa em seções da mesma tela;
 - `supportRequests` representa pessoas/casos relevantes, não fila bruta de sinais;
 - métricas de presença consideram apenas encontros com dado válido.
 
 ## Componentes e helpers compartilhados
 
-Componentes reutilizáveis devem preservar linguagem pastoral e evitar duplicar regras de domínio em páginas.
+Componentes reutilizáveis devem preservar linguagem pastoral e evitar duplicar regras de domínio em páginas. A organização visual completa fica em `docs/FRONTEND.md`.
 
 Fontes principais:
 
 ```txt
-src/components/structure-search.tsx
-src/components/cells-structure-search.tsx
-src/components/team-structure-search.tsx
-src/components/member-priority-list.tsx
-src/components/cards.tsx
-src/components/pastoral-list-cards.tsx
-src/components/progressive-list.tsx
+src/components/ui
+src/components/layout
+src/components/shared
+src/features/*/components
 src/features/people/member-filters.ts
+src/features/groups/cells-page-filters.ts
+src/features/team/team-filters.ts
+src/lib/filter-param.ts
 src/lib/search-params.ts
 src/lib/text.ts
+src/lib/format.ts
+src/lib/domain/group-responsibilities.ts
+src/lib/domain/group-responsibility-query.ts
+src/lib/domain/weekdays.ts
 ```
 
 Regras:
 
-- `StructureSearch` centraliza busca e chips de filtro das superfícies estruturais; wrappers por tela mantêm labels e filtros específicos.
-- `MemberPriorityList` centraliza a lista pastoral de membros, separando pessoas no radar e ativos sem reimplementar `ProgressiveList + PersonMiniCard` em páginas.
-- `member-filters.ts` guarda filtros oficiais de membros e diferenças explícitas por superfície, como limite de prioridade em `Atenção` e recorte de `Em cuidado`.
+- `src/components/ui` concentra primitives visuais genéricos antes de novas classes locais ou variantes soltas.
+- `src/components/shared/structure-search.tsx` centraliza busca e chips de superfícies estruturais; wrappers de feature ficam em `features/groups` e `features/team`.
+- `src/components/shared/presence-metric.tsx` é fachada pública para os módulos internos de presença; novas superfícies devem reutilizá-lo antes de criar anéis/barras próprios.
+- `src/components/ui/signal-heart-indicator.tsx` centraliza chips pastorais com coração + texto, usando ícone de presença quando o rótulo for de presença.
+- `src/components/shared/person-cards.tsx` centraliza o card compacto de pessoa e remove subtítulo que repete o chip.
+- `src/features/pastoral-home/components/person-signal-card.tsx` centraliza os cards de pessoa das visões pastorais e também evita repetir o status no contexto.
+- `src/features/pastoral-home/components/pastoral-list-cards.tsx` centraliza as seções compactas da visão do líder, incluindo sinais e membros em cuidado.
+- `src/components/shared/filter-context-card.tsx` centraliza mensagens de contexto dos filtros em listas estruturais, como `Todas`/`Todos`.
+- `src/features/people/components/member-priority-list.tsx` centraliza a lista pastoral de membros, separando `Sinais`, `Em cuidado` e `Ativos`.
+- `member-filters.ts`, `cells-page-filters.ts` e `team-filters.ts` devem usar `src/lib/filter-param.ts` para valores, labels comuns e parsing de query param.
 - `firstParam()` deve ser usado para leitura simples de `searchParams` em páginas server-side.
-- `normalizeSearchText()` deve ser usado para busca local sem acento/case-insensitive.
-- Cards devem calcular apresentação visual localmente ou por helpers compartilhados; páginas não devem duplicar iniciais, tons de presença ou composição básica de card.
+- `normalizeSearchText()` e `matchesNormalizedQuery()` devem ser usados para busca local sem acento/case-insensitive.
+- `countLabel()`, datas curtas e horários devem sair de `src/lib/format.ts`; código de app não deve importar `brasilia-time.ts` diretamente sem motivo específico.
+- Regras neutras de responsabilidades e agenda semanal compartilhadas entre features devem ficar em `src/lib/domain`, não em `features/groups`.
+- Cards pastorais devem calcular apresentação visual localmente ou por helpers compartilhados; páginas não devem duplicar iniciais, tons de presença ou composição básica de card.
 
 ## Cadastro mínimo de célula
 
@@ -495,7 +586,7 @@ Fontes:
 src/app/(app)/celulas/actions.ts
 src/app/(app)/celulas/nova/page.tsx
 src/app/(app)/celulas/[groupId]/editar/page.tsx
-src/components/group-form.tsx
+src/features/groups/components/group-form.tsx
 src/features/groups/group-form.ts
 ```
 
@@ -526,6 +617,8 @@ Regras:
 | `/pessoas` | membros do líder |
 | `/pessoas/[personId]` | detalhe da pessoa |
 | `/eventos` | `Encontros` na UI |
+| `/eventos?consulta=sem-presenca` | encontros passados sem presença registrada |
+| `/eventos?consulta=historico` | encontros com presença registrada |
 | `/eventos/[eventId]` | detalhe/resumo/registro do encontro |
 | `/api/search` | busca de pessoa |
 
@@ -535,8 +628,8 @@ Fontes de tema:
 
 ```txt
 src/features/theme/theme.ts
-src/components/theme-init.tsx
-src/components/theme-toggle.tsx
+src/components/layout/theme-init.tsx
+src/components/layout/theme-toggle.tsx
 src/app/globals.css
 ```
 
@@ -544,8 +637,8 @@ Fontes de tamanho do texto:
 
 ```txt
 src/features/text-size/text-size.ts
-src/components/text-size-init.tsx
-src/components/text-size-toggle.tsx
+src/components/layout/text-size-init.tsx
+src/components/layout/text-size-toggle.tsx
 src/app/globals.css
 ```
 
@@ -561,16 +654,46 @@ Regras:
 - `TextSizeToggle` alterna entre `Normal`, `Grande` e `Muito grande`;
 - tema e tamanho do texto são preferências locais do aparelho e não devem ser persistidos no banco nesta fase.
 
-## Seed de desenvolvimento
+## Banco, migrations e performance
 
-A seed é para desenvolvimento e teste local. Produção deve usar migrations e cadastros reais.
+O projeto usa Prisma Migrate com PostgreSQL. Alteração de schema que deve permanecer no projeto precisa ser versionada em `prisma/migrations`; `db:push` fica reservado para experimento local descartável.
 
-Usuários principais de desenvolvimento:
+Índices relevantes atuais:
+
+```txt
+Event: churchId/type/startsAt, groupId/type/startsAt, groupId/type/scheduleStartsAt
+CareSignal: groupId/source/status/personId/resolvedAt
+```
+
+Guardrails de performance já aplicados:
+
+- busca global com limite no fallback normalizado;
+- `getAuthenticatedUser()` com `select` enxuto;
+- histórico de cuidado da pessoa com limite explícito;
+- recálculo de sinais de presença com busca em lote;
+- geração de encontros com short-circuit por `eventsGeneratedUntil`;
+- `/eventos` carrega eventos recentes primeiro antes de montar as seções.
+
+Para setup local, reset e seeds, use `docs/DEVELOPMENT.md`.
+
+## Seeds de desenvolvimento
+
+A seed padrão é para desenvolvimento e teste local. A seed de performance é para volume e validação manual com massa maior. Produção deve usar migrations e cadastros reais.
+
+Usuários principais da seed padrão:
 
 ```txt
 pastor@koinonia.local
 ana@koinonia.local
 bruno@koinonia.local
+```
+
+Usuários úteis da seed de performance:
+
+```txt
+pastor@koinonia.local
+supervisor01@koinonia.local
+lider01@koinonia.local
 ```
 
 Senha padrão local:
@@ -585,12 +708,24 @@ A tela de login não deve exibir credenciais de desenvolvimento.
 
 ```txt
 npm run db:generate
-npm run db:push
 npm run db:migrate
 npm run db:seed
-npm run db:backfill:responsibilities
+npm run db:seed:performance
 npm run lint
 npm run typecheck
 npm test
 npm run build
 ```
+
+
+## Próximas ações pastorais
+
+Use `src/components/shared/next-action-card.tsx` como superfície visual compartilhada quando uma home precisa destacar o primeiro cuidado. A decisão de prioridade, rota e CTA deve vir de helpers de view da home correspondente, não do JSX da página.
+
+Uso atual:
+
+- pastor/admin usa `NextPastoralActionCard` quando há prioridade clara depois do radar;
+- supervisor usa `SupervisorFocusPanel`, que compõe `NextActionCard` para o primeiro cuidado da supervisão;
+- líder usa pulso, seções compactas e encontro relevante, sem forçar card único de próxima ação.
+
+Detalhes consultivos, como célula ou encontro, devem preferir diagnóstico e orientação pastoral sem criar um CTA quando o usuário já tem caminhos naturais na tela.

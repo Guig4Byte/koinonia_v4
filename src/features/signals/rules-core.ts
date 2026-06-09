@@ -1,5 +1,7 @@
 import { AttendanceStatus, SignalSeverity } from "@/generated/prisma/client";
-import { formatBrasiliaShortDate } from "@/lib/brasilia-time";
+import { isAbsentAttendanceStatus } from "@/features/events/attendance-display";
+import { SIGNAL_COPY } from "@/features/signals/signal-copy";
+import { formatShortDate } from "@/lib/format";
 
 export const ATTENDANCE_SIGNAL_EVENT_LOOKBACK_COUNT = 4;
 
@@ -21,7 +23,7 @@ export function getRecordedStatusesNewestFirst(eventsNewestFirst: AttendanceEven
 export function countConsecutiveAbsences(statusesNewestFirst: AttendanceStatus[]) {
   let count = 0;
   for (const status of statusesNewestFirst) {
-    if (status === AttendanceStatus.ABSENT) count += 1;
+    if (isAbsentAttendanceStatus(status)) count += 1;
     else break;
   }
   return count;
@@ -34,7 +36,7 @@ export function getConsecutiveAbsenceDatesNewestFirst(eventsNewestFirst: Attenda
     const attendance = event.attendances.find((item) => item.personId === personId);
     if (!attendance) continue;
 
-    if (attendance.status !== AttendanceStatus.ABSENT) break;
+    if (!isAbsentAttendanceStatus(attendance.status)) break;
     dates.push(event.startsAt);
   }
 
@@ -42,7 +44,7 @@ export function getConsecutiveAbsenceDatesNewestFirst(eventsNewestFirst: Attenda
 }
 
 function formatDateList(dates: Date[]) {
-  const labels = dates.map((date) => formatBrasiliaShortDate(date));
+  const labels = dates.map((date) => formatShortDate(date));
 
   if (labels.length <= 1) return labels[0] ?? "";
   if (labels.length === 2) return `${labels[0]} e ${labels[1]}`;
@@ -76,8 +78,8 @@ export function describeAttendanceSignal(absences: number, evidence?: string | n
     return {
       kind: "attendance-urgent" as const,
       severity: SignalSeverity.URGENT,
-      reason: "Ausência recorrente percebida.",
-      evidence: evidence ?? "Presença recente pede cuidado mais próximo.",
+      reason: SIGNAL_COPY.messages.attendanceRecurring.title,
+      evidence: evidence ?? SIGNAL_COPY.messages.attendanceRecurring.evidenceFallback,
     };
   }
 
@@ -85,8 +87,8 @@ export function describeAttendanceSignal(absences: number, evidence?: string | n
     return {
       kind: "attendance-attention" as const,
       severity: SignalSeverity.ATTENTION,
-      reason: "Ausência recente percebida.",
-      evidence: evidence ?? "Presença recente pede atenção.",
+      reason: SIGNAL_COPY.messages.attendanceRecent.title,
+      evidence: evidence ?? SIGNAL_COPY.messages.attendanceRecent.evidenceFallback,
     };
   }
 

@@ -1,0 +1,12 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.content {
+  --fixed-action-bar-content-gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}

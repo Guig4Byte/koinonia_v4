@@ -1,0 +1,100 @@
+.option {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  cursor: pointer;
+  border: 0;
+  border-radius: 1.1rem;
+  background: transparent;
+  padding: 0.3rem 0 0.1rem;
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
+}
+
+.option:hover {
+  transform: translateY(-1px);
+}
+
+.optionDisabled {
+  cursor: not-allowed;
+  opacity: 0.78;
+}
+
+.checkbox {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.visual {
+  position: relative;
+  margin-top: 0.12rem;
+  display: inline-flex;
+  width: 2.62rem;
+  height: 1.46rem;
+  flex: 0 0 auto;
+  align-items: center;
+  border: 1px solid color-mix(in srgb, var(--color-text-muted) 32%, var(--color-border-card));
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--color-text-muted) 17%, var(--surface-alt));
+  padding: 0.14rem;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.knob {
+  width: 1.04rem;
+  height: 1.04rem;
+  border-radius: 50%;
+  background: var(--cream-50);
+  box-shadow: 0 1px 6px color-mix(in srgb, var(--color-text-primary) 22%, transparent);
+  transform: translateX(0);
+  transition: transform 150ms ease;
+}
+
+.checkbox:checked + .visual {
+  border-color: color-mix(in srgb, var(--brown-400) 70%, var(--color-border-card));
+  background: color-mix(in srgb, var(--brown-400) 68%, var(--surface-alt));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--brown-400) 10%, transparent);
+}
+
+.checkbox:checked + .visual .knob {
+  transform: translateX(1.16rem);
+  background: var(--cream-50);
+  box-shadow:
+    0 1px 5px color-mix(in srgb, var(--color-text-primary) 22%, transparent),
+    0 0 0 2px color-mix(in srgb, var(--cream-50) 18%, transparent);
+}
+
+.checkbox:focus-visible + .visual {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brown-400) 16%, transparent);
+}
+
+.copy {
+  min-width: 0;
+}
+
+.title {
+  display: block;
+  color: var(--color-text-primary);
+  font-size: var(--text-base);
+  font-weight: 850;
+  line-height: 1.25;
+}
+
+.description {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.45;
+}

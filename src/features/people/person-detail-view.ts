@@ -1,4 +1,8 @@
-import { AttendanceStatus, CareKind } from "@/generated/prisma/client";
+import { AttendanceStatus } from "@/generated/prisma/client";
+import { isVisitorAttendanceStatus } from "@/features/events/attendance-display";
+export { attendanceLabels, attendanceTone } from "@/features/events/attendance-display";
+export type { AttendanceTone } from "@/features/events/attendance-display";
+export { careKindLabels } from "@/features/care/care-copy";
 import { presenceTone, type PresenceTone } from "@/features/events/presence-display";
 import {
   summarizePresenceFromAttendances,
@@ -9,24 +13,7 @@ import {
   type PresenceTrend,
 } from "@/features/events/presence-summary";
 export const PERSON_DETAIL_ATTENDANCE_HISTORY_LIMIT = 12;
-
-export const attendanceLabels: Record<AttendanceStatus, string> = {
-  PRESENT: "Presente",
-  ABSENT: "Ausente",
-  JUSTIFIED: "Justificou",
-  VISITOR: "Visitante",
-};
-
-export const careKindLabels: Record<CareKind, string> = {
-  CALL: "Contato feito",
-  WHATSAPP: "Contato feito",
-  VISIT: "Contato feito",
-  PRAYER: "Contato feito",
-  MARKED_CARED: "Contato feito",
-  NOTE: "Anotação",
-  REQUESTED_SUPPORT: "Pedido de apoio à supervisão",
-  ESCALATED_TO_PASTOR: "Encaminhado ao cuidado pastoral",
-};
+export const PERSON_DETAIL_CARE_TOUCH_HISTORY_LIMIT = 24;
 
 export type PersonRecentAttendance = {
   id: string;
@@ -48,28 +35,6 @@ export type PersonPresenceView = {
   hasPartialTrendHistory: boolean;
 };
 
-
-export type AttendanceTone = "ok" | "warn" | "risk" | "info";
-
-export function attendanceTone(status?: AttendanceStatus | null): AttendanceTone {
-  if (status === AttendanceStatus.PRESENT) return "ok";
-  if (status === AttendanceStatus.JUSTIFIED) return "warn";
-  if (status === AttendanceStatus.ABSENT) return "risk";
-  return "info";
-}
-
-export function presenceToneClass(tone: PresenceTone) {
-  if (tone === "risk") return "text-[var(--color-metric-atencoes)]";
-  if (tone === "warn") return "text-[var(--color-badge-atencao-text)]";
-  if (tone === "ok") return "text-[var(--color-metric-presenca)]";
-  return "text-[var(--color-text-primary)]";
-}
-
-export function presenceTrendToneClass(direction: PresenceTrend["direction"], currentTone: PresenceTone) {
-  if (direction === "up") return "text-[var(--color-metric-presenca)]";
-  if (currentTone === "ok") return "text-[var(--color-badge-atencao-text)]";
-  return "text-[var(--color-metric-atencoes)]";
-}
 
 export function recentPresenceCountLabel(presentCount: number, encountersCount: number) {
   if (encountersCount === 1) {
@@ -94,12 +59,12 @@ export function recentPresenceCountLabel(presentCount: number, encountersCount: 
 
 export function recentPresenceTrendLabel(trend: PresenceTrend, currentTone: PresenceTone) {
   if (trend.direction === "up") return "Presença mais constante que nos encontros anteriores.";
-  if (currentTone === "ok") return "Ainda há boa presença, mesmo com queda nos encontros recentes.";
-  return "A presença caiu em relação aos encontros anteriores. Vale se aproximar com cuidado.";
+  if (currentTone === "ok") return "Boa presença, apesar da queda recente.";
+  return "Presença caiu em relação aos encontros anteriores.";
 }
 
 export function buildPersonPresenceView(attendances: PersonRecentAttendance[]): PersonPresenceView {
-  const accountableAttendances = attendances.filter((attendance) => attendance.status !== AttendanceStatus.VISITOR);
+  const accountableAttendances = attendances.filter((attendance) => !isVisitorAttendanceStatus(attendance.status));
   const { recentItems: recentAttendances, previousItems: previousAttendances } = splitPresenceTrendSamples(accountableAttendances);
   const recentPresence = summarizePresenceFromAttendances(recentAttendances);
   const previousPresence = summarizePresenceFromAttendances(previousAttendances);

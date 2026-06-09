@@ -1,0 +1,80 @@
+.statusDot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--radius-pill);
+  background: currentcolor;
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentcolor 16%, transparent);
+}
+
+.memberRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  gap: 0.7rem;
+  align-items: center;
+}
+
+.memberAvatar {
+  display: inline-grid;
+  width: 2.24rem;
+  height: 2.24rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, currentcolor 28%, transparent);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  font-weight: 780;
+  line-height: 1;
+}
+
+.memberAvatarPresent {
+  background: color-mix(in srgb, var(--color-badge-estavel-bg) 78%, var(--color-bg-card));
+  color: var(--color-badge-estavel-text);
+}
+
+.memberAvatarAbsent {
+  background: color-mix(in srgb, var(--color-badge-risco-bg) 78%, var(--color-bg-card));
+  color: var(--color-badge-risco-text);
+}
+
+.memberAvatarJustified {
+  background: color-mix(in srgb, var(--color-badge-atencao-bg) 78%, var(--color-bg-card));
+  color: var(--color-badge-atencao-text);
+}
+
+.memberAvatarPending {
+  background: color-mix(in srgb, var(--surface-alt) 84%, var(--color-bg-card));
+  color: var(--color-text-secondary);
+}
+
+.memberName {
+  overflow: hidden;
+  color: var(--color-text-primary);
+  font-family: ui-rounded, "SF Pro Rounded", "Nunito", var(--font-body);
+  font-size: var(--text-base);
+  font-weight: 700;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.memberChevron {
+  width: 1rem;
+  height: 1rem;
+  color: color-mix(in srgb, var(--color-text-secondary) 72%, var(--color-text-primary));
+  stroke-width: 2.4;
+}
+
+@media (max-width: 360px) {
+  .memberRow {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 0.58rem;
+  }
+
+  .memberAvatar {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .memberChevron {
+    display: none;
+  }
+}

@@ -1,22 +1,32 @@
-import { AppShell } from "@/components/app-shell";
+import { AppShell } from "@/components/layout/app-shell";
 import { appNavForRole } from "@/features/navigation/app-nav";
-import { ContextSummary, PulseCard, SectionTitle } from "@/components/base-cards";
-import { InCareSection, PastoralSignalSection } from "@/components/pastoral-list-cards";
-import { SearchBox } from "@/components/search-box";
+import { PastoralHealthCard } from "@/features/dashboard/components/pastoral-health-card";
+import { PastorPresenceCard } from "@/features/pastoral-home/components/pastor-presence-card";
+import { PastorRadarCard } from "@/features/pastoral-home/components/pastor-radar-card";
+import { PastorTeamSummaryCard } from "@/features/pastoral-home/components/pastor-team-summary-card";
+import { NextPastoralActionCard } from "@/features/pastoral-home/components/next-pastoral-action-card";
+import { FirstUseStateCard } from "@/features/pastoral-home/components/first-use-state-card";
+import { RegistrationQualityCard } from "@/features/registration-quality/components/registration-quality-card";
+import { SearchBox } from "@/features/search/components/search-box";
 import { getPastorDashboard } from "@/features/dashboard/queries";
+import { getRegistrationQualitySummary } from "@/features/registration-quality/registration-quality.query";
 import { canUsePastorDashboard } from "@/features/permissions/permissions";
 import { buildPastorPageView } from "@/features/pastoral-home/pastor-page-view";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { redirect } from "next/navigation";
+import { ROUTES } from "@/lib/routes";
 
 export default async function PastorPage() {
   const user = await getCurrentUser();
 
   if (!canUsePastorDashboard(user)) {
-    redirect("/");
+    redirect(ROUTES.root);
   }
 
-  const dashboard = await getPastorDashboard(user);
+  const [dashboard, registrationQuality] = await Promise.all([
+    getPastorDashboard(user),
+    getRegistrationQualitySummary(user),
+  ]);
   const view = buildPastorPageView({ dashboard, user });
 
   return (
@@ -25,30 +35,26 @@ export default async function PastorPage() {
       role={user.role}
       nav={appNavForRole(user, { active: "home", indicator: view.navIndicator })}
     >
-      <SearchBox placeholder="Buscar qualquer pessoa..." />
-      <PulseCard
-        title={view.pastoralPulse.title}
-        subtitle={view.pastoralPulse.subtitle}
-        tone={view.pastoralPulse.tone}
+      <PastorRadarCard pulse={view.pastoralPulse} />
+
+      {view.firstUseState ? <FirstUseStateCard state={view.firstUseState} className="mb-4" /> : null}
+
+      {view.nextAction ? <NextPastoralActionCard action={view.nextAction} /> : null}
+
+      <SearchBox placeholder="Buscar qualquer irmão..." />
+
+      <PastoralHealthCard
+        overview={view.healthOverview}
+        title="Saúde das células"
+        description="Leitura pastoral das células ativas por estabilidade, presença recente e cuidado."
+        className="mt-4 mb-0"
       />
 
-      <PastoralSignalSection
-        title="Irmãos que precisam de um olhar especial"
-        detail="Urgentes ou encaminhados ao pastor aparecem com mais destaque."
-        emptyMessage="Nada grave ou encaminhado chegou para o pastor agora."
-        signals={view.urgentOrPastoralCases}
-        viewer={user}
-      />
+      <PastorPresenceCard weeklyPresence={view.weeklyPresence} className="mt-4" />
 
-      <InCareSection
-        title="Acolhidos em cuidado pastoral"
-        detail="Pessoas que receberam cuidado pastoral e seguem no radar."
-        emptyMessage="Nenhuma pessoa em cuidado pastoral para destacar agora."
-        people={view.inCarePeople}
-      />
+      <PastorTeamSummaryCard items={view.teamSummaryItems} />
 
-      <SectionTitle>Presença geral</SectionTitle>
-      <ContextSummary items={view.presenceSummary} />
+      <RegistrationQualityCard summary={registrationQuality} className="mt-4" />
     </AppShell>
   );
 }

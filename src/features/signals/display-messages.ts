@@ -1,38 +1,19 @@
 import { SignalSeverity, SignalSource, UserRole } from "@/generated/prisma/client";
+import { isPastoralRole } from "@/features/permissions/permissions";
+import { SIGNAL_COPY, supportPastoralMessageCopy } from "./signal-copy";
 import {
   isAssignedToPastoralRole,
   isAssignedToSupervisor,
   shouldShowEscalationStatusForViewer,
 } from "./escalation";
-import type { SignalDetailLike, SignalDisplayViewerLike, SignalPastoralMessage } from "./display";
-
-function isPastoralViewer(viewer?: SignalDisplayViewerLike | null): boolean {
-  return viewer?.role === UserRole.PASTOR || viewer?.role === UserRole.ADMIN;
-}
+import type { SignalDetailLike, SignalDisplayViewerLike, SignalPastoralMessage } from "./display-types";
 
 function isAttendanceSignal(signal: SignalDetailLike): boolean {
   return signal.source === SignalSource.ATTENDANCE;
 }
 
 function supportPastoralMessage(viewer: SignalDisplayViewerLike): SignalPastoralMessage {
-  if (viewer.role === UserRole.SUPERVISOR) {
-    return {
-      title: "Pedido de apoio recebido.",
-      description: "A liderança pediu ajuda para acompanhar este cuidado com mais proximidade.",
-    };
-  }
-
-  if (viewer.role === UserRole.LEADER) {
-    return {
-      title: "Apoio solicitado à supervisão.",
-      description: "Você continua perto da pessoa, com a supervisão caminhando junto.",
-    };
-  }
-
-  return {
-    title: "Apoio em andamento.",
-    description: "Esse cuidado segue com liderança e supervisão; aparece aqui apenas como contexto da célula.",
-  };
+  return supportPastoralMessageCopy(viewer);
 }
 
 function attendanceEvidenceText(signal: SignalDetailLike): string | undefined {
@@ -51,22 +32,22 @@ function pastoralEscalationMessage(
   signal: SignalDetailLike,
   viewer: SignalDisplayViewerLike,
 ): SignalPastoralMessage {
-  if (isPastoralViewer(viewer)) {
+  if (isPastoralRole(viewer)) {
     const actorName = signal.pastoralEscalationActorName?.trim();
 
     return {
-      title: "Cuidado pastoral solicitado.",
+      title: SIGNAL_COPY.pastoralEscalation.requestedTitle,
       description: actorName
-        ? `${actorName} compartilhou este cuidado para um olhar mais próximo. Um contato pode ajudar a entender melhor o momento.`
-        : "Há um contexto que pede um olhar mais próximo. Um contato pode ajudar a entender melhor o momento.",
+        ? SIGNAL_COPY.pastoralEscalation.requestedDescriptionWithActor(actorName)
+        : SIGNAL_COPY.pastoralEscalation.requestedDescription,
     };
   }
 
   return {
-    title: "Encaminhado ao pastor.",
+    title: SIGNAL_COPY.pastoralEscalation.title,
     description: viewer.role === UserRole.LEADER
-      ? "Você compartilhou este cuidado para um olhar pastoral mais próximo."
-      : "Esse cuidado foi compartilhado para acompanhamento pastoral.",
+      ? SIGNAL_COPY.pastoralEscalation.leaderDescription
+      : SIGNAL_COPY.pastoralEscalation.teamDescription,
   };
 }
 
@@ -77,13 +58,13 @@ function urgentPastoralMessage(
   useDetailedDescription: boolean,
 ): SignalPastoralMessage {
   if (isAttendanceSignal(signal)) {
-    const compactDescription = "Parece que houve ausências recorrentes sem justificativa registrada.";
-    const detailDescription = isPastoralViewer(viewer)
-      ? "Parece que houve ausências recorrentes sem justificativa registrada. A presença recente pede um olhar pastoral mais próximo, com calma e contexto."
-      : "Parece que houve ausências recorrentes sem justificativa registrada. Talvez valha uma aproximação simples, com calma e proximidade.";
+    const compactDescription = SIGNAL_COPY.messages.attendanceRecurring.compact;
+    const detailDescription = isPastoralRole(viewer)
+      ? SIGNAL_COPY.messages.attendanceRecurring.pastoralDetail
+      : SIGNAL_COPY.messages.attendanceRecurring.localDetail;
 
     return {
-      title: "Ausência recorrente percebida.",
+      title: SIGNAL_COPY.messages.attendanceRecurring.title,
       description: withAttendanceEvidence(
         useDetailedDescription ? detailDescription : compactDescription,
         signal,
@@ -93,10 +74,10 @@ function urgentPastoralMessage(
   }
 
   return {
-    title: "Cuidado mais próximo.",
-    description: isPastoralViewer(viewer)
-      ? "Há um sinal sensível que vale olhar com calma antes de orientar a equipe."
-      : "Há um sinal sensível que vale acompanhar com calma e proximidade.",
+    title: SIGNAL_COPY.messages.urgent.title,
+    description: isPastoralRole(viewer)
+      ? SIGNAL_COPY.messages.urgent.pastoralDescription
+      : SIGNAL_COPY.messages.urgent.localDescription,
   };
 }
 
@@ -107,13 +88,13 @@ function attentionPastoralMessage(
   useDetailedDescription: boolean,
 ): SignalPastoralMessage {
   if (isAttendanceSignal(signal)) {
-    const compactDescription = "Parece que houve ausências sem justificativa registrada.";
+    const compactDescription = SIGNAL_COPY.messages.attendanceRecent.compact;
     const detailDescription = viewer.role === UserRole.LEADER
-      ? "Parece que houve ausências sem justificativa registrada. Talvez valha uma aproximação simples, sem tom de cobrança."
-      : "Parece que houve ausências sem justificativa registrada. Pode ser um bom ponto de atenção para acompanhar o cuidado da célula.";
+      ? SIGNAL_COPY.messages.attendanceRecent.leaderDetail
+      : SIGNAL_COPY.messages.attendanceRecent.teamDetail;
 
     return {
-      title: "Ausência recente percebida.",
+      title: SIGNAL_COPY.messages.attendanceRecent.title,
       description: withAttendanceEvidence(
         useDetailedDescription ? detailDescription : compactDescription,
         signal,
@@ -124,28 +105,28 @@ function attentionPastoralMessage(
 
   if (signal.source === SignalSource.NO_CONTACT) {
     return {
-      title: "Vínculo pede proximidade.",
-      description: "Pode ser um bom momento para retomar contato com calma.",
+      title: SIGNAL_COPY.messages.noContact.title,
+      description: SIGNAL_COPY.messages.noContact.description,
     };
   }
 
   if (signal.source === SignalSource.VISITOR) {
     return {
-      title: "Pessoa para acolher com proximidade.",
-      description: "Vale manter esse vínculo no radar com leveza.",
+      title: SIGNAL_COPY.messages.visitor.title,
+      description: SIGNAL_COPY.messages.visitor.description,
     };
   }
 
   return {
-    title: "Cuidado percebido pela liderança.",
-    description: "Há um contexto que vale acompanhar com calma.",
+    title: SIGNAL_COPY.messages.attention.title,
+    description: SIGNAL_COPY.messages.attention.description,
   };
 }
 
 function informationalPastoralMessage(): SignalPastoralMessage {
   return {
-    title: "Informativo.",
-    description: "Há um registro para contexto deste cuidado.",
+    title: SIGNAL_COPY.messages.informational.title,
+    description: SIGNAL_COPY.messages.informational.description,
   };
 }
 

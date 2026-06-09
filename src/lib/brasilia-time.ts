@@ -3,7 +3,7 @@ export const BRASILIA_UTC_OFFSET_MS = BRASILIA_UTC_OFFSET_HOURS * 60 * 60 * 1000
 
 const SHORT_MONTHS_PT_BR = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 
-function pad2(value: number) {
+export function padZero(value: number) {
   return String(value).padStart(2, "0");
 }
 
@@ -95,10 +95,10 @@ export function formatBrasiliaShortDate(date: Date, referenceDate = new Date()) 
   if (isTomorrowInBrasilia(date, referenceDate)) return "Amanhã";
 
   const parts = getBrasiliaDateParts(date);
-  return `${pad2(parts.day)} ${SHORT_MONTHS_PT_BR[parts.month - 1]}`;
+  return `${padZero(parts.day)} ${SHORT_MONTHS_PT_BR[parts.month - 1]}`;
 }
 
 export function formatBrasiliaTime(date: Date) {
   const parts = getBrasiliaDateParts(date);
-  return `${pad2(parts.hours)}:${pad2(parts.minutes)}`;
+  return `${padZero(parts.hours)}:${padZero(parts.minutes)}`;
 }

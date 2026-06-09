@@ -3,7 +3,6 @@ import {
   AttendanceStatus,
   CareKind,
   EventStatus,
-  GroupResponsibilityRole,
   MembershipRole,
   PersonStatus,
   SignalSeverity,
@@ -12,6 +11,18 @@ import {
   UserRole,
 } from "../src/generated/prisma/client";
 import { prisma } from "../src/lib/prisma";
+import { createSeedCareTouch } from "./seed-helpers/care";
+import { clearDatabase } from "./seed-helpers/cleanup";
+import {
+  createSeedAttendanceRecords,
+  createSeedEvent,
+} from "./seed-helpers/events";
+import {
+  createSeedGroupMemberships,
+  createSeedGroupWithResponsibilities,
+} from "./seed-helpers/groups";
+import type { SeedMember, SeedUser } from "./seed-helpers/types";
+import { createSeedUserWithPerson } from "./seed-helpers/users";
 
 function daysFromNow(days: number, hour = 20): Date {
   const date = new Date();
@@ -34,18 +45,6 @@ function nextSeedPhone(): string {
   return `+558199${String(seedPhoneCounter).padStart(6, "0")}`;
 }
 
-type SeedUser = {
-  id: string;
-  personId: string | null;
-  name: string;
-  email: string;
-  role: UserRole;
-};
-
-type SeedMember = {
-  id: string;
-  fullName: string;
-};
 
 type SeedGroup = {
   id: string;
@@ -185,6 +184,34 @@ const memberNamesByGroup: Record<string, string[]> = {
     "Kleber Torres",
     "Lais Cardoso",
   ],
+  riacho: [
+    "Manoel Dantas",
+    "Rebeca Falcão",
+    "Otília Nascimento",
+    "Saulo Pires",
+    "Cristina Valente",
+    "Rodrigo Batista",
+    "Ayla Monteiro",
+    "Jairo Mendonça",
+    "Vera Andrade",
+    "Luan Correia",
+    "Sônia Peixoto",
+    "Moisés Cabral",
+  ],
+  jardim: [
+    "Natan Ribeiro",
+    "Eliane Prado",
+    "Irene Macedo",
+    "Márcio Abreu",
+    "Yasmin Cavalcante",
+    "Flávio Rezende",
+    "Tereza Guimarães",
+    "Caetano Barros",
+    "Rafaela Lopes",
+    "Sérgio Tavares",
+    "Mirela Duarte",
+    "Jonas Almeida",
+  ],
 };
 
 const completedEventDays = [-42, -35, -28, -21, -14, -7] as const;
@@ -199,12 +226,12 @@ const currentWeekEventIndex = completedEventDays.length;
 
 const seedSignalText = {
   attendanceAttention: {
-    reason: "Presença recente pede atenção.",
+    reason: "Atenção percebida",
     evidence:
       "A ausência em encontros recentes pode ser um bom motivo para uma aproximação simples.",
   },
   attendanceUrgent: {
-    reason: "Presença recente pede cuidado mais próximo.",
+    reason: "Urgência percebida.",
     evidence:
       "A ausência recorrente merece uma aproximação com calma e proximidade.",
   },
@@ -292,6 +319,12 @@ function memberStatus(
   return AttendanceStatus.PRESENT;
 }
 
+function seedPresencePattern(presentCount: number, totalCount = 12): AttendanceStatus[] {
+  return Array.from({ length: totalCount }, (_, index) =>
+    index < presentCount ? AttendanceStatus.PRESENT : AttendanceStatus.ABSENT,
+  );
+}
+
 async function createUserWithPerson({
   churchId,
   name,
@@ -307,24 +340,15 @@ async function createUserWithPerson({
   passwordHash: string;
   personName?: string;
 }): Promise<SeedUser> {
-  const person = await prisma.person.create({
-    data: {
-      churchId,
-      fullName: personName ?? name,
-      phone: nextSeedPhone(),
-      status: PersonStatus.ACTIVE,
-    },
-  });
-
-  return prisma.user.create({
-    data: {
-      churchId,
-      personId: person.id,
-      name,
-      email,
-      passwordHash,
-      role,
-    },
+  return createSeedUserWithPerson({
+    prisma,
+    churchId,
+    name,
+    email,
+    role,
+    passwordHash,
+    personName,
+    phone: nextSeedPhone(),
   });
 }
 
@@ -347,38 +371,15 @@ async function createGroupWithMembers({
   meetingTime: string;
   locationName: string;
 }): Promise<SeedGroup> {
-  const group = await prisma.smallGroup.create({
-    data: {
-      churchId,
-      name,
-      kind: "CELL",
-      leaderUserId: leader.id,
-      supervisorUserId: supervisor?.id ?? null,
-      meetingDayOfWeek,
-      meetingTime,
-      locationName,
-    },
-  });
-
-  await prisma.groupResponsibility.createMany({
-    data: [
-      {
-        churchId,
-        groupId: group.id,
-        userId: leader.id,
-        role: GroupResponsibilityRole.LEADER,
-      },
-      ...(supervisor
-        ? [
-            {
-              churchId,
-              groupId: group.id,
-              userId: supervisor.id,
-              role: GroupResponsibilityRole.SUPERVISOR,
-            },
-          ]
-        : []),
-    ],
+  const group = await createSeedGroupWithResponsibilities({
+    prisma,
+    churchId,
+    name,
+    leader,
+    supervisor,
+    meetingDayOfWeek,
+    meetingTime,
+    locationName,
   });
 
   const members = await Promise.all(
@@ -404,12 +405,10 @@ async function createGroupWithMembers({
     ),
   );
 
-  await prisma.groupMembership.createMany({
-    data: members.map((member) => ({
-      groupId: group.id,
-      personId: member.id,
-      role: MembershipRole.MEMBER,
-    })),
+  await createSeedGroupMemberships({
+    prisma,
+    groupId: group.id,
+    members,
   });
 
   const visitor = await prisma.person.create({
@@ -420,12 +419,11 @@ async function createGroupWithMembers({
     },
   });
 
-  await prisma.groupMembership.create({
-    data: {
-      groupId: group.id,
-      personId: visitor.id,
-      role: MembershipRole.VISITOR,
-    },
+  await createSeedGroupMemberships({
+    prisma,
+    groupId: group.id,
+    members: [visitor],
+    role: MembershipRole.VISITOR,
   });
 
   return {
@@ -460,18 +458,52 @@ async function createEvent({
   hour?: number;
   locationName?: string;
 }) {
-  return prisma.event.create({
-    data: {
-      churchId,
-      groupId: group.id,
-      createdById,
-      title: group.name,
-      startsAt: daysFromNow(days, hour),
-      status,
-      locationName: locationName ?? group.locationName,
-      generatedFromSchedule: true,
-    },
+  return createSeedEvent({
+    prisma,
+    churchId,
+    groupId: group.id,
+    createdById,
+    title: group.name,
+    startsAt: daysFromNow(days, hour),
+    status,
+    locationName: locationName ?? group.locationName,
   });
+}
+
+async function createCompletedEventWithStatuses({
+  churchId,
+  group,
+  createdById,
+  days,
+  hour = 8,
+  statuses,
+}: {
+  churchId: string;
+  group: SeedGroup;
+  createdById: string;
+  days: number;
+  hour?: number;
+  statuses: AttendanceStatus[];
+}) {
+  const event = await createEvent({
+    churchId,
+    group,
+    createdById,
+    days,
+    hour,
+    status: EventStatus.COMPLETED,
+  });
+
+  await createSeedAttendanceRecords({
+    prisma,
+    eventId: event.id,
+    records: group.members.map((member, index) => ({
+      personId: member.id,
+      status: statuses[index] ?? AttendanceStatus.PRESENT,
+    })),
+  });
+
+  return event;
 }
 
 async function createSignal({
@@ -535,30 +567,67 @@ async function createCareTouch({
   days: number;
   hour: number;
 }) {
-  return prisma.careTouch.create({
-    data: {
+  return createSeedCareTouch({
+    prisma,
+    churchId,
+    personId: group.members[personIndex].id,
+    groupId: group.id,
+    actorId: actorId ?? null,
+    kind,
+    note,
+    happenedAt: daysFromNow(days, hour),
+  });
+}
+
+async function markMemberInCare({
+  churchId,
+  group,
+  personIndex,
+  actorId,
+  note,
+  days,
+  hour,
+}: {
+  churchId: string;
+  group: SeedGroup;
+  personIndex: number;
+  actorId?: string | null;
+  note?: string | null;
+  days: number;
+  hour: number;
+}) {
+  const personId = group.members[personIndex].id;
+  const happenedAt = daysFromNow(days, hour);
+
+  await prisma.person.update({
+    where: { id: personId },
+    data: { status: PersonStatus.COOLING_AWAY },
+  });
+
+  await prisma.careSignal.updateMany({
+    where: {
       churchId,
-      personId: group.members[personIndex].id,
+      personId,
       groupId: group.id,
-      actorId: actorId ?? null,
-      kind,
-      note: note?.trim() ? note.trim() : null,
-      happenedAt: daysFromNow(days, hour),
+      status: SignalStatus.OPEN,
     },
+    data: { status: SignalStatus.RESOLVED, resolvedAt: happenedAt },
+  });
+
+  return createCareTouch({
+    churchId,
+    group,
+    personIndex,
+    actorId,
+    kind: CareKind.MARKED_CARED,
+    note,
+    days,
+    hour,
   });
 }
 
 async function main() {
-  await prisma.careTouch.deleteMany();
-  await prisma.careSignal.deleteMany();
-  await prisma.attendance.deleteMany();
-  await prisma.event.deleteMany();
-  await prisma.groupMembership.deleteMany();
-  await prisma.groupResponsibility.deleteMany();
-  await prisma.smallGroup.deleteMany();
-  await prisma.user.deleteMany();
-  await prisma.person.deleteMany();
-  await prisma.church.deleteMany();
+  await clearDatabase(prisma);
 
   const passwordHash = await hash("koinonia123", 10);
 
@@ -746,6 +815,26 @@ async function main() {
       meetingTime: "20:00",
       locationName: "Casa de Lucas e Mariana",
     }),
+    createGroupWithMembers({
+      churchId: church.id,
+      key: "riacho",
+      name: "Célula Riacho",
+      leader: fernanda,
+      supervisor: marcos,
+      meetingDayOfWeek: 2,
+      meetingTime: "20:00",
+      locationName: "Casa de Manoel e Rebeca",
+    }),
+    createGroupWithMembers({
+      churchId: church.id,
+      key: "jardim",
+      name: "Célula Jardim",
+      leader: juliana,
+      supervisor: helena,
+      meetingDayOfWeek: 6,
+      meetingTime: "19:30",
+      locationName: "Casa de Natan e Eliane",
+    }),
   ]);
 
   // Cenário de regressão: célula ativa sem eventos registrados deve aparecer como sem registro,
@@ -792,7 +881,21 @@ async function main() {
     }
   }
 
-  const [esperanca, agape, betel, videira, semente, caminho, graca] = groups;
+  const [esperanca, agape, betel, videira, semente, caminho, graca, riacho] = groups;
+
+  // Cenário da visão do pastor: presença da semana com base real e tendência positiva
+  // em relação ao último mês. Estes encontros mantêm a leitura macro viva mesmo no
+  // começo da semana e alimentam o mini gráfico de tendência da home pastoral.
+  for (const group of groups) {
+    await createCompletedEventWithStatuses({
+      churchId,
+      group,
+      createdById: group.leader.id,
+      days: 0,
+      hour: 8,
+      statuses: seedPresencePattern(10, group.members.length),
+    });
+  }
 
   await createEvent({
     churchId,
@@ -882,17 +985,17 @@ async function main() {
     [betelWeek, betel, currentWeekEventIndex, false],
     [gracaWeek, graca, currentWeekEventIndex, false],
   ] as const) {
-    await prisma.attendance.createMany({
-      data: [
+    await createSeedAttendanceRecords({
+      prisma,
+      eventId: event.id,
+      records: [
         ...group.members.map((member, memberIndex) => ({
-          eventId: event.id,
           personId: member.id,
           status: memberStatus(group.key, memberIndex, eventIndex),
         })),
         ...(hasVisitor
           ? [
               {
-                eventId: event.id,
                 personId: group.visitor.id,
                 status: AttendanceStatus.VISITOR,
               },
@@ -941,6 +1044,86 @@ async function main() {
     note: "Tentei contato, mas ainda não consegui conversar com calma.",
     days: -1,
     hour: 13,
+  });
+
+  // Cenários principais da visão do líder Bruno:
+  // - sinais de presença em atenção/urgência, apoio, pessoas em cuidado e rotina da célula;
+  // - vários itens do mesmo tipo para validar pluralização e ordenação;
+  // - cards de pessoa devem abrir o perfil/pedido; rotina deve continuar apontando para a célula/encontro.
+  await createSignal({
+    churchId,
+    group: esperanca,
+    personIndex: 0,
+    assignedToId: null,
+    severity: SignalSeverity.ATTENTION,
+    source: SignalSource.ATTENDANCE,
+    reason: seedSignalText.attendanceAttention.reason,
+    evidence: seedSignalText.attendanceAttention.evidence,
+  });
+
+  await markMemberInCare({
+    churchId,
+    group: esperanca,
+    personIndex: 0,
+    actorId: bruno.id,
+    note: "Contato iniciado. O sinal aberto foi cuidado e a pessoa segue em acompanhamento.",
+    days: -1,
+    hour: 18,
+  });
+
+  await createSignal({
+    churchId,
+    group: esperanca,
+    personIndex: 2,
+    assignedToId: ana.id,
+    severity: SignalSeverity.ATTENTION,
+    source: SignalSource.MANUAL,
+    reason: seedSignalText.supportRequested.reason,
+    evidence:
+      "Segundo pedido aberto na mesma célula para validar agrupamento de múltiplos pedidos de apoio.",
+  });
+
+  await createSignal({
+    churchId,
+    group: esperanca,
+    personIndex: 3,
+    assignedToId: null,
+    severity: SignalSeverity.ATTENTION,
+    source: SignalSource.MANUAL,
+    reason: seedSignalText.localCare.reason,
+    evidence:
+      "Pessoa em atenção local, sem pedido de apoio e sem urgência, para manter a seção de atenção separada.",
+  });
+
+  await markMemberInCare({
+    churchId,
+    group: esperanca,
+    personIndex: 4,
+    actorId: bruno.id,
+    note: "Conversa pelo WhatsApp. Sem sinal aberto; deve aparecer somente em Pessoas em cuidado.",
+    days: -2,
+    hour: 16,
+  });
+
+  await markMemberInCare({
+    churchId,
+    group: esperanca,
+    personIndex: 5,
+    actorId: bruno.id,
+    note: "Contato iniciado após ausência pontual. Segundo cuidado ativo para validar lista com múltiplos itens.",
+    days: -3,
+    hour: 17,
+  });
+
+  await createSignal({
+    churchId,
+    group: esperanca,
+    personIndex: 6,
+    assignedToId: null,
+    severity: SignalSeverity.URGENT,
+    source: SignalSource.ATTENDANCE,
+    reason: seedSignalText.attendanceUrgent.reason,
+    evidence: seedSignalText.attendanceUrgent.evidence,
   });
 
   await createSignal({
@@ -1059,6 +1242,24 @@ async function main() {
     hour: 14,
   });
 
+  // Cenário da nova saúde pastoral: célula com atenção local comum, sem urgência,
+  // sem pedido de apoio e sem encaminhamento ao pastor. Deve alimentar o segmento
+  // "Pedem atenção" e permanecer diferente de apoio/encaminhamento.
+  await createSignal({
+    churchId,
+    group: riacho,
+    personIndex: 0,
+    assignedToId: null,
+    severity: SignalSeverity.ATTENTION,
+    source: SignalSource.MANUAL,
+    reason: seedSignalText.localCare.reason,
+    evidence:
+      "A liderança percebeu um contexto familiar que vale acompanhar de perto, sem encaminhamento por enquanto.",
+  });
+
+  // A Célula Jardim fica sem sinais abertos e com presença boa para validar o
+  // segmento "Estáveis" da visão do pastor e da tela Equipe.
+
   // Cenário de regressão: cuidado pastoral realizado pelo pastor deve aparecer
   // em Acolhidos em cuidado pastoral, sem misturar cuidado local do líder.
   await prisma.careSignal.create({
@@ -1079,16 +1280,15 @@ async function main() {
     },
   });
 
-  await prisma.careTouch.create({
-    data: {
-      churchId,
-      personId: caminho.members[1].id,
-      groupId: caminho.id,
-      actorId: pastor.id,
-      kind: CareKind.MARKED_CARED,
-      note: "Conversa pastoral realizada. Família acolhida e sem novo sinal aberto.",
-      happenedAt: daysFromNow(-1, 18),
-    },
+  await createSeedCareTouch({
+    prisma,
+    churchId,
+    personId: caminho.members[1].id,
+    groupId: caminho.id,
+    actorId: pastor.id,
+    kind: CareKind.MARKED_CARED,
+    note: "Conversa pastoral realizada. Família acolhida e sem novo sinal aberto.",
+    happenedAt: daysFromNow(-1, 18),
   });
 
   await prisma.person.update({
@@ -1096,35 +1296,16 @@ async function main() {
     data: { status: PersonStatus.COOLING_AWAY },
   });
 
-  const inactiveGroup = await prisma.smallGroup.create({
-    data: {
-      churchId,
-      name: "Célula Arquivada",
-      kind: "CELL",
-      leaderUserId: bruno.id,
-      supervisorUserId: ana.id,
-      meetingDayOfWeek: 5,
-      meetingTime: "20:00",
-      locationName: "Endereço antigo",
-      isActive: false,
-    },
-  });
-
-  await prisma.groupResponsibility.createMany({
-    data: [
-      {
-        churchId,
-        groupId: inactiveGroup.id,
-        userId: bruno.id,
-        role: GroupResponsibilityRole.LEADER,
-      },
-      {
-        churchId,
-        groupId: inactiveGroup.id,
-        userId: ana.id,
-        role: GroupResponsibilityRole.SUPERVISOR,
-      },
-    ],
+  const inactiveGroup = await createSeedGroupWithResponsibilities({
+    prisma,
+    churchId,
+    name: "Célula Arquivada",
+    leader: bruno,
+    supervisor: ana,
+    meetingDayOfWeek: 5,
+    meetingTime: "20:00",
+    locationName: "Endereço antigo",
+    isActive: false,
   });
 
   const inactivePerson = await prisma.person.create({
@@ -1138,12 +1319,10 @@ async function main() {
     },
   });
 
-  await prisma.groupMembership.create({
-    data: {
-      groupId: inactiveGroup.id,
-      personId: inactivePerson.id,
-      role: MembershipRole.MEMBER,
-    },
+  await createSeedGroupMemberships({
+    prisma,
+    groupId: inactiveGroup.id,
+    members: [inactivePerson],
   });
 
   await prisma.careSignal.create({
@@ -1217,7 +1396,7 @@ async function main() {
 
   console.log("Seed concluído.");
   console.log(
-    "Estrutura da seed: 1 admin, 1 pastor, 4 supervisores, 9 células ativas, 1 célula inativa e 12 membros por célula ativa.",
+    "Estrutura da seed: 1 admin, 1 pastor, 4 supervisores, 11 células ativas, 1 célula inativa e 12 membros por célula ativa.",
   );
   console.log(
     `Acessos principais: ${pastor.email} / ${admin.email} / ${ana.email} / ${bruno.email}`,
@@ -1226,7 +1405,7 @@ async function main() {
     `Outros usuários da seed: ${marcos.email} / ${helena.email} / ${paulo.email} / ${carla.email} / ${diego.email} / ${fernanda.email} / ${gabriel.email} / ${juliana.email} / ${lucas.email}`,
   );
   console.log(
-    "Cenários de regressão: histórico de presença nas células com registro, 4 encontros no mês atual para a Célula Semente, faltas consecutivas, faltas intercaladas, justificativas, urgente sem atribuição, apoio à supervisão, múltiplos sinais, encaminhamento pastoral, cuidado pastoral realizado, histórico compacto de cuidado com e sem anotação, sinal resolvido, célula sem registro, célula sem supervisor, evento sem presença e célula inativa. Os textos visíveis dos sinais foram padronizados por família pastoral para não sugerir regras automáticas que não existem.",
+    "Cenários de regressão: saúde pastoral com urgentes, encaminhadas ao pastor, pedido de apoio, atenção local, sem presença recente e estáveis; presença da semana com tendência positiva para o pastor; histórico de presença nas células com registro; 4 encontros no mês atual para a Célula Semente; faltas consecutivas, faltas intercaladas, justificativas, urgente sem atribuição, apoio à supervisão, múltiplos sinais, encaminhamento pastoral, cuidado pastoral realizado, histórico compacto de cuidado com e sem anotação, sinal resolvido, célula sem registro, célula sem supervisor, evento sem presença e célula inativa. Na visão do líder Bruno, a Célula Esperança concentra múltiplos cenários visuais: urgentes por presença, pedidos de apoio, atenção local, pessoas em cuidado, múltiplos itens do mesmo tipo e rotina da célula. Os textos visíveis dos sinais foram padronizados por família pastoral para não sugerir regras automáticas que não existem.",
   );
   console.log("Senha local da seed: koinonia123");
 }
@@ -1239,22 +1418,21 @@ async function createCompletedEventWithChurch(
   eventIndex: number,
   hour = 20,
 ) {
-  const event = await prisma.event.create({
-    data: {
-      churchId,
-      groupId: group.id,
-      createdById,
-      title: group.name,
-      startsAt: daysFromNow(days, hour),
-      status: EventStatus.COMPLETED,
-      locationName: group.locationName,
-      generatedFromSchedule: true,
-    },
+  const event = await createSeedEvent({
+    prisma,
+    churchId,
+    groupId: group.id,
+    createdById,
+    title: group.name,
+    startsAt: daysFromNow(days, hour),
+    status: EventStatus.COMPLETED,
+    locationName: group.locationName,
   });
 
-  await prisma.attendance.createMany({
-    data: group.members.map((member, memberIndex) => ({
-      eventId: event.id,
+  await createSeedAttendanceRecords({
+    prisma,
+    eventId: event.id,
+    records: group.members.map((member, memberIndex) => ({
       personId: member.id,
       status: memberStatus(group.key, memberIndex, eventIndex),
     })),
@@ -1271,30 +1449,28 @@ async function createCompletedEventAtDate(
   eventIndex: number,
   hasVisitor = false,
 ) {
-  const event = await prisma.event.create({
-    data: {
-      churchId,
-      groupId: group.id,
-      createdById,
-      title: group.name,
-      startsAt,
-      status: EventStatus.COMPLETED,
-      locationName: group.locationName,
-      generatedFromSchedule: true,
-    },
+  const event = await createSeedEvent({
+    prisma,
+    churchId,
+    groupId: group.id,
+    createdById,
+    title: group.name,
+    startsAt,
+    status: EventStatus.COMPLETED,
+    locationName: group.locationName,
   });
 
-  await prisma.attendance.createMany({
-    data: [
+  await createSeedAttendanceRecords({
+    prisma,
+    eventId: event.id,
+    records: [
       ...group.members.map((member, memberIndex) => ({
-        eventId: event.id,
         personId: member.id,
         status: memberStatus(group.key, memberIndex, eventIndex),
       })),
       ...(hasVisitor
         ? [
             {
-              eventId: event.id,
               personId: group.visitor.id,
               status: AttendanceStatus.VISITOR,
             },

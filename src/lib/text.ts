@@ -1,3 +1,17 @@
+export const PT_BR_LOCALE = "pt-BR";
+
+export function comparePtBr(left: string, right: string): number {
+  return left.localeCompare(right, PT_BR_LOCALE);
+}
+
+export function compareByName<T extends { name: string }>(left: T, right: T): number {
+  return comparePtBr(left.name, right.name);
+}
+
+export function compareByFullName<T extends { fullName: string }>(left: T, right: T): number {
+  return comparePtBr(left.fullName, right.fullName);
+}
+
 export function initials(name: string): string {
   return name
     .trim()
@@ -39,3 +53,9 @@ export function normalizeSearchText(value: string) {
     .trim()
     .toLowerCase();
 }
+
+export function matchesNormalizedQuery(haystack: string, normalizedQuery: string): boolean {
+  if (!normalizedQuery) return true;
+  return normalizeSearchText(haystack).includes(normalizedQuery);
+}
+

@@ -3,9 +3,10 @@ import { type AttendanceStatus } from "@/generated/prisma/client";
 import { eventEffectiveLocation, isClosedWithoutPresenceStatus, closedWithoutPresenceLabel as closedStatusLabel } from "@/features/events/event-display";
 import { summarizeEventPresence, type EventPresenceSummary } from "@/features/events/presence-summary";
 import { canCheckInEvent, type PermissionUser } from "@/features/permissions/permissions";
-import { formatShortDate, formatTime } from "@/lib/format";
+import { countLabel, formatShortDate, formatTime } from "@/lib/format";
 import { normalizeSearchText } from "@/lib/text";
 import { addBrasiliaDays, endOfBrasiliaWeek, isTodayInBrasilia, startOfBrasiliaDay, startOfBrasiliaWeek } from "@/lib/brasilia-time";
+import { EMPTY_STATE_COPY } from "@/features/empty-states/empty-state-copy";
 
 export const EVENT_LIST_LIMIT = 4;
 export const EVENTS_PAGE_HISTORY_LOOKBACK_DAYS = 60;
@@ -13,6 +14,13 @@ export const EVENTS_PAGE_QUERY_LIMIT = 120;
 
 export type EventConsultationMode = "sem-presenca" | "historico";
 export type EventPeriod = "semana" | "semana-passada" | "30d";
+
+export type EventsConsultationSummary = {
+  pendingCount: number;
+  pendingDescription: string;
+  historyCount: number;
+  historyDescription: string;
+};
 
 export type EventListEvent = {
   id: string;
@@ -27,8 +35,6 @@ export type EventListEvent = {
     churchId: string;
     isActive?: boolean | null;
     locationName?: string | null;
-    leaderUserId?: string | null;
-    supervisorUserId?: string | null;
     responsibilities?: {
       userId: string;
       role: string;
@@ -49,6 +55,7 @@ export type EventListCardState = {
   badgeTone: EventListBadgeTone;
   actionLabel: string;
   locationName: string | null;
+  pendingAgeLabel: string | null;
 };
 
 export function readEventConsultationMode(value?: string | null): EventConsultationMode | null {
@@ -59,8 +66,21 @@ export function readEventPeriod(value?: string | null): EventPeriod {
   return value === "semana-passada" || value === "30d" ? value : "semana";
 }
 
+export function eventDateTimeLabel(event: Pick<EventListEvent, "startsAt">) {
+  return `${formatShortDate(event.startsAt)}, ${formatTime(event.startsAt)}`;
+}
+
+export function eventPendingAgeLabel(event: Pick<EventListEvent, "startsAt">, now: Date) {
+  const elapsedDays = Math.max(0, Math.floor((startOfBrasiliaDay(now).getTime() - startOfBrasiliaDay(event.startsAt).getTime()) / 86_400_000));
+
+  if (elapsedDays === 0) return "hoje";
+  if (elapsedDays === 1) return "há 1 dia";
+
+  return `há ${elapsedDays} dias`;
+}
+
 export function eventMeta(event: EventListEvent) {
-  const dateTime = `${formatShortDate(event.startsAt)}, ${formatTime(event.startsAt)}`;
+  const dateTime = eventDateTimeLabel(event);
   const groupName = event.group?.name;
 
   if (!groupName) return `Encontro geral · ${dateTime}`;
@@ -120,14 +140,14 @@ export function buildEventListCardState(event: EventListEvent, user: PermissionU
       : isFutureEvent
         ? "Agendado"
         : canRegisterPresence
-          ? "Presença pendente"
+          ? "Aguardando presença"
           : "Aguardando registro";
   const badgeTone: EventListBadgeTone = isCancelledEvent ? "neutral" : recordedPresence ? "ok" : isFutureEvent ? "info" : "warn";
   const actionLabel = canRegisterPresence
     ? "Registrar presença"
     : recordedPresence
-      ? "Ver resumo"
-      : "Ver encontro";
+      ? "Ver detalhes"
+      : "Abrir";
 
   return {
     metrics,
@@ -138,8 +158,10 @@ export function buildEventListCardState(event: EventListEvent, user: PermissionU
     badgeTone,
     actionLabel,
     locationName: eventEffectiveLocation(event),
+    pendingAgeLabel: isPendingEvent ? eventPendingAgeLabel(event, now) : null,
   };
 }
+
 
 export function buildEventsConsultationView({
   mode,
@@ -160,18 +182,50 @@ export function buildEventsConsultationView({
       if (mode === "historico") return recordedPresence;
       return !isClosedWithoutPresenceStatus(event.status) && !recordedPresence && !isAfter(event.startsAt, now);
     })
-    .sort((a, b) => b.startsAt.getTime() - a.startsAt.getTime());
+    .sort((a, b) => {
+      if (mode === "sem-presenca") return a.startsAt.getTime() - b.startsAt.getTime();
+
+      return b.startsAt.getTime() - a.startsAt.getTime();
+    });
+
+  const eventCountLabel = countLabel(filteredEvents.length, "encontro", "encontros");
 
   return {
     filteredEvents,
-    title: mode === "historico" ? "Histórico de presença" : "Sem presença registrada",
+    title: mode === "historico" ? "Histórico de presença" : "Encontros aguardando presença",
     description: mode === "historico"
-      ? "Consulte encontros já registrados por período."
-      : "Alguns encontros ainda não têm presença registrada. Talvez já tenham acontecido, mas a presença ainda não foi marcada.",
+      ? `${eventCountLabel} com presença registrada`
+      : `${eventCountLabel} aguardando registro`,
     emptyMessage: mode === "historico"
-      ? "Nenhuma presença registrada neste período."
-      : "Nenhum encontro sem presença registrada neste período.",
+      ? EMPTY_STATE_COPY.events.noHistoryInPeriodDetail
+      : EMPTY_STATE_COPY.events.noPendingInPeriodDetail,
     periodLabel: eventPeriodLabel(period),
+  };
+}
+
+export function buildEventsConsultationSummary(events: EventListEvent[], now: Date): EventsConsultationSummary {
+  const pendingCount = buildEventsConsultationView({
+    mode: "sem-presenca",
+    period: "30d",
+    events,
+    now,
+  }).filteredEvents.length;
+  const historyCount = buildEventsConsultationView({
+    mode: "historico",
+    period: "30d",
+    events,
+    now,
+  }).filteredEvents.length;
+
+  return {
+    pendingCount,
+    pendingDescription: pendingCount > 0
+      ? "aguardando registro"
+      : "tudo em dia",
+    historyCount,
+    historyDescription: historyCount > 0
+      ? "registrados"
+      : "sem histórico",
   };
 }
 

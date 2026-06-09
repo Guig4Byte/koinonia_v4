@@ -43,23 +43,23 @@ describe("signal escalation helpers", () => {
     const supervisorRequest = { severity: SignalSeverity.URGENT, assignedTo: { name: "Ana", role: UserRole.SUPERVISOR } };
 
     expect(escalationStatusDetailForViewer(supervisorRequest, { role: UserRole.PASTOR })).toBeNull();
-    expect(escalationStatusDetailForViewer(supervisorRequest, { role: UserRole.LEADER })).toBe("Apoio solicitado à supervisão.");
-    expect(escalationStatusDetailForViewer(supervisorRequest, { role: UserRole.SUPERVISOR })).toBe("Essa célula pediu apoio da supervisão.");
+    expect(escalationStatusDetailForViewer(supervisorRequest, { role: UserRole.LEADER })).toBe("Apoio solicitado à supervisão");
+    expect(escalationStatusDetailForViewer(supervisorRequest, { role: UserRole.SUPERVISOR })).toBe("Essa célula pediu apoio da supervisão");
   });
 
 
   it("uses a pastoral state chip for pastor viewers", () => {
     const pastoralRequest = { severity: SignalSeverity.ATTENTION, assignedTo: { role: UserRole.PASTOR } };
 
-    expect(escalationStatusChipForViewer(pastoralRequest, { role: UserRole.PASTOR })).toBe("Cuidado pastoral");
+    expect(escalationStatusChipForViewer(pastoralRequest, { role: UserRole.PASTOR })).toBe("Encaminhado");
     expect(escalationStatusChipForViewer(pastoralRequest, { role: UserRole.LEADER })).toBe("Encaminhado");
   });
 
   it("uses neutral detail messages for pastoral assignments", () => {
     const pastoralRequest = { severity: SignalSeverity.ATTENTION, assignedTo: { name: "Roberto", role: UserRole.PASTOR } };
 
-    expect(escalationStatusDetailForViewer(pastoralRequest, { role: UserRole.PASTOR })).toBe("Encaminhado ao cuidado pastoral.");
-    expect(escalationStatusDetailForViewer(pastoralRequest, { role: UserRole.LEADER })).toBe("Encaminhado ao pastor.");
+    expect(escalationStatusDetailForViewer(pastoralRequest, { role: UserRole.PASTOR })).toBe("Encaminhado ao pastor");
+    expect(escalationStatusDetailForViewer(pastoralRequest, { role: UserRole.LEADER })).toBe("Encaminhado ao pastor");
   });
 });
 
