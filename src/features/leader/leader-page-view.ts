@@ -42,7 +42,9 @@ export function buildLeaderPastoralSections({
   inCarePeople: LeaderPageInCarePerson[];
   viewer: LeaderPageViewer;
 }) {
-  const pastoralSections = splitPastoralSections({ signals, inCarePeople, viewer });
+  const signalPersonIds = new Set(signals.map((signal) => signal.personId));
+  const peopleOnlyInCare = inCarePeople.filter((person) => !signalPersonIds.has(person.id));
+  const pastoralSections = splitPastoralSections({ signals, inCarePeople: peopleOnlyInCare, viewer });
   const prioritySignals = [
     ...pastoralSections.urgentOrPastoralCases,
     ...pastoralSections.supportRequests,

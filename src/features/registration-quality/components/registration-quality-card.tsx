@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
+import { useId, useState } from "react";
 import { ArrowRight, ChevronRight, ClipboardCheck, Search, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
@@ -33,14 +33,13 @@ export function RegistrationQualityCard({
   const issues = actionableRegistrationQualityIssues(summary);
   const activeIssue = issues.find((issue) => issue.key === activeIssueKey) ?? null;
   const normalizedSheetQuery = normalizeSearchText(sheetQuery);
-  const filteredSheetItems = useMemo(() => {
-    if (!activeIssue) return [];
-    if (!normalizedSheetQuery) return activeIssue.items;
-
-    return activeIssue.items.filter((item) =>
-      matchesNormalizedQuery(`${item.title} ${item.detail}`, normalizedSheetQuery),
-    );
-  }, [activeIssue, normalizedSheetQuery]);
+  const filteredSheetItems = activeIssue
+    ? activeIssue.items.filter((item) => (
+      normalizedSheetQuery
+        ? matchesNormalizedQuery(`${item.title} ${item.detail}`, normalizedSheetQuery)
+        : true
+    ))
+    : [];
   const visibleItems = filteredSheetItems.slice(0, visibleSheetItems);
   const hiddenItemsCount = Math.max(filteredSheetItems.length - visibleSheetItems, 0);
   const visibleItemsCount = Math.min(visibleSheetItems, filteredSheetItems.length);

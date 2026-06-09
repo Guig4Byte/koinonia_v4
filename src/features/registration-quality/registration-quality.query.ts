@@ -51,7 +51,7 @@ export async function getRegistrationQualitySummary(user: PermissionUser) {
   return buildRegistrationQualitySummary({
     people: people.map(({ memberships, ...person }) => ({
       ...person,
-      primaryGroup: memberships[0]?.group ?? null,
+      primaryGroup: memberships?.[0]?.group ?? null,
     })),
     users: users.map((user) => ({
       ...user,

@@ -44,8 +44,8 @@ describe("registration quality", () => {
       expect.objectContaining({
         title: "Derbe Aguiar",
         detail: "Célula Esperança",
-        href: "/pessoas/person-2",
-        actionLabel: "Abrir pessoa",
+        href: "/pessoas/person-2?acao=telefone",
+        actionLabel: "Adicionar telefone",
       }),
     ]);
     expect(summary.issues.find((issue) => issue.key === "internalLogin")?.items).toEqual([
@@ -53,8 +53,35 @@ describe("registration quality", () => {
         title: "Cibeli",
         detail: "cibeli@koinonia.local · Líder",
         href: "/usuarios/user-1/editar",
-        actionLabel: "Editar usuário",
+        actionLabel: "Trocar login",
       }),
+    ]);
+  });
+
+
+  it("prioriza pendências acionáveis por vínculo pastoral e papel", () => {
+    const summary = buildRegistrationQualitySummary({
+      people: [
+        { id: "person-3", fullName: "Visitante Betel", phone: null, primaryGroup: null },
+        { id: "person-1", fullName: "Bruno Lima", phone: null, primaryGroup: { id: "group-2", name: "Célula Esperança" } },
+        { id: "person-2", fullName: "Ana Martins", phone: null, primaryGroup: { id: "group-1", name: "Célula Semear" } },
+      ],
+      users: [
+        { id: "user-3", name: "Bruno Lima", email: "bruno@koinonia.local", role: "Líder" },
+        { id: "user-1", name: "Admin Koinonia", email: "admin@koinonia.local", role: "Admin" },
+        { id: "user-2", name: "Ana Martins", email: "ana@koinonia.local", role: "Supervisor" },
+      ],
+    });
+
+    expect(summary.issues.find((issue) => issue.key === "missingPhone")?.items).toEqual([
+      expect.objectContaining({ title: "Ana Martins", detail: "Célula Semear", actionLabel: "Adicionar telefone" }),
+      expect.objectContaining({ title: "Bruno Lima", detail: "Célula Esperança", actionLabel: "Adicionar telefone" }),
+      expect.objectContaining({ title: "Visitante Betel", detail: "Sem célula ativa", actionLabel: "Adicionar telefone" }),
+    ]);
+    expect(summary.issues.find((issue) => issue.key === "internalLogin")?.items).toEqual([
+      expect.objectContaining({ title: "Admin Koinonia", actionLabel: "Trocar login" }),
+      expect.objectContaining({ title: "Ana Martins", actionLabel: "Trocar login" }),
+      expect.objectContaining({ title: "Bruno Lima", actionLabel: "Trocar login" }),
     ]);
   });
 

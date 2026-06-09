@@ -68,7 +68,7 @@
 .headerActions {
   display: inline-flex;
   min-width: 0;
-  max-width: min(8rem, 42vw);
+  max-width: min(11rem, 48vw);
   flex: 0 1 auto;
   align-items: center;
   justify-content: flex-end;
@@ -154,7 +154,7 @@
   }
 }
 
-@media (max-width: 430px) {
+@media (max-width: 400px) {
   .headerRow {
     flex-wrap: wrap;
     row-gap: 0.48rem;

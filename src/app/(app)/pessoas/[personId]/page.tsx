@@ -17,9 +17,22 @@ import { cn } from "@/lib/cn";
 import { getPersonDetailPageData } from "./page-data";
 import styles from "./person-detail-page.module.css";
 
-export default async function PersonDetailPage({ params }: { params: Promise<{ personId: string }> }) {
-  const { personId } = await params;
+type PersonDetailSearchParams = Promise<{ acao?: string | string[] }>;
+
+function firstSearchParam(value?: string | string[]) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+export default async function PersonDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ personId: string }>;
+  searchParams: PersonDetailSearchParams;
+}) {
+  const [{ personId }, query] = await Promise.all([params, searchParams]);
   const data = await getPersonDetailPageData(personId);
+  const startWithPhoneForm = firstSearchParam(query.acao) === "telefone";
 
   return (
     <AppShell
@@ -54,7 +67,13 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
 
         <SectionHeader title="Próximo cuidado" detail="O próximo gesto, sem repetir o histórico." />
         <CareOverviewCard id="registrar-cuidado" view={data.care.overview} className={styles.primaryCareCard}>
-          <CareActions personId={data.person.id} personName={data.person.fullName} phone={data.person.phone} className={styles.careActions} />
+          <CareActions
+            personId={data.person.id}
+            personName={data.person.fullName}
+            phone={data.person.phone}
+            startWithPhoneForm={startWithPhoneForm}
+            className={styles.careActions}
+          />
           {data.care.canMarkActive ? <PersonStatusActions personId={data.person.id} /> : null}
         </CareOverviewCard>
 

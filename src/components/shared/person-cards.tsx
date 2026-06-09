@@ -1,7 +1,7 @@
 import { Avatar } from "@/components/ui/avatar";
 import type { BadgeTone } from "@/components/ui/badge";
 import { SignalHeartIndicator } from "@/components/ui/signal-heart-indicator";
-import { ListLinkCard } from "@/components/ui/list-link-card";
+import { ListLinkCard, type ListLinkCardTrailingStack } from "@/components/ui/list-link-card";
 import type { CardPriorityTone } from "@/lib/card-priority";
 import styles from "./person-cards.module.css";
 
@@ -41,6 +41,7 @@ export function PersonMiniCard(props: {
   prioritySurface?: "default" | "accentStrip";
   ctaLabel?: string;
   compact?: boolean;
+  trailingStack?: ListLinkCardTrailingStack;
   className?: string;
 }) {
   const {
@@ -53,6 +54,7 @@ export function PersonMiniCard(props: {
     prioritySurface = "default",
     ctaLabel = "Acompanhar",
     compact = false,
+    trailingStack = "none",
     className,
   } = props;
   const subtitle = contextWithoutRepeatedBadge(context, badgeLabel);
@@ -68,7 +70,7 @@ export function PersonMiniCard(props: {
       priorityTone={cardTone ?? badgeTone}
       prioritySurface={prioritySurface}
       compact={compact}
-      stackTrailingOnMobile
+      trailingStack={trailingStack}
       subtitleClassName={styles.personMiniSubtitle}
       className={className}
     />

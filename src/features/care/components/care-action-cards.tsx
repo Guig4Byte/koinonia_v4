@@ -2,10 +2,12 @@ import type { MouseEvent } from "react";
 import { ArrowLeft, CheckCircle2, MessageCircleMore, NotebookPen, Phone } from "lucide-react";
 import { CARE_NOTE_MAX_LENGTH, type CareContactLinks, type CareContactMethod } from "@/features/care/care-actions-view";
 import { CARE_COPY, careConfirmContactCopy } from "@/features/care/care-copy";
+import { PERSON_PHONE_MAX_LENGTH } from "@/features/people/person-phone";
 import { ActionTextareaPanel } from "@/components/shared/action-textarea-panel";
 import { ActionPanel } from "@/components/ui/action-panel";
 import { Button, buttonClassName } from "@/components/ui/button";
 import { Feedback } from "@/components/ui/feedback";
+import { InputField } from "@/components/ui/field";
 import { cn } from "@/lib/cn";
 
 const disabledLinkClass = "pointer-events-none cursor-not-allowed saturate-75";
@@ -34,6 +36,7 @@ export function CareContactStart({
   isPending,
   onContactAttempt,
   onExistingContact,
+  onAddPhone,
 }: {
   links: CareContactLinks;
   hasPhone: boolean;
@@ -42,6 +45,7 @@ export function CareContactStart({
   isPending: boolean;
   onContactAttempt: (method: CareContactMethod) => void;
   onExistingContact: () => void;
+  onAddPhone: () => void;
 }) {
   function handleContactClick(event: MouseEvent<HTMLAnchorElement>, method: CareContactMethod) {
     if (!hasPhone) {
@@ -57,7 +61,7 @@ export function CareContactStart({
       {hasPhone ? (
         <div className="space-y-2.5">
           {displayPhone ? (
-            <p
+            <div
               className="flex min-w-0 items-center gap-2 rounded-xl border px-3 py-2 text-[length:var(--text-sm)] font-semibold text-[color:var(--color-text-secondary)]"
               style={{
                 backgroundColor: "color-mix(in srgb, var(--brown-400) 6%, transparent)",
@@ -66,8 +70,19 @@ export function CareContactStart({
             >
               <Phone className="h-4 w-4 shrink-0" aria-hidden="true" strokeWidth={2.2} />
               <span className="shrink-0">{CARE_COPY.contactActions.phoneLabel}</span>
-              <span className="min-w-0 truncate text-[color:var(--color-text-primary)]">{displayPhone}</span>
-            </p>
+              <span className="min-w-0 flex-1 truncate text-[color:var(--color-text-primary)]">{displayPhone}</span>
+              <Button
+                type="button"
+                variant="brandGhost"
+                size="sm"
+                density="inlineCompact"
+                disabled={isPending}
+                className="shrink-0"
+                onClick={onAddPhone}
+              >
+                {CARE_COPY.contactActions.editPhoneLabel}
+              </Button>
+            </div>
           ) : null}
 
           <div className="grid grid-cols-2 gap-2">
@@ -109,9 +124,17 @@ export function CareContactStart({
           </p>
         </div>
       ) : (
-        <Feedback tone="info" title={CARE_COPY.contactActions.noPhoneTitle} compact>
-          {CARE_COPY.contactActions.noPhoneDescription}
-        </Feedback>
+        <div className="space-y-2.5">
+          <Feedback tone="info" title={CARE_COPY.contactActions.noPhoneTitle} compact>
+            {CARE_COPY.contactActions.noPhoneDescription}
+          </Feedback>
+          {canRegisterCare ? (
+            <Button type="button" variant="secondary" size="md" fullWidth disabled={isPending} onClick={onAddPhone}>
+              <Phone className="h-4 w-4" aria-hidden="true" strokeWidth={2.2} />
+              {CARE_COPY.contactActions.addPhoneLabel}
+            </Button>
+          ) : null}
+        </div>
       )}
 
       {canRegisterCare ? (
@@ -122,6 +145,58 @@ export function CareContactStart({
         </div>
       ) : null}
     </>
+  );
+}
+
+export function CarePhoneFormCard({
+  phoneId,
+  phone,
+  error,
+  isPending,
+  isEditing,
+  onPhoneChange,
+  onSave,
+  onCancel,
+}: {
+  phoneId: string;
+  phone: string;
+  error?: string | null;
+  isPending: boolean;
+  isEditing: boolean;
+  onPhoneChange: (value: string) => void;
+  onSave: () => void;
+  onCancel: () => void;
+}) {
+  const hasPhone = Boolean(phone.trim());
+
+  return (
+    <ActionPanel
+      title={isEditing ? CARE_COPY.phoneForm.editTitle : CARE_COPY.phoneForm.title}
+      description={CARE_COPY.phoneForm.description}
+    >
+      <InputField
+        id={phoneId}
+        label={CARE_COPY.phoneForm.label}
+        value={phone}
+        onChange={(event) => onPhoneChange(event.target.value)}
+        maxLength={PERSON_PHONE_MAX_LENGTH}
+        placeholder={CARE_COPY.phoneForm.placeholder}
+        type="tel"
+        inputMode="tel"
+        autoComplete="tel"
+        startIcon={<Phone className="h-4 w-4" aria-hidden="true" strokeWidth={2.2} />}
+        error={error}
+        className="mb-2"
+      />
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <Button type="button" fullWidth disabled={!hasPhone || isPending} onClick={onSave}>
+          {isPending ? CARE_COPY.phoneForm.savingLabel : CARE_COPY.phoneForm.saveLabel}
+        </Button>
+        <Button type="button" variant="secondary" fullWidth disabled={isPending} onClick={onCancel}>
+          {CARE_COPY.phoneForm.cancelLabel}
+        </Button>
+      </div>
+    </ActionPanel>
   );
 }
 

@@ -1,6 +1,6 @@
 import type { CareContactMethod as CareContactMethodType } from "./care-copy";
 
-export type CareFlowStage = "idle" | "confirm" | "confirm-existing" | "ask-note" | "note" | "done";
+export type CareFlowStage = "idle" | "phone" | "confirm" | "confirm-existing" | "ask-note" | "note" | "done";
 
 export type CareContactLinks = {
   tel?: string;
@@ -59,4 +59,8 @@ export function careKindForContactMethod(method?: CareContactMethodType) {
 
 export function careNoteId(personId?: string) {
   return `note-${personId ?? "person"}`;
+}
+
+export function carePhoneId(personId?: string) {
+  return `phone-${personId ?? "person"}`;
 }

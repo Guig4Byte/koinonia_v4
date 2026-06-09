@@ -37,6 +37,7 @@ export const ROUTES = {
   editGroup: (groupId: string) => `/celulas/${groupId}/editar`,
   editUser: (userId: string) => `/usuarios/${userId}/editar`,
   person: (personId: string) => `/pessoas/${personId}`,
+  personPhone: (personId: string) => routeWithQuery(`/pessoas/${personId}`, { acao: "telefone" }),
   event: (eventId: string) => `/eventos/${eventId}`,
 
   eventCheckInAdjustment: (eventId: string) => routeWithQuery(`/eventos/${eventId}`, { modo: "ajuste" }),

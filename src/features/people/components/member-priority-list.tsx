@@ -66,6 +66,7 @@ function MemberCards<TMember extends MemberPriorityListItem>({
             ctaLabel={memberCtaLabel(member)}
             compact={compactForMember?.(member) ?? false}
             prioritySurface="accentStrip"
+            trailingStack={member.priorityRank <= 4 ? "narrow" : "none"}
           />
         );
       })}

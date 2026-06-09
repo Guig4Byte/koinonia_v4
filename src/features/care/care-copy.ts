@@ -5,12 +5,14 @@ export type CareContactMethod = "call" | "whatsapp" | "existing";
 export const CARE_COPY = {
   errors: {
     invalidPayload: "Não foi possível ler os dados deste cuidado.",
+    invalidPhonePayload: "Não foi possível ler o telefone informado.",
     personNotFound: "Irmão não encontrado",
     noPermission: "Este cuidado não está disponível no seu acesso",
     noUpdatePermission: "Este irmão não está disponível para atualização no seu acesso",
     noVisibleGroup: "Não há célula visível no seu acesso para guardar este cuidado",
     registerFallback: "Não foi possível registrar o cuidado agora. Vale tentar novamente em instantes.",
     markActiveFallback: "Não foi possível encerrar o cuidado agora. Vale tentar novamente em instantes.",
+    phoneUpdateFallback: "Não foi possível salvar o telefone agora. Vale tentar novamente em instantes.",
   },
 
   feedback: {
@@ -25,6 +27,7 @@ export const CARE_COPY = {
     noAttentionChanged: "Nenhum sinal de atenção mudou agora.",
     careRegisteredAndPersonInCare: "Cuidado registrado. O irmão segue em cuidado.",
     personInCareSuffix: "O irmão segue em cuidado.",
+    phoneSaved: "Telefone salvo.",
   },
 
   history: {
@@ -50,6 +53,19 @@ export const CARE_COPY = {
     noPhoneTitle: "Sem telefone cadastrado",
     noPhoneDescription: "Quando um telefone for cadastrado, ligação e WhatsApp ficam disponíveis. Por enquanto, um cuidado já realizado ainda pode ser guardado.",
     registerWithoutPhoneLabel: "Guardar cuidado já realizado",
+    addPhoneLabel: "Adicionar telefone",
+    editPhoneLabel: "Editar telefone",
+  },
+
+  phoneForm: {
+    title: "Adicionar telefone",
+    editTitle: "Editar telefone",
+    description: "O telefone fica no perfil da pessoa e libera WhatsApp e ligação no cuidado pastoral.",
+    label: "Telefone de contato",
+    placeholder: "(00) 00000-0000",
+    saveLabel: "Salvar telefone",
+    savingLabel: "Salvando...",
+    cancelLabel: "Cancelar",
   },
 
   confirmContact: {

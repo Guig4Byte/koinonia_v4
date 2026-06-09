@@ -1,12 +1,14 @@
 import Link, { type LinkProps } from "next/link";
 import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { Badge, type BadgeMaxWidth, type BadgeShape, type BadgeSize, type BadgeTone } from "@/components/ui/badge";
+import { CardActionCue } from "@/components/ui/card-action-cue";
 import { priorityCardClass, type CardPriorityTone } from "@/lib/card-priority";
 import { cn } from "@/lib/cn";
 import styles from "./list-link-card.module.css";
 
 type ListLinkCardSurface = "card" | "plain";
 type ListLinkCardPrioritySurface = "default" | "accentStrip";
+export type ListLinkCardTrailingStack = "none" | "narrow";
 
 type ListLinkCardProps = LinkProps &
   Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps> & {
@@ -32,7 +34,7 @@ type ListLinkCardProps = LinkProps &
     textClassName?: string;
     trailingClassName?: string;
     arrowClassName?: string;
-    stackTrailingOnMobile?: boolean;
+    trailingStack?: ListLinkCardTrailingStack;
   };
 
 export function ListLinkCard({
@@ -58,16 +60,18 @@ export function ListLinkCard({
   textClassName,
   trailingClassName,
   arrowClassName,
-  stackTrailingOnMobile = false,
+  trailingStack = "none",
   className,
   ...props
 }: ListLinkCardProps) {
+  const stackTrailingOnNarrowMobile = trailingStack === "narrow";
+
   return (
     <Link
       className={cn(
         surface === "card" && [
           "card-hover-lift group relative isolate flex w-full max-w-full min-w-0 items-center justify-between gap-3 overflow-hidden rounded-2xl border border-[var(--color-border-card)] bg-[var(--color-bg-card)] shadow-card transition active:scale-[0.99]",
-          stackTrailingOnMobile && "max-[430px]:flex-wrap max-[430px]:items-start",
+          stackTrailingOnNarrowMobile && styles.stackTrailingOnNarrowMobile,
           compact ? "min-h-[3.75rem] px-3 py-2.5" : "min-h-[4.25rem] px-3 py-3",
           priorityCardClass(priorityTone ?? badgeTone),
           prioritySurface === "accentStrip" && styles.accentStrip,
@@ -76,7 +80,11 @@ export function ListLinkCard({
       )}
       {...props}
     >
-      <span className={cn("flex min-w-0 flex-1 items-center gap-3", stackTrailingOnMobile && "max-[430px]:basis-full", leadingClassName)}>
+      <span className={cn(
+        "flex flex-1 items-center gap-3",
+        styles.leading,
+        leadingClassName,
+      )}>
         {leading}
         <span className={cn("min-w-0 flex-1", textClassName)}>
           <span className={cn("k-item-title-sm block truncate", titleClassName)}>{title}</span>
@@ -85,8 +93,8 @@ export function ListLinkCard({
       </span>
       <span
         className={cn(
-          "flex min-w-0 max-w-[48%] shrink-0 items-center justify-end gap-2",
-          stackTrailingOnMobile && "max-[430px]:ml-[2.75rem] max-[430px]:mt-1 max-[430px]:basis-[calc(100%-2.75rem)] max-[430px]:max-w-[calc(100%-2.75rem)] max-[430px]:justify-between",
+          "flex max-w-[48%] shrink-0 items-center justify-end gap-2",
+          styles.trailing,
           trailingClassName,
         )}
       >
@@ -104,9 +112,14 @@ export function ListLinkCard({
         ) : null}
         {trailing}
         {showArrow ? (
-          <span className={cn("text-[length:var(--text-sm)] font-bold text-[color:var(--color-brand)] opacity-80 transition group-hover:opacity-100 group-active:translate-x-0.5", arrowClassName)} aria-hidden="true">
-            →
-          </span>
+          <CardActionCue
+            variant="icon"
+            tone="neutral"
+            enhanceOnGroupHover
+            mobileCompact
+            className={arrowClassName}
+            aria-hidden="true"
+          />
         ) : null}
       </span>
     </Link>

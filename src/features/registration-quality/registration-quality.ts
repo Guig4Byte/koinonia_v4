@@ -73,13 +73,30 @@ export function actionableRegistrationQualityIssues(
   return summary.issues.filter((issue) => issue.count > 0);
 }
 
-function personIssueItem(person: RegistrationQualityPerson): RegistrationQualityIssueItem {
+function registrationPersonSortRank(person: RegistrationQualityPerson): number {
+  return person.primaryGroup ? 0 : 1;
+}
+
+function sortRegistrationPeople(people: RegistrationQualityPerson[]): RegistrationQualityPerson[] {
+  return [...people].sort((current, next) => {
+    const rankDiff = registrationPersonSortRank(current) - registrationPersonSortRank(next);
+    if (rankDiff !== 0) return rankDiff;
+
+    return current.fullName.localeCompare(next.fullName, "pt-BR", { sensitivity: "base" });
+  });
+}
+
+function personIssueItem(
+  person: RegistrationQualityPerson,
+  actionLabel: string,
+  hrefForPerson: (personId: string) => string = ROUTES.person,
+): RegistrationQualityIssueItem {
   return {
     id: person.id ?? person.fullName,
     title: person.fullName,
     detail: person.primaryGroup?.name ?? "Sem célula ativa",
-    href: person.id ? ROUTES.person(person.id) : ROUTES.team,
-    actionLabel: "Abrir pessoa",
+    href: person.id ? hrefForPerson(person.id) : ROUTES.team,
+    actionLabel,
   };
 }
 
@@ -92,13 +109,41 @@ function userIssueDetail(user: RegistrationQualityUser, fallback: string): strin
   return parts.length > 0 ? parts.join(" · ") : fallback;
 }
 
-function userIssueItem(user: RegistrationQualityUser, detailFallback: string): RegistrationQualityIssueItem {
+const REGISTRATION_USER_ROLE_RANK: Record<string, number> = {
+  ADMIN: 0,
+  Admin: 0,
+  PASTOR: 1,
+  Pastor: 1,
+  SUPERVISOR: 2,
+  Supervisor: 2,
+  LEADER: 3,
+  Líder: 3,
+};
+
+function registrationUserSortRank(user: RegistrationQualityUser): number {
+  return user.role ? REGISTRATION_USER_ROLE_RANK[user.role] ?? 4 : 4;
+}
+
+function sortRegistrationUsers(users: RegistrationQualityUser[]): RegistrationQualityUser[] {
+  return [...users].sort((current, next) => {
+    const rankDiff = registrationUserSortRank(current) - registrationUserSortRank(next);
+    if (rankDiff !== 0) return rankDiff;
+
+    return userIssueTitle(current).localeCompare(userIssueTitle(next), "pt-BR", { sensitivity: "base" });
+  });
+}
+
+function userIssueItem(
+  user: RegistrationQualityUser,
+  detailFallback: string,
+  actionLabel: string,
+): RegistrationQualityIssueItem {
   return {
     id: user.id ?? user.email,
     title: userIssueTitle(user),
     detail: userIssueDetail(user, detailFallback),
     href: user.id ? ROUTES.editUser(user.id) : ROUTES.users,
-    actionLabel: "Editar usuário",
+    actionLabel,
   };
 }
 
@@ -127,28 +172,36 @@ export function buildRegistrationQualitySummary({
         "cadastros com nome possivelmente incompleto",
       ),
       detail: "Nomes com apenas uma palavra podem ser revisados depois.",
-      items: peopleWithPossiblyIncompleteNames.map(personIssueItem),
+      items: sortRegistrationPeople(peopleWithPossiblyIncompleteNames).map((person) =>
+        personIssueItem(person, "Revisar nome"),
+      ),
     },
     {
       key: "missingPhone",
       count: peopleWithoutPhone,
       label: personLabel(peopleWithoutPhone, "pessoa sem telefone", "pessoas sem telefone"),
       detail: "Telefone ajuda o cuidado pastoral a acontecer com menos atrito.",
-      items: peopleWithoutPhoneItems.map(personIssueItem),
+      items: sortRegistrationPeople(peopleWithoutPhoneItems).map((person) =>
+        personIssueItem(person, "Adicionar telefone", ROUTES.personPhone),
+      ),
     },
     {
       key: "internalLogin",
       count: usersWithInternalLogin,
       label: personLabel(usersWithInternalLogin, "usuário com login interno", "usuários com login interno"),
       detail: "Logins internos podem ser trocados por e-mails reais quando forem coletados.",
-      items: usersWithInternalLoginItems.map((user) => userIssueItem(user, "Login interno")),
+      items: sortRegistrationUsers(usersWithInternalLoginItems).map((user) =>
+        userIssueItem(user, "Login interno", "Trocar login"),
+      ),
     },
     {
       key: "unlinkedUser",
       count: usersWithoutLinkedPerson,
       label: personLabel(usersWithoutLinkedPerson, "usuário sem pessoa vinculada", "usuários sem pessoa vinculada"),
       detail: "O vínculo conecta acesso, ficha pastoral e telefone da pessoa.",
-      items: usersWithoutLinkedPersonItems.map((user) => userIssueItem(user, "Sem pessoa vinculada")),
+      items: sortRegistrationUsers(usersWithoutLinkedPersonItems).map((user) =>
+        userIssueItem(user, "Sem pessoa vinculada", "Vincular pessoa"),
+      ),
     },
   ];
   const totalIssues = issues.reduce((sum, issue) => sum + issue.count, 0);
