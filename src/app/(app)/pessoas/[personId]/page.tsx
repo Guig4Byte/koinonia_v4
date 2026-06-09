@@ -39,7 +39,11 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
                 <div className={styles.personTitleBlock}>
                   <p className={styles.eyebrow}>{data.hero.profileEyebrow}</p>
                   <h2 className={styles.personTitle}>{data.person.fullName}</h2>
-                  <p className={styles.personMeta}>{data.hero.meta}</p>
+                  <div className={styles.personMeta}>
+                    {data.hero.metaLines.map((line) => (
+                      <p key={line}>{line}</p>
+                    ))}
+                  </div>
                 </div>
                 <SignalHeartIndicator tone={data.hero.badge.tone} size="md" label={data.hero.badge.label} className={styles.personBadge} />
               </div>
@@ -109,7 +113,12 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ p
                   <div className={styles.contextHeader}>
                     <div className={styles.contextCopy}>
                       <p className={styles.contextTitle}>{membership.name}</p>
-                      <p className={styles.contextMeta}>{membership.meta}</p>
+                      <div className={styles.contextMeta}>
+                        <p>Liderança: {membership.leadershipName}</p>
+                        {membership.supervisionName ? (
+                          <p>Supervisão: {membership.supervisionName}</p>
+                        ) : null}
+                      </div>
                     </div>
                     <span className={styles.contextAction}>Abrir célula →</span>
                   </div>

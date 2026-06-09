@@ -197,6 +197,11 @@
   line-height: 1.35;
 }
 
+.personMeta > p,
+.contextMeta > p {
+  margin: 0;
+}
+
 .contextAction {
   display: inline-flex;
   min-height: 2rem;

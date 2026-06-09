@@ -2,7 +2,6 @@ import { GroupResponsibilityRole } from "@/generated/prisma/client";
 import { FALLBACK_LEADER_NAME } from "@/features/groups/group-display";
 import { responsibilityNames } from "@/features/groups/responsibility-display";
 import { ROUTES } from "@/lib/routes";
-import { membershipRoleLabel } from "./person-detail-labels";
 import type { loadPersonDetailContext } from "./person-detail.loader";
 
 type VisibleMemberships = Awaited<ReturnType<typeof loadPersonDetailContext>>["visibleMemberships"];
@@ -17,7 +16,8 @@ export function buildPersonDetailMembershipCards(visibleMemberships: VisibleMemb
       id: membership.id,
       href: ROUTES.group(group.id),
       name: group.name,
-      meta: `${membershipRoleLabel(membership.role)} · Liderança: ${leadershipName || FALLBACK_LEADER_NAME}${supervisionName ? ` · Supervisão: ${supervisionName}` : ""}`,
+      leadershipName: leadershipName || FALLBACK_LEADER_NAME,
+      supervisionName,
     };
   });
 }

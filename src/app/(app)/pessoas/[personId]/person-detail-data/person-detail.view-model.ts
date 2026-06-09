@@ -1,6 +1,4 @@
-import { GroupResponsibilityRole } from "@/generated/prisma/client";
 import { groupNameOrFallback } from "@/features/groups/group-display";
-import { responsibilityNames } from "@/features/groups/responsibility-display";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
 import { buildPersonPresenceView } from "@/features/people/person-detail-view";
 import { isInCarePerson } from "@/features/people/person-status";
@@ -16,9 +14,6 @@ export function buildPersonDetailPageData(context: Awaited<ReturnType<typeof loa
   const { user, person, signals, attendances, careTouches, visibleMemberships } = context;
   const primaryMembership = visibleMemberships[0];
   const primaryGroup = primaryMembership?.group;
-  const primaryLeadershipName = primaryGroup
-    ? responsibilityNames(primaryGroup.responsibilities, GroupResponsibilityRole.LEADER, "")
-    : "";
   const openSignalsCount = signals.length;
   const personIsInCare = isInCarePerson(person);
   const hasRiskSignal = signals.some(isUrgentOrPastoralCase);
@@ -29,9 +24,9 @@ export function buildPersonDetailPageData(context: Awaited<ReturnType<typeof loa
   const profileEyebrow = personProfileEyebrow({ openSignalsCount, isInCare: personIsInCare });
   const primaryGroupName = groupNameOrFallback(primaryGroup);
   const primaryMembershipLabel = membershipRoleLabel(primaryMembership?.role);
-  const personMeta = primaryGroup
-    ? `${primaryMembershipLabel} · ${primaryGroupName}${primaryLeadershipName ? ` · ${primaryLeadershipName}` : ""}`
-    : primaryMembershipLabel;
+  const personMetaLines = primaryGroup
+    ? [primaryMembershipLabel, primaryGroupName]
+    : [primaryMembershipLabel];
   const pastoralEscalationActorLookup = buildPastoralEscalationActorLookup(careTouches);
   const careSection = buildPersonDetailCareSection({
     user,
@@ -71,7 +66,7 @@ export function buildPersonDetailPageData(context: Awaited<ReturnType<typeof loa
     },
     hero: {
       profileEyebrow,
-      meta: personMeta,
+      metaLines: personMetaLines,
       badge: personBadge,
     },
     care: careSection,

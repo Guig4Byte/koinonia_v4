@@ -61,6 +61,10 @@ export default async function LeaderPage() {
       nav={appNavForRole(user, { active: "home", indicator: view.navIndicator, secondaryHref: leaderCellHref })}
     >
       <div className={styles.pageFlow}>
+        {!view.firstUseState && view.nextAction ? (
+          <NextActionCard action={view.nextAction} />
+        ) : null}
+
         <PulseCard
           title={view.pastoralPulse.title}
           subtitle={view.pastoralPulse.subtitle}
@@ -70,8 +74,6 @@ export default async function LeaderPage() {
 
         {view.firstUseState ? (
           <FirstUseStateCard state={view.firstUseState} />
-        ) : view.nextAction ? (
-          <NextActionCard action={view.nextAction} />
         ) : null}
 
         {!view.firstUseState && view.hasPeopleInRadar ? (
