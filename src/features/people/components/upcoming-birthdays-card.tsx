@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Cake, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import type { UpcomingBirthdayItem } from "@/features/people/upcoming-birthdays";
@@ -10,6 +10,48 @@ const UPCOMING_BIRTHDAYS_VISIBLE_LIMIT = 4;
 const GROUPED_UPCOMING_BIRTHDAYS_VISIBLE_LIMIT = 5;
 
 type UpcomingBirthdaysCardVariant = "list" | "grouped";
+
+function BirthdayCelebrationIcon() {
+  return (
+    <span className={styles.iconWrap} aria-hidden="true">
+      <span className={styles.iconHalo} />
+      <span className={styles.iconCircle}>
+        <span className={styles.confettiField}>
+          <span className={`${styles.confettiPiece} ${styles.confettiPieceA}`} />
+          <span className={`${styles.confettiPiece} ${styles.confettiPieceB}`} />
+          <span className={`${styles.confettiPiece} ${styles.confettiPieceC}`} />
+          <span className={`${styles.confettiPiece} ${styles.confettiPieceD}`} />
+          <span className={`${styles.confettiDot} ${styles.confettiDotA}`} />
+          <span className={`${styles.confettiDot} ${styles.confettiDotB}`} />
+          <span className={`${styles.confettiDot} ${styles.confettiDotC}`} />
+        </span>
+
+        <span className={styles.cakeIcon}>
+          <span className={styles.candleRow}>
+            <span className={styles.candle}>
+              <span className={styles.flameOuter}>
+                <span className={styles.flameInner} />
+              </span>
+            </span>
+            <span className={styles.candle}>
+              <span className={styles.flameOuter}>
+                <span className={styles.flameInner} />
+              </span>
+            </span>
+            <span className={styles.candle}>
+              <span className={styles.flameOuter}>
+                <span className={styles.flameInner} />
+              </span>
+            </span>
+          </span>
+          <span className={styles.cakeTop} />
+          <span className={styles.cakeBody} />
+          <span className={styles.cakePlate} />
+        </span>
+      </span>
+    </span>
+  );
+}
 
 function BirthdayListItem({
   birthday,
@@ -85,10 +127,8 @@ export function UpcomingBirthdaysCard({
     <Card as="section" padding="sm" radius="lg" surface="pastoralCue" accentTone="care" className={className}>
       <div className={styles.content}>
         <div className={styles.header}>
-          <span className={styles.iconWrap} aria-hidden="true">
-            <Cake className="h-4 w-4" strokeWidth={2.2} />
-          </span>
-          <div className="min-w-0">
+          <BirthdayCelebrationIcon />
+          <div className={styles.headerCopy}>
             <p className="k-eyebrow mb-1">Aniversários próximos</p>
             <h2 className={styles.title}>{title}</h2>
             <p className={styles.description}>{description}</p>
