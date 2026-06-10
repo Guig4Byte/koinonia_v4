@@ -1,4 +1,4 @@
-import { PersonStatus } from "@/generated/prisma/client";
+import { GroupResponsibilityRole, PersonStatus } from "@/generated/prisma/client";
 import { activeNonVisitorMembershipWhere } from "@/features/groups/group-query";
 import { canUsePastorDashboard, type PermissionUser } from "@/features/permissions/permissions";
 import { userRoleLabels } from "@/features/users/user-display";
@@ -28,6 +28,21 @@ export async function getRegistrationQualitySummary(user: PermissionUser) {
           orderBy: { joinedAt: "asc" },
           take: 1,
         },
+        user: {
+          select: {
+            groupResponsibilities: {
+              where: {
+                churchId: user.churchId,
+                activeUntil: null,
+                group: { is: { isActive: true } },
+              },
+              select: {
+                role: true,
+                group: { select: { id: true, name: true } },
+              },
+            },
+          },
+        },
       },
       orderBy: { fullName: "asc" },
     }),
@@ -49,10 +64,25 @@ export async function getRegistrationQualitySummary(user: PermissionUser) {
   ]);
 
   return buildRegistrationQualitySummary({
-    people: people.map(({ memberships, ...person }) => ({
-      ...person,
-      primaryGroup: memberships?.[0]?.group ?? null,
-    })),
+    people: people.map(({ memberships, user: personUser, ...person }) => {
+      const responsibilities = personUser?.groupResponsibilities ?? [];
+      const ledGroups = responsibilities
+        .filter((responsibility) => responsibility.role === GroupResponsibilityRole.LEADER)
+        .map((responsibility) => responsibility.group)
+        .sort((current, next) => current.name.localeCompare(next.name, "pt-BR", { sensitivity: "base" }));
+      const supervisedGroups = responsibilities
+        .filter((responsibility) => responsibility.role === GroupResponsibilityRole.SUPERVISOR)
+        .map((responsibility) => responsibility.group)
+        .sort((current, next) => current.name.localeCompare(next.name, "pt-BR", { sensitivity: "base" }));
+
+      return {
+        ...person,
+        primaryGroup: memberships?.[0]?.group ?? null,
+        ledGroups,
+        supervisedGroups,
+        hasSystemAccess: Boolean(personUser),
+      };
+    }),
     users: users.map((user) => ({
       ...user,
       role: userRoleLabels[user.role],

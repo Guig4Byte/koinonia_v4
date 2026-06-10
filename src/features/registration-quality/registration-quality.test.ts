@@ -48,6 +48,14 @@ describe("registration quality", () => {
         actionLabel: "Adicionar telefone",
       }),
     ]);
+    expect(summary.issues.find((issue) => issue.key === "possiblyIncompleteName")?.items).toEqual([
+      expect.objectContaining({
+        title: "Cibeli",
+        detail: "Célula Semear",
+        href: "/pessoas/person-1?acao=nome#perfil",
+        actionLabel: "Revisar nome",
+      }),
+    ]);
     expect(summary.issues.find((issue) => issue.key === "internalLogin")?.items).toEqual([
       expect.objectContaining({
         title: "Cibeli",
@@ -82,6 +90,55 @@ describe("registration quality", () => {
       expect.objectContaining({ title: "Admin Koinonia", actionLabel: "Trocar login" }),
       expect.objectContaining({ title: "Ana Martins", actionLabel: "Trocar login" }),
       expect.objectContaining({ title: "Bruno Lima", actionLabel: "Trocar login" }),
+    ]);
+  });
+
+  it("descreve pessoas com acesso ao sistema pelo vínculo mais relevante", () => {
+    const summary = buildRegistrationQualitySummary({
+      people: [
+        {
+          id: "person-supervisor",
+          fullName: "Cibeli",
+          phone: "+5521999999999",
+          primaryGroup: null,
+          supervisedGroups: [{ id: "group-1", name: "Célula Semear" }],
+          hasSystemAccess: true,
+        },
+        {
+          id: "person-supervisor-many",
+          fullName: "Fernando",
+          phone: "+5521888888888",
+          primaryGroup: null,
+          supervisedGroups: [
+            { id: "group-1", name: "Célula Semear" },
+            { id: "group-2", name: "Célula Esperança" },
+          ],
+          hasSystemAccess: true,
+        },
+        {
+          id: "person-leader",
+          fullName: "Derbe",
+          phone: "+5521777777777",
+          primaryGroup: null,
+          ledGroups: [{ id: "group-3", name: "Célula Centro" }],
+          hasSystemAccess: true,
+        },
+        {
+          id: "person-system",
+          fullName: "Adriana",
+          phone: "+5521666666666",
+          primaryGroup: null,
+          hasSystemAccess: true,
+        },
+      ],
+      users: [],
+    });
+
+    expect(summary.issues.find((issue) => issue.key === "possiblyIncompleteName")?.items).toEqual([
+      expect.objectContaining({ title: "Cibeli", detail: "Acompanha 1 célula" }),
+      expect.objectContaining({ title: "Derbe", detail: "Lidera Célula Centro" }),
+      expect.objectContaining({ title: "Fernando", detail: "Acompanha 2 células" }),
+      expect.objectContaining({ title: "Adriana", detail: "Usuário do sistema" }),
     ]);
   });
 

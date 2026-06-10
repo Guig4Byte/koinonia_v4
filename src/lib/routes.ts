@@ -37,6 +37,7 @@ export const ROUTES = {
   editGroup: (groupId: string) => `/celulas/${groupId}/editar`,
   editUser: (userId: string) => `/usuarios/${userId}/editar`,
   person: (personId: string) => `/pessoas/${personId}`,
+  personNameReview: (personId: string) => `${routeWithQuery(`/pessoas/${personId}`, { acao: "nome" })}#perfil`,
   personPhone: (personId: string) => routeWithQuery(`/pessoas/${personId}`, { acao: "telefone" }),
   event: (eventId: string) => `/eventos/${eventId}`,
 

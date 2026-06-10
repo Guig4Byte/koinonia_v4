@@ -12,6 +12,7 @@
 .personHero {
   --priority-card-decor-color: var(--person-decor-color);
   animation: personHeroPulse 3.2s ease-in-out infinite;
+  scroll-margin-top: 1rem;
 }
 
 .personHeroContent {
@@ -63,6 +64,29 @@
   font-size: var(--text-sm);
   font-weight: 500;
   line-height: 1.4;
+}
+
+.nameReviewNotice {
+  margin-top: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--person-decor-color) 24%, var(--color-border-divider));
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--person-decor-color) 8%, var(--surface-alt));
+  padding: 0.75rem;
+}
+
+.nameReviewTitle {
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.nameReviewDetail {
+  margin-top: 0.25rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 1.45;
 }
 
 .personBadge.personBadge {

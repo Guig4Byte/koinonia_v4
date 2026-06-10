@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
-import { PersonStatus, UserRole } from "@/generated/prisma/client";
+import { GroupResponsibilityRole, PersonStatus, UserRole } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getRegistrationQualitySummary } from "@/features/registration-quality/registration-quality.query";
 
@@ -63,4 +63,51 @@ describe("registration quality query", () => {
       }),
     );
   });
+  it("inclui responsabilidades ativas da pessoa para descrever vínculo de liderança ou supervisão", async () => {
+    prismaMock.person.findMany.mockResolvedValue([
+      {
+        id: "person-1",
+        fullName: "Cibeli",
+        phone: "+5521999999999",
+        memberships: [],
+        user: {
+          groupResponsibilities: [
+            {
+              role: GroupResponsibilityRole.SUPERVISOR,
+              group: { id: "group-1", name: "Célula Semear" },
+            },
+          ],
+        },
+      },
+    ]);
+    prismaMock.user.findMany.mockResolvedValue([]);
+
+    const summary = await getRegistrationQualitySummary({
+      id: "pastor-1",
+      churchId: "church-1",
+      role: UserRole.PASTOR,
+    });
+
+    expect(prismaMock.person.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        select: expect.objectContaining({
+          user: {
+            select: {
+              groupResponsibilities: expect.objectContaining({
+                where: {
+                  churchId: "church-1",
+                  activeUntil: null,
+                  group: { is: { isActive: true } },
+                },
+              }),
+            },
+          },
+        }),
+      }),
+    );
+    expect(summary.issues.find((issue) => issue.key === "possiblyIncompleteName")?.items).toEqual([
+      expect.objectContaining({ title: "Cibeli", detail: "Acompanha 1 célula" }),
+    ]);
+  });
+
 });
