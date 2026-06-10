@@ -6,6 +6,7 @@ import { getSupervisorDashboard } from "@/features/dashboard/queries";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { SupervisorFocusPanel } from "@/features/pastoral-home/components/supervisor-focus-panel";
 import { FirstUseStateCard } from "@/features/pastoral-home/components/first-use-state-card";
+import { UpcomingBirthdaysCard } from "@/features/people/components/upcoming-birthdays-card";
 import { EMPTY_STATE_COPY } from "@/features/empty-states/empty-state-copy";
 import { buildSupervisorPageView } from "@/features/pastoral-home/supervisor-page-view";
 import { canUseSupervisorDashboard } from "@/features/permissions/permissions";
@@ -33,6 +34,10 @@ export default async function SupervisorPage() {
         subtitle={view.pastoralPulse.subtitle}
         tone={view.pastoralPulse.tone}
       />
+
+      {dashboard.upcomingBirthdays.length > 0 ? (
+        <UpcomingBirthdaysCard birthdays={dashboard.upcomingBirthdays} className="mt-4 mb-4" />
+      ) : null}
 
       {view.firstUseState ? (
         <FirstUseStateCard state={view.firstUseState} />

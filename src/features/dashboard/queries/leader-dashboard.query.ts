@@ -65,5 +65,6 @@ export async function getLeaderDashboard(user: PermissionUser): Promise<LeaderDa
     inCarePeople,
     currentEvent,
     hasRecordedMeetings,
+    upcomingBirthdays: groupScoped.upcomingBirthdays,
   };
 }

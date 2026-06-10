@@ -59,6 +59,7 @@ describe("leader-page-view", () => {
       inCarePeople: [inCare, hiddenInCare],
       currentEvent: null,
       hasRecordedMeetings: true,
+      upcomingBirthdays: [],
     };
     const view = buildLeaderPageView({ dashboard, viewer });
 
@@ -78,6 +79,7 @@ describe("leader-page-view", () => {
         inCarePeople: [],
         currentEvent: null,
         hasRecordedMeetings: false,
+        upcomingBirthdays: [],
       },
       viewer,
     });
@@ -106,6 +108,7 @@ describe("leader-page-view", () => {
           group: { name: "Célula Central", locationName: "Casa da Ana" },
         },
         hasRecordedMeetings: false,
+        upcomingBirthdays: [],
       },
       viewer,
     });
