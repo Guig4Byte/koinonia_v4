@@ -7,6 +7,7 @@ import { PastorTeamSummaryCard } from "@/features/pastoral-home/components/pasto
 import { NextPastoralActionCard } from "@/features/pastoral-home/components/next-pastoral-action-card";
 import { FirstUseStateCard } from "@/features/pastoral-home/components/first-use-state-card";
 import { RegistrationQualityCard } from "@/features/registration-quality/components/registration-quality-card";
+import { UpcomingBirthdaysCard } from "@/features/people/components/upcoming-birthdays-card";
 import { SearchBox } from "@/features/search/components/search-box";
 import { getPastorDashboard } from "@/features/dashboard/queries";
 import { getRegistrationQualitySummary } from "@/features/registration-quality/registration-quality.query";
@@ -42,6 +43,17 @@ export default async function PastorPage() {
       {view.nextAction ? <NextPastoralActionCard action={view.nextAction} /> : null}
 
       <SearchBox placeholder="Buscar qualquer irmão..." />
+
+      {dashboard.upcomingBirthdays.length > 0 ? (
+        <UpcomingBirthdaysCard
+          birthdays={dashboard.upcomingBirthdays}
+          className="mt-4 mb-0"
+          description="Próximos 30 dias da igreja, organizados por célula."
+          title="Datas próximas na igreja"
+          variant="grouped"
+          visibleLimit={5}
+        />
+      ) : null}
 
       <PastoralHealthCard
         overview={view.healthOverview}

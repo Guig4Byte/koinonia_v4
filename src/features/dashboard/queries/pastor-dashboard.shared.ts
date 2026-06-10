@@ -8,7 +8,16 @@ export function pastorTeamGroupInclude(presenceHistoryWhere: ReturnType<typeof p
     responsibilities: activeGroupResponsibilitiesInclude,
     memberships: {
       where: activeNonVisitorMembershipWhere,
-      include: { person: { select: { status: true } } },
+      include: {
+        person: {
+          select: {
+            id: true,
+            fullName: true,
+            birthDate: true,
+            status: true,
+          },
+        },
+      },
     },
     signals: { where: { status: SignalStatus.OPEN }, include: { assignedTo: true } },
     events: {

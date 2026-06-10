@@ -29,6 +29,7 @@ function dashboard(overrides: Partial<PastorPageDashboard> = {}): PastorPageDash
       presenceRate: 0,
       recordedEventsCount: 0,
     },
+    upcomingBirthdays: overrides.upcomingBirthdays ?? [],
   };
 }
 
