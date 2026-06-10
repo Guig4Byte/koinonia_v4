@@ -72,16 +72,16 @@ export default async function PersonDetailPage({
                 </div>
                 <SignalHeartIndicator tone={data.hero.badge.tone} size="md" label={data.hero.badge.label} className={styles.personBadge} />
               </div>
-
-              <PersonBirthdayCard
-                personId={data.person.id}
-                birthDate={data.person.birthDate}
-                startWithForm={startWithBirthdayForm}
-                className={styles.personBirthdayCard}
-              />
             </div>
           </div>
         </PriorityCard>
+
+        <PersonBirthdayCard
+          personId={data.person.id}
+          birthDate={data.person.birthDate}
+          startWithForm={startWithBirthdayForm}
+          className={styles.personBirthdayCard}
+        />
 
         <SectionHeader title="Próximo cuidado" detail="O próximo gesto, sem repetir o histórico." />
         <CareOverviewCard id="registrar-cuidado" view={data.care.overview} className={styles.primaryCareCard}>

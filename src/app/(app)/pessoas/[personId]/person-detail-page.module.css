@@ -68,7 +68,8 @@
 
 
 .personBirthdayCard {
-  margin-top: 0.85rem;
+  margin-top: 0.75rem;
+  scroll-margin-top: 1rem;
   border-color: color-mix(in srgb, var(--person-decor-color) 20%, var(--color-border-card));
   background:
     linear-gradient(90deg, color-mix(in srgb, var(--person-decor-color) 6%, transparent), transparent 64%),

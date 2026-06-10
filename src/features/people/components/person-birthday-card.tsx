@@ -23,6 +23,31 @@ const CURRENT_YEAR = new Date().getFullYear();
 
 const BIRTHDAY_DAY_OPTIONS = Array.from({ length: 31 }, (_, index) => String(index + 1).padStart(2, "0"));
 
+function isLeapYear(year: number) {
+  return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+}
+
+function birthdayDayLimit(month?: string, year?: string) {
+  const monthNumber = Number(month);
+  const yearNumber = Number(year);
+
+  if (!monthNumber) return 31;
+  if ([4, 6, 9, 11].includes(monthNumber)) return 30;
+  if (monthNumber === 2) {
+    return Number.isInteger(yearNumber) && year?.length === 4
+      ? isLeapYear(yearNumber)
+        ? 29
+        : 28
+      : 29;
+  }
+
+  return 31;
+}
+
+function birthdayDayOptions(month?: string, year?: string) {
+  return BIRTHDAY_DAY_OPTIONS.slice(0, birthdayDayLimit(month, year));
+}
+
 const BIRTHDAY_MONTH_OPTIONS = [
   { value: "01", label: "Jan" },
   { value: "02", label: "Fev" },
@@ -108,6 +133,7 @@ export function PersonBirthdayCard({
   const hasBirthday = Boolean(savedBirthDate);
   const displayBirthday = formatPersonBirthday(savedBirthDate);
   const selectedMonthLabel = BIRTHDAY_MONTH_OPTIONS.find((month) => month.value === pickerDraft.month)?.label;
+  const pickerDayOptions = birthdayDayOptions(pickerDraft.month, pickerDraft.year);
 
   function openForm() {
     clearError();
@@ -148,10 +174,19 @@ export function PersonBirthdayCard({
   }
 
   function selectPickerValue(field: keyof BirthdayPickerDraft, value: string) {
-    setPickerDraft((currentDraft) => ({
-      ...currentDraft,
-      [field]: field === "year" ? digitsOnly(value, 4) : digitsOnly(value, 2),
-    }));
+    setPickerDraft((currentDraft) => {
+      const nextDraft = {
+        ...currentDraft,
+        [field]: field === "year" ? digitsOnly(value, 4) : digitsOnly(value, 2),
+      };
+      const dayLimit = birthdayDayLimit(nextDraft.month, nextDraft.year);
+
+      if (nextDraft.day && Number(nextDraft.day) > dayLimit) {
+        nextDraft.day = "";
+      }
+
+      return nextDraft;
+    });
     setPickerError("");
   }
 
@@ -168,7 +203,7 @@ export function PersonBirthdayCard({
     const parsed = validatePersonBirthdayValue(nextDraft);
 
     if (!parsed.ok) {
-      setPickerError(personBirthdayErrorMessage(parsed.error) ?? "Data inválida.");
+      setPickerError("Escolha um dia válido para o mês selecionado.");
       return;
     }
 
@@ -226,9 +261,9 @@ export function PersonBirthdayCard({
         {!isEditing ? (
           <Button
             type="button"
-            variant="brandGhost"
+            variant="actionPillSecondary"
             size="sm"
-            density="inlineCompact"
+            density="actionPillCompact"
             className="shrink-0"
             onClick={openForm}
           >
@@ -335,14 +370,13 @@ export function PersonBirthdayCard({
             <div>
               <p className={pickerStyles.label}>Dia</p>
               <div className="grid grid-cols-7 gap-1.5" role="group" aria-label="Escolher dia do aniversário">
-                {BIRTHDAY_DAY_OPTIONS.map((day) => (
+                {pickerDayOptions.map((day) => (
                   <Button
                     key={day}
                     type="button"
                     variant={pickerDraft.day === day ? "warmSoft" : "secondary"}
                     size="sm"
                     density="inlineCompact"
-                    className="min-h-9 px-1.5"
                     onClick={() => selectPickerValue("day", day)}
                   >
                     {day}

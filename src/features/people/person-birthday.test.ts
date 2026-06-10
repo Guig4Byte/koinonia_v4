@@ -35,7 +35,7 @@ describe("person birthday", () => {
       ok: false,
       error: "aniversario-invalido",
     });
-    expect(personBirthdayErrorMessage("aniversario-invalido")).toBe("Informe uma data no formato dd/mm/aaaa.");
+    expect(personBirthdayErrorMessage("aniversario-invalido")).toBe("Informe uma data válida no formato dd/mm/aaaa.");
   });
 
   it("formata o aniversário sem deslocar o dia pelo fuso local", () => {

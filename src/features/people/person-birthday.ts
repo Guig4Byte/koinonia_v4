@@ -145,7 +145,7 @@ export function parsePersonBirthdayPayload(payload: unknown): PersonBirthdayVali
 
 export function personBirthdayErrorMessage(error?: PersonBirthdayError | null) {
   const messages: Record<PersonBirthdayError, string> = {
-    "aniversario-invalido": "Informe uma data no formato dd/mm/aaaa.",
+    "aniversario-invalido": "Informe uma data válida no formato dd/mm/aaaa.",
     "aniversario-futuro": "A data de aniversário não pode ficar no futuro.",
   };
 
