@@ -11,6 +11,7 @@ import { CareTouchHistory } from "@/features/care/components/care-touch-history"
 import { PersonStatusActions } from "@/features/care/components/person-status-actions";
 import { CARE_COPY } from "@/features/care/care-copy";
 import { EMPTY_STATE_COPY } from "@/features/empty-states/empty-state-copy";
+import { PersonBirthdayCard } from "@/features/people/components/person-birthday-card";
 import { PersonPresenceCard } from "@/features/people/components/person-presence-card";
 import { SignalSupportActions } from "@/features/signals/components/signal-support-actions";
 import { cn } from "@/lib/cn";
@@ -35,6 +36,7 @@ export default async function PersonDetailPage({
   const requestedAction = firstSearchParam(query.acao);
   const startWithPhoneForm = requestedAction === "telefone";
   const shouldShowNameReviewNotice = requestedAction === "nome";
+  const startWithBirthdayForm = requestedAction === "aniversario";
 
   return (
     <AppShell
@@ -70,10 +72,16 @@ export default async function PersonDetailPage({
                 </div>
                 <SignalHeartIndicator tone={data.hero.badge.tone} size="md" label={data.hero.badge.label} className={styles.personBadge} />
               </div>
-
             </div>
           </div>
         </PriorityCard>
+
+        <PersonBirthdayCard
+          personId={data.person.id}
+          birthDate={data.person.birthDate}
+          startWithForm={startWithBirthdayForm}
+          className={styles.personBirthdayCard}
+        />
 
         <SectionHeader title="Próximo cuidado" detail="O próximo gesto, sem repetir o histórico." />
         <CareOverviewCard id="registrar-cuidado" view={data.care.overview} className={styles.primaryCareCard}>

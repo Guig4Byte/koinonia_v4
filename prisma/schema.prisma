@@ -142,6 +142,7 @@ model Person {
   churchId    String       @db.Uuid
   fullName    String
   phone       String?
+  birthDate   DateTime?    @db.Date
   avatarUrl   String?
   status      PersonStatus @default(ACTIVE)
   shortNote   String?
