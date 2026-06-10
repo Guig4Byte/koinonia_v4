@@ -3,6 +3,7 @@ import type { WeeklyPresenceSummary } from "@/features/dashboard/presence-health
 import type { PastoralHealthOverview } from "@/features/dashboard/pastoral-health";
 import type { PastoralPulseMessage } from "@/features/pastoral-pulse";
 import type { NextPastoralAction } from "@/features/pastoral-home/components/next-pastoral-action-card";
+import type { UpcomingBirthdayItem } from "@/features/people/upcoming-birthdays";
 import { buildPastorFirstUseState, firstUsePulseForRole, type FirstUseState } from "@/features/pastoral-home/first-use-state";
 import { FILTER_ATTENTION, FILTER_PASTORAL, FILTER_SUPPORT, FILTER_URGENT } from "@/lib/filter-param";
 import { countLabel } from "@/lib/format";
@@ -29,6 +30,7 @@ export type PastorPageDashboard = {
   teamSummary: PastorPageTeamSummary;
   healthOverview: PastoralHealthOverview;
   weeklyPresence: WeeklyPresenceSummary;
+  upcomingBirthdays: UpcomingBirthdayItem[];
 };
 
 export type PastorPageSummaryItem = {

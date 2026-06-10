@@ -7,8 +7,17 @@ import { ROUTES } from "@/lib/routes";
 import styles from "./upcoming-birthdays-card.module.css";
 
 const UPCOMING_BIRTHDAYS_VISIBLE_LIMIT = 4;
+const GROUPED_UPCOMING_BIRTHDAYS_VISIBLE_LIMIT = 5;
 
-function BirthdayListItem({ birthday }: { birthday: UpcomingBirthdayItem }) {
+type UpcomingBirthdaysCardVariant = "list" | "grouped";
+
+function BirthdayListItem({
+  birthday,
+  showGroupName = true,
+}: {
+  birthday: UpcomingBirthdayItem;
+  showGroupName?: boolean;
+}) {
   return (
     <Link
       href={ROUTES.person(birthday.personId)}
@@ -19,7 +28,7 @@ function BirthdayListItem({ birthday }: { birthday: UpcomingBirthdayItem }) {
       <div className={styles.copy}>
         <p className={styles.name}>{birthday.fullName}</p>
         <p className={styles.context}>
-          {[birthday.groupName, birthday.dateLabel].filter(Boolean).join(" · ")}
+          {[showGroupName ? birthday.groupName : null, birthday.dateLabel].filter(Boolean).join(" · ")}
         </p>
       </div>
       <span className={styles.relativeLabel}>
@@ -30,17 +39,47 @@ function BirthdayListItem({ birthday }: { birthday: UpcomingBirthdayItem }) {
   );
 }
 
+function groupVisibleBirthdaysByCell(birthdays: UpcomingBirthdayItem[]) {
+  const groups = new Map<string, UpcomingBirthdayItem[]>();
+
+  birthdays.forEach((birthday) => {
+    const groupName = birthday.groupName || "Sem célula informada";
+    const currentBirthdays = groups.get(groupName) ?? [];
+
+    currentBirthdays.push(birthday);
+    groups.set(groupName, currentBirthdays);
+  });
+
+  return Array.from(groups.entries()).map(([groupName, groupBirthdays]) => ({
+    groupName,
+    birthdays: groupBirthdays,
+  }));
+}
+
 export function UpcomingBirthdaysCard({
   birthdays,
   className,
+  description = "Datas dos próximos 30 dias no seu escopo pastoral.",
+  title = "Celebrar também é cuidado",
+  variant = "list",
+  visibleLimit,
 }: {
   birthdays: UpcomingBirthdayItem[];
   className?: string;
+  description?: string;
+  title?: string;
+  variant?: UpcomingBirthdaysCardVariant;
+  visibleLimit?: number;
 }) {
   if (birthdays.length === 0) return null;
 
-  const visibleBirthdays = birthdays.slice(0, UPCOMING_BIRTHDAYS_VISIBLE_LIMIT);
+  const resolvedVisibleLimit = visibleLimit
+    ?? (variant === "grouped"
+      ? GROUPED_UPCOMING_BIRTHDAYS_VISIBLE_LIMIT
+      : UPCOMING_BIRTHDAYS_VISIBLE_LIMIT);
+  const visibleBirthdays = birthdays.slice(0, resolvedVisibleLimit);
   const hiddenCount = birthdays.length - visibleBirthdays.length;
+  const groupedBirthdays = variant === "grouped" ? groupVisibleBirthdaysByCell(visibleBirthdays) : [];
 
   return (
     <Card as="section" padding="sm" radius="lg" surface="pastoralCue" accentTone="care" className={className}>
@@ -51,16 +90,31 @@ export function UpcomingBirthdaysCard({
           </span>
           <div className="min-w-0">
             <p className="k-eyebrow mb-1">Aniversários próximos</p>
-            <h2 className={styles.title}>Celebrar também é cuidado</h2>
-            <p className={styles.description}>Datas dos próximos 30 dias no seu escopo pastoral.</p>
+            <h2 className={styles.title}>{title}</h2>
+            <p className={styles.description}>{description}</p>
           </div>
         </div>
 
-        <div className={styles.list}>
-          {visibleBirthdays.map((birthday) => (
-            <BirthdayListItem key={birthday.personId} birthday={birthday} />
-          ))}
-        </div>
+        {variant === "grouped" ? (
+          <div className={styles.groupedList}>
+            {groupedBirthdays.map((group) => (
+              <div key={group.groupName} className={styles.groupBlock}>
+                <p className={styles.groupTitle}>{group.groupName}</p>
+                <div className={styles.list}>
+                  {group.birthdays.map((birthday) => (
+                    <BirthdayListItem key={birthday.personId} birthday={birthday} showGroupName={false} />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className={styles.list}>
+            {visibleBirthdays.map((birthday) => (
+              <BirthdayListItem key={birthday.personId} birthday={birthday} />
+            ))}
+          </div>
+        )}
 
         {hiddenCount > 0 ? (
           <p className={styles.moreMessage}>

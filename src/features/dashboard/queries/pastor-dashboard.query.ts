@@ -1,4 +1,4 @@
-import { EventType, GroupKind, GroupResponsibilityRole, UserRole } from "@/generated/prisma/client";
+import { EventType, GroupKind, GroupResponsibilityRole, PersonStatus, UserRole } from "@/generated/prisma/client";
 import { buildPastoralHealthOverview } from "@/features/dashboard/pastoral-health";
 import { buildWeeklyPresenceMonthTrend, type WeeklyPresenceTrendPoint } from "@/features/dashboard/presence-health";
 import {
@@ -13,6 +13,7 @@ import { canUsePastorDashboard, type PermissionUser } from "@/features/permissio
 import { addBrasiliaDays, endOfBrasiliaWeek, startOfBrasiliaDay, startOfBrasiliaWeek } from "@/lib/brasilia-time";
 import { prisma } from "@/lib/prisma";
 import { pastorTeamGroupInclude } from "@/features/dashboard/queries/pastor-dashboard.shared";
+import { buildUpcomingBirthdays } from "@/features/people/upcoming-birthdays";
 
 const PASTOR_PRESENCE_TREND_WEEK_LABELS = ["-4 sem", "-3 sem", "-2 sem", "-1 sem"] as const;
 
@@ -107,6 +108,19 @@ export async function getPastorDashboard(user: PermissionUser) {
   const presence = summarizeEventsPresence(completedEvents);
   const previousMonthPresence = summarizeEventsPresence(previousCompletedEvents);
   const groups = activeGroups.map(buildPastorTeamGroup);
+  const upcomingBirthdays = buildUpcomingBirthdays(
+    activeGroups.flatMap((group) => (
+      group.memberships
+        .filter((membership) => membership.person.status !== PersonStatus.INACTIVE)
+        .map((membership) => ({
+          id: membership.person.id,
+          fullName: membership.person.fullName,
+          birthDate: membership.person.birthDate,
+          groupName: group.name,
+        }))
+    )),
+    { referenceDate: now },
+  );
   const groupsNeedingAttention = groups.filter((group) => groupPastoralState(group).needsTeamAttention);
   const hasRecordedCellMeetings = groups.some((group) => group.recordedEventsCount > 0);
 
@@ -123,6 +137,7 @@ export async function getPastorDashboard(user: PermissionUser) {
       }),
     },
     healthOverview: buildPastoralHealthOverview(groups),
+    upcomingBirthdays,
     teamSummary: {
       supervisorsCount,
       groupsCount: groups.length,
