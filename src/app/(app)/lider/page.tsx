@@ -4,6 +4,7 @@ import { EmptyState, PulseCard } from "@/components/shared/base-cards";
 import { NextActionCard } from "@/components/shared/next-action-card";
 import { PastoralSectionTitle } from "@/features/pastoral-home/components/pastoral-section";
 import { FirstUseStateCard } from "@/features/pastoral-home/components/first-use-state-card";
+import { UpcomingBirthdaysCard } from "@/features/people/components/upcoming-birthdays-card";
 import { EMPTY_STATE_COPY } from "@/features/empty-states/empty-state-copy";
 import { InCareSection, PastoralSignalSection } from "@/features/pastoral-home/components/pastoral-list-cards";
 import { buildLeaderPageView } from "@/features/leader/leader-page-view";
@@ -74,6 +75,10 @@ export default async function LeaderPage() {
 
         {view.firstUseState ? (
           <FirstUseStateCard state={view.firstUseState} />
+        ) : null}
+
+        {dashboard.upcomingBirthdays.length > 0 ? (
+          <UpcomingBirthdaysCard birthdays={dashboard.upcomingBirthdays} />
         ) : null}
 
         {!view.firstUseState && view.hasPeopleInRadar ? (

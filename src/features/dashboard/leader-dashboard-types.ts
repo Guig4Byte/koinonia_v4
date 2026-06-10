@@ -1,6 +1,7 @@
 import type { UserRole } from "@/generated/prisma/client";
 import type { RelevantEventCandidate } from "@/features/events/relevant-event";
 import type { SignalDetailLike } from "@/features/signals/display";
+import type { UpcomingBirthdayItem } from "@/features/people/upcoming-birthdays";
 import type { SectionPersonWithIdentity, SectionSignalWithIdentity } from "@/features/signals/sections";
 
 export const LEADER_RELEVANT_EVENT_LOOKBACK_DAYS = 60;
@@ -36,4 +37,5 @@ export type LeaderDashboard = {
   inCarePeople: LeaderPageInCarePerson[];
   currentEvent: LeaderCurrentEvent | null;
   hasRecordedMeetings: boolean;
+  upcomingBirthdays: UpcomingBirthdayItem[];
 };

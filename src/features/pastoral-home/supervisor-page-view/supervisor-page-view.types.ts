@@ -3,6 +3,7 @@ import type { SupervisorGroup } from "@/features/groups/cells-page-view";
 import type { NextPastoralAction, NextPastoralActionTone } from "@/features/pastoral-home/components/next-pastoral-action-card";
 import type { FirstUseState } from "@/features/pastoral-home/first-use-state";
 import type { PastoralPulseMessage } from "@/features/pastoral-pulse";
+import type { UpcomingBirthdayItem } from "@/features/people/upcoming-birthdays";
 
 export type SupervisorPageViewer = {
   id: string;
@@ -31,6 +32,7 @@ export type SupervisorPageInCarePerson = {
 export type SupervisorPageDashboard = {
   attentionPeople: SupervisorPageSignal[];
   groups: SupervisorGroup[];
+  upcomingBirthdays?: UpcomingBirthdayItem[];
 };
 
 export type SupervisorFocusKey = "urgent" | "support" | "presence" | "attention" | "care";

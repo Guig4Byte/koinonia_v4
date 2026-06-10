@@ -3,6 +3,7 @@ import { buildScopedGroupDashboardItem } from "@/features/dashboard/dashboard-vi
 import { presenceHistoryEventWhere } from "@/features/events/presence-query";
 import { isPresenceRecordedEvent, PRESENCE_TREND_TOTAL_SAMPLE_COUNT, summarizeEventsPresence } from "@/features/events/presence-summary";
 import { activeGroupResponsibilitiesInclude, activeNonVisitorMembershipWhere } from "@/features/groups/group-query";
+import { buildUpcomingBirthdays } from "@/features/people/upcoming-birthdays";
 import { getVisibleEventWhere, getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
 import { getPastoralSectionSignalsByPerson } from "@/features/signals/sections";
 import { addBrasiliaDays, endOfBrasiliaWeek, startOfBrasiliaDay, startOfBrasiliaWeek } from "@/lib/brasilia-time";
@@ -52,10 +53,24 @@ export async function getGroupScopedDashboard(user: PermissionUser) {
   const signals = groups.flatMap((group) => group.signals.map((signal) => ({ ...signal, group })));
   const attentionPeople = getPastoralSectionSignalsByPerson(signals, user);
   const groupsWithPresence = groups.map((group) => buildScopedGroupDashboardItem(group, user, now));
+  const upcomingBirthdays = buildUpcomingBirthdays(
+    groupsWithPresence.flatMap((group) => (
+      group.memberships
+        .filter((membership) => membership.person.status !== PersonStatus.INACTIVE)
+        .map((membership) => ({
+          id: membership.person.id,
+          fullName: membership.person.fullName,
+          birthDate: membership.person.birthDate,
+          groupName: group.name,
+        }))
+    )),
+    { referenceDate: now },
+  );
 
   return {
     groups: groupsWithPresence,
     attentionPeople,
+    upcomingBirthdays,
     weeklyPresence: {
       presenceRate: weeklyPresence.presenceRate,
       hasPresenceData: weeklyPresence.hasPresenceData,
