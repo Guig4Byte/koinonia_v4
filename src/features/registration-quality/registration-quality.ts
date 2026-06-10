@@ -1,13 +1,18 @@
 import { ROUTES } from "@/lib/routes";
 
+export type RegistrationQualityGroup = {
+  id: string;
+  name: string;
+};
+
 export type RegistrationQualityPerson = {
   id?: string;
   fullName: string;
   phone?: string | null;
-  primaryGroup?: {
-    id: string;
-    name: string;
-  } | null;
+  primaryGroup?: RegistrationQualityGroup | null;
+  ledGroups?: RegistrationQualityGroup[];
+  supervisedGroups?: RegistrationQualityGroup[];
+  hasSystemAccess?: boolean;
 };
 
 export type RegistrationQualityUser = {
@@ -73,8 +78,15 @@ export function actionableRegistrationQualityIssues(
   return summary.issues.filter((issue) => issue.count > 0);
 }
 
+function registrationPersonHasPastoralContext(person: RegistrationQualityPerson): boolean {
+  return Boolean(person.primaryGroup || person.ledGroups?.length || person.supervisedGroups?.length);
+}
+
 function registrationPersonSortRank(person: RegistrationQualityPerson): number {
-  return person.primaryGroup ? 0 : 1;
+  if (registrationPersonHasPastoralContext(person)) return 0;
+  if (person.hasSystemAccess) return 1;
+
+  return 2;
 }
 
 function sortRegistrationPeople(people: RegistrationQualityPerson[]): RegistrationQualityPerson[] {
@@ -86,6 +98,24 @@ function sortRegistrationPeople(people: RegistrationQualityPerson[]): Registrati
   });
 }
 
+function personGroupCountLabel(count: number): string {
+  return `${count} ${count === 1 ? "célula" : "células"}`;
+}
+
+function personContextDetail(person: RegistrationQualityPerson): string {
+  const ledGroupCount = person.ledGroups?.length ?? 0;
+  if (ledGroupCount === 1 && person.ledGroups?.[0]) return `Lidera ${person.ledGroups[0].name}`;
+  if (ledGroupCount > 1) return `Lidera ${personGroupCountLabel(ledGroupCount)}`;
+
+  const supervisedGroupCount = person.supervisedGroups?.length ?? 0;
+  if (supervisedGroupCount > 0) return `Acompanha ${personGroupCountLabel(supervisedGroupCount)}`;
+
+  if (person.primaryGroup) return person.primaryGroup.name;
+  if (person.hasSystemAccess) return "Usuário do sistema";
+
+  return "Sem célula ativa";
+}
+
 function personIssueItem(
   person: RegistrationQualityPerson,
   actionLabel: string,
@@ -94,7 +124,7 @@ function personIssueItem(
   return {
     id: person.id ?? person.fullName,
     title: person.fullName,
-    detail: person.primaryGroup?.name ?? "Sem célula ativa",
+    detail: personContextDetail(person),
     href: person.id ? hrefForPerson(person.id) : ROUTES.team,
     actionLabel,
   };
@@ -173,7 +203,7 @@ export function buildRegistrationQualitySummary({
       ),
       detail: "Nomes com apenas uma palavra podem ser revisados depois.",
       items: sortRegistrationPeople(peopleWithPossiblyIncompleteNames).map((person) =>
-        personIssueItem(person, "Revisar nome"),
+        personIssueItem(person, "Revisar nome", ROUTES.personNameReview),
       ),
     },
     {

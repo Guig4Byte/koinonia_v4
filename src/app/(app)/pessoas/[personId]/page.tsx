@@ -32,7 +32,9 @@ export default async function PersonDetailPage({
 }) {
   const [{ personId }, query] = await Promise.all([params, searchParams]);
   const data = await getPersonDetailPageData(personId);
-  const startWithPhoneForm = firstSearchParam(query.acao) === "telefone";
+  const requestedAction = firstSearchParam(query.acao);
+  const startWithPhoneForm = requestedAction === "telefone";
+  const shouldShowNameReviewNotice = requestedAction === "nome";
 
   return (
     <AppShell
@@ -44,7 +46,7 @@ export default async function PersonDetailPage({
       <div className={styles.page}>
         <BackLink href={data.shell.backHref} className={styles.backLink}>{data.shell.backLabel}</BackLink>
 
-        <PriorityCard as="section" priorityTone={data.hero.badge.tone} radius="lg" surface="pastoralHero" className={cn("card-hover-lift", styles.personHero)}>
+        <PriorityCard id="perfil" as="section" priorityTone={data.hero.badge.tone} radius="lg" surface="pastoralHero" className={cn("card-hover-lift", styles.personHero)}>
           <div className={styles.personHeroContent}>
             <Avatar name={data.person.fullName} size="xl" className={styles.avatar} />
             <div className={styles.personMain}>
@@ -57,6 +59,14 @@ export default async function PersonDetailPage({
                       <p key={line}>{line}</p>
                     ))}
                   </div>
+                  {shouldShowNameReviewNotice ? (
+                    <div className={styles.nameReviewNotice} role="note">
+                      <p className={styles.nameReviewTitle}>Nome possivelmente incompleto</p>
+                      <p className={styles.nameReviewDetail}>
+                        Confirme se este é o nome usado no acompanhamento ou complete o cadastro quando tiver o nome completo.
+                      </p>
+                    </div>
+                  ) : null}
                 </div>
                 <SignalHeartIndicator tone={data.hero.badge.tone} size="md" label={data.hero.badge.label} className={styles.personBadge} />
               </div>
