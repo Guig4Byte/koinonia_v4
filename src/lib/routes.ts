@@ -39,6 +39,7 @@ export const ROUTES = {
   person: (personId: string) => `/pessoas/${personId}`,
   personNameReview: (personId: string) => `${routeWithQuery(`/pessoas/${personId}`, { acao: "nome" })}#perfil`,
   personPhone: (personId: string) => routeWithQuery(`/pessoas/${personId}`, { acao: "telefone" }),
+  personBirthday: (personId: string) => routeWithQuery(`/pessoas/${personId}`, { acao: "aniversario" }),
   event: (eventId: string) => `/eventos/${eventId}`,
 
   eventCheckInAdjustment: (eventId: string) => routeWithQuery(`/eventos/${eventId}`, { modo: "ajuste" }),

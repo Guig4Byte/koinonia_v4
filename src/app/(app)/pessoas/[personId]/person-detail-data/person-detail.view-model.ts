@@ -1,5 +1,6 @@
 import { groupNameOrFallback } from "@/features/groups/group-display";
 import { personEffectiveBadgeForViewer } from "@/features/people/status-display";
+import { personBirthdayInputValue } from "@/features/people/person-birthday";
 import { buildPersonPresenceView } from "@/features/people/person-detail-view";
 import { isInCarePerson } from "@/features/people/person-status";
 import { isUrgentOrPastoralCase, sortSignalsForPastoralViewer } from "@/features/signals/sections";
@@ -63,6 +64,7 @@ export function buildPersonDetailPageData(context: Awaited<ReturnType<typeof loa
       id: person.id,
       fullName: person.fullName,
       phone: person.phone,
+      birthDate: personBirthdayInputValue(person.birthDate),
     },
     hero: {
       profileEyebrow,

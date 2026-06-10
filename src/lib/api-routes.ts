@@ -7,6 +7,7 @@ export const API_ROUTES = {
   eventCheckIn: (eventId: string) => `/api/events/${eventId}/check-in`,
   markPersonActive: (personId: string) => `/api/people/${personId}/mark-active`,
   personPhone: (personId: string) => `/api/people/${personId}/phone`,
+  personBirthday: (personId: string) => `/api/people/${personId}/birthday`,
   signalSupport: (signalId: string) => `/api/signals/${signalId}/support`,
   searchPeople: (query: string) => `/api/search?q=${encodeURIComponent(query)}`,
 } as const;

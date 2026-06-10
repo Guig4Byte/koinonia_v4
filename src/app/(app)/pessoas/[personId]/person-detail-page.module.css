@@ -66,6 +66,15 @@
   line-height: 1.4;
 }
 
+
+.personBirthdayCard {
+  margin-top: 0.85rem;
+  border-color: color-mix(in srgb, var(--person-decor-color) 20%, var(--color-border-card));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--person-decor-color) 6%, transparent), transparent 64%),
+    color-mix(in srgb, var(--surface-alt) 72%, var(--color-bg-card));
+}
+
 .nameReviewNotice {
   margin-top: 0.75rem;
   border: 1px solid color-mix(in srgb, var(--person-decor-color) 24%, var(--color-border-divider));
