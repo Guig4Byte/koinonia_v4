@@ -2,6 +2,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { BackLink, EmptyState } from "@/components/shared/base-cards";
 import { SectionHeader } from "@/components/ui/section-header";
 import { Avatar } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { CardLink } from "@/components/ui/card-link";
 import { PriorityCard } from "@/components/ui/priority-card";
 import { SignalHeartIndicator } from "@/components/ui/signal-heart-indicator";
@@ -48,7 +49,14 @@ export default async function PersonDetailPage({
       <div className={styles.page}>
         <BackLink href={data.shell.backHref} className={styles.backLink}>{data.shell.backLabel}</BackLink>
 
-        <PriorityCard id="perfil" as="section" priorityTone={data.hero.badge.tone} radius="lg" surface="pastoralHero" className={cn("card-hover-lift", styles.personHero)}>
+        <PriorityCard
+          id="perfil"
+          as="section"
+          priorityTone={data.hero.badgeKind === "leadership" ? undefined : data.hero.badge.tone}
+          radius="lg"
+          surface="pastoralHero"
+          className={cn("card-hover-lift", styles.personHero, data.hero.badgeKind === "leadership" && styles.leadershipHero)}
+        >
           <div className={styles.personHeroContent}>
             <Avatar name={data.person.fullName} size="xl" className={styles.avatar} />
             <div className={styles.personMain}>
@@ -70,7 +78,15 @@ export default async function PersonDetailPage({
                     </div>
                   ) : null}
                 </div>
-                <SignalHeartIndicator tone={data.hero.badge.tone} size="md" label={data.hero.badge.label} className={styles.personBadge} />
+                {data.hero.badgeKind === "leadership" ? (
+                  <span className={styles.roleBadgeWrap}>
+                    <Badge tone={data.hero.badge.tone} size="sm" maxWidth="full" elevation="soft">
+                      {data.hero.badge.label}
+                    </Badge>
+                  </span>
+                ) : (
+                  <SignalHeartIndicator tone={data.hero.badge.tone} size="md" label={data.hero.badge.label} className={styles.personBadge} />
+                )}
               </div>
             </div>
           </div>
@@ -83,85 +99,160 @@ export default async function PersonDetailPage({
           className={styles.personBirthdayCard}
         />
 
-        <SectionHeader title="Próximo cuidado" detail="O próximo gesto, sem repetir o histórico." />
-        <CareOverviewCard id="registrar-cuidado" view={data.care.overview} className={styles.primaryCareCard}>
-          <CareActions
-            personId={data.person.id}
-            personName={data.person.fullName}
-            phone={data.person.phone}
-            startWithPhoneForm={startWithPhoneForm}
-            className={styles.careActions}
-          />
-          {data.care.canMarkActive ? <PersonStatusActions personId={data.person.id} /> : null}
-        </CareOverviewCard>
-
-        <SectionHeader title={data.signals.sectionTitle} detail={data.signals.sectionDetail} />
-        <div className={styles.sectionStack}>
-          {data.signals.cards.map((signal) => (
-            <PriorityCard key={signal.id} priorityTone={signal.priorityTone} surface="accentStrip" className="card-hover-lift">
-              <div className={styles.signalHeader}>
-                <p className={styles.signalTitle}>{signal.title}</p>
-                <p className={styles.signalMeta}>{signal.meta}</p>
-              </div>
-              {signal.description ? <p className={styles.signalDescription}>{signal.description}</p> : null}
-              <SignalSupportActions
-                signalId={signal.id}
-                assignmentMessage={signal.assignmentMessage}
-                canRequestSupervisor={signal.canRequestSupervisor}
-                canEscalatePastor={signal.canEscalatePastor}
-              />
-            </PriorityCard>
-          ))}
-
-          {data.signals.openCount === 0 ? (
-            <EmptyState className={styles.emptyState} title={EMPTY_STATE_COPY.care.noOpenSignalTitle}>
-              {data.care.hasCareTouch
-                ? "O cuidado mais recente aparece abaixo, e o irmão segue no radar pastoral."
-                : EMPTY_STATE_COPY.care.noOpenSignalDetail}
-            </EmptyState>
-          ) : null}
-        </div>
-
-        <SectionHeader title="Ritmo de presença" />
-        <PersonPresenceCard view={data.presence.view} />
-
-        <div id="historico-cuidado" className={styles.anchorSection}>
-          <SectionHeader title="Histórico de cuidado" detail="Registros recentes antes de um novo cuidado." />
-          {data.care.historyItems.length > 0 ? (
-            <CareTouchHistory items={data.care.historyItems} />
-          ) : (
-            <EmptyState className={styles.emptyState}>{CARE_COPY.history.empty}</EmptyState>
-          )}
-        </div>
-
-        {data.memberships.cards.length > 0 ? (
+        {data.leadership ? (
           <>
-            <SectionHeader title={data.memberships.sectionTitle} />
-            <div className={styles.contextList}>
-              {data.memberships.cards.map((membership) => (
-                <CardLink
-                  key={membership.id}
-                  href={membership.href}
-                  priorityTone="muted"
-                  surface="event"
-                  containment="hidden"
-                  accent="left"
-                >
-                  <div className={styles.contextHeader}>
-                    <div className={styles.contextCopy}>
-                      <p className={styles.contextTitle}>{membership.name}</p>
-                      <div className={styles.contextMeta}>
-                        <p>Liderança: {membership.leadershipName}</p>
-                        {membership.supervisionName ? (
-                          <p>Supervisão: {membership.supervisionName}</p>
-                        ) : null}
-                      </div>
-                    </div>
-                    <span className={styles.contextAction}>Abrir célula →</span>
+            <SectionHeader title="Responsabilidade pastoral" detail="Função e vínculo, sem repetir os indicadores da visão." />
+            <PriorityCard as="section" surface="accentHalo" className={styles.leadershipCard}>
+              <div className={styles.leadershipHeader}>
+                <div className={styles.contextCopy}>
+                  <p className={styles.leadershipRole}>{data.leadership.roleLabel}</p>
+                  <p className={styles.leadershipDetail}>{data.leadership.detail}</p>
+                </div>
+              </div>
+
+              {data.leadership.groups.length > 0 ? (
+                <div className={styles.leadershipGroups}>
+                  {data.leadership.groupsTitle ? (
+                    <p className={styles.leadershipGroupsTitle}>{data.leadership.groupsTitle}</p>
+                  ) : null}
+                  <div className={styles.contextList}>
+                    {data.leadership.groups.map((group) => (
+                      <CardLink
+                        key={group.id}
+                        href={group.href}
+                        priorityTone="muted"
+                        surface="event"
+                        containment="hidden"
+                        accent="left"
+                        padding="sm"
+                      >
+                        <div className={styles.contextHeader}>
+                          <div className={styles.contextCopy}>
+                            <p className={styles.contextTitle}>{group.name}</p>
+                            {group.metaLines.length > 0 ? (
+                              <div className={styles.contextMeta}>
+                                {group.metaLines.map((line) => (
+                                  <p key={line}>{line}</p>
+                                ))}
+                              </div>
+                            ) : null}
+                          </div>
+                          <span className={styles.contextAction}>Abrir célula →</span>
+                        </div>
+                      </CardLink>
+                    ))}
                   </div>
-                </CardLink>
+                  {data.leadership.hiddenGroupsCount > 0 ? (
+                    <p className={styles.leadershipMore}>
+                      Mais {data.leadership.hiddenGroupsCount} célula{data.leadership.hiddenGroupsCount === 1 ? "" : "s"} no escopo.
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
+
+              {!data.profile.showPersonalPastoralSections && startWithPhoneForm ? (
+                <CareActions
+                  personId={data.person.id}
+                  personName={data.person.fullName}
+                  phone={data.person.phone}
+                  startWithPhoneForm={startWithPhoneForm}
+                  className={styles.careActions}
+                />
+              ) : null}
+            </PriorityCard>
+          </>
+        ) : null}
+
+        {data.profile.showPersonalPastoralSections ? (
+          <>
+            {data.profile.personalSectionTitle ? (
+              <SectionHeader
+                title={data.profile.personalSectionTitle}
+                detail={data.profile.personalSectionDetail ?? undefined}
+              />
+            ) : null}
+
+            <SectionHeader title="Próximo cuidado" detail="O próximo gesto, sem repetir o histórico." />
+            <CareOverviewCard id="registrar-cuidado" view={data.care.overview} className={styles.primaryCareCard}>
+              <CareActions
+                personId={data.person.id}
+                personName={data.person.fullName}
+                phone={data.person.phone}
+                startWithPhoneForm={startWithPhoneForm}
+                className={styles.careActions}
+              />
+              {data.care.canMarkActive ? <PersonStatusActions personId={data.person.id} /> : null}
+            </CareOverviewCard>
+
+            <SectionHeader title={data.signals.sectionTitle} detail={data.signals.sectionDetail} />
+            <div className={styles.sectionStack}>
+              {data.signals.cards.map((signal) => (
+                <PriorityCard key={signal.id} priorityTone={signal.priorityTone} surface="accentStrip" className="card-hover-lift">
+                  <div className={styles.signalHeader}>
+                    <p className={styles.signalTitle}>{signal.title}</p>
+                    <p className={styles.signalMeta}>{signal.meta}</p>
+                  </div>
+                  {signal.description ? <p className={styles.signalDescription}>{signal.description}</p> : null}
+                  <SignalSupportActions
+                    signalId={signal.id}
+                    assignmentMessage={signal.assignmentMessage}
+                    canRequestSupervisor={signal.canRequestSupervisor}
+                    canEscalatePastor={signal.canEscalatePastor}
+                  />
+                </PriorityCard>
               ))}
+
+              {data.signals.openCount === 0 ? (
+                <EmptyState className={styles.emptyState} title={EMPTY_STATE_COPY.care.noOpenSignalTitle}>
+                  {data.care.hasCareTouch
+                    ? "O cuidado mais recente aparece abaixo, e o irmão segue no radar pastoral."
+                    : EMPTY_STATE_COPY.care.noOpenSignalDetail}
+                </EmptyState>
+              ) : null}
             </div>
+
+            <SectionHeader title="Ritmo de presença" />
+            <PersonPresenceCard view={data.presence.view} />
+
+            <div id="historico-cuidado" className={styles.anchorSection}>
+              <SectionHeader title="Histórico de cuidado" detail="Registros recentes antes de um novo cuidado." />
+              {data.care.historyItems.length > 0 ? (
+                <CareTouchHistory items={data.care.historyItems} />
+              ) : (
+                <EmptyState className={styles.emptyState}>{CARE_COPY.history.empty}</EmptyState>
+              )}
+            </div>
+
+            {data.memberships.cards.length > 0 ? (
+              <>
+                <SectionHeader title={data.memberships.sectionTitle} />
+                <div className={styles.contextList}>
+                  {data.memberships.cards.map((membership) => (
+                    <CardLink
+                      key={membership.id}
+                      href={membership.href}
+                      priorityTone="muted"
+                      surface="event"
+                      containment="hidden"
+                      accent="left"
+                    >
+                      <div className={styles.contextHeader}>
+                        <div className={styles.contextCopy}>
+                          <p className={styles.contextTitle}>{membership.name}</p>
+                          <div className={styles.contextMeta}>
+                            <p>Liderança: {membership.leadershipName}</p>
+                            {membership.supervisionName ? (
+                              <p>Supervisão: {membership.supervisionName}</p>
+                            ) : null}
+                          </div>
+                        </div>
+                        <span className={styles.contextAction}>Abrir célula →</span>
+                      </div>
+                    </CardLink>
+                  ))}
+                </div>
+              </>
+            ) : null}
           </>
         ) : null}
       </div>

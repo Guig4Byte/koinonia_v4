@@ -1,5 +1,5 @@
 import { GroupResponsibilityRole, PersonStatus } from "@/generated/prisma/client";
-import { activeNonVisitorMembershipWhere } from "@/features/groups/group-query";
+import { activeMembershipWhere } from "@/features/groups/group-query";
 import { canUsePastorDashboard, type PermissionUser } from "@/features/permissions/permissions";
 import { userRoleLabels } from "@/features/users/user-display";
 import { prisma } from "@/lib/prisma";
@@ -20,9 +20,11 @@ export async function getRegistrationQualitySummary(user: PermissionUser) {
         id: true,
         fullName: true,
         phone: true,
+        status: true,
         memberships: {
-          where: activeNonVisitorMembershipWhere,
+          where: activeMembershipWhere,
           select: {
+            role: true,
             group: { select: { id: true, name: true } },
           },
           orderBy: { joinedAt: "asc" },
@@ -30,6 +32,7 @@ export async function getRegistrationQualitySummary(user: PermissionUser) {
         },
         user: {
           select: {
+            role: true,
             groupResponsibilities: {
               where: {
                 churchId: user.churchId,
@@ -78,9 +81,11 @@ export async function getRegistrationQualitySummary(user: PermissionUser) {
       return {
         ...person,
         primaryGroup: memberships?.[0]?.group ?? null,
+        primaryMembershipRole: memberships?.[0]?.role ?? null,
         ledGroups,
         supervisedGroups,
         hasSystemAccess: Boolean(personUser),
+        systemRole: personUser?.role ?? null,
       };
     }),
     users: users.map((user) => ({
