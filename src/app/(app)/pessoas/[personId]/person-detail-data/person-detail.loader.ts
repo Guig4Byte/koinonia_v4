@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { GroupResponsibilityRole } from "@/generated/prisma/client";
 import { canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
 import { PERSON_DETAIL_ATTENDANCE_HISTORY_LIMIT, PERSON_DETAIL_CARE_TOUCH_HISTORY_LIMIT } from "@/features/people/person-detail-view";
 import { isInCarePerson } from "@/features/people/person-status";
@@ -15,6 +16,19 @@ export async function loadPersonDetailContext(personId: string) {
       memberships: {
         where: { leftAt: null },
         include: { group: { include: { responsibilities: activeGroupResponsibilitiesInclude } } },
+      },
+      user: {
+        include: {
+          groupResponsibilities: {
+            where: {
+              activeUntil: null,
+              role: { in: [GroupResponsibilityRole.LEADER, GroupResponsibilityRole.SUPERVISOR] },
+              group: { is: { isActive: true } },
+            },
+            include: { group: { include: { responsibilities: activeGroupResponsibilitiesInclude } } },
+            orderBy: { createdAt: "asc" },
+          },
+        },
       },
     },
   });

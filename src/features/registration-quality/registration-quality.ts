@@ -1,3 +1,5 @@
+import { personDisplayContext } from "@/features/people/person-display-context";
+import type { MembershipRole, PersonStatus, UserRole } from "@/generated/prisma/client";
 import { ROUTES } from "@/lib/routes";
 
 export type RegistrationQualityGroup = {
@@ -9,10 +11,13 @@ export type RegistrationQualityPerson = {
   id?: string;
   fullName: string;
   phone?: string | null;
+  status?: PersonStatus | string | null;
   primaryGroup?: RegistrationQualityGroup | null;
+  primaryMembershipRole?: MembershipRole | string | null;
   ledGroups?: RegistrationQualityGroup[];
   supervisedGroups?: RegistrationQualityGroup[];
   hasSystemAccess?: boolean;
+  systemRole?: UserRole | string | null;
 };
 
 export type RegistrationQualityUser = {
@@ -98,22 +103,16 @@ function sortRegistrationPeople(people: RegistrationQualityPerson[]): Registrati
   });
 }
 
-function personGroupCountLabel(count: number): string {
-  return `${count} ${count === 1 ? "célula" : "células"}`;
-}
-
 function personContextDetail(person: RegistrationQualityPerson): string {
-  const ledGroupCount = person.ledGroups?.length ?? 0;
-  if (ledGroupCount === 1 && person.ledGroups?.[0]) return `Lidera ${person.ledGroups[0].name}`;
-  if (ledGroupCount > 1) return `Lidera ${personGroupCountLabel(ledGroupCount)}`;
-
-  const supervisedGroupCount = person.supervisedGroups?.length ?? 0;
-  if (supervisedGroupCount > 0) return `Acompanha ${personGroupCountLabel(supervisedGroupCount)}`;
-
-  if (person.primaryGroup) return person.primaryGroup.name;
-  if (person.hasSystemAccess) return "Usuário do sistema";
-
-  return "Sem célula ativa";
+  return personDisplayContext({
+    status: person.status,
+    systemRole: person.systemRole,
+    primaryGroup: person.primaryGroup,
+    primaryMembershipRole: person.primaryMembershipRole,
+    ledGroups: person.ledGroups,
+    supervisedGroups: person.supervisedGroups,
+    hasSystemAccess: person.hasSystemAccess,
+  });
 }
 
 function personIssueItem(

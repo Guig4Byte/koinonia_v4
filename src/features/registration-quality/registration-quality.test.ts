@@ -5,6 +5,7 @@ import {
   isInternalLogin,
   isPossiblyIncompleteName,
 } from "@/features/registration-quality/registration-quality";
+import { MembershipRole, PersonStatus, UserRole } from "@/generated/prisma/client";
 
 const people = [
   { id: "person-1", fullName: "Cibeli", phone: "+5521999999999", primaryGroup: { id: "group-1", name: "Célula Semear" } },
@@ -43,7 +44,7 @@ describe("registration quality", () => {
     expect(summary.issues.find((issue) => issue.key === "missingPhone")?.items).toEqual([
       expect.objectContaining({
         title: "Derbe Aguiar",
-        detail: "Célula Esperança",
+        detail: "Irmão · Célula Esperança",
         href: "/pessoas/person-2?acao=telefone",
         actionLabel: "Adicionar telefone",
       }),
@@ -51,7 +52,7 @@ describe("registration quality", () => {
     expect(summary.issues.find((issue) => issue.key === "possiblyIncompleteName")?.items).toEqual([
       expect.objectContaining({
         title: "Cibeli",
-        detail: "Célula Semear",
+        detail: "Irmão · Célula Semear",
         href: "/pessoas/person-1?acao=nome#perfil",
         actionLabel: "Revisar nome",
       }),
@@ -70,7 +71,7 @@ describe("registration quality", () => {
   it("prioriza pendências acionáveis por vínculo pastoral e papel", () => {
     const summary = buildRegistrationQualitySummary({
       people: [
-        { id: "person-3", fullName: "Visitante Betel", phone: null, primaryGroup: null },
+        { id: "person-3", fullName: "Visitante Betel", phone: null, status: PersonStatus.VISITOR, primaryGroup: null },
         { id: "person-1", fullName: "Bruno Lima", phone: null, primaryGroup: { id: "group-2", name: "Célula Esperança" } },
         { id: "person-2", fullName: "Ana Martins", phone: null, primaryGroup: { id: "group-1", name: "Célula Semear" } },
       ],
@@ -82,9 +83,9 @@ describe("registration quality", () => {
     });
 
     expect(summary.issues.find((issue) => issue.key === "missingPhone")?.items).toEqual([
-      expect.objectContaining({ title: "Ana Martins", detail: "Célula Semear", actionLabel: "Adicionar telefone" }),
-      expect.objectContaining({ title: "Bruno Lima", detail: "Célula Esperança", actionLabel: "Adicionar telefone" }),
-      expect.objectContaining({ title: "Visitante Betel", detail: "Sem célula ativa", actionLabel: "Adicionar telefone" }),
+      expect.objectContaining({ title: "Ana Martins", detail: "Irmão · Célula Semear", actionLabel: "Adicionar telefone" }),
+      expect.objectContaining({ title: "Bruno Lima", detail: "Irmão · Célula Esperança", actionLabel: "Adicionar telefone" }),
+      expect.objectContaining({ title: "Visitante Betel", detail: "Visitante", actionLabel: "Adicionar telefone" }),
     ]);
     expect(summary.issues.find((issue) => issue.key === "internalLogin")?.items).toEqual([
       expect.objectContaining({ title: "Admin Koinonia", actionLabel: "Trocar login" }),
@@ -103,6 +104,7 @@ describe("registration quality", () => {
           primaryGroup: null,
           supervisedGroups: [{ id: "group-1", name: "Célula Semear" }],
           hasSystemAccess: true,
+          systemRole: UserRole.SUPERVISOR,
         },
         {
           id: "person-supervisor-many",
@@ -122,6 +124,7 @@ describe("registration quality", () => {
           primaryGroup: null,
           ledGroups: [{ id: "group-3", name: "Célula Centro" }],
           hasSystemAccess: true,
+          systemRole: UserRole.LEADER,
         },
         {
           id: "person-system",
@@ -135,10 +138,34 @@ describe("registration quality", () => {
     });
 
     expect(summary.issues.find((issue) => issue.key === "possiblyIncompleteName")?.items).toEqual([
-      expect.objectContaining({ title: "Cibeli", detail: "Acompanha 1 célula" }),
-      expect.objectContaining({ title: "Derbe", detail: "Lidera Célula Centro" }),
-      expect.objectContaining({ title: "Fernando", detail: "Acompanha 2 células" }),
+      expect.objectContaining({ title: "Cibeli", detail: "Supervisor · Acompanha 1 célula" }),
+      expect.objectContaining({ title: "Derbe", detail: "Líder · Célula Centro" }),
+      expect.objectContaining({ title: "Fernando", detail: "Supervisor · Acompanha 2 células" }),
       expect.objectContaining({ title: "Adriana", detail: "Usuário do sistema" }),
+    ]);
+  });
+
+  it("preserva o contexto de visitantes quando a pendência cadastral é acionável", () => {
+    const summary = buildRegistrationQualitySummary({
+      people: [
+        {
+          id: "visitor-1",
+          fullName: "Visitante Betel",
+          phone: null,
+          status: PersonStatus.ACTIVE,
+          primaryGroup: { id: "group-1", name: "Célula Semear" },
+          primaryMembershipRole: MembershipRole.VISITOR,
+        },
+      ],
+      users: [],
+    });
+
+    expect(summary.issues.find((issue) => issue.key === "missingPhone")?.items).toEqual([
+      expect.objectContaining({
+        title: "Visitante Betel",
+        detail: "Visitante · Visitou Célula Semear",
+        actionLabel: "Adicionar telefone",
+      }),
     ]);
   });
 
