@@ -38,6 +38,24 @@ Também preserve:
 - visitante não vira membro automaticamente;
 - grupo inativo não entra nas superfícies padrão.
 
+## Encontros, rotina e presença
+
+Proteja esta separação:
+
+```txt
+Rotina da célula se repete.
+Encontro realizado não se repete.
+Presença só existe quando alguém registra.
+```
+
+- Rotina de célula gera encontro esperado (`SCHEDULED`), não presença real.
+- Encontro esperado sem check-in não deve virar falta, `0%` ou sinal automático por si só.
+- Encontro anterior ainda é `CELL_MEETING`; use `generatedFromSchedule = false` quando ele não veio da rotina automática.
+- Não crie encontro como `COMPLETED` sem presenças reais.
+- Antes de criar encontro manual/anterior, evite duplicidade por célula, tipo e data/horário.
+- Líder registra presença da própria célula; supervisor acompanha e pastor interpreta.
+- Supervisor/pastor não devem virar operador comum de check-in sem decisão explícita de produto.
+
 ## Fronteiras de diretório
 
 ### `src/app`

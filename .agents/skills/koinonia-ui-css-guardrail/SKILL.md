@@ -101,6 +101,14 @@ Use somente quando existe:
 - Formulários focados, check-in e edição devem respeitar navegação inferior oculta quando esse padrão já existir.
 - Não aumentar densidade visual se isso prejudicar a leitura pastoral.
 
+## Fluxos de encontro
+
+- Em `/eventos`, a ação primária deve continuar favorecendo o registro de presença pendente.
+- Ações como `Registrar encontro anterior` devem ser visíveis sem competir com cards de encontros pendentes.
+- Prefira `BottomSheet` para formulário curto mobile-first; use página dedicada só se o fluxo crescer.
+- Use ícones existentes da `lucide-react` quando ajudarem a reconhecer a ação, como `CalendarPlus`.
+- Não crie modal/wizard se data, horário e local opcional resolvem o fluxo.
+
 ## Tom pastoral da UI
 
 - Presença não é fiscalização.

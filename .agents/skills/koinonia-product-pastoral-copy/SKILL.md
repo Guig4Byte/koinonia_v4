@@ -78,6 +78,7 @@ Prefira:
 - `Ver células em atenção`
 - `Abrir célula`
 - `Registrar presença`
+- `Registrar encontro anterior`
 - `Ajustar encontro`
 
 Evite:
@@ -87,6 +88,15 @@ Evite:
 - `Tratar ocorrência`
 - `Abrir ticket`
 - `Ver pendências` quando o contexto for cuidado pastoral sensível
+
+## Copy para encontros
+
+- Use `Encontro anterior` quando a célula se reuniu e a presença ficou para lançar depois.
+- Evite `retroativo` na UI; é técnico.
+- Evite `já realizado` se o fluxo ainda vai registrar presença, para não sugerir conclusão sem dados.
+- Diferencie `Agendar encontro` de `Registrar encontro anterior` quando ambos existirem.
+- Para duplicidade, direcione revisão: `Já existe um encontro desta célula nesse dia e horário. Revise o encontro existente antes de criar outro.`
+- Para encontro passado sem presença, prefira tom calmo: `A presença ficou para registrar depois.`
 
 ## Layout e copy
 

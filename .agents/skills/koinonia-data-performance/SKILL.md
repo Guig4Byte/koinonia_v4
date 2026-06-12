@@ -29,6 +29,16 @@ Use esta skill quando a tarefa envolver Prisma, PostgreSQL, `schema.prisma`, mig
 - `CareSignal` sustenta atenção; não é tarefa nem SLA.
 - `CareTouch` registra cuidado/contato sem virar prontuário pesado.
 
+## Encontros e dados derivados
+
+- Rotina de célula pode gerar `Event` esperado; isso não é presença real.
+- `Event` passado sem `Attendance` continua sendo dado pendente, não `0%`.
+- Encontro anterior criado manualmente deve evitar duplicidade com eventos existentes por `startsAt` e `scheduleStartsAt`.
+- Use `scheduleStartsAt` para preservar a ocorrência original quando encontro gerado foi remarcado.
+- Use `generatedFromSchedule = false` quando o encontro foi criado manualmente fora da rotina.
+- Recalcule sinais de presença somente depois de check-in real ou mudança que afete presença.
+- Não faça geração histórica ampla em page load; se precisar criar passado, faça por ação explícita do usuário.
+
 ## Prisma e migrations
 
 - Mudança persistente em `schema.prisma` deve gerar migration versionada em `prisma/migrations`.
