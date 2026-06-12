@@ -16,97 +16,20 @@ import {
   personBirthdayErrorMessage,
   validatePersonBirthdayValue,
 } from "@/features/people/person-birthday";
+import {
+  BIRTHDAY_CURRENT_YEAR,
+  BIRTHDAY_MIN_YEAR,
+  BIRTHDAY_MONTH_OPTIONS,
+  type BirthdayPickerDraft,
+  birthdayDayOptions,
+  birthdayDraftFromInput,
+  birthdayInputFromPickerDraft,
+  decadeStartFromYear,
+  nextDecadeStart,
+  updateBirthdayPickerDraft,
+  yearsForDecade,
+} from "@/features/people/person-birthday-picker";
 import pickerStyles from "@/components/ui/picker.module.css";
-
-const BIRTHDAY_MIN_YEAR = 1900;
-const CURRENT_YEAR = new Date().getFullYear();
-
-const BIRTHDAY_DAY_OPTIONS = Array.from({ length: 31 }, (_, index) => String(index + 1).padStart(2, "0"));
-
-function isLeapYear(year: number) {
-  return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
-}
-
-function birthdayDayLimit(month?: string, year?: string) {
-  const monthNumber = Number(month);
-  const yearNumber = Number(year);
-
-  if (!monthNumber) return 31;
-  if ([4, 6, 9, 11].includes(monthNumber)) return 30;
-  if (monthNumber === 2) {
-    return Number.isInteger(yearNumber) && year?.length === 4
-      ? isLeapYear(yearNumber)
-        ? 29
-        : 28
-      : 29;
-  }
-
-  return 31;
-}
-
-function birthdayDayOptions(month?: string, year?: string) {
-  return BIRTHDAY_DAY_OPTIONS.slice(0, birthdayDayLimit(month, year));
-}
-
-const BIRTHDAY_MONTH_OPTIONS = [
-  { value: "01", label: "Jan" },
-  { value: "02", label: "Fev" },
-  { value: "03", label: "Mar" },
-  { value: "04", label: "Abr" },
-  { value: "05", label: "Mai" },
-  { value: "06", label: "Jun" },
-  { value: "07", label: "Jul" },
-  { value: "08", label: "Ago" },
-  { value: "09", label: "Set" },
-  { value: "10", label: "Out" },
-  { value: "11", label: "Nov" },
-  { value: "12", label: "Dez" },
-];
-
-type BirthdayPickerDraft = {
-  day: string;
-  month: string;
-  year: string;
-};
-
-function digitsOnly(value: string, maxLength: number) {
-  return value.replace(/\D/g, "").slice(0, maxLength);
-}
-
-function birthdayDraftFromInput(value: string): BirthdayPickerDraft {
-  const [day = "", month = "", year = ""] = formatPersonBirthdayDraftInput(value).split("/");
-
-  return { day, month, year };
-}
-
-function birthdayInputFromPickerDraft({ day, month, year }: BirthdayPickerDraft) {
-  if (!day || !month || year.length !== 4) return "";
-
-  return `${day}/${month}/${year}`;
-}
-
-function decadeStartFromYear(year?: string) {
-  const parsedYear = Number(year);
-  const fallbackYear = CURRENT_YEAR - 30;
-  const yearForDecade = Number.isInteger(parsedYear) && parsedYear >= BIRTHDAY_MIN_YEAR && parsedYear <= CURRENT_YEAR
-    ? parsedYear
-    : fallbackYear;
-
-  return Math.floor(yearForDecade / 10) * 10;
-}
-
-function yearsForDecade(decadeStart: number) {
-  return Array.from({ length: 10 }, (_, index) => decadeStart + index)
-    .filter((year) => year >= BIRTHDAY_MIN_YEAR && year <= CURRENT_YEAR)
-    .map(String);
-}
-
-function nextDecadeStart(decadeStart: number, direction: "previous" | "next") {
-  const nextValue = direction === "previous" ? decadeStart - 10 : decadeStart + 10;
-  const currentDecadeStart = Math.floor(CURRENT_YEAR / 10) * 10;
-
-  return Math.min(Math.max(nextValue, BIRTHDAY_MIN_YEAR), currentDecadeStart);
-}
 
 export function PersonBirthdayCard({
   personId,
@@ -174,19 +97,7 @@ export function PersonBirthdayCard({
   }
 
   function selectPickerValue(field: keyof BirthdayPickerDraft, value: string) {
-    setPickerDraft((currentDraft) => {
-      const nextDraft = {
-        ...currentDraft,
-        [field]: field === "year" ? digitsOnly(value, 4) : digitsOnly(value, 2),
-      };
-      const dayLimit = birthdayDayLimit(nextDraft.month, nextDraft.year);
-
-      if (nextDraft.day && Number(nextDraft.day) > dayLimit) {
-        nextDraft.day = "";
-      }
-
-      return nextDraft;
-    });
+    setPickerDraft((currentDraft) => updateBirthdayPickerDraft(currentDraft, field, value));
     setPickerError("");
   }
 
@@ -409,7 +320,7 @@ export function PersonBirthdayCard({
                 <div>
                   <p className={pickerStyles.label}>Ano</p>
                   <p className="text-[length:var(--text-xs)] font-semibold text-[color:var(--color-text-secondary)]">
-                    {yearDecadeStart}–{Math.min(yearDecadeStart + 9, CURRENT_YEAR)}
+                    {yearDecadeStart}–{Math.min(yearDecadeStart + 9, BIRTHDAY_CURRENT_YEAR)}
                   </p>
                 </div>
                 <div className="flex shrink-0 gap-1.5">
@@ -430,7 +341,7 @@ export function PersonBirthdayCard({
                     size="sm"
                     density="inlineCompact"
                     aria-label="Ver próxima década"
-                    disabled={yearDecadeStart >= Math.floor(CURRENT_YEAR / 10) * 10}
+                    disabled={yearDecadeStart >= Math.floor(BIRTHDAY_CURRENT_YEAR / 10) * 10}
                     onClick={() => setYearDecadeStart((currentDecade) => nextDecadeStart(currentDecade, "next"))}
                   >
                     <ChevronRight className="h-4 w-4" aria-hidden="true" strokeWidth={2.3} />

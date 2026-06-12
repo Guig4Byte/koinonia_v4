@@ -26,6 +26,39 @@ export type EnsureUpcomingCellMeetingsResult = {
   generatedUntil: Date;
 };
 
+export type ScheduledCellMeetingGroup = CellMeetingSchedule & {
+  id: string;
+  churchId: string;
+  name: string;
+  responsibilities: { userId: string }[];
+  locationName: string | null;
+  eventsGeneratedUntil: Date | null;
+};
+
+export type ExistingCellMeeting = {
+  groupId: string | null;
+  startsAt: Date;
+  scheduleStartsAt: Date | null;
+};
+
+export type ScheduledCellMeetingPlan = {
+  group: ScheduledCellMeetingGroup;
+  starts: Date[];
+};
+
+export type ScheduledCellMeetingCreateData = {
+  churchId: string;
+  groupId: string;
+  createdById: string | null;
+  type: typeof EventType.CELL_MEETING;
+  title: string;
+  startsAt: Date;
+  status: typeof EventStatus.SCHEDULED;
+  locationName: string | null;
+  generatedFromSchedule: true;
+  scheduleStartsAt: Date;
+};
+
 export function parseMeetingTime(meetingTime: string | null) {
   return meetingTime ? parseClockTime(meetingTime, { allowSingleDigitHour: true }) : null;
 }
@@ -65,6 +98,59 @@ export function scheduledCellMeetingStarts({
   }
 
   return starts;
+}
+
+export function scheduledCellMeetingPlans(
+  groups: ScheduledCellMeetingGroup[],
+  { from, until }: { from: Date; until: Date },
+): ScheduledCellMeetingPlan[] {
+  return groups.flatMap((group) => {
+    const starts = scheduledCellMeetingStarts({
+      meetingDayOfWeek: group.meetingDayOfWeek,
+      meetingTime: group.meetingTime,
+      from,
+      until,
+    });
+
+    return starts.length > 0 ? [{ group, starts }] : [];
+  });
+}
+
+export function existingCellMeetingStartsByGroup(existingEvents: ExistingCellMeeting[]) {
+  const existingStartsByGroup = new Map<string, Set<number>>();
+
+  for (const event of existingEvents) {
+    if (!event.groupId) continue;
+
+    const groupExistingStarts = existingStartsByGroup.get(event.groupId) ?? new Set<number>();
+    groupExistingStarts.add((event.scheduleStartsAt ?? event.startsAt).getTime());
+    existingStartsByGroup.set(event.groupId, groupExistingStarts);
+  }
+
+  return existingStartsByGroup;
+}
+
+export function scheduledCellMeetingCreateData(
+  plans: ScheduledCellMeetingPlan[],
+  existingStartsByGroup: Map<string, Set<number>>,
+): ScheduledCellMeetingCreateData[] {
+  return plans.flatMap(({ group, starts }) => {
+    const existingStarts = existingStartsByGroup.get(group.id) ?? new Set<number>();
+    const startsToCreate = starts.filter((startsAt) => !existingStarts.has(startsAt.getTime()));
+
+    return startsToCreate.map((startsAt) => ({
+      churchId: group.churchId,
+      groupId: group.id,
+      createdById: group.responsibilities[0]?.userId ?? null,
+      type: EventType.CELL_MEETING,
+      title: group.name,
+      startsAt,
+      status: EventStatus.SCHEDULED,
+      locationName: group.locationName,
+      generatedFromSchedule: true,
+      scheduleStartsAt: startsAt,
+    }));
+  });
 }
 
 export async function ensureUpcomingCellMeetingsForUser(
@@ -110,56 +196,45 @@ export async function ensureUpcomingCellMeetingsForUser(
     },
   });
 
+  const plans = scheduledCellMeetingPlans(groups, {
+    from: generationStart,
+    until: generatedUntil,
+  });
+
   let eventsCreated = 0;
 
-  for (const group of groups) {
-    const starts = scheduledCellMeetingStarts({
-      meetingDayOfWeek: group.meetingDayOfWeek,
-      meetingTime: group.meetingTime,
-      from: generationStart,
-      until: generatedUntil,
-    });
-
-    if (starts.length === 0) continue;
-
+  if (plans.length > 0) {
+    const groupIds = plans.map(({ group }) => group.id);
     const existingEvents = await prisma.event.findMany({
       where: {
-        groupId: group.id,
+        groupId: { in: groupIds },
         type: EventType.CELL_MEETING,
         OR: [
           { startsAt: { gte: generationStart, lte: generatedUntil } },
           { scheduleStartsAt: { gte: generationStart, lte: generatedUntil } },
         ],
       },
-      select: { startsAt: true, scheduleStartsAt: true },
+      select: { groupId: true, startsAt: true, scheduleStartsAt: true },
     });
 
-    const existingStarts = new Set(existingEvents.map((event) => (event.scheduleStartsAt ?? event.startsAt).getTime()));
-    const startsToCreate = starts.filter((startsAt) => !existingStarts.has(startsAt.getTime()));
+    const createData = scheduledCellMeetingCreateData(plans, existingCellMeetingStartsByGroup(existingEvents));
 
-    if (startsToCreate.length > 0) {
+    if (createData.length > 0) {
       const result = await prisma.event.createMany({
-        data: startsToCreate.map((startsAt) => ({
-          churchId: group.churchId,
-          groupId: group.id,
-          createdById: group.responsibilities[0]?.userId ?? null,
-          type: EventType.CELL_MEETING,
-          title: group.name,
-          startsAt,
-          status: EventStatus.SCHEDULED,
-          locationName: group.locationName,
-          generatedFromSchedule: true,
-          scheduleStartsAt: startsAt,
-        })),
+        data: createData,
         skipDuplicates: true,
       });
 
-      eventsCreated += result.count;
+      eventsCreated = result.count;
     }
 
-    if (!group.eventsGeneratedUntil || group.eventsGeneratedUntil < generatedUntil) {
-      await prisma.smallGroup.update({
-        where: { id: group.id },
+    const groupIdsToUpdate = plans
+      .filter(({ group }) => !group.eventsGeneratedUntil || group.eventsGeneratedUntil < generatedUntil)
+      .map(({ group }) => group.id);
+
+    if (groupIdsToUpdate.length > 0) {
+      await prisma.smallGroup.updateMany({
+        where: { id: { in: groupIdsToUpdate } },
         data: { eventsGeneratedUntil: generatedUntil },
       });
     }

@@ -3,6 +3,7 @@ import {
   formatPersonBirthday,
   formatPersonBirthdayDraftInput,
   parsePersonBirthdayPayload,
+  personBirthdayFeedbackMessage,
   personBirthdayInputValue,
   personBirthdayErrorMessage,
   validatePersonBirthdayValue,
@@ -60,5 +61,12 @@ describe("person birthday", () => {
       birthDate: new Date("1992-05-14T00:00:00.000Z"),
       inputValue: "14/05/1992",
     });
+  });
+
+  it("mantém as mensagens de retorno da API", () => {
+    expect(personBirthdayFeedbackMessage(new Date("1992-05-14T00:00:00.000Z"))).toBe(
+      "Aniversário salvo no perfil da pessoa.",
+    );
+    expect(personBirthdayFeedbackMessage(null)).toBe("Aniversário removido do perfil da pessoa.");
   });
 });

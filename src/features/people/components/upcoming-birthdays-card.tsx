@@ -2,14 +2,13 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
+import {
+  type UpcomingBirthdaysCardVariant,
+  buildUpcomingBirthdaysCardDisplay,
+} from "@/features/people/upcoming-birthdays-card-display";
 import type { UpcomingBirthdayItem } from "@/features/people/upcoming-birthdays";
 import { ROUTES } from "@/lib/routes";
 import styles from "./upcoming-birthdays-card.module.css";
-
-const UPCOMING_BIRTHDAYS_VISIBLE_LIMIT = 4;
-const GROUPED_UPCOMING_BIRTHDAYS_VISIBLE_LIMIT = 5;
-
-type UpcomingBirthdaysCardVariant = "list" | "grouped";
 
 function BirthdayCelebrationIcon() {
   return (
@@ -81,23 +80,6 @@ function BirthdayListItem({
   );
 }
 
-function groupVisibleBirthdaysByCell(birthdays: UpcomingBirthdayItem[]) {
-  const groups = new Map<string, UpcomingBirthdayItem[]>();
-
-  birthdays.forEach((birthday) => {
-    const groupName = birthday.groupName || "Sem célula informada";
-    const currentBirthdays = groups.get(groupName) ?? [];
-
-    currentBirthdays.push(birthday);
-    groups.set(groupName, currentBirthdays);
-  });
-
-  return Array.from(groups.entries()).map(([groupName, groupBirthdays]) => ({
-    groupName,
-    birthdays: groupBirthdays,
-  }));
-}
-
 export function UpcomingBirthdaysCard({
   birthdays,
   className,
@@ -115,13 +97,10 @@ export function UpcomingBirthdaysCard({
 }) {
   if (birthdays.length === 0) return null;
 
-  const resolvedVisibleLimit = visibleLimit
-    ?? (variant === "grouped"
-      ? GROUPED_UPCOMING_BIRTHDAYS_VISIBLE_LIMIT
-      : UPCOMING_BIRTHDAYS_VISIBLE_LIMIT);
-  const visibleBirthdays = birthdays.slice(0, resolvedVisibleLimit);
-  const hiddenCount = birthdays.length - visibleBirthdays.length;
-  const groupedBirthdays = variant === "grouped" ? groupVisibleBirthdaysByCell(visibleBirthdays) : [];
+  const { visibleBirthdays, hiddenCount, groupedBirthdays } = buildUpcomingBirthdaysCardDisplay(birthdays, {
+    variant,
+    visibleLimit,
+  });
 
   return (
     <Card as="section" padding="sm" radius="lg" surface="pastoralCue" accentTone="care" className={className}>

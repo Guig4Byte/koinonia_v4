@@ -151,3 +151,9 @@ export function personBirthdayErrorMessage(error?: PersonBirthdayError | null) {
 
   return error ? messages[error] : null;
 }
+
+export function personBirthdayFeedbackMessage(birthDate: Date | null) {
+  return birthDate
+    ? "Aniversário salvo no perfil da pessoa."
+    : "Aniversário removido do perfil da pessoa.";
+}

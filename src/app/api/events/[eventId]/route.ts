@@ -2,7 +2,10 @@ import { NextRequest } from "next/server";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { apiError, apiOk } from "@/lib/api-response";
 import { readJsonBody } from "@/lib/json";
-import { eventDetailsPayloadSchema, updateEventDetails } from "./event-details-command";
+import {
+  eventDetailsPayloadSchema,
+  updateEventDetails,
+} from "@/features/events/event-details-command";
 
 export async function PATCH(request: NextRequest, context: { params: Promise<{ eventId: string }> }) {
   const user = await getCurrentUser();

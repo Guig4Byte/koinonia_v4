@@ -91,14 +91,17 @@ Consulte `docs/ARCHITECTURE.md` para detalhes. Pontos mais usados:
 | Permissões e escopo | `src/features/permissions/permissions.ts`, `src/features/permissions/permission-query.ts` |
 | Células e responsabilidades | `src/features/groups`, `src/app/(app)/celulas` |
 | Encontros e agenda | `src/features/events`, `src/app/(app)/eventos`, `src/app/api/events` |
+| Commands de eventos | `src/features/events/event-details-command.ts`, `src/features/events/event-check-in-command.ts` |
 | Check-in | `src/features/check-in`, `src/app/api/events/[eventId]/check-in` |
 | Presença | `src/features/events/presence-summary.ts`, `src/features/events/presence-display.ts`, `src/features/events/weekly-presence-health.ts`, `src/components/shared/presence-metric.tsx` |
 | Sinais | `src/features/signals` |
-| Cuidado | `src/features/care`, `src/app/api/care/[personId]` |
-| Busca | `src/features/search`, `src/app/api/search` |
+| Cuidado | `src/features/care`, `src/app/api/care/[personId]`, `src/features/care/person-status-actions.ts` |
+| Busca | `src/features/search/search-people.ts`, `src/features/search/search-view.ts`, `src/app/api/search` |
 | Tema e texto | `src/features/theme`, `src/features/text-size`, `src/components/layout` |
 | UI compartilhada | `src/components/ui`, `src/components/shared`, `docs/FRONTEND.md`, `docs/UI_PRIMITIVES_GUIDE.md` |
 | Domínio compartilhado | `src/lib/domain` |
+| Gestão de usuários | `src/features/users/managed-user-commands.ts`, `src/app/(app)/usuarios` |
+| Perfil da pessoa | `src/features/people/person-detail-data`, `src/app/(app)/pessoas/[personId]` |
 | Banco, migrations e seeds | `prisma/schema.prisma`, `prisma/migrations`, `prisma/seed.ts`, `prisma/seed-performance.ts`, `docs/DEVELOPMENT.md` |
 
 ## Checklist Antes De Codar Ou Responder

@@ -1,9 +1,9 @@
 import { UserRole } from "@/generated/prisma/client";
 import { appNavForRole, homeHrefForRole, secondaryNavHrefForRole, secondaryNavLabelForRole } from "@/features/navigation/app-nav";
 import { leaderCellHrefFromGroup } from "@/features/navigation/leader-cell-nav";
-import type { loadPersonDetailContext } from "./person-detail.loader";
+import type { PersonDetailContext } from "./person-detail.loader";
 
-type User = Awaited<ReturnType<typeof loadPersonDetailContext>>["user"];
+type User = PersonDetailContext["user"];
 
 export function buildPersonDetailShell({
   user,

@@ -2,9 +2,9 @@ import { GroupResponsibilityRole } from "@/generated/prisma/client";
 import { FALLBACK_LEADER_NAME } from "@/features/groups/group-display";
 import { responsibilityNames } from "@/features/groups/responsibility-display";
 import { ROUTES } from "@/lib/routes";
-import type { loadPersonDetailContext } from "./person-detail.loader";
+import type { PersonDetailContext } from "./person-detail.loader";
 
-type VisibleMemberships = Awaited<ReturnType<typeof loadPersonDetailContext>>["visibleMemberships"];
+type VisibleMemberships = PersonDetailContext["visibleMemberships"];
 
 export function buildPersonDetailMembershipCards(visibleMemberships: VisibleMemberships) {
   return visibleMemberships.map((membership) => {

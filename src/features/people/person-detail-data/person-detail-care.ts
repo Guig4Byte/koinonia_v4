@@ -5,9 +5,7 @@ import { buildPersonCareOverviewView } from "@/features/people/person-care-overv
 import { careKindLabels } from "@/features/care/care-copy";
 import { responsibilityNames } from "@/features/groups/responsibility-display";
 import { formatShortDate, formatTime } from "@/lib/format";
-import type { loadPersonDetailContext } from "./person-detail.loader";
-
-type PersonDetailContext = Awaited<ReturnType<typeof loadPersonDetailContext>>;
+import type { PersonDetailContext } from "./person-detail.loader";
 
 type Signal = PersonDetailContext["signals"][number];
 

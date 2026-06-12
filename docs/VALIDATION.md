@@ -57,8 +57,10 @@ Para revisar uma mini entrega específica, prefira começar pelo teste afetado:
 
 ```bash
 npx vitest run src/features/check-in/check-in-view.test.ts
-npx vitest run src/app/api/events/[eventId]/check-in/check-in-command.test.ts
-npx vitest run src/app/api/events/[eventId]/event-details-command.test.ts
+npx vitest run src/features/events/event-check-in-command.test.ts
+npx vitest run src/features/events/event-details-command.test.ts
+npx vitest run src/features/search/search-people.test.ts
+npx vitest run src/features/users/managed-user-commands.test.ts
 npx vitest run src/features/signals/support-command.test.ts
 ```
 
@@ -75,8 +77,9 @@ Depois rode `npm run verify` para capturar impactos indiretos.
 
 ### API handlers e server actions
 
-- Handler continua fino: autenticação, parsing, chamada de command e resposta.
+- Handler continua fino: autenticação, parsing, chamada de command/query da feature e resposta.
 - Command concentra regra de negócio e retorna um contrato explícito.
+- Queries com montagem de view model público ficam em `src/features`, não diretamente no handler quando houver lógica real.
 - Erros mantêm status HTTP esperado.
 - Nenhuma query Prisma foi movida para componente client-side.
 
