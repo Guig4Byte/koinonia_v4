@@ -13,9 +13,8 @@ import { personProfileEyebrow, membershipRoleLabel } from "./person-detail-label
 import { buildPersonDetailMembershipCards } from "./person-detail-memberships";
 import { buildPersonDetailShell } from "./person-detail-navigation";
 import { buildPersonDetailSignalCards } from "./person-detail-signals";
-import type { loadPersonDetailContext } from "./person-detail.loader";
+import type { PersonDetailContext } from "./person-detail.loader";
 
-type PersonDetailContext = Awaited<ReturnType<typeof loadPersonDetailContext>>;
 type PersonDetailGroupResponsibility = NonNullable<PersonDetailContext["person"]["user"]>["groupResponsibilities"][number];
 type PersonDetailResponsibilityGroup = PersonDetailGroupResponsibility["group"];
 
@@ -76,7 +75,6 @@ function leadershipGroupCard(group: PersonDetailResponsibilityGroup): Leadership
     ]),
   };
 }
-
 
 function leaderGroupDetail(groups: PersonDetailResponsibilityGroup[]) {
   if (groups.length === 0) return "Ainda sem célula liderada.";

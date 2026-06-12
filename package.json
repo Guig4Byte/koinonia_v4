@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "audit:ui-css": "node scripts/audit-ui-css-overrides.mjs",
     "audit:ui-css:strict": "node scripts/audit-ui-css-overrides.mjs --strict",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "verify": "npm run db:generate && npm run typecheck && npm run lint && npm run test && npm run build",

@@ -12,7 +12,7 @@ import {
   eventCheckInPayloadSchema,
   registerEventCheckIn,
   type EventCheckInPayload,
-} from "./check-in-command";
+} from "./event-check-in-command";
 
 const prismaMock = vi.hoisted(() => ({
   event: {

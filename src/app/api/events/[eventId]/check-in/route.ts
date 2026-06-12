@@ -2,7 +2,10 @@ import { NextRequest } from "next/server";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { apiError, apiOk } from "@/lib/api-response";
 import { readJsonBody } from "@/lib/json";
-import { eventCheckInPayloadSchema, registerEventCheckIn } from "./check-in-command";
+import {
+  eventCheckInPayloadSchema,
+  registerEventCheckIn,
+} from "@/features/events/event-check-in-command";
 
 export async function POST(request: NextRequest, context: { params: Promise<{ eventId: string }> }) {
   const user = await getCurrentUser();

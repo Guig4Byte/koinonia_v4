@@ -13,7 +13,8 @@ Objetivos principais:
 - reduzir dependências cruzadas problemáticas entre features;
 - melhorar performance de servidor/banco;
 - criar massa de dados realista para validar performance e telas;
-- alinhar documentação ao estado atual.
+- alinhar documentação ao estado atual;
+- lapidar fronteiras entre `src/app` e `src/features` sem redesenhar a arquitetura.
 
 ## O que já foi concluído
 
@@ -34,6 +35,8 @@ src/components/shared/base-cards.tsx
 src/components/shared/presence-metric.tsx
 src/features/dashboard/queries.ts
 src/app/(app)/pessoas/[personId]/page-data.ts
+src/app/(app)/pessoas/[personId]/person-detail-content.tsx
+src/features/people/person-detail-data/*
 src/features/groups/cells-page-view.ts
 src/features/groups/group-detail-view.ts
 src/features/team/components/team-structure-cards.tsx
@@ -42,6 +45,21 @@ src/features/pastoral-home/supervisor-page-view.ts
 ```
 
 Regra usada: manter import público existente funcionando e dividir por responsabilidade interna. Não criar wrapper novo quando ele só esconde uma linha de outro componente.
+
+### Fronteira `app` / `features`
+
+No ciclo mais recente, várias regras que estavam próximas de rotas/actions foram movidas para features, mantendo os handlers finos:
+
+```txt
+src/features/users/managed-user-commands.ts
+src/features/people/person-profile-commands.ts
+src/features/care/person-status-actions.ts
+src/features/search/search-people.ts
+src/features/events/event-details-command.ts
+src/features/events/event-check-in-command.ts
+```
+
+`src/app` continua responsável por rota, parâmetros, redirects/respostas HTTP e composição. Commands, queries e view models com lógica real devem continuar em `src/features`.
 
 ### Dependências entre features
 
@@ -62,11 +80,11 @@ Helpers neutros foram movidos para `src/lib/domain`, incluindo responsabilidades
 
 Foram aplicados quick wins:
 
-- busca global com fallback limitado e payload menor;
+- busca global com fallback limitado, payload menor e query/view model em `src/features/search/search-people.ts`;
 - `getAuthenticatedUser()` usando `select` enxuto;
 - histórico de cuidado da pessoa com limite explícito;
 - recálculo de sinais de presença sem N+1 de leitura;
-- geração automática de encontros usando `eventsGeneratedUntil` como short-circuit;
+- geração automática de encontros usando `eventsGeneratedUntil` como short-circuit e leitura/criação em lote por grupos elegíveis;
 - query de `/eventos` carregando eventos recentes primeiro para não cortar a semana atual com `take`;
 - índices P1 adicionados ao Prisma para `Event` e `CareSignal`;
 - migration versionada criada em `prisma/migrations`.
@@ -93,14 +111,15 @@ migrations versionadas      sim
 
 ## Próximos candidatos, se houver demanda
 
-Não há refactor estrutural urgente. Próximos passos devem depender de dor real.
+Não há refactor estrutural urgente. Próximos passos devem depender de dor real e validação em produção/local.
 
 Candidatos técnicos:
 
-1. Ajuste visual pequeno no card `Presença da semana`: em 360-384 px, o texto `Sem mudança relevante em relação ao último mês` fica quebrado; avaliar copy menor ou comportamento responsivo do badge.
+1. Rodar `npm run verify` e, quando aplicável, `npm run verify:all` após aplicar todo o ciclo.
 2. Medir performance real com seed de performance em `/pastor`, `/eventos`, `/lider`, `/equipe` e check-in.
-3. Revisar `src/features/people/components/member-priority-list.tsx` apenas se aparecer dor de manutenção.
-4. Expandir E2E para fluxos críticos com seed de performance.
+3. Ajuste visual pequeno no card `Presença da semana`: em 360-384 px, o texto `Sem mudança relevante em relação ao último mês` fica quebrado; avaliar copy menor ou comportamento responsivo do badge.
+4. Revisar `src/features/people/components/member-priority-list.tsx` apenas se aparecer dor de manutenção.
+5. Expandir E2E para fluxos críticos com seed de performance.
 
 Evitar por enquanto:
 

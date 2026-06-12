@@ -26,7 +26,8 @@ A pessoa é o centro. Presença é fonte de leitura pastoral. A arquitetura deve
 
 ```txt
 src/app
-  Rotas, páginas, layouts, loading.tsx, login/logout, server actions e API handlers.
+  Rotas, páginas, layouts, loading.tsx, login/logout, server actions e API handlers finos.
+  Regras de aplicação, commands, queries e view models devem morar em `src/features` quando houver lógica real.
 
 src/components/ui
   Primitives visuais reutilizáveis, sem regra de domínio.
@@ -83,6 +84,34 @@ src/features/groups/group-detail-view.ts
 ```
 
 Não crie fachada ou wrapper novo se ele apenas renomeia outro componente sem semântica, regra visual ou compatibilidade real.
+
+## Fronteiras entre `app` e `features`
+
+`src/app` deve ficar fino. Páginas, server actions e API handlers podem ler parâmetros, sessão/contexto, fazer parsing de transporte, chamar commands/queries de feature e compor a resposta. Regras de negócio, autorização específica, queries Prisma com montagem de view model e comandos de escrita devem ficar em `src/features` quando passarem de orquestração trivial.
+
+Padrão esperado para API handlers e server actions:
+
+```txt
+app route/action
+  autentica
+  lê/parsa parâmetros
+  chama command/query da feature
+  traduz resultado para redirect ou resposta HTTP
+```
+
+Exemplos atuais dessa fronteira:
+
+```txt
+src/features/users/managed-user-commands.ts
+src/features/people/person-profile-commands.ts
+src/features/care/person-status-actions.ts
+src/features/search/search-people.ts
+src/features/events/event-details-command.ts
+src/features/events/event-check-in-command.ts
+src/features/people/person-detail-data/*
+```
+
+`src/app/(app)/pessoas/[personId]/page-data.ts` é uma fachada de rota: busca o usuário atual, chama `src/features/people/person-detail-data/get-person-detail-page-data.ts` e aplica `notFound()` quando necessário. A feature concentra query, visibilidade e view model do perfil.
 
 ## Regra de UI/CSS
 
@@ -289,6 +318,9 @@ Helpers principais:
 ```ts
 ensureUpcomingCellMeetingsForUser()
 scheduledCellMeetingStarts()
+scheduledCellMeetingPlans()
+existingCellMeetingStartsByGroup()
+scheduledCellMeetingCreateData()
 parseMeetingTime()
 ```
 
@@ -300,7 +332,7 @@ Regras:
 - copia `SmallGroup.locationName` para `Event.locationName`;
 - grava `scheduleStartsAt` com a ocorrência original;
 - usa `SmallGroup.eventsGeneratedUntil` para pular células já cobertas em page load;
-- quando precisa gerar, verifica eventos existentes por `startsAt` e `scheduleStartsAt`;
+- quando precisa gerar, verifica eventos existentes em lote por grupo usando `startsAt` e `scheduleStartsAt`;
 - atualiza `SmallGroup.eventsGeneratedUntil`.
 
 Chamadas atuais ocorrem nas telas que dependem de encontros, como `/eventos` e `/lider`. A criação/edição de célula deve chamar a geração com `force: true` quando agenda, local padrão ou status puder exigir regeneração de encontros futuros.
@@ -335,6 +367,9 @@ Fontes:
 
 ```txt
 src/app/api/events/[eventId]/route.ts
+src/app/api/events/[eventId]/check-in/route.ts
+src/features/events/event-details-command.ts
+src/features/events/event-check-in-command.ts
 src/features/events/components/event-details-actions.tsx
 src/features/events/event-display.ts
 src/features/events/brasilia-date-time.ts
@@ -364,6 +399,8 @@ Regras de backend:
 No client, remarcação usa data `dd/mm/aaaa` e horário `hh:mm` no Horário de Brasília (`UTC-3`) para evitar o seletor nativo de `datetime-local`. A lógica de parse, formatação, calendário e opções de horário fica em `src/features/events/brasilia-date-time.ts` e `src/features/events/time-options.ts`; não duplicar esses helpers dentro de componentes.
 
 `src/features/events/event-display.ts` centraliza local efetivo e rótulos de encontro fechado sem presença. Esse arquivo é usado por páginas e componentes client-side, então não deve importar Prisma Client diretamente.
+
+As regras de detalhe e check-in ficam em `src/features/events/event-details-command.ts` e `src/features/events/event-check-in-command.ts`. Os handlers em `src/app/api/events/[eventId]` devem permanecer finos e não concentrar regra Prisma/permission fora desses commands.
 
 ## Presença
 
@@ -598,6 +635,24 @@ Regras:
 - liderança, supervisão, membros e usuários ficam fora desta fase;
 - ao alterar agenda, local padrão ou status da célula, encontros futuros gerados automaticamente e ainda não registrados podem ser regenerados;
 - células inativas não aparecem nas superfícies padrão, encontros ou check-in.
+
+## Busca de pessoas
+
+Fontes:
+
+```txt
+src/app/api/search/route.ts
+src/features/search/search-people.ts
+src/features/search/search-view.ts
+```
+
+Regras:
+
+- `/api/search` retorna `{ people }` e o handler deve continuar fino;
+- `searchVisiblePeople()` aplica escopo de visibilidade, limite de resultados, fallback sem acento e montagem do resultado público;
+- `search-view.ts` centraliza constantes e parsing visual/cliente da busca;
+- o fallback normalizado deve continuar limitado por `SEARCH_ACCENT_FALLBACK_SCAN_LIMIT` para evitar varredura ampla sem necessidade;
+- a busca não deve expor pessoas fora do escopo do usuário autenticado.
 
 ## Rotas principais
 

@@ -1,10 +1,9 @@
 import { signalBadgeForViewer, signalDescriptionForViewer, signalTitleForViewer } from "@/features/signals/display";
 import { canEscalateSignalToPastor, canRequestSupervisorSupport, escalationStatusChipForViewer } from "@/features/signals/escalation";
 import { formatShortDate, formatTime } from "@/lib/format";
-import type { loadPersonDetailContext } from "./person-detail.loader";
+import type { PersonDetailContext } from "./person-detail.loader";
 import type { buildPastoralEscalationActorLookup } from "./person-detail-care";
 
-type PersonDetailContext = Awaited<ReturnType<typeof loadPersonDetailContext>>;
 type PastoralEscalationActorLookup = ReturnType<typeof buildPastoralEscalationActorLookup>;
 
 export function buildPersonDetailSignalCards({

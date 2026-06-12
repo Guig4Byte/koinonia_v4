@@ -1,15 +1,22 @@
-import { notFound } from "next/navigation";
 import { GroupResponsibilityRole } from "@/generated/prisma/client";
-import { canViewGroup, canViewPerson, getVisibleCareTouchWhere, getVisibleEventWhere, getVisibleOpenSignalWhere } from "@/features/permissions/permissions";
+import {
+  canViewGroup,
+  canViewPerson,
+  getVisibleCareTouchWhere,
+  getVisibleEventWhere,
+  getVisibleOpenSignalWhere,
+  type PermissionUser,
+} from "@/features/permissions/permissions";
 import { PERSON_DETAIL_ATTENDANCE_HISTORY_LIMIT, PERSON_DETAIL_CARE_TOUCH_HISTORY_LIMIT } from "@/features/people/person-detail-view";
 import { isInCarePerson } from "@/features/people/person-status";
 import { activeGroupResponsibilitiesInclude } from "@/features/groups/group-query";
-import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 
-export async function loadPersonDetailContext(personId: string) {
-  const user = await getCurrentUser();
+export type PersonDetailViewer = PermissionUser & {
+  name: string;
+};
 
+export async function loadPersonDetailContext(user: PersonDetailViewer, personId: string) {
   const person = await prisma.person.findUnique({
     where: { id: personId },
     include: {
@@ -33,8 +40,9 @@ export async function loadPersonDetailContext(personId: string) {
     },
   });
 
-  if (!person || person.churchId !== user.churchId) notFound();
-  if (!canViewPerson(user, person)) notFound();
+  if (!person || person.churchId !== user.churchId || !canViewPerson(user, person)) {
+    return null;
+  }
 
   const visibleOpenSignalWhere = getVisibleOpenSignalWhere(user);
   const visibleEventWhere = getVisibleEventWhere(user);
@@ -78,3 +86,5 @@ export async function loadPersonDetailContext(personId: string) {
     visibleMemberships,
   };
 }
+
+export type PersonDetailContext = NonNullable<Awaited<ReturnType<typeof loadPersonDetailContext>>>;
