@@ -135,7 +135,7 @@ describe("cells-page-view", () => {
     const urgent = group({ id: "urgent", name: "Célula Urgente", signals: [signal({ severity: SignalSeverity.URGENT })], attentionCount: 1 });
     const inCare = group({ id: "in-care", name: "Célula Vale", inCareCount: 1 });
     const lowPresence = group({ id: "low-presence", name: "Célula Oeste", presenceRate: 62 });
-    const noPresence = group({ id: "no-presence", name: "Célula Sem Registro", hasPresenceData: false, recordedEventsCount: 1 });
+    const noPresence = group({ id: "no-presence", name: "Célula Manancial", hasPresenceData: false, recordedEventsCount: 1 });
 
     expect(filterCellsPageGroups([regular, attention], "sul", "todos").map((item) => item.id)).toEqual(["attention"]);
     expect(filterCellsPageGroups([regular, attention, support, urgent], "", "atencao").map((item) => item.id)).toEqual(["attention"]);

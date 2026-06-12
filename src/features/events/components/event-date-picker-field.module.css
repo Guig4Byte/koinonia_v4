@@ -41,6 +41,11 @@
   margin-top: 6px;
 }
 
+.popoverAlignLeft {
+  right: auto;
+  left: 0;
+}
+
 .day,
 .empty {
   min-height: 40px;
