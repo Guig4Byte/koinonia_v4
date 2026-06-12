@@ -63,6 +63,18 @@ Um command bom deve:
 - retornar `commandOk` ou `commandError`;
 - ser coberto por teste quando altera regra ou contrato.
 
+### Commands de encontros
+
+Para commands que criam, remarcem ou registram encontros:
+
+- Preserve `churchId`, `groupId`, `type` e escopo do usuário autenticado.
+- Valide papel permitido antes de escrever; check-in comum é responsabilidade do líder da célula.
+- Encontro anterior deve nascer como encontro de célula (`CELL_MEETING`) em estado registrável, não como `COMPLETED` sem presença.
+- Bloqueie data futura quando o fluxo for "encontro anterior".
+- Verifique duplicidade por célula, tipo e data/horário antes de criar manualmente.
+- Ao salvar presenças, mantenha as escritas acopladas em transaction e recalcule sinais quando aplicável.
+- Não altere semântica de `NO_MEETING`: ele confirma que a célula não se reuniu após o horário, não é falta.
+
 ## Prisma e transações
 
 - Use `$transaction` quando as escritas precisam ser atômicas.
