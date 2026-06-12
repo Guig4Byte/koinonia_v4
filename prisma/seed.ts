@@ -837,12 +837,12 @@ async function main() {
     }),
   ]);
 
-  // Cenário de regressão: célula ativa sem eventos registrados deve aparecer como sem registro,
-  // não como 0% de presença.
+  // Cenário de regressão: célula ativa com nome real e sem eventos registrados deve aparecer
+  // com diagnóstico de sem registro, não como 0% de presença.
   await createGroupWithMembers({
     churchId: church.id,
     key: "semRegistro",
-    name: "Célula Sem Registro",
+    name: "Célula Manancial",
     leader: bruno,
     supervisor: ana,
     meetingDayOfWeek: 2,
@@ -1405,7 +1405,7 @@ async function main() {
     `Outros usuários da seed: ${marcos.email} / ${helena.email} / ${paulo.email} / ${carla.email} / ${diego.email} / ${fernanda.email} / ${gabriel.email} / ${juliana.email} / ${lucas.email}`,
   );
   console.log(
-    "Cenários de regressão: saúde pastoral com urgentes, encaminhadas ao pastor, pedido de apoio, atenção local, sem presença recente e estáveis; presença da semana com tendência positiva para o pastor; histórico de presença nas células com registro; 4 encontros no mês atual para a Célula Semente; faltas consecutivas, faltas intercaladas, justificativas, urgente sem atribuição, apoio à supervisão, múltiplos sinais, encaminhamento pastoral, cuidado pastoral realizado, histórico compacto de cuidado com e sem anotação, sinal resolvido, célula sem registro, célula sem supervisor, evento sem presença e célula inativa. Na visão do líder Bruno, a Célula Esperança concentra múltiplos cenários visuais: urgentes por presença, pedidos de apoio, atenção local, pessoas em cuidado, múltiplos itens do mesmo tipo e rotina da célula. Os textos visíveis dos sinais foram padronizados por família pastoral para não sugerir regras automáticas que não existem.",
+    "Cenários de regressão: saúde pastoral com urgentes, encaminhadas ao pastor, pedido de apoio, atenção local, sem presença recente e estáveis; presença da semana com tendência positiva para o pastor; histórico de presença nas células com registro; 4 encontros no mês atual para a Célula Semente; faltas consecutivas, faltas intercaladas, justificativas, urgente sem atribuição, apoio à supervisão, múltiplos sinais, encaminhamento pastoral, cuidado pastoral realizado, histórico compacto de cuidado com e sem anotação, sinal resolvido, célula sem presença registrada, célula sem supervisor, evento sem presença e célula inativa. Na visão do líder Bruno, a Célula Esperança concentra múltiplos cenários visuais: urgentes por presença, pedidos de apoio, atenção local, pessoas em cuidado, múltiplos itens do mesmo tipo e rotina da célula. Os textos visíveis dos sinais foram padronizados por família pastoral para não sugerir regras automáticas que não existem.",
   );
   console.log("Senha local da seed: koinonia123");
 }

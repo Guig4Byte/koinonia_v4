@@ -14,6 +14,9 @@ import pickerStyles from "@/components/ui/picker.module.css";
 import styles from "./event-date-picker-field.module.css";
 
 export function EventDatePickerField({
+  id = "event-start-date",
+  label = "Nova data",
+  popoverAlign = "right",
   value,
   isOpen,
   calendarMonth,
@@ -23,6 +26,9 @@ export function EventDatePickerField({
   onCalendarMonthChange,
   onCalendarDaySelect,
 }: {
+  id?: string;
+  label?: string;
+  popoverAlign?: "left" | "right";
   value: string;
   isOpen: boolean;
   calendarMonth: CalendarMonth;
@@ -34,12 +40,12 @@ export function EventDatePickerField({
 }) {
   return (
     <div>
-      <label className={pickerStyles.label} htmlFor="event-start-date">
-        Nova data
+      <label className={pickerStyles.label} htmlFor={id}>
+        {label}
       </label>
       <div className={pickerStyles.field}>
         <input
-          id="event-start-date"
+          id={id}
           value={value}
           onChange={(event) => onChange(event.target.value)}
           inputMode="numeric"
@@ -56,7 +62,7 @@ export function EventDatePickerField({
           <CalendarDays className="h-4 w-4" aria-hidden="true" />
         </button>
         {isOpen ? (
-          <div className={pickerStyles.popover}>
+          <div className={cn(pickerStyles.popover, popoverAlign === "left" && styles.popoverAlignLeft)}>
             <div className={styles.header}>
               <button
                 type="button"

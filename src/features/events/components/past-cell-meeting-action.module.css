@@ -1,0 +1,83 @@
+.actionBar {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 0.85rem;
+}
+
+.triggerIcon {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+}
+
+.sheet {
+  display: grid;
+  gap: 1rem;
+}
+
+.sheetHeader {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.sheetIcon {
+  display: inline-grid;
+  width: 2.7rem;
+  height: 2.7rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--color-brand-accent) 22%, var(--color-border-card));
+  border-radius: var(--radius-pill);
+  background:
+    radial-gradient(circle at 42% 32%, color-mix(in srgb, var(--color-brand-accent) 16%, transparent), transparent 68%),
+    color-mix(in srgb, var(--color-brand-accent) 9%, var(--surface-alt));
+  color: color-mix(in srgb, var(--color-brand) 82%, var(--color-text-primary));
+}
+
+.sheetIconSvg {
+  width: 1.22rem;
+  height: 1.22rem;
+  stroke-width: 2.25;
+}
+
+.sheetTitle {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-family: ui-rounded, "SF Pro Rounded", "Nunito", var(--font-body);
+  font-size: var(--text-xl);
+  font-weight: 820;
+  line-height: 1.12;
+}
+
+.sheetDescription {
+  margin: 0.28rem 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 540;
+  line-height: 1.4;
+}
+
+.fields {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.dateTimeFields {
+  display: grid;
+  align-items: start;
+  gap: 0.75rem;
+}
+
+.sheetActions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.55rem;
+}
+
+@media (min-width: 560px) {
+  .dateTimeFields,
+  .sheetActions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

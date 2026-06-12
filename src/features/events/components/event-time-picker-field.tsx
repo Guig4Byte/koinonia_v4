@@ -4,12 +4,16 @@ import { TimePickerField } from "@/components/ui/time-picker-field";
 import { timeOptionsWithCurrent } from "@/features/events/time-options";
 
 export function EventTimePickerField({
+  id = "event-start-time",
+  label = "Novo horário",
   value,
   isOpen,
   onChange,
   onOpenChange,
   onTimeSelect,
 }: {
+  id?: string;
+  label?: string;
   value: string;
   isOpen: boolean;
   onChange: (value: string) => void;
@@ -18,8 +22,8 @@ export function EventTimePickerField({
 }) {
   return (
     <TimePickerField
-      id="event-start-time"
-      label="Novo horário"
+      id={id}
+      label={label}
       value={value}
       isOpen={isOpen}
       getTimeOptions={timeOptionsWithCurrent}

@@ -3,6 +3,7 @@ import { EmptyState } from "@/components/shared/base-cards";
 import { SectionHeader } from "@/components/ui/section-header";
 import { PageHero } from "@/components/shared/page-hero";
 import { EventConsultationCards, EventList, EventsConsultationView } from "@/features/events/components/events-page-sections";
+import { PastCellMeetingAction } from "@/features/events/components/past-cell-meeting-action";
 import { EMPTY_STATE_COPY } from "@/features/empty-states/empty-state-copy";
 import {
   EVENTS_PAGE_HISTORY_LOOKBACK_DAYS,
@@ -16,7 +17,8 @@ import { ensureUpcomingCellMeetingsForUser } from "@/features/events/schedule";
 import { activeGroupResponsibilitiesScopeInclude } from "@/features/groups/group-query";
 import { appNavForRole } from "@/features/navigation/app-nav";
 import { leaderCellHrefForUser } from "@/features/navigation/leader-cell-nav";
-import { getVisibleEventWhere, type PermissionUser } from "@/features/permissions/permissions";
+import { getVisibleEventWhere, getVisibleGroupWhere, type PermissionUser } from "@/features/permissions/permissions";
+import { EventType, GroupKind, UserRole } from "@/generated/prisma/client";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { addBrasiliaDays, endOfBrasiliaWeek, startOfBrasiliaDay } from "@/lib/brasilia-time";
 import { prisma } from "@/lib/prisma";
@@ -28,6 +30,8 @@ type EventsSearchParams = Promise<{
   consulta?: string | string[];
   periodo?: string | string[];
 }>;
+
+const NO_RECORDED_PRESENCE_LABEL = "Ainda sem presença registrada";
 
 async function getEventsForUser(user: PermissionUser, referenceDate: Date) {
   const today = startOfBrasiliaDay(referenceDate);
@@ -47,14 +51,49 @@ async function getEventsForUser(user: PermissionUser, referenceDate: Date) {
   });
 }
 
+async function getLeaderCellsForPastMeetingAction(user: PermissionUser, referenceDate: Date) {
+  if (user.role !== UserRole.LEADER) return [];
+
+  const cells = await prisma.smallGroup.findMany({
+    where: {
+      ...getVisibleGroupWhere(user),
+      kind: GroupKind.CELL,
+    },
+    select: {
+      id: true,
+      name: true,
+      locationName: true,
+      meetingTime: true,
+      events: {
+        where: {
+          type: EventType.CELL_MEETING,
+          startsAt: { lte: referenceDate },
+          attendances: { some: {} },
+        },
+        select: { id: true },
+        take: 1,
+      },
+    },
+    orderBy: { name: "asc" },
+  });
+
+  return cells.map(({ events: presenceHistoryEvents, ...cell }) => ({
+    ...cell,
+    statusLabel: presenceHistoryEvents.length > 0
+      ? undefined
+      : NO_RECORDED_PRESENCE_LABEL,
+  }));
+}
+
 export default async function EventsPage({ searchParams }: { searchParams?: EventsSearchParams }) {
   const user = await getCurrentUser();
   const now = new Date();
   await ensureUpcomingCellMeetingsForUser(user, { referenceDate: now });
 
-  const [events, leaderCellHref] = await Promise.all([
+  const [events, leaderCellHref, leaderCells] = await Promise.all([
     getEventsForUser(user, now),
     leaderCellHrefForUser(user),
+    getLeaderCellsForPastMeetingAction(user, now),
   ]);
   const resolvedSearchParams: Awaited<EventsSearchParams> = searchParams ? await searchParams : {};
   const mode = readEventConsultationMode(firstParam(resolvedSearchParams.consulta));
@@ -81,6 +120,7 @@ export default async function EventsPage({ searchParams }: { searchParams?: Even
               description="Encontros da semana e presença em um só lugar."
             />
             <EventConsultationCards summary={consultationSummary} />
+            <PastCellMeetingAction groups={leaderCells} />
 
             <section className={pageStyles.eventsHomeSection}>
               <SectionHeader title="Hoje" className={pageStyles.eventsHomeSectionTitle} />

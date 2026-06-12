@@ -178,6 +178,8 @@ A célula pode ter dia, horário e local padrão. O sistema usa essa agenda para
 
 Cada encontro tem local próprio. Quando gerado automaticamente, começa com o local padrão da célula, mas pode ser ajustado para aquela ocorrência.
 
+Quando a célula se reuniu e a presença ficou para lançar depois, a liderança pode usar `Registrar encontro anterior`. Esse fluxo cria um encontro passado pendente de presença, com data, horário e local opcional, sem gerar histórico amplo automaticamente e sem transformar ausência de check-in em presença real.
+
 | Situação | Leitura | Ações do líder |
 | --- | --- | --- |
 | Futuro | `Agendado` | ajustar local, remarcar, cancelar |

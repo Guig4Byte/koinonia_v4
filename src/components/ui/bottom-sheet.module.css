@@ -5,6 +5,8 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
+  overflow: hidden;
+  overscroll-behavior: contain;
   padding: 0.75rem;
   padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
 }
@@ -21,13 +23,16 @@
   border: 0;
   background: var(--color-modal-backdrop);
   cursor: pointer;
+  touch-action: none;
 }
 
 .panel {
+  box-sizing: border-box;
   position: relative;
   width: min(100%, var(--bottom-sheet-max-width, 28rem));
-  max-height: calc(100dvh - 2rem);
+  max-height: calc(100dvh - 1.5rem - env(safe-area-inset-bottom));
   overflow: auto;
+  overscroll-behavior: contain;
   border: 1px solid var(--color-border-card);
   border-radius: 1.75rem;
   background: var(--color-bg-card);
@@ -35,12 +40,17 @@
   padding: 0.75rem 1rem 1rem;
   animation: bottom-sheet-enter 180ms ease-out;
   scroll-margin: 1rem;
+  -webkit-overflow-scrolling: touch;
 }
 
 .panelAccent {
   background:
     radial-gradient(ellipse 82% 62% at 50% 0%, color-mix(in srgb, var(--color-brand-accent) 10%, transparent) 0%, transparent 72%),
     var(--color-bg-card);
+}
+
+.panelVisibleOnWide {
+  overflow: auto;
 }
 
 .panelSm {
@@ -74,6 +84,10 @@
 @media (min-width: 640px) {
   .layer {
     align-items: center;
+  }
+
+  .panelVisibleOnWide {
+    overflow: visible;
   }
 }
 

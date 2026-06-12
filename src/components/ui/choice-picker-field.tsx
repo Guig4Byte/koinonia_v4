@@ -273,6 +273,9 @@ export function ChoicePickerField({
                   onClick={() => selectValue(option.value)}
                 >
                   <span className={styles.choiceOptionLabel}>{option.label}</span>
+                  {option.description ? (
+                    <span className={styles.choiceOptionDescription}>{option.description}</span>
+                  ) : null}
                 </button>
               );
             }) : (
